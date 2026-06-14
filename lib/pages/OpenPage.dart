@@ -8,6 +8,9 @@ import 'package:xournalpp/pages/WorkspacePage.dart';
 import 'package:xournalpp/src/XppPageSize.dart';
 import 'package:xournalpp/src/compat/file_picker_cross.dart';
 
+// Importante: serve per chiamare la funzione di cambio colore che abbiamo messo nel main
+import 'package:xournalpp/main.dart'; 
+
 class OpenPage extends StatefulWidget {
   @override
   _OpenPageState createState() => _OpenPageState();
@@ -94,6 +97,63 @@ class _OpenPageState extends State<OpenPage> {
     );
   }
 
+  // --- POPUP DELLE IMPOSTAZIONI (CAMBIO COLORE) ---
+  Future<void> _showSettingsDialog() async {
+    final List<Color> colors = [
+      Colors.indigo, Colors.blue, Colors.teal, Colors.green, 
+      Colors.orange, Colors.red, Colors.pink, Colors.purple,
+    ];
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Impostazioni App', style: TextStyle(fontWeight: FontWeight.bold)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Colore del tema:', style: TextStyle(fontSize: 16)),
+              SizedBox(height: 16),
+              Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: [
+                  // Tasto per il colore Dinamico di Android (Material You)
+                  InkWell(
+                    onTap: () {
+                      XournalppMobile.of(context).updateThemeColor(Colors.indigo, true);
+                      Navigator.pop(context);
+                    },
+                    child: CircleAvatar(
+                      backgroundColor: Colors.grey.shade300,
+                      radius: 22,
+                      child: Icon(Icons.android, color: Colors.black54),
+                    ),
+                  ),
+                  // Colori manuali
+                  ...colors.map((color) {
+                    return InkWell(
+                      onTap: () {
+                        // Cambia colore e disattiva quello dinamico
+                        XournalppMobile.of(context).updateThemeColor(color, false);
+                        Navigator.pop(context);
+                      },
+                      child: CircleAvatar(backgroundColor: color, radius: 22),
+                    );
+                  }).toList(),
+                ],
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context), child: Text('Chiudi')),
+          ],
+        );
+      }
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final filteredFiles = selectedTag == 'Tutti' 
@@ -106,7 +166,11 @@ class _OpenPageState extends State<OpenPage> {
         centerTitle: false,
         actions: [
           IconButton(icon: Icon(Icons.search), onPressed: () {}),
-          IconButton(icon: Icon(Icons.settings), onPressed: () {}),
+          // --- ECCO IL COLLEGAMENTO AL TASTO IMPOSTAZIONI ---
+          IconButton(
+            icon: Icon(Icons.settings), 
+            onPressed: _showSettingsDialog, // Apre il menu del colore!
+          ),
         ],
       ),
       body: Column(
@@ -149,10 +213,10 @@ class _OpenPageState extends State<OpenPage> {
               : GridView.builder(
               padding: EdgeInsets.all(16),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, 
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                childAspectRatio: 0.75, 
+                crossAxisCount: 6, // <-- NUMERO DI COLONNE (più sono, più le card sono piccole)
+                crossAxisSpacing: 10, // Spazio orizzontale tra le card
+                mainAxisSpacing: 10,  // Spazio verticale tra le card
+                childAspectRatio: 1, // <-- PROPORZIONE: più si avvicina a 1, più la card è quadrata e meno ingombrante in altezza
               ),
               itemCount: filteredFiles.length,
               itemBuilder: (context, index) {
@@ -163,7 +227,6 @@ class _OpenPageState extends State<OpenPage> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   child: InkWell(
                     onTap: () async {
-                      // --- LA NUOVA LOGICA DI CARICAMENTO ---
                       String? savedPath = fileData['path'];
                       
                       if (savedPath != null && savedPath.isNotEmpty) {
@@ -173,11 +236,13 @@ class _OpenPageState extends State<OpenPage> {
                           try {
                             final bytes = await localFile.readAsBytes();
                             FilePickerCross fpc = FilePickerCross(bytes, path: savedPath);
+                            
                             XppFile loadedFile = await XppFile.fromFilePickerCross(
-							  fpc, 
-							  (progress) {}, // Lasciamo vuota la barra di caricamento per ora
-							  (_) async => throw Exception('File non trovato') // Gestiamo un eventuale file PDF mancante
-							);
+                              fpc, 
+                              (progress) {}, 
+                              (_) async => throw Exception('File non trovato') 
+                            );
+                            
                             loadedFile.title = fileData['name']; 
                             _openFile(loadedFile);
                           } catch (e) {
@@ -187,7 +252,6 @@ class _OpenPageState extends State<OpenPage> {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Impossibile trovare il file fisico!")));
                         }
                       } else {
-                        // Fallback di sicurezza se la path non esiste
                         final fileToOpen = XppFile.empty()..title = fileData['name'];
                         _openFile(fileToOpen);
                       }
