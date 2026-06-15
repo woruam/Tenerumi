@@ -3,6 +3,12 @@
   OSIpp
 </h1>
 
+<h1>
+  <img src="assets/OSIpp.png" width="40">
+  OSIpp
+</h1>
+
+
 
 ***Warning:*** *OSIpp is currently in early development and **not** yet stable. Use with caution!*
 
