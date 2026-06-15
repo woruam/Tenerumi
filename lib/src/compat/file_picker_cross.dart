@@ -43,7 +43,7 @@ class FilePickerCross {
           .map((e) => e.trim().replaceAll('.', ''))
           .toList();
     }
-    final result = await FilePicker.platform.pickFiles(
+    final result = await FilePicker.pickFiles(
         type: fileType, allowedExtensions: extensions, withData: true);
     if (result == null || result.files.isEmpty) {
       throw 'No file selected.';
@@ -80,7 +80,7 @@ class FilePickerCross {
     name = name.replaceAll('\\', '/');
     name = name.substring(name.lastIndexOf('/') + 1);
     final savedPath =
-        await FilePicker.platform.saveFile(fileName: name, bytes: _bytes);
+        await FilePicker.saveFile(fileName: name, bytes: _bytes);
     if (savedPath != null) {
       // On desktop platforms `saveFile` only returns the location and the
       // caller is responsible for writing the bytes.
