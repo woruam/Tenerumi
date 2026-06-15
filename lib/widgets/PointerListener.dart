@@ -20,7 +20,6 @@ class PointerListener extends StatefulWidget {
   final Function({Offset? coordinates, double? radius})? filterEraser;
   final Function()? removeLastContent;
   
-  // Le due azioni separate per i due tasti
   final String buttonDownAction;
   final String buttonUpAction;
   
@@ -28,6 +27,9 @@ class PointerListener extends StatefulWidget {
   final List<XppContent?> Function()? getPageContent;
   final Function(List<XppContent>)? onDeleteContent;
   final VoidCallback? onContentChanged;
+
+  // --- NUOVA CALLBACK PER ILLUMINARE LA TOOLBAR ---
+  final Function(EditingTool)? onToolChanged;
 
   const PointerListener(
       {Key? key,
@@ -45,8 +47,9 @@ class PointerListener extends StatefulWidget {
       this.shapeRecognition = false,
       this.getPageContent,
       this.onDeleteContent,
-      this.onContentChanged})
-      : super(key: key);
+      this.onContentChanged,
+      this.onToolChanged, // Inserita nel costruttore
+  }) : super(key: key);
 
   @override
   PointerListenerState createState() => PointerListenerState();
@@ -55,7 +58,7 @@ class PointerListener extends StatefulWidget {
 enum _SelectionDragMode { none, lasso, move, resize }
 
 class PointerListenerState extends State<PointerListener> {
-  bool drawingEnabled = false;
+  bool drawingEnabled = true; 
   List<XppStrokePoint> points = [];
   XppStrokeTool tool = XppStrokeTool.PEN;
   Map<int, DateTime> pointerTimestamps = Map();
@@ -67,8 +70,7 @@ class PointerListenerState extends State<PointerListener> {
   _SelectionDragMode _dragMode = _SelectionDragMode.none;
   Offset? _lastDragPosition;
 
-  // --- GESTIONE AVANZATA DUE TASTI ---
-  String? _activeOverrideAction; // null significa "Penna normale"
+  String? _activeOverrideAction; 
   static const platform = MethodChannel('online.xournal.mobile/pen');
 
   @override
@@ -78,17 +80,51 @@ class PointerListenerState extends State<PointerListener> {
       setState(() {
         if (call.method == "redmiPenPageDown") {
           _activeOverrideAction = (_activeOverrideAction == widget.buttonDownAction) ? null : widget.buttonDownAction;
+          _notifyParentTool(); // Notifica la toolbar dello schermo
         } else if (call.method == "redmiPenPageUp") {
           _activeOverrideAction = (_activeOverrideAction == widget.buttonUpAction) ? null : widget.buttonUpAction;
+          _notifyParentTool(); // Notifica la toolbar dello schermo
         }
       });
     });
   }
 
-  // Helper per ottenere il colore corretto in base al tool
+  // --- LOGICA INTELLIGENTE DI RESET COESISTENZA ---
+  @override
+  void didUpdateWidget(covariant PointerListener oldWidget) {
+    if (oldWidget.toolData != widget.toolData) {
+      // Controlliamo quale strumento per la penna (STYLUS) è appena arrivato dalla Toolbar UI
+      final currentStylusTool = widget.toolData[PointerDeviceKind.stylus];
+      
+      // Se l'hardware credeva di essere una gomma, ma sulla toolbar hai cliccato altro, resetta l'hardware!
+      if (_activeOverrideAction == 'eraser' && currentStylusTool != EditingTool.ERASER) {
+        _activeOverrideAction = null;
+      } else if (_activeOverrideAction == 'highlighter' && currentStylusTool != EditingTool.HIGHLIGHT) {
+        _activeOverrideAction = null;
+      } else if (_activeOverrideAction == 'select' && currentStylusTool != EditingTool.SELECT) {
+        _activeOverrideAction = null;
+      }
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  // Helper interno per tradurre l'azione hardware nell'interfaccia grafica
+  void _notifyParentTool() {
+    if (widget.onToolChanged == null) return;
+    
+    if (_activeOverrideAction == 'eraser') {
+      widget.onToolChanged!(EditingTool.ERASER);
+    } else if (_activeOverrideAction == 'highlighter') {
+      widget.onToolChanged!(EditingTool.HIGHLIGHT);
+    } else if (_activeOverrideAction == 'select') {
+      widget.onToolChanged!(EditingTool.SELECT);
+    } else {
+      widget.onToolChanged!(EditingTool.STYLUS); // Torna alla penna normale standard
+    }
+  }
+
   Color _getToolColor(XppStrokeTool currentTool) {
     if (widget.color == null) return Colors.black;
-    // Se è l'evidenziatore, applichiamo un'opacità fissa (es. 50%)
     if (currentTool == XppStrokeTool.HIGHLIGHTER) {
       return widget.color!.withOpacity(0.5);
     }
@@ -127,9 +163,11 @@ class PointerListenerState extends State<PointerListener> {
               CustomPaint(
                 foregroundPainter: XppStrokePainter(
                     points: points,
-                    color: _getToolColor(tool), // <-- Colore con opacità se evidenziatore
-                    topLeft: Offset(0, 0),
-                    smoothPressure: tool == XppStrokeTool.PEN),
+                    color: _getToolColor(tool),
+                    topLeft: const Offset(0, 0),
+                    smoothPressure: tool == XppStrokeTool.PEN,
+                    isComplete: false, 
+                ),
               ),
             if (_lassoPoints.length > 1)
               CustomPaint(
@@ -138,9 +176,6 @@ class PointerListenerState extends State<PointerListener> {
                     color: Theme.of(context).colorScheme.primary),
               ),
             if (_selectionRect != null) ..._buildSelectionOverlay(context),
-            
-            // Ho rimosso il grande banner indicatore "_activeOverrideAction"
-            // per evitare sovrapposizioni fastidiose con la UI pulita.
           ],
         ),
       ),
@@ -221,8 +256,9 @@ class PointerListenerState extends State<PointerListener> {
   void _onPointerDown(PointerDownEvent data) {
     if (_detectTwoFingerGesture(data, shouldPop: true)) return;
 
+    final currentTool = getToolFromPointer(data);
     setState(() {
-      tool = getToolFromPointer(data);
+      tool = currentTool;
     });
     widget.onDeviceChange!(device: data.device, kind: data.kind);
 
@@ -253,12 +289,13 @@ class PointerListenerState extends State<PointerListener> {
       return;
     }
 
-    if (isLaTeX(data)) {
+    if (currentTool == XppStrokeTool.ERASER) {
+      widget.filterEraser!(coordinates: Offset(data.localPosition.dx, data.localPosition.dy), radius: (widget.strokeWidth ?? 5) * 2.5);
+    } else if (isLaTeX(data)) {
       XppTexImage.edit(context: context, topLeft: data.localPosition, color: widget.color).then((value) {
         widget.onNewContent!(value);
       }).catchError((e) {});
-    }
-    if (isText(data)) {
+    } else if (isText(data)) {
       _editText(data.localPosition);
     }
   }
@@ -305,15 +342,16 @@ class PointerListenerState extends State<PointerListener> {
       return;
     }
 
-    if (isPen(data) || isHighlighter(data)) {
+    final currentTool = getToolFromPointer(data);
+
+    if (currentTool == XppStrokeTool.ERASER) {
+      widget.filterEraser!(coordinates: Offset(data.localPosition.dx, data.localPosition.dy), radius: (widget.strokeWidth ?? 5) * 2.5);
+    } else if (currentTool == XppStrokeTool.HIGHLIGHTER || currentTool == XppStrokeTool.PEN) {
       double? width = (data.pressure == 0 ? widget.strokeWidth : data.pressure * widget.strokeWidth!);
-      if (isHighlighter(data)) width = width! * 5;
+      if (currentTool == XppStrokeTool.HIGHLIGHTER) width = width! * 5;
       points.add(XppStrokePoint(x: data.localPosition.dx, y: data.localPosition.dy, width: width));
       setState(() {});
     }
-
-    if (isEraser(data))
-      widget.filterEraser!(coordinates: Offset(data.localPosition.dx, data.localPosition.dy), radius: widget.strokeWidth);
   }
 
   void _onPointerUp(PointerUpEvent data) {
@@ -322,7 +360,11 @@ class PointerListenerState extends State<PointerListener> {
       _dragMode = _SelectionDragMode.none;
       return;
     }
-    if (!poppedContentForCurrentPointer) saveStroke(tool);
+    
+    final currentTool = getToolFromPointer(data);
+    if (!poppedContentForCurrentPointer && currentTool != XppStrokeTool.ERASER) {
+       saveStroke(currentTool);
+    }
     poppedContentForCurrentPointer = false;
     points.clear();
   }
@@ -409,20 +451,18 @@ class PointerListenerState extends State<PointerListener> {
     });
   }
 
-  void saveStroke(XppStrokeTool tool) {
+  void saveStroke(XppStrokeTool currentTool) {
     if (points.isNotEmpty) {
       List<XppStrokePoint> strokePoints = List.from(points);
-      if (widget.shapeRecognition && tool == XppStrokeTool.PEN) {
+      if (widget.shapeRecognition && currentTool == XppStrokeTool.PEN) {
         final recognized = ShapeRecognizer.recognize(strokePoints);
         if (recognized != null) strokePoints = recognized;
       }
-      // Passiamo il colore con l'opacità corretta se evidenziatore
-      XppStroke stroke = XppStroke.byTool(tool: tool, points: strokePoints, color: _getToolColor(tool));
+      XppStroke stroke = XppStroke.byTool(tool: currentTool, points: strokePoints, color: _getToolColor(currentTool));
       widget.onNewContent!(stroke);
     }
   }
 
-  // --- CONTROLLO STRUMENTI INTELLIGENTE ---
   bool _isActionActive(String targetAction, PointerEvent data) {
     if (data.kind == PointerDeviceKind.stylus && data.buttons == kSecondaryButton && widget.buttonDownAction == targetAction) return true;
     return _activeOverrideAction == targetAction;
@@ -460,8 +500,8 @@ class PointerListenerState extends State<PointerListener> {
   }
 
   XppStrokeTool getToolFromPointer(PointerEvent data) {
+    if (isEraser(data)) return XppStrokeTool.ERASER; 
     if (isHighlighter(data)) return XppStrokeTool.HIGHLIGHTER;
-    if (isEraser(data)) return XppStrokeTool.ERASER;
     return XppStrokeTool.PEN;
   }
 

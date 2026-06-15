@@ -4,9 +4,12 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+
+// Importiamo le VERE classi dal loro file originale (che ha paintToCanvas)
 import 'package:xournalpp/src/XppBackground.dart';
 import 'package:xournalpp/src/XppLayer.dart';
 import 'package:xournalpp/src/XppPage.dart';
+import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart'; 
 
 class XppPageStack extends StatefulWidget {
   final XppPage? page;
@@ -38,19 +41,27 @@ class XppPageStackState extends State<XppPageStack>
 
     if (page!.background != null && _lastKnownBackground != page!.background) {
       _lastKnownBackground = page!.background;
-      background = page!.background!.render();
+      // Il RepaintBoundary per lo sfondo
+      background = RepaintBoundary(
+        child: page!.background!.render()
+      );
     }
     children.add(background);
 
-    children.addAll(page!.layers!.map((e) => XppLayerStack(
-          layer: e,
-        )));
+    // Iteriamo sui layer passando anche le dimensioni della pagina al nuovo pittore
+    if (page!.layers != null) {
+      children.addAll(page!.layers!.map((e) => XppLayerStack(
+            layer: e,
+            pageSize: Size(page!.pageSize!.width, page!.pageSize!.height),
+          )));
+    }
+
     return RepaintBoundary(
         key: pngKey,
         child: SizedBox(
             width: page!.pageSize!.width,
             height: page!.pageSize!.height,
-            child: (Stack(children: children))));
+            child: Stack(children: children)));
   }
 
   void setPageData(XppPage pageData) {
@@ -77,28 +88,56 @@ class XppPageStackState extends State<XppPageStack>
   }
 }
 
-class XppLayerStack extends StatefulWidget {
+// ---------------------------------------------------------
+// NUOVA ARCHITETTURA: Il pittore Master per i contenuti
+// ---------------------------------------------------------
+
+class XppLayerStack extends StatelessWidget {
   final XppLayer? layer;
+  final Size pageSize; 
 
-  const XppLayerStack({Key? key, this.layer}) : super(key: key);
-  @override
-  _XppLayerStackState createState() => _XppLayerStackState();
-}
+  const XppLayerStack({Key? key, this.layer, required this.pageSize}) : super(key: key);
 
-class _XppLayerStackState extends State<XppLayerStack> {
   @override
   Widget build(BuildContext context) {
-    List<Widget> children = [];
-    widget.layer!.content!.forEach((element) {
-      if (element == null) return;
-      children.add(Positioned(
-        top: element.getOffset()?.dy ?? 0,
-        left: element.getOffset()?.dx ?? 0,
-        child: element.render(),
-      ));
-    });
-    return Stack(
-      children: children,
+    if (layer == null || layer!.content == null) return const SizedBox();
+
+    return RepaintBoundary(
+      child: CustomPaint(
+        painter: XppMasterPainter(layerContents: layer!.content!),
+        size: pageSize, 
+      ),
     );
+  }
+}
+
+class XppMasterPainter extends CustomPainter {
+  final List<XppContent?> layerContents;
+
+  XppMasterPainter({required this.layerContents});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    for (var element in layerContents) {
+      if (element != null) {
+        canvas.save();
+        
+        final offset = element.getOffset();
+        if (offset != null) {
+          canvas.translate(offset.dx, offset.dy);
+        }
+
+        element.paintToCanvas(canvas, size);
+        
+        canvas.restore();
+      }
+    }
+  }
+
+  // --- ECCO LA MODIFICA ---
+  @override
+  bool shouldRepaint(covariant XppMasterPainter oldDelegate) {
+    // Ora si aggiornerà sempre non appena la gomma "mangia" un pezzo di inchiostro!
+    return true; 
   }
 }
