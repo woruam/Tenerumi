@@ -12,11 +12,15 @@ import 'package:xournalpp/src/XppPageContentWidget.dart';
 import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
 
 class XppImage extends XppContent {
-  Offset? topLeft = Offset(0, 0);
-  Offset? bottomRight = Offset(0, 0);
+  Offset? topLeft = const Offset(0, 0);
+  Offset? bottomRight = const Offset(0, 0);
 
   @required
   final Uint8List? data;
+
+  // --- VARIABILI INTERNE PER IL CANVAS ---
+  ui.Image? _decodedImage;
+  bool _isDecoding = false;
 
   XppImage({this.data, this.topLeft, this.bottomRight});
 
@@ -24,7 +28,6 @@ class XppImage extends XppContent {
     FilePickerCross image =
         await FilePickerCross.importFromStorage(type: FileTypeCross.image);
 
-    /// rendering the [Uint8List] into an image to determinate the height and width
     MemoryImage memoryImage = MemoryImage(image.toUint8List());
     final completer = Completer<ui.Image>();
     memoryImage.resolve(const ImageConfiguration()).addListener(
@@ -37,22 +40,43 @@ class XppImage extends XppContent {
         data: image.toUint8List(), topLeft: topLeft, bottomRight: bottomRight);
   }
 
+  // --- NUOVO METODO AD ALTE PRESTAZIONI ---
+  @override
+  void paintToCanvas(Canvas canvas, Size size) {
+    if (data == null || topLeft == null || bottomRight == null) return;
+
+    // Poiché il MasterPainter ha già spostato l'origine del Canvas su 'topLeft',
+    // disegniamo partendo da 0,0 fino alla larghezza/altezza dell'immagine.
+    final double width = bottomRight!.dx - topLeft!.dx;
+    final double height = bottomRight!.dy - topLeft!.dy;
+    final Rect destRect = Rect.fromLTWH(0, 0, width, height);
+
+    if (_decodedImage != null) {
+      // L'immagine è decodificata e pronta in RAM: la "stampiamo" alla massima velocità GPU
+      final Rect srcRect = Rect.fromLTWH(0, 0, _decodedImage!.width.toDouble(), _decodedImage!.height.toDouble());
+      canvas.drawImageRect(_decodedImage!, srcRect, destRect, Paint());
+    } else {
+      // Disegna un placeholder grigio per far capire che sta caricando
+      canvas.drawRect(destRect, Paint()..color = Colors.grey.withOpacity(0.2));
+      
+      // Avvia la decodifica in background se non è già partita
+      if (!_isDecoding) {
+        _isDecoding = true;
+        ui.decodeImageFromList(data!, (result) {
+          _decodedImage = result;
+          // Nota: il Canvas verrà aggiornato automaticamente al prossimo movimento 
+          // della pagina, dello zoom o al prossimo tratto di penna.
+        });
+      }
+    }
+  }
+
+  // --- VECCHIO METODO (Inattivo) ---
   @override
   XppPageContentWidget render() {
     return XppPageContentWidget(
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          CircularProgressIndicator(),
-          FadeInImage(
-            image: MemoryImage(data!),
-            placeholder: MemoryImage(kTransparentImage),
-            width: bottomRight!.dx - topLeft!.dx,
-            height: bottomRight!.dy - topLeft!.dy,
-          )
-        ],
-      ),
       tool: EditingTool.IMAGE,
+      child: const SizedBox.shrink(),
     );
   }
 

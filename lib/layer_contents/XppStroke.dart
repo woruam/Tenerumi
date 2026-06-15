@@ -5,6 +5,8 @@ import 'package:xournalpp/src/XppLayer.dart';
 import 'package:xournalpp/src/XppPageContentWidget.dart';
 import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
 
+import 'package:perfect_freehand/perfect_freehand.dart' as pf;
+
 abstract class XppStroke extends XppContent {
   XppStroke(
       {this.tool = XppStrokeTool.PEN,
@@ -19,14 +21,12 @@ abstract class XppStroke extends XppContent {
 
   @override
   Offset getOffset() {
-    if (points!.isEmpty) return Offset(0, 0);
+    if (points == null || points!.isEmpty) return const Offset(0, 0);
     double? x = points![0].x;
-    // finding smallest x point
     points!.forEach((point) {
       if (point.x! < x!) x = point.x;
     });
     double y = points![0].y!;
-    // finding smallest y point
     points!.forEach((point) {
       if (point.y! < y) y = point.y!;
     });
@@ -34,41 +34,47 @@ abstract class XppStroke extends XppContent {
   }
 
   Offset get bottomRight {
-    if (points!.isEmpty) return Offset(0, 0);
+    if (points == null || points!.isEmpty) return const Offset(0, 0);
     double? x = points![0].x;
-    // finding largest x point
     points!.forEach((point) {
       if (point.x! > x!) x = point.x;
     });
     double y = points![0].y!;
-    // finding largest y point
     points!.forEach((point) {
       if (point.y! > y) y = point.y!;
     });
     return (Offset(x!, y));
   }
 
+  // --- NUOVO METODO AD ALTE PRESTAZIONI ---
+  @override
+  void paintToCanvas(Canvas canvas, Size size) {
+    if (points == null || points!.isEmpty) return;
+
+    // Calcoliamo il colore corretto senza sovrascrivere la variabile originale
+    Color colorToUse = color ?? Colors.black;
+    if (tool == XppStrokeTool.ERASER) colorToUse = Colors.white;
+    if (tool == XppStrokeTool.HIGHLIGHTER) {
+      colorToUse = colorToUse.withOpacity(.5);
+    }
+
+    // Usiamo il pittore esistente per disegnare DIRETTAMENTE sul Canvas
+    final painter = XppStrokePainter(
+      points: points,
+      color: colorToUse,
+      topLeft: getOffset(), // Il pittore disegna partendo da questo offset
+      smoothPressure: tool == XppStrokeTool.PEN,
+    );
+
+    painter.paint(canvas, size);
+  }
+
+  // --- VECCHIO METODO (Mantenuto inattivo per evitare crash del resto dell'app) ---
   @override
   XppPageContentWidget render() {
-    if (points!.isEmpty) {
-      return XppPageContentWidget(child: (Container()));
-    }
-    Color? colorToUse = color;
-    if (tool == XppStrokeTool.ERASER) color = Colors.white;
-    if (tool == XppStrokeTool.HIGHLIGHTER) {
-      color = color!.withOpacity(.5);
-    }
     return XppPageContentWidget(
-      child: CustomPaint(
-        size: Size(
-            bottomRight.dx - getOffset().dx, bottomRight.dy - getOffset().dy),
-        foregroundPainter: XppStrokePainter(
-            points: points,
-            color: colorToUse,
-            topLeft: getOffset(),
-            smoothPressure: tool == XppStrokeTool.PEN),
-      ),
       tool: EditingTool.STYLUS,
+      child: const SizedBox.shrink(), // Non crea più pesanti CustomPaint in un Widget
     );
   }
 
@@ -253,6 +259,8 @@ class XppStrokeHighlight extends XppStroke {
   }
 }
 
+// MANTENIAMO IL PITTORE ORIGINALE perché il "PointerListener" lo usa 
+// in tempo reale per disegnare il tratto che hai sotto la punta della penna!
 class XppStrokePainter extends CustomPainter {
   @required
   final List<XppStrokePoint>? points;
@@ -262,69 +270,62 @@ class XppStrokePainter extends CustomPainter {
   final Offset? topLeft;
   @required
   final bool? smoothPressure;
+  
+  // Aggiungiamo questa variabile per decidere se il tratto è finito o in corso
+  final bool isComplete;
 
   XppStrokePainter({
     this.points,
     this.color,
     this.topLeft,
     this.smoothPressure,
+    this.isComplete = true, // Di default è true (i tratti vecchi salvati sono completi)
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (points!.isEmpty) return;
-    if (points!.length == 1) {
-      var paint = Paint()
-        ..color = color!
-        ..strokeWidth = points![0].width ?? 5
-        ..style = PaintingStyle.stroke
-        ..strokeCap = StrokeCap.round;
+    if (points == null || points!.isEmpty) return;
 
-      var path = Path();
-      Offset offset = points![0].offset;
-      path.moveTo(offset.dx - topLeft!.dx, offset.dy - topLeft!.dy);
-      path.lineTo(offset.dx - topLeft!.dx, offset.dy - topLeft!.dy);
-      canvas.drawPath(path, paint);
-    }
-    if (smoothPressure!) {
-      for (int i = 1; i < points!.length; i++) {
-        var paint = Paint()
-          ..color = color!
-          ..strokeWidth = points![i].width ?? 5
-          ..style = PaintingStyle.stroke
-          ..strokeCap = StrokeCap.round;
+    bool isHighlighter = smoothPressure == false;
 
-        var path = Path();
-        path.moveTo(points![i - 1].offset.dx - topLeft!.dx,
-            points![i - 1].offset.dy - topLeft!.dy);
-        Offset offset = points![i].offset;
-        path.lineTo(offset.dx - topLeft!.dx, offset.dy - topLeft!.dy);
-        canvas.drawPath(path, paint);
+    List<pf.Point> pfPoints = points!.map((p) {
+      return pf.Point(
+        p.x! - topLeft!.dx, 
+        p.y! - topLeft!.dy, 
+        (smoothPressure == true && p.width != null) ? (p.width! / 5.0).clamp(0.1, 1.0) : 0.5
+      );
+    }).toList();
+
+    final outlinePoints = pf.getStroke(
+      pfPoints,
+      options: pf.StrokeOptions(
+        size: 5, 
+        thinning: isHighlighter ? 0.0 : 0.7, 
+        smoothing: 0.5, 
+        isComplete: isComplete, // <--- Usa il parametro dinamico!
+        simulatePressure: isHighlighter ? false : !smoothPressure!, 
+      ),
+    );
+
+    if (outlinePoints.isNotEmpty) {
+      final path = Path();
+      path.moveTo(outlinePoints.first.dx, outlinePoints.first.dy);
+      for (int i = 1; i < outlinePoints.length; i++) {
+        path.lineTo(outlinePoints[i].dx, outlinePoints[i].dy);
       }
-    } else {
-      double width = 0;
+      path.close();
 
-      var path = Path();
-      path.moveTo(points![0].offset.dx - topLeft!.dx,
-          points![0].offset.dy - topLeft!.dy);
-      for (int i = 1; i < points!.length; i++) {
-        Offset offset = points![i].offset;
-        path.lineTo(offset.dx - topLeft!.dx, offset.dy - topLeft!.dy);
-        width += points![i].width!;
-      }
-      width /= points!.length;
-      var paint = Paint()
+      final paint = Paint()
         ..color = color!
-        ..strokeWidth = width
-        ..style = PaintingStyle.stroke
-        ..strokeCap = StrokeCap.round;
+        ..style = PaintingStyle.fill;
+        
       canvas.drawPath(path, paint);
     }
   }
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
-    return true; //!((oldDelegate is XppStrokePainter) && oldDelegate.points == points);
+    return true; 
   }
 }
 

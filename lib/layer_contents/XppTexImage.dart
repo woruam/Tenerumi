@@ -49,21 +49,42 @@ class XppTexImage extends XppContent {
         text: laTeXController.text, topLeft: topLeft, color: color));
   }
 
+  // --- NUOVO METODO AD ALTE PRESTAZIONI ---
+  @override
+  void paintToCanvas(Canvas canvas, Size size) {
+    if (text == null || text!.isEmpty) return;
+
+    // Ricreiamo lo stile "math-like" del vecchio render
+    final textStyle = TextStyle(
+      color: color ?? Colors.black,
+      fontSize: 18,
+      fontStyle: FontStyle.italic,
+      fontFamily: 'serif',
+    );
+
+    final textSpan = TextSpan(
+      text: text,
+      style: textStyle,
+    );
+
+    final textPainter = TextPainter(
+      text: textSpan,
+      textDirection: TextDirection.ltr,
+    );
+
+    // Diciamo al testo di calcolare il suo ingombro senza limiti di larghezza
+    textPainter.layout();
+
+    // Disegniamo sul canvas all'origine (il MasterPainter ha già spostato le coordinate corrette)
+    textPainter.paint(canvas, const Offset(0, 0));
+  }
+
+  // --- VECCHIO METODO (Inattivo) ---
   @override
   XppPageContentWidget render() {
-    // Rendering LaTeX source in a math-like style. Full KaTeX rendering was
-    // dropped together with the unmaintained WebView-based katex_flutter.
     return XppPageContentWidget(
-      child: Text(
-        text ?? '',
-        style: TextStyle(
-          color: color,
-          fontSize: 18,
-          fontStyle: FontStyle.italic,
-          fontFamily: 'serif',
-        ),
-      ),
       tool: EditingTool.LATEX,
+      child: const SizedBox.shrink(),
     );
   }
 
