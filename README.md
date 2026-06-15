@@ -3,10 +3,7 @@
   OSIpp
 </h1>
 
-<h1>
-  <img src="assets/OSIpp.png" width="40">
-  OSIpp
-</h1>
+
 
 
 
