@@ -4,9 +4,7 @@
 
 
 
-A port of the main features of Xournal++ to various Flutter platforms like Android, iOS and the Web.
-
-![Feature banner](https://gitlab.com/TheOneWithTheBraid/xournalpp_mobile/-/raw/master/assets/feature-banner.svg)
+A fork of Xournal++ Mobile based on Flutter.
 
 
 ### Visible parts already working
