@@ -11,7 +11,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:xournalpp/widgets/EditingToolbar.dart';
 import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
 import 'package:xournalpp/widgets/ToolSettingsMenu.dart';
-
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:xournalpp/src/compat/file_picker_cross.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -37,10 +37,9 @@ class CanvasPage extends StatefulWidget {
   final String? filePath;
 
   @override
-  CanvasPageState createState() => CanvasPageState(); // NOTA: Rimosso '_' per renderlo pubblico
+  CanvasPageState createState() => CanvasPageState(); 
 }
 
-// NOTA: Rimosso '_' da CanvasPageState per permettere al genitore di chiamare i suoi metodi
 class CanvasPageState extends State<CanvasPage> with TickerProviderStateMixin {
   XppFile? _file;
   int currentPage = 0;
@@ -62,7 +61,6 @@ class CanvasPageState extends State<CanvasPage> with TickerProviderStateMixin {
   bool savingFile = false;
   bool shapeRecognition = false;
   
-  // Variabile per tracciare le modifiche non salvate
   bool hasUnsavedChanges = false;
   
   String buttonDownAction = 'eraser';
@@ -97,9 +95,8 @@ class CanvasPageState extends State<CanvasPage> with TickerProviderStateMixin {
     }).catchError((e) {});
   }
 
-  // NUOVO METODO: Gestisce il pop-up prima della chiusura
   Future<bool> promptSaveIfUnsaved() async {
-    if (!hasUnsavedChanges) return true; // Nessuna modifica, puoi chiudere
+    if (!hasUnsavedChanges) return true; 
 
     final result = await showDialog<bool>(
       context: context,
@@ -108,17 +105,17 @@ class CanvasPageState extends State<CanvasPage> with TickerProviderStateMixin {
         content: Text('Vuoi salvare il documento prima di chiudere la scheda? Le modifiche andranno perse.'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false), // Annulla chiusura
+            onPressed: () => Navigator.pop(context, false), 
             child: Text('Annulla', style: TextStyle(color: Colors.grey)),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context, true), // Chiudi perdendo i dati
+            onPressed: () => Navigator.pop(context, true), 
             child: Text('Chiudi senza salvare', style: TextStyle(color: Colors.red)),
           ),
           ElevatedButton(
             onPressed: () async {
-              await saveFile(); // Attende il salvataggio
-              Navigator.pop(context, true); // Ora puoi chiudere
+              await saveFile(); 
+              Navigator.pop(context, true); 
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.primary,
@@ -185,8 +182,14 @@ class CanvasPageState extends State<CanvasPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    // Capiamo se il sistema è in modalità scura
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
+      // Se è Dark Mode usa il nero assoluto, altrimenti il grigio chiaro adattivo
+      backgroundColor: isDarkMode 
+          ? Colors.black // <-- Puoi usare anche Color(0xFF121212) se preferisci un grigio scurissimo
+          : Theme.of(context).colorScheme.surfaceContainerHighest,
       
       drawer: Drawer(
         child: ListView(
@@ -275,6 +278,7 @@ class CanvasPageState extends State<CanvasPage> with TickerProviderStateMixin {
               
               SizedBox(height: 30, child: VerticalDivider(width: 20)),
               
+              // 2. NUOVE ICONE DELLA TOOLBAR!
               IconButton(
                 key: _penButtonKey,
                 icon: Icon(Icons.edit), 
@@ -293,7 +297,7 @@ class CanvasPageState extends State<CanvasPage> with TickerProviderStateMixin {
 
               IconButton(
                 key: _highlighterButtonKey,
-                icon: Icon(Icons.brush), 
+                icon: Icon(Icons.highlight), // <--- Icona Evidenziatore nuova
                 tooltip: 'Evidenziatore',
                 color: _toolData[PointerDeviceKind.stylus] == EditingTool.HIGHLIGHT 
                     ? Theme.of(context).colorScheme.primary 
@@ -308,7 +312,8 @@ class CanvasPageState extends State<CanvasPage> with TickerProviderStateMixin {
               ),
 
               IconButton(
-                icon: Icon(Icons.cleaning_services), 
+                // Usa FaIcon invece del classico Icon
+                icon: FaIcon(FontAwesomeIcons.eraser), 
                 tooltip: 'Gomma',
                 color: _toolData[PointerDeviceKind.stylus] == EditingTool.ERASER 
                     ? Theme.of(context).colorScheme.primary 
@@ -317,7 +322,7 @@ class CanvasPageState extends State<CanvasPage> with TickerProviderStateMixin {
               ),
 
               IconButton(
-                icon: Icon(Icons.gesture), 
+                icon: Icon(Icons.all_out), // <--- Icona Lazzo (Selezione espansa)
                 tooltip: 'Lazo',
                 color: _toolData[PointerDeviceKind.stylus] == EditingTool.SELECT 
                     ? Theme.of(context).colorScheme.primary 
@@ -326,7 +331,7 @@ class CanvasPageState extends State<CanvasPage> with TickerProviderStateMixin {
               ),
 
               IconButton(
-                icon: Icon(Icons.pan_tool), 
+                icon: Icon(Icons.open_with), // <--- Icona Mano/Spostamento (Frecce a 4 punte)
                 tooltip: 'Sposta Pagina',
                 color: _toolData[PointerDeviceKind.stylus] == EditingTool.MOVE 
                     ? Theme.of(context).colorScheme.primary 
@@ -370,12 +375,18 @@ class CanvasPageState extends State<CanvasPage> with TickerProviderStateMixin {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
+                  // Usa il colore "contenitore secondario" del tema di sistema
+                  color: Theme.of(context).colorScheme.secondaryContainer,
                   borderRadius: BorderRadius.circular(8)
                 ),
                 child: Text(
                   'Pag. ${currentPage + 1} / ${_file!.pages!.length}',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold, 
+                    fontSize: 13,
+                    // Usa il colore del testo corretto per il contenitore secondario
+                    color: Theme.of(context).colorScheme.onSecondaryContainer 
+                  ),
                 ),
               ),
               
@@ -396,7 +407,7 @@ class CanvasPageState extends State<CanvasPage> with TickerProviderStateMixin {
                 tooltip: 'Aggiungi Pagina Sotto',
                 onPressed: () {
                   setState(() {
-                    hasUnsavedChanges = true; // Aggiunta pagina = modifica
+                    hasUnsavedChanges = true; 
                     currentPage++;
                     XppPage newPage = XppPage.empty(background: Colors.white);
                     newPage.pageSize = _file!.pages![currentPage - 1].pageSize ?? XppPageSize.a4;
@@ -454,7 +465,7 @@ class CanvasPageState extends State<CanvasPage> with TickerProviderStateMixin {
                         getPageContent: () => _file!.pages![currentPage].layers![0].content ?? [],
                         onDeleteContent: (deleted) {
                           setState(() {
-                            hasUnsavedChanges = true; // TRACCIA MODIFICA
+                            hasUnsavedChanges = true; 
                             _file!.pages![currentPage].layers![0].content!.removeWhere((element) => deleted.contains(element));
                           });
                           _pageStackKey.currentState!.setPageData(_file!.pages![currentPage]);
@@ -468,7 +479,7 @@ class CanvasPageState extends State<CanvasPage> with TickerProviderStateMixin {
                           _setZoomableState();
                         },
                         removeLastContent: () {
-                          hasUnsavedChanges = true; // TRACCIA MODIFICA
+                          hasUnsavedChanges = true; 
                           _file!.pages![currentPage].layers![0].content!.removeLast();
                         },
                         filterEraser: ({Offset? coordinates, double? radius}) {
@@ -483,13 +494,13 @@ class CanvasPageState extends State<CanvasPage> with TickerProviderStateMixin {
                             });
                           });
                           if (removalFunctions.isNotEmpty) {
-                            hasUnsavedChanges = true; // TRACCIA MODIFICA
+                            hasUnsavedChanges = true; 
                             removalFunctions.forEach((element) { element(); });
                             setState(() {});
                           }
                         },
                         onNewContent: (newContent) {
-                          hasUnsavedChanges = true; // TRACCIA MODIFICA
+                          hasUnsavedChanges = true; 
                           _file!.pages![currentPage].layers![0].content =
                               new List.from(_file!.pages![currentPage].layers![0].content!)..add(newContent);
                           _pageStackKey.currentState!.setPageData(_file!.pages![currentPage]);
@@ -523,7 +534,7 @@ class CanvasPageState extends State<CanvasPage> with TickerProviderStateMixin {
         onBackgroundChange: (newBackground) {
           newBackground.size = _file!.pages![currentPage].pageSize;
           setState(() {
-            hasUnsavedChanges = true; // TRACCIA MODIFICA
+            hasUnsavedChanges = true; 
             _file!.pages![currentPage].background = newBackground;
           });
         },
@@ -548,7 +559,7 @@ class CanvasPageState extends State<CanvasPage> with TickerProviderStateMixin {
                 onPressed: () {
                   setState(() { 
                     _file!.title = titleController.text;
-                    hasUnsavedChanges = true; // TRACCIA MODIFICA
+                    hasUnsavedChanges = true; 
                   });
                   Navigator.of(context).pop();
                 },
@@ -594,7 +605,6 @@ class CanvasPageState extends State<CanvasPage> with TickerProviderStateMixin {
     }
   }
 
-  // Modificato in Future<void> per poterlo attendere durante la chiusura
   Future<void> saveFile({bool export = false}) async {
     setState(() { savingFile = true; });
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -610,25 +620,20 @@ class CanvasPageState extends State<CanvasPage> with TickerProviderStateMixin {
       
       String fileName = _file!.title! + '.xopp';
       
-      // 1. Troviamo la cartella "Cassaforte" della tua app (nessun permesso richiesto!)
       final directory = await getApplicationDocumentsDirectory();
       
-      // 2. Creiamo il percorso esatto e privato per il file
       String absolutePath = '${directory.path}/$fileName';
       
       if (_file!.previewImage == null) {
         _file!.previewImage = kTransparentImage;
       }
       
-      // 3. Generiamo i byte del tuo file Xournal
       late FilePickerCross fileData;
       fileData = _file!.toFilePickerCross(filePath: fileName);
       
-      // 4. SCRIVIAMO IL FILE SILENZIOSAMENTE NELLA MEMORIA DELL'APP
       File localFile = File(absolutePath);
       await localFile.writeAsBytes(fileData.toUint8List());
 
-      // 5. Aggiorniamo la Home passandogli il percorso "assoluto" così lo ritrova sempre
       final prefs = await SharedPreferences.getInstance();
       String jsonData = prefs.getString(PreferencesKeys.kRecentFiles) ?? '[]';
       List files = (jsonDecode(jsonData) as List).toList();
@@ -644,7 +649,7 @@ class CanvasPageState extends State<CanvasPage> with TickerProviderStateMixin {
       files.add({
         'preview': base64Preview, 
         'name': _file!.title, 
-        'path': absolutePath, // <--- ORA LA HOME SA ESATTAMENTE DOVE CERCARE
+        'path': absolutePath, 
         'favorite': wasFavorite
       });
       
@@ -654,7 +659,7 @@ class CanvasPageState extends State<CanvasPage> with TickerProviderStateMixin {
       
       setState(() { 
         savingFile = false; 
-        hasUnsavedChanges = false; // Resettiamo lo stato delle modifiche
+        hasUnsavedChanges = false; 
       });
       
     } catch (e) {
