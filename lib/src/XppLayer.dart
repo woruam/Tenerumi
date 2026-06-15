@@ -18,7 +18,13 @@ class XppLayer {
 abstract class XppContent {
   Offset? getOffset();
 
+  // VECCHIO METODO: Lo teniamo temporaneamente per non far esplodere tutto subito, 
+  // ma lo elimineremo alla fine.
   XppPageContentWidget render();
+
+  // NUOVO METODO: Il futuro dell'app.
+  // Ogni elemento (testo, immagine, tratto) dovrà saper disegnare se stesso su questa tela.
+  void paintToCanvas(Canvas canvas, Size size);
 
   XmlElement toXmlElement();
 
@@ -26,16 +32,12 @@ abstract class XppContent {
 
   bool inRegion({Offset? topLeft, Offset? bottomRight});
 
-  /// bounding rectangle of this content in page coordinates, if known
   Rect? bounds() => null;
 
-  /// moves this content by [delta] (used by the selection tool)
   void translate(Offset delta) {}
 
-  /// scales this content by [factor] around [anchor] (used by the selection tool)
   void scaleBy(double factor, Offset anchor) {}
 
-  /// return [true] in case it should be fully deleted
   XppContentEraseData eraseWhere({Offset? coordinates, double? radius}) =>
       XppContentEraseData();
 }
