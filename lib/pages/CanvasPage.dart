@@ -132,6 +132,9 @@ class CanvasPageState extends State<CanvasPage> with TickerProviderStateMixin {
 
   void _setTool(EditingTool newTool) {
     setState(() {
+      // AGGIUNGI QUESTA RIGA: Clona la mappa così Flutter si accorge del reset!
+      _toolData = Map.from(_toolData); 
+      
       _toolData[_currentDevice] = newTool;
       _toolData[PointerDeviceKind.stylus] = newTool; 
       _setZoomableState();
@@ -462,6 +465,20 @@ class CanvasPageState extends State<CanvasPage> with TickerProviderStateMixin {
                         shapeRecognition: shapeRecognition,
                         buttonDownAction: buttonDownAction,
                         buttonUpAction: buttonUpAction,
+						
+						// --- ECCO LA MAGIA CHE SINCRONIZZA LA TOOLBAR ---
+                        onToolChanged: (EditingTool newTool) {
+                          setState(() {
+                            // AGGIUNGI QUESTA RIGA ANCHE QUI!
+                            _toolData = Map.from(_toolData);
+
+                            _toolData[PointerDeviceKind.stylus] = newTool;
+                            _toolData[_currentDevice] = newTool;
+                            _setZoomableState(); 
+                          });
+                        },
+                        // ------------------------------------------------
+						
                         getPageContent: () => _file!.pages![currentPage].layers![0].content ?? [],
                         onDeleteContent: (deleted) {
                           setState(() {
