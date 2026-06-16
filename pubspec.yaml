@@ -11,6 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  provider: ^6.1.2
   intl: '>=0.18.0 <0.30.0'
   archive: ^4.0.4
   xml: ^6.5.0
