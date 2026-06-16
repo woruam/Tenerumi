@@ -21,9 +21,9 @@ A fork of Xournal++ Mobile based on Flutter.
 
 ## Known issues
 
-- **Immense memory consumption**: *If you open immense files, you get immense memory consumption. That's logic. Usually, Xournal++ Mobile takes twice the file size plus around 50MB for itself.*
-- But **why** does it take twice the memory?: *No idea. ¯\\\_(ツ)_/¯*
-- **The snap does not start on Linux when using wayland**: *Please set the environment variable `DISABLE_WAYLAND=1` before you start Xournal++ Mobile.*
+- **Immense memory consumption**: *If you open immense files, you get immense memory consumption. That's logic. Usually, Xournal++ Mobile takes twice the file size plus around 50MB for itself.*   PROBABLY FIXED 
+
+
 
 ## Getting started
 
@@ -105,11 +105,6 @@ The dark color is Material Blue Grey 900.
 - Emphasis: Glacial Indifference Regular *(400)* `SIL Open Font License`, *light color*, *UPPERCASE*
 - Body: Open Sans Light *(300)* `Apache 2.0`, *light color*
 
-## Misc
-
-*Like this project? [Buy me a Coffee](https://buymeacoff.ee/braid).*
-
-This software is powered by the education software [TestApp](https://testapp.schule) — **Learning. Easily.**
 
 [![TestApp banner](https://gitlab.com/testapp-system/testapp-flutter/-/raw/mobile/assets/Google%20Play%20EN.png)](https://testapp.schule)
 
