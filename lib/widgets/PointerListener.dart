@@ -7,6 +7,7 @@ import 'package:xournalpp/layer_contents/XppStroke.dart';
 import 'package:xournalpp/layer_contents/XppTexImage.dart';
 import 'package:xournalpp/layer_contents/XppText.dart';
 import 'package:xournalpp/src/ShapeRecognizer.dart';
+import 'package:xournalpp/src/ink_geometry.dart';
 import 'package:xournalpp/src/XppLayer.dart';
 import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
 import 'package:xournalpp/widgets/ZoomableWidget.dart';
@@ -19,7 +20,14 @@ class PointerListener extends StatefulWidget {
   final Matrix4? translationMatrix;
   final double? strokeWidth;
   final Color? color;
-  final Function({Offset? coordinates, double? radius})? filterEraser;
+  final Function({
+    Offset? coordinates,
+    Offset? previousCoordinates,
+    double? radius,
+  })?
+  filterEraser;
+  final double? eraserWidth;
+  final VoidCallback? onEraserStart;
   final Function()? removeLastContent;
 
   final String buttonDownAction;
@@ -42,6 +50,8 @@ class PointerListener extends StatefulWidget {
     this.strokeWidth,
     this.color,
     this.filterEraser,
+    this.eraserWidth,
+    this.onEraserStart,
     this.removeLastContent,
     this.buttonDownAction = 'eraser',
     this.buttonUpAction = 'select',
@@ -60,6 +70,19 @@ class PointerListener extends StatefulWidget {
 enum _SelectionDragMode { none, lasso, move, resize }
 
 class PointerListenerState extends State<PointerListener> {
+  Offset? _lastEraserPosition;
+
+  void _eraseAt(PointerEvent event, {bool begin = false}) {
+    if (begin) widget.onEraserStart?.call();
+    final position = _canvasPoint(event);
+    widget.filterEraser?.call(
+      coordinates: position,
+      previousCoordinates: begin ? null : _lastEraserPosition,
+      radius: (widget.eraserWidth ?? widget.strokeWidth ?? 5) / 2,
+    );
+    _lastEraserPosition = position;
+  }
+
   bool drawingEnabled = true;
   List<XppStrokePoint> points = [];
   final _InkPreview _inkPreview = _InkPreview();
@@ -150,8 +173,11 @@ class PointerListenerState extends State<PointerListener> {
   void initState() {
     super.initState();
     if (_hardwareListeners.isEmpty) {
-      _hardwareChannel = MethodChannel(platform.name, platform.codec,
-          ServicesBinding.instance.defaultBinaryMessenger);
+      _hardwareChannel = MethodChannel(
+        platform.name,
+        platform.codec,
+        ServicesBinding.instance.defaultBinaryMessenger,
+      );
       _hardwareChannel!.setMethodCallHandler(_dispatchHardwareCall);
     }
     _hardwareListeners.add(this);
@@ -365,7 +391,8 @@ class PointerListenerState extends State<PointerListener> {
           _drawingPointer != null ||
           (session?.pointers ?? 0) > 1 ||
           widget.toolData[data.kind] == null ||
-          widget.toolData[data.kind] == EditingTool.MOVE) return;
+          widget.toolData[data.kind] == EditingTool.MOVE)
+        return;
     } else if (_drawingPointer != null) {
       return;
     }
@@ -393,8 +420,10 @@ class PointerListenerState extends State<PointerListener> {
         final actionBar = Rect.fromLTWH(_selectionRect!.left, barTop, 112, 40);
         if (actionBar.contains(position)) return;
 
-        final handle =
-            Rect.fromCircle(center: _selectionRect!.bottomRight, radius: 24);
+        final handle = Rect.fromCircle(
+          center: _selectionRect!.bottomRight,
+          radius: 24,
+        );
         if (handle.contains(position)) {
           _dragMode = _SelectionDragMode.resize;
         } else if (_selectionRect!.inflate(8).contains(position)) {
@@ -420,17 +449,17 @@ class PointerListenerState extends State<PointerListener> {
     }
 
     if (currentTool == XppStrokeTool.ERASER) {
-      widget.filterEraser!(
-          coordinates: _canvasPoint(data),
-          radius: (widget.strokeWidth ?? 5) * 2.5);
+      _eraseAt(data, begin: true);
     } else if (isLaTeX(data)) {
       XppTexImage.edit(
-              context: context,
-              topLeft: _canvasPoint(data),
-              color: widget.color)
+            context: context,
+            topLeft: _canvasPoint(data),
+            color: widget.color,
+          )
           .then((value) {
-        widget.onNewContent!(value);
-      }).catchError((e) {});
+            widget.onNewContent!(value);
+          })
+          .catchError((e) {});
     } else if (isText(data)) {
       _editText(_canvasPoint(data));
     } else if (currentTool == XppStrokeTool.PEN ||
@@ -448,7 +477,8 @@ class PointerListenerState extends State<PointerListener> {
       return;
     }
     if (_drawingPointer != data.pointer ||
-        (data.kind == PointerDeviceKind.touch && _multipleTouches)) return;
+        (data.kind == PointerDeviceKind.touch && _multipleTouches))
+      return;
     widget.onDeviceChange?.call(device: data.device, kind: data.kind);
     if (!drawingEnabled) return;
 
@@ -478,10 +508,11 @@ class PointerListenerState extends State<PointerListener> {
             }
             setState(() {
               _selectionRect = Rect.fromLTWH(
-                  anchor.dx,
-                  anchor.dy,
-                  _selectionRect!.width * factor,
-                  _selectionRect!.height * factor);
+                anchor.dx,
+                anchor.dy,
+                _selectionRect!.width * factor,
+                _selectionRect!.height * factor,
+              );
             });
             widget.onContentChanged?.call();
           }
@@ -495,9 +526,7 @@ class PointerListenerState extends State<PointerListener> {
 
     final currentTool = _strokeTool ?? getToolFromPointer(data);
     if (currentTool == XppStrokeTool.ERASER) {
-      widget.filterEraser!(
-          coordinates: _canvasPoint(data),
-          radius: (widget.strokeWidth ?? 5) * 2.5);
+      _eraseAt(data);
     } else if (currentTool == XppStrokeTool.HIGHLIGHTER ||
         currentTool == XppStrokeTool.PEN) {
       _addDrawingPoint(data, currentTool);
@@ -531,6 +560,8 @@ class PointerListenerState extends State<PointerListener> {
         currentTool != XppStrokeTool.ERASER) {
       saveStroke(currentTool);
     }
+    if (currentTool == XppStrokeTool.ERASER) _eraseAt(data);
+    _lastEraserPosition = null;
     poppedContentForCurrentPointer = false;
     clearPoints();
     // Fine tratto: l'azione "hold-to-use" si spegne col rilascio della punta.
@@ -560,7 +591,8 @@ class PointerListenerState extends State<PointerListener> {
     // dal driver, cosi' la curva di spessore resta identica su ogni hardware.
     final double pMin = data.pressureMin;
     final double pMax = data.pressureMax;
-    final bool isStylusKind = data.kind == PointerDeviceKind.stylus ||
+    final bool isStylusKind =
+        data.kind == PointerDeviceKind.stylus ||
         data.kind == PointerDeviceKind.invertedStylus;
     if (isStylusKind && pMax > pMin) {
       pressure = ((pressure - pMin) / (pMax - pMin)).clamp(0.0, 1.0);
@@ -582,12 +614,15 @@ class PointerListenerState extends State<PointerListener> {
     }
 
     final point = XppStrokePoint(
-        x: _canvasPoint(data).dx,
-        y: _canvasPoint(data).dy,
-        width: dynamicThickness);
+      x: _canvasPoint(data).dx,
+      y: _canvasPoint(data).dy,
+      width: dynamicThickness,
+    );
     points.add(point);
-    _inkPreview.append(point,
-        pressureSensitive: currentTool == XppStrokeTool.PEN);
+    _inkPreview.append(
+      point,
+      pressureSensitive: currentTool == XppStrokeTool.PEN,
+    );
   }
 
   void _finishLasso() {
@@ -666,22 +701,26 @@ class PointerListenerState extends State<PointerListener> {
           ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Cancel')),
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
             TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Okay')),
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Okay'),
+            ),
           ],
         ),
       );
       if (mounted && result == true && controller.text.trim().isNotEmpty) {
-        widget.onNewContent!(XppText(
-          text: controller.text,
-          offset: position,
-          color: widget.color,
-          size: (widget.strokeWidth ?? 5) * 3,
-          fontFamily: 'Sans',
-        ));
+        widget.onNewContent!(
+          XppText(
+            text: controller.text,
+            offset: position,
+            color: widget.color,
+            size: (widget.strokeWidth ?? 5) * 3,
+            fontFamily: 'Sans',
+          ),
+        );
       }
     } finally {
       controller.dispose();
@@ -689,6 +728,7 @@ class PointerListenerState extends State<PointerListener> {
   }
 
   void clearPoints() {
+    _lastEraserPosition = null;
     points.clear();
     _inkPreview.clear();
   }
@@ -700,7 +740,8 @@ class PointerListenerState extends State<PointerListener> {
       bool renderSmooth = false;
 
       final currentStylusTool = widget.toolData[PointerDeviceKind.stylus];
-      final isShapeTool = currentStylusTool == EditingTool.SHAPE_LINE ||
+      final isShapeTool =
+          currentStylusTool == EditingTool.SHAPE_LINE ||
           currentStylusTool == EditingTool.SHAPE_RECT ||
           currentStylusTool == EditingTool.SHAPE_CIRCLE ||
           currentStylusTool == EditingTool.SHAPE_SQUARE ||
@@ -764,9 +805,10 @@ class PointerListenerState extends State<PointerListener> {
             recognized = List.generate(segments + 1, (i) {
               final angle = 2 * pi * i / segments;
               return XppStrokePoint(
-                  x: center.dx + radius * cos(angle),
-                  y: center.dy + radius * sin(angle),
-                  width: width);
+                x: center.dx + radius * cos(angle),
+                y: center.dy + radius * sin(angle),
+                width: width,
+              );
             });
           }
         } else {
@@ -778,19 +820,26 @@ class PointerListenerState extends State<PointerListener> {
           renderAsShape = true;
         }
       }
-      widget.onNewContent!(XppStroke.byTool(
+      widget.onNewContent!(
+        XppStroke.byTool(
           tool: currentTool,
           points: strokePoints,
           color: _getToolColor(currentTool),
           isShape: renderAsShape,
-          smooth: renderSmooth));
+          smooth: renderSmooth,
+        ),
+      );
     }
   }
 
   // Linea tratteggiata: emessa come serie di piccole linee solide (i trattini),
   // cosi' resta nel formato esistente e si salva/renderizza senza modifiche al painter.
   void _commitDashedLine(
-      Offset start, Offset end, double width, XppStrokeTool currentTool) {
+    Offset start,
+    Offset end,
+    double width,
+    XppStrokeTool currentTool,
+  ) {
     final double total = (end - start).distance;
     if (total <= 0) return;
     final Offset dir = (end - start) / total;
@@ -801,44 +850,62 @@ class PointerListenerState extends State<PointerListener> {
       final Offset a = start + dir * d;
       final Offset b =
           start + dir * (d + dashLen > total ? total : d + dashLen);
-      widget.onNewContent!(XppStroke.byTool(
-        tool: currentTool,
-        points: [
-          XppStrokePoint(x: a.dx, y: a.dy, width: width),
-          XppStrokePoint(x: b.dx, y: b.dy, width: width),
-        ],
-        color: _getToolColor(currentTool),
-        isShape: true,
-      ));
+      widget.onNewContent!(
+        XppStroke.byTool(
+          tool: currentTool,
+          points: [
+            XppStrokePoint(x: a.dx, y: a.dy, width: width),
+            XppStrokePoint(x: b.dx, y: b.dy, width: width),
+          ],
+          color: _getToolColor(currentTool),
+          isShape: true,
+        ),
+      );
       d += dashLen + gapLen;
     }
   }
 
   // ----- Forme 3D: proiezioni vettoriali 2D (wireframe) dal box di trascinamento -----
-  List<Offset> _ellipse(double cx, double cy, double rx, double ry,
-      {int seg = 48}) {
+  List<Offset> _ellipse(
+    double cx,
+    double cy,
+    double rx,
+    double ry, {
+    int seg = 48,
+  }) {
     return List.generate(seg + 1, (i) {
       final double ang = 2 * pi * i / seg;
       return Offset(cx + rx * cos(ang), cy + ry * sin(ang));
     });
   }
 
-  void _emitPolyline(List<Offset> pts, double width, XppStrokeTool currentTool,
-      {bool smooth = false}) {
+  void _emitPolyline(
+    List<Offset> pts,
+    double width,
+    XppStrokeTool currentTool, {
+    bool smooth = false,
+  }) {
     if (pts.length < 2) return;
-    widget.onNewContent!(XppStroke.byTool(
-      tool: currentTool,
-      points: pts
-          .map((p) => XppStrokePoint(x: p.dx, y: p.dy, width: width))
-          .toList(),
-      color: _getToolColor(currentTool),
-      isShape: true,
-      smooth: smooth,
-    ));
+    widget.onNewContent!(
+      XppStroke.byTool(
+        tool: currentTool,
+        points: pts
+            .map((p) => XppStrokePoint(x: p.dx, y: p.dy, width: width))
+            .toList(),
+        color: _getToolColor(currentTool),
+        isShape: true,
+        smooth: smooth,
+      ),
+    );
   }
 
-  void _commit3DShape(EditingTool tool, Offset start, Offset end, double width,
-      XppStrokeTool currentTool) {
+  void _commit3DShape(
+    EditingTool tool,
+    Offset start,
+    Offset end,
+    double width,
+    XppStrokeTool currentTool,
+  ) {
     final double left = min(start.dx, end.dx), top = min(start.dy, end.dy);
     final double right = max(start.dx, end.dx), bottom = max(start.dy, end.dy);
     final double w = right - left, h = bottom - top;
@@ -861,21 +928,43 @@ class PointerListenerState extends State<PointerListener> {
       _emitPolyline([fBL, bBL], width, currentTool);
     } else if (tool == EditingTool.SHAPE_CYLINDER) {
       final double rx = w / 2, ry = h * 0.12;
-      _emitPolyline(_ellipse(cx, top + ry, rx, ry), width, currentTool,
-          smooth: true);
-      _emitPolyline(_ellipse(cx, bottom - ry, rx, ry), width, currentTool,
-          smooth: true);
-      _emitPolyline([Offset(left, top + ry), Offset(left, bottom - ry)], width,
-          currentTool);
-      _emitPolyline([Offset(right, top + ry), Offset(right, bottom - ry)],
-          width, currentTool);
+      _emitPolyline(
+        _ellipse(cx, top + ry, rx, ry),
+        width,
+        currentTool,
+        smooth: true,
+      );
+      _emitPolyline(
+        _ellipse(cx, bottom - ry, rx, ry),
+        width,
+        currentTool,
+        smooth: true,
+      );
+      _emitPolyline(
+        [Offset(left, top + ry), Offset(left, bottom - ry)],
+        width,
+        currentTool,
+      );
+      _emitPolyline(
+        [Offset(right, top + ry), Offset(right, bottom - ry)],
+        width,
+        currentTool,
+      );
     } else if (tool == EditingTool.SHAPE_SPHERE) {
       final double r = (w < h ? w : h) / 2;
       _emitPolyline(_ellipse(cx, cy, r, r), width, currentTool, smooth: true);
-      _emitPolyline(_ellipse(cx, cy, r, r * 0.3), width, currentTool,
-          smooth: true);
-      _emitPolyline(_ellipse(cx, cy, r * 0.3, r), width, currentTool,
-          smooth: true);
+      _emitPolyline(
+        _ellipse(cx, cy, r, r * 0.3),
+        width,
+        currentTool,
+        smooth: true,
+      );
+      _emitPolyline(
+        _ellipse(cx, cy, r * 0.3, r),
+        width,
+        currentTool,
+        smooth: true,
+      );
     }
   }
 
@@ -937,12 +1026,12 @@ class _ShapePreviewPainter extends CustomPainter {
   final EditingTool Function() tool;
   final _InkPreview preview;
 
-  _ShapePreviewPainter(
-      {required this.points,
-      required this.color,
-      required this.tool,
-      required this.preview})
-      : super(repaint: preview);
+  _ShapePreviewPainter({
+    required this.points,
+    required this.color,
+    required this.tool,
+    required this.preview,
+  }) : super(repaint: preview);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -993,7 +1082,7 @@ class _ShapePreviewPainter extends CustomPainter {
           bottom = max(start.dy, end.dy);
       final double depth =
           ((right - left) < (bottom - top) ? (right - left) : (bottom - top)) *
-              0.35;
+          0.35;
       final Offset fTL = Offset(left, top + depth),
           fTR = Offset(right - depth, top + depth),
           fBR = Offset(right - depth, bottom),
@@ -1022,16 +1111,27 @@ class _ShapePreviewPainter extends CustomPainter {
           rx = (right - left) / 2,
           ry = (bottom - top) * 0.12;
       canvas.drawOval(
-          Rect.fromCenter(
-              center: Offset(cx, top + ry), width: rx * 2, height: ry * 2),
-          paint);
+        Rect.fromCenter(
+          center: Offset(cx, top + ry),
+          width: rx * 2,
+          height: ry * 2,
+        ),
+        paint,
+      );
       canvas.drawOval(
-          Rect.fromCenter(
-              center: Offset(cx, bottom - ry), width: rx * 2, height: ry * 2),
-          paint);
+        Rect.fromCenter(
+          center: Offset(cx, bottom - ry),
+          width: rx * 2,
+          height: ry * 2,
+        ),
+        paint,
+      );
       canvas.drawLine(Offset(left, top + ry), Offset(left, bottom - ry), paint);
       canvas.drawLine(
-          Offset(right, top + ry), Offset(right, bottom - ry), paint);
+        Offset(right, top + ry),
+        Offset(right, bottom - ry),
+        paint,
+      );
     } else if (tool == EditingTool.SHAPE_SPHERE) {
       final double left = min(start.dx, end.dx), top = min(start.dy, end.dy);
       final double right = max(start.dx, end.dx),
@@ -1039,16 +1139,16 @@ class _ShapePreviewPainter extends CustomPainter {
       final double cx = (left + right) / 2, cy = (top + bottom) / 2;
       final double r =
           ((right - left) < (bottom - top) ? (right - left) : (bottom - top)) /
-              2;
+          2;
       canvas.drawCircle(Offset(cx, cy), r, paint);
       canvas.drawOval(
-          Rect.fromCenter(
-              center: Offset(cx, cy), width: r * 2, height: r * 0.6),
-          paint);
+        Rect.fromCenter(center: Offset(cx, cy), width: r * 2, height: r * 0.6),
+        paint,
+      );
       canvas.drawOval(
-          Rect.fromCenter(
-              center: Offset(cx, cy), width: r * 0.6, height: r * 2),
-          paint);
+        Rect.fromCenter(center: Offset(cx, cy), width: r * 0.6, height: r * 2),
+        paint,
+      );
     } else {
       // Geometry is appended once per input sample, never rebuilt per frame.
       // A single fill prevents alpha buildup where highlighter segments overlap.
@@ -1060,40 +1160,23 @@ class _ShapePreviewPainter extends CustomPainter {
   bool shouldRepaint(covariant _ShapePreviewPainter oldDelegate) => true;
 }
 
-/// Live ink follows the current sample without perfect_freehand's streamline
-/// delay. Saved strokes retain the existing smoothing and every raw sample.
+/// Live and committed ink use identical round geometry and every raw sample.
 class _InkPreview extends ChangeNotifier {
-  final Path path = Path();
-  Offset? _previous;
-  double _previousRadius = 0;
+  final InkGeometry _geometry = InkGeometry();
+  Path get path => _geometry.path;
 
   void append(XppStrokePoint point, {required bool pressureSensitive}) {
-    final position = point.offset;
-    final pressure = ((point.width ?? 2.5) / 5).clamp(0.1, 1.0);
-    final radius = pressureSensitive ? 5 * (0.5 - 0.7 * (0.5 - pressure)) : 2.5;
-    final previous = _previous;
-    if (previous != null && position != previous) {
-      final delta = position - previous;
-      final normal = Offset(-delta.dy, delta.dx) / delta.distance;
-      // Clockwise winding matches addOval, so overlap stays filled.
-      path.addPolygon([
-        previous - normal * _previousRadius,
-        position - normal * radius,
-        position + normal * radius,
-        previous + normal * _previousRadius,
-      ], true);
-    }
-    path.addOval(Rect.fromCircle(center: position, radius: radius));
-    _previous = position;
-    _previousRadius = radius;
+    _geometry.append(
+      point.offset,
+      point.width,
+      pressureSensitive: pressureSensitive,
+    );
     // RenderCustomPaint schedules one paint per frame; samples are never dropped.
     notifyListeners();
   }
 
   void clear() {
-    path.reset();
-    _previous = null;
-    _previousRadius = 0;
+    _geometry.clear();
     notifyListeners();
   }
 }

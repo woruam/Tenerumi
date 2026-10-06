@@ -2,7 +2,7 @@
 
 L'anteprima della penna aggiorna soltanto il proprio layer di pittura. Ogni evento aggiunge un segmento al percorso, senza ricostruire i widget della pagina e senza ricalcolare l'intera geometria con `perfect_freehand`. Flutter raggruppa le richieste di pittura nello stesso frame: gli eventi ricevuti rimangono tutti nel tratto salvato, anche quando la penna produce più campioni dei frame disponibili.
 
-L'anteprima segue direttamente la punta e usa la stessa curva di raggio dipendente dalla pressione del painter esistente. Il tratto definitivo conserva lo smoothing precedente di `perfect_freehand`, quindi la curva può assestarsi leggermente al rilascio. L'evidenziatore viene disegnato con un unico riempimento per evitare accumuli di trasparenza fra segmenti sovrapposti.
+L'anteprima e il tratto definitivo condividono la stessa geometria di capsule con estremità e giunzioni arrotondate e la stessa curva di raggio dipendente dalla pressione. Al rilascio non si ricostruisce più un outline diverso con `perfect_freehand`: i campioni mantengono la stessa forma visibile. Le forme geometriche esplicitamente selezionate conservano il loro rendering dedicato. L'evidenziatore viene disegnato con un unico riempimento per evitare accumuli di trasparenza fra segmenti sovrapposti.
 
 ## Regressioni
 

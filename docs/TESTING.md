@@ -32,6 +32,7 @@ Gli avvisi e gli errori bloccano la verifica. Le informazioni sullo stile del co
 | `widget_test.dart` | Apertura della schermata iniziale |
 | `split_resize_test.dart` | Divisore orizzontale/verticale con canvas reali, gesture disabilitate durante drag, nessuno spostamento della matrice, reflow ancorato alla pagina |
 | `ink_preview_test.dart` | 400 campioni conservati in frame simulati a 120 Hz, repaint senza ricostruire il painter, cancellazione |
+| `ink_round_continuity_test.dart` | Confronto raster identico fra anteprima e tratto definitivo, pressione, incroci, estremità arrotondate e invalidazione cache |
 | `document_toolbar_test.dart` | Menu visibile su telefono, salvataggio nel pannello con focus, apertura/cancellazione/errore senza perdere documenti |
 | `dynamic_color_adapter_test.dart` | Compatibilità della nuova palette dynamic_color con i ruoli ThemeData di Flutter |
 

@@ -10,33 +10,40 @@ XppContent cloneContent(XppContent content) {
     return content.newStroke(
         color: content.color,
         points: content.points
-            ?.map((point) =>
-                XppStrokePoint(x: point.x, y: point.y, width: point.width))
-            .toList())
+            ?.map(
+              (point) =>
+                  XppStrokePoint(x: point.x, y: point.y, width: point.width),
+            )
+            .toList(),
+      )
       ..editingTool = content.editingTool
       ..isShape = content.isShape
-      ..smooth = content.smooth;
+      ..smooth = content.smooth
+      ..erasures = List.of(content.erasures);
   }
   if (content is XppText) {
     return XppText(
-        size: content.size,
-        offset: content.offset,
-        fontFamily: content.fontFamily,
-        color: content.color,
-        text: content.text);
+      size: content.size,
+      offset: content.offset,
+      fontFamily: content.fontFamily,
+      color: content.color,
+      text: content.text,
+    );
   }
   if (content is XppImage) {
     return XppImage(
-        data: content.data,
-        topLeft: content.topLeft,
-        bottomRight: content.bottomRight);
+      data: content.data,
+      topLeft: content.topLeft,
+      bottomRight: content.bottomRight,
+    );
   }
   if (content is XppTexImage) {
     return XppTexImage(
-        text: content.text,
-        topLeft: content.topLeft,
-        bottomRight: content.bottomRight,
-        color: content.color);
+      text: content.text,
+      topLeft: content.topLeft,
+      bottomRight: content.bottomRight,
+      color: content.color,
+    );
   }
   throw UnsupportedError('Snapshot not supported for ${content.runtimeType}');
 }

@@ -63,17 +63,17 @@ class CanvasPage extends StatefulWidget {
   final bool showInternalToolbar;
   // Notifica al genitore che questo pannello ha ricevuto il focus (tocco/stilo).
   final VoidCallback? onFocus;
-  const CanvasPage(
-      {Key? key,
-      this.file,
-      this.filePath,
-      this.pdfToImportPath,
-      this.onOpenPdfInNewTab,
-      this.controller,
-      this.zoomController,
-      this.showInternalToolbar = true,
-      this.onFocus})
-      : super(key: key);
+  const CanvasPage({
+    Key? key,
+    this.file,
+    this.filePath,
+    this.pdfToImportPath,
+    this.onOpenPdfInNewTab,
+    this.controller,
+    this.zoomController,
+    this.showInternalToolbar = true,
+    this.onFocus,
+  }) : super(key: key);
   @override
   CanvasPageState createState() => CanvasPageState();
 }
@@ -82,15 +82,22 @@ class CanvasPageState extends State<CanvasPage> {
   double? _pageDisplayWidth;
 
   double _layoutPageWidth(
-      double viewportWidth, bool resizing, CanvasController ctrl) {
+    double viewportWidth,
+    bool resizing,
+    CanvasController ctrl,
+  ) {
     final next = max(1.0, viewportWidth - 32);
     final old = _pageDisplayWidth;
     if (resizing && old != null) return old;
     if (old != null && old != next) {
       final matrix = _zoomController.value.clone();
       final oldY = _zoomController.toScene(Offset.zero).dy;
-      final newY = reflowSceneY(oldY, old, next,
-          (ctrl.file?.pages ?? []).map((p) => p.pageSize!.ratio));
+      final newY = reflowSceneY(
+        oldY,
+        old,
+        next,
+        (ctrl.file?.pages ?? []).map((p) => p.pageSize!.ratio),
+      );
       matrix.setEntry(1, 3, -newY * matrix.getMaxScaleOnAxis());
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && _pageDisplayWidth == next)
@@ -123,7 +130,9 @@ class CanvasPageState extends State<CanvasPage> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         _controller.loadPdfFresh(
-            widget.pdfToImportPath!, widget.file?.title ?? 'PDF');
+          widget.pdfToImportPath!,
+          widget.file?.title ?? 'PDF',
+        );
       });
     }
   }
@@ -147,8 +156,9 @@ class CanvasPageState extends State<CanvasPage> {
       child: Consumer<CanvasController>(
         builder: (context, ctrl, child) {
           return Scaffold(
-            backgroundColor: Theme.of(context)
-                .scaffoldBackgroundColor, // segue il tema (nero puro se attivato)
+            backgroundColor: Theme.of(
+              context,
+            ).scaffoldBackgroundColor, // segue il tema (nero puro se attivato)
 
             appBar: widget.showInternalToolbar
                 ? CanvasToolbar(
@@ -157,73 +167,86 @@ class CanvasPageState extends State<CanvasPage> {
                     shapeKey: _shapeBtn,
                     eraserKey: _eraserBtn,
                     onPenTap: () => _openSettingsMenu(
-                        context,
-                        ctrl,
-                        _penBtn,
-                        'Penna',
-                        [
-                          Colors.black,
-                          Colors.grey,
-                          Colors.white,
-                          Colors.red,
-                          Colors.blue,
-                          Colors.green,
-                          Colors.purple,
-                          Colors.orange
-                        ],
-                        ctrl.penColor,
-                        ctrl.penWidth,
-                        ctrl.setPenProps),
+                      context,
+                      ctrl,
+                      _penBtn,
+                      'Penna',
+                      [
+                        Colors.black,
+                        Colors.grey,
+                        Colors.white,
+                        Colors.red,
+                        Colors.blue,
+                        Colors.green,
+                        Colors.purple,
+                        Colors.orange,
+                      ],
+                      ctrl.penColor,
+                      ctrl.penWidth,
+                      ctrl.setPenProps,
+                    ),
                     onHighlighterTap: () => _openSettingsMenu(
-                        context,
-                        ctrl,
-                        _highlighterBtn,
-                        'Evidenziatore',
-                        [
-                          const Color(0xFFFFF59D),
-                          const Color(0xFFA5D6A7),
-                          const Color(0xFF81D4FA),
-                          const Color(0xFFF48FB1),
-                          const Color(0xFFCE93D8),
-                          const Color(0xFFFFCC80)
-                        ],
-                        ctrl.highlighterColor,
-                        ctrl.highlighterWidth,
-                        ctrl.setHighlighterProps),
+                      context,
+                      ctrl,
+                      _highlighterBtn,
+                      'Evidenziatore',
+                      [
+                        const Color(0xFFFFF59D),
+                        const Color(0xFFA5D6A7),
+                        const Color(0xFF81D4FA),
+                        const Color(0xFFF48FB1),
+                        const Color(0xFFCE93D8),
+                        const Color(0xFFFFCC80),
+                      ],
+                      ctrl.highlighterColor,
+                      ctrl.highlighterWidth,
+                      ctrl.setHighlighterProps,
+                    ),
                     onShapeTap: () => _openShapeSettings(context, ctrl),
                     onEraserTap: () => _openEraserSettings(context, ctrl),
-                    onImportPdf: () => ctrl.importPdf(context,
-                        onOpenInNewTab: widget.onOpenPdfInNewTab),
+                    onImportPdf: () => ctrl.importPdf(
+                      context,
+                      onOpenInNewTab: widget.onOpenPdfInNewTab,
+                    ),
                     onPomodoroTap: () =>
                         setState(() => _showPomodoro = !_showPomodoro),
                     pomodoroActive: _showPomodoro,
                     onToolSelect: (tool) {
                       ctrl.setTool(tool);
-                      _zoomableKey.currentState?.setState(() => _zoomableKey
-                          .currentState!.enabled = ctrl.isPanEnabled);
+                      _zoomableKey.currentState?.setState(
+                        () => _zoomableKey.currentState!.enabled =
+                            ctrl.isPanEnabled,
+                      );
                     },
                   )
                 : null,
 
             body: Listener(
-                behavior: HitTestBehavior.translucent,
-                onPointerDown: (_) => widget.onFocus?.call(),
-                child: Stack(children: [
+              behavior: HitTestBehavior.translucent,
+              onPointerDown: (_) => widget.onFocus?.call(),
+              child: Stack(
+                children: [
                   RawGestureDetector(
                     gestures: <Type, GestureRecognizerFactory>{
                       StylusGestureRecognizer:
                           GestureRecognizerFactoryWithHandlers<
-                              StylusGestureRecognizer>(
-                        () => StylusGestureRecognizer(
-                            blockStylusPan: !ctrl.isPanEnabled),
-                        (instance) =>
-                            instance.blockStylusPan = !ctrl.isPanEnabled,
-                      ),
+                            StylusGestureRecognizer
+                          >(
+                            () => StylusGestureRecognizer(
+                              blockStylusPan: !ctrl.isPanEnabled,
+                            ),
+                            (instance) =>
+                                instance.blockStylusPan = !ctrl.isPanEnabled,
+                          ),
                     },
-                    child: LayoutBuilder(builder: (context, constraints) {
-                      final displayWidth = _layoutPageWidth(
-                          constraints.maxWidth, resizing, ctrl);
-                      return IgnorePointer(
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final displayWidth = _layoutPageWidth(
+                          constraints.maxWidth,
+                          resizing,
+                          ctrl,
+                        );
+                        return IgnorePointer(
                           ignoring: resizing,
                           child: ZoomableWidget(
                             key: _zoomableKey,
@@ -240,40 +263,50 @@ class CanvasPageState extends State<CanvasPage> {
                               width: displayWidth,
                               heights: [
                                 for (final page in ctrl.file?.pages ?? [])
-                                  displayWidth / page.pageSize!.ratio
+                                  displayWidth / page.pageSize!.ratio,
                               ],
                               onVisiblePages: ctrl.setVisiblePdfPages,
                               pageBuilder: (pageIndex) {
-                                ctrl.pageStackKeys.putIfAbsent(pageIndex,
-                                    () => GlobalKey<XppPageStackState>());
+                                ctrl.pageStackKeys.putIfAbsent(
+                                  pageIndex,
+                                  () => GlobalKey<XppPageStackState>(),
+                                );
 
                                 final double dispW = displayWidth;
 
                                 return Container(
                                   width: dispW,
-                                  decoration: BoxDecoration(boxShadow: [
-                                    BoxShadow(
+                                  decoration: BoxDecoration(
+                                    boxShadow: [
+                                      BoxShadow(
                                         color: Colors.black.withOpacity(0.2),
                                         blurRadius: 10,
-                                        offset: const Offset(0, 4))
-                                  ]),
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
                                   child: Card(
                                     elevation: 0,
                                     margin: EdgeInsets.zero,
                                     color: Colors.white,
                                     child: AspectRatio(
-                                      aspectRatio: ctrl.file!.pages![pageIndex]
-                                          .pageSize!.ratio,
+                                      aspectRatio: ctrl
+                                          .file!
+                                          .pages![pageIndex]
+                                          .pageSize!
+                                          .ratio,
                                       child: FittedBox(
                                         child: Listener(
                                           onPointerUp: (_) =>
+                                              ctrl.eraserSnapshotTaken = false,
+                                          onPointerCancel: (_) =>
                                               ctrl.eraserSnapshotTaken = false,
                                           child: PointerListener(
                                             translationMatrix:
                                                 _zoomController.value,
                                             toolData: ctrl.toolData,
-                                            strokeWidth:
-                                                ctrl.getCurrentToolWidth(),
+                                            strokeWidth: ctrl
+                                                .getCurrentToolWidth(),
                                             color: ctrl.getCurrentToolColor(),
                                             shapeRecognition:
                                                 ctrl.shapeRecognition,
@@ -285,38 +318,59 @@ class CanvasPageState extends State<CanvasPage> {
                                             onToolChanged: (tool) {
                                               ctrl.setTool(tool);
                                               _zoomableKey.currentState
-                                                  ?.setState(() => _zoomableKey
-                                                          .currentState!
-                                                          .enabled =
-                                                      ctrl.isPanEnabled);
+                                                  ?.setState(
+                                                    () =>
+                                                        _zoomableKey
+                                                                .currentState!
+                                                                .enabled =
+                                                            ctrl.isPanEnabled,
+                                                  );
                                             },
 
                                             getPageContent: () =>
-                                                ctrl.file!.pages![pageIndex]
-                                                    .layers![0].content ??
+                                                ctrl
+                                                    .file!
+                                                    .pages![pageIndex]
+                                                    .layers![0]
+                                                    .content ??
                                                 [],
-                                            onDeviceChange: (
-                                                {int? device,
-                                                PointerDeviceKind? kind}) {},
+                                            onDeviceChange:
+                                                ({
+                                                  int? device,
+                                                  PointerDeviceKind? kind,
+                                                }) {},
                                             onDeleteContent: (deleted) =>
                                                 ctrl.deleteContent(
-                                                    pageIndex, deleted),
+                                                  pageIndex,
+                                                  deleted,
+                                                ),
                                             onBeforeContentChanged: () =>
                                                 ctrl.saveSnapshot(pageIndex),
                                             onContentChanged: () => ctrl
                                                 .markContentChanged(pageIndex),
                                             removeLastContent: () => ctrl
                                                 .removeLastContent(pageIndex),
-                                            filterEraser: (
-                                                    {Offset? coordinates,
-                                                    double? radius}) =>
-                                                ctrl.filterEraser(
-                                                    pageIndex: pageIndex,
-                                                    coordinates: coordinates,
-                                                    radius: radius),
+                                            filterEraser:
+                                                ({
+                                                  Offset? coordinates,
+                                                  Offset? previousCoordinates,
+                                                  double? radius,
+                                                }) => ctrl.filterEraser(
+                                                  pageIndex: pageIndex,
+                                                  coordinates: coordinates,
+                                                  previousCoordinates:
+                                                      previousCoordinates,
+                                                  radius: radius,
+                                                ),
+                                            eraserWidth: ctrl.eraserWidth,
+                                            onEraserStart: () =>
+                                                ctrl.eraserSnapshotTaken =
+                                                    false,
                                             onNewContent: (newContent) =>
                                                 ctrl.addNewContent(
-                                                    pageIndex, newContent),
+                                                  pageIndex,
+                                                  newContent,
+                                                ),
 
                                             child: SizedBox(
                                               width: ctrl
@@ -339,26 +393,29 @@ class CanvasPageState extends State<CanvasPage> {
                                                     if (ctrl.pdfBackgrounds
                                                         .containsKey(pageIndex))
                                                       Image.memory(
-                                                        ctrl.pdfBackgrounds[
-                                                            pageIndex]!,
+                                                        ctrl.pdfBackgrounds[pageIndex]!,
                                                         fit: BoxFit.fill,
                                                       ),
                                                     if (ctrl.pdfErrors
                                                         .containsKey(pageIndex))
                                                       const Center(
-                                                          child: Text(
-                                                              'Sfondo PDF non disponibile',
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .red))),
+                                                        child: Text(
+                                                          'Sfondo PDF non disponibile',
+                                                          style: TextStyle(
+                                                            color: Colors.red,
+                                                          ),
+                                                        ),
+                                                      ),
                                                     // 2. LA TELA REALE PER L'INCHIOSTRO (Sopra)
                                                     XppPageStack(
-                                                        renderPdfBackground:
-                                                            false,
-                                                        key: ctrl.pageStackKeys[
-                                                            pageIndex],
-                                                        page: ctrl.file!
-                                                            .pages![pageIndex]),
+                                                      renderPdfBackground:
+                                                          false,
+                                                      key: ctrl
+                                                          .pageStackKeys[pageIndex],
+                                                      page: ctrl
+                                                          .file!
+                                                          .pages![pageIndex],
+                                                    ),
                                                   ],
                                                 ),
                                               ),
@@ -371,8 +428,10 @@ class CanvasPageState extends State<CanvasPage> {
                                 );
                               },
                             ),
-                          ));
-                    }),
+                          ),
+                        );
+                      },
+                    ),
                   ),
                   // Pannello Pomodoro a comparsa (resta attivo anche se nascosto)
                   Positioned(
@@ -383,15 +442,22 @@ class CanvasPageState extends State<CanvasPage> {
                       child: PomodoroTimer(
                         onClose: () => setState(() => _showPomodoro = false),
                         onPhaseComplete: (finished, next) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(finished == PomodoroPhase.work
-                                  ? "Sessione finita! Tempo di pausa."
-                                  : "Pausa finita! Si torna a lavorare.")));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                finished == PomodoroPhase.work
+                                    ? "Sessione finita! Tempo di pausa."
+                                    : "Pausa finita! Si torna a lavorare.",
+                              ),
+                            ),
+                          );
                         },
                       ),
                     ),
                   ),
-                ])),
+                ],
+              ),
+            ),
           );
         },
       ),
@@ -403,176 +469,206 @@ class CanvasPageState extends State<CanvasPage> {
         _shapeBtn.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox == null) return;
     double leftPosition = max(
-        16,
-        min(
-            renderBox.localToGlobal(Offset.zero).dx -
-                160 +
-                (renderBox.size.width / 2),
-            MediaQuery.of(context).size.width - 336));
+      16,
+      min(
+        renderBox.localToGlobal(Offset.zero).dx -
+            160 +
+            (renderBox.size.width / 2),
+        MediaQuery.of(context).size.width - 336,
+      ),
+    );
 
     showDialog(
-        context: context,
-        barrierColor: Colors.transparent,
-        builder: (context) => Stack(children: [
-              Positioned(
-                  top: renderBox.localToGlobal(Offset.zero).dy +
-                      renderBox.size.height +
-                      8,
-                  left: leftPosition,
-                  child: ClipRRect(
+      context: context,
+      barrierColor: Colors.transparent,
+      builder: (context) => Stack(
+        children: [
+          Positioned(
+            top:
+                renderBox.localToGlobal(Offset.zero).dy +
+                renderBox.size.height +
+                8,
+            left: leftPosition,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(32),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Material(
+                  color: const Color(0xFF151515).withOpacity(0.6),
+                  elevation: 0,
+                  child: Container(
+                    width: 320,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.1),
+                        width: 1,
+                      ),
                       borderRadius: BorderRadius.circular(32),
-                      child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                          child: Material(
-                              color: const Color(0xFF151515).withOpacity(0.6),
-                              elevation: 0,
-                              child: Container(
-                                  width: 320,
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: Colors.white.withOpacity(0.1),
-                                          width: 1),
-                                      borderRadius: BorderRadius.circular(32)),
-                                  child: StatefulBuilder(
-                                      builder: (context, setDialogState) =>
-                                          Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                const Text('Strumento Forma:',
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold)),
-                                                const SizedBox(height: 8),
-                                                _shapeItem(
-                                                    context,
-                                                    'Linea',
-                                                    Icons.horizontal_rule,
-                                                    EditingTool.SHAPE_LINE,
-                                                    ctrl,
-                                                    setDialogState),
-                                                _shapeItem(
-                                                    context,
-                                                    'Linea tratteggiata',
-                                                    Icons.more_horiz,
-                                                    EditingTool
-                                                        .SHAPE_DASHED_LINE,
-                                                    ctrl,
-                                                    setDialogState),
-                                                _shapeItem(
-                                                    context,
-                                                    'Rettangolo',
-                                                    Icons.rectangle_outlined,
-                                                    EditingTool.SHAPE_RECT,
-                                                    ctrl,
-                                                    setDialogState),
-                                                _shapeItem(
-                                                    context,
-                                                    'Cerchio',
-                                                    Icons.circle_outlined,
-                                                    EditingTool.SHAPE_CIRCLE,
-                                                    ctrl,
-                                                    setDialogState),
-                                                _shapeItem(
-                                                    context,
-                                                    'Quadrato',
-                                                    Icons
-                                                        .check_box_outline_blank,
-                                                    EditingTool.SHAPE_SQUARE,
-                                                    ctrl,
-                                                    setDialogState),
-                                                _shapeItem(
-                                                    context,
-                                                    'Cubo',
-                                                    Icons.view_in_ar,
-                                                    EditingTool.SHAPE_CUBE,
-                                                    ctrl,
-                                                    setDialogState),
-                                                _shapeItem(
-                                                    context,
-                                                    'Cilindro',
-                                                    Icons.album,
-                                                    EditingTool.SHAPE_CYLINDER,
-                                                    ctrl,
-                                                    setDialogState),
-                                                _shapeItem(
-                                                    context,
-                                                    'Sfera',
-                                                    Icons.lens,
-                                                    EditingTool.SHAPE_SPHERE,
-                                                    ctrl,
-                                                    setDialogState),
-                                                const Divider(),
-                                                const Text('Proprietà Penna:',
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold)),
-                                                const SizedBox(height: 8),
-                                                Wrap(
-                                                    spacing: 8,
-                                                    runSpacing: 8,
-                                                    children: [
-                                                      Colors.black,
-                                                      Colors.grey,
-                                                      Colors.red,
-                                                      Colors.blue,
-                                                      Colors.green
-                                                    ]
-                                                        .map((c) => InkWell(
-                                                            onTap: () {
-                                                              ctrl.setPenProps(
-                                                                  c, null);
-                                                              setDialogState(
-                                                                  () {});
-                                                            },
-                                                            child: Container(
-                                                                width: 32,
-                                                                height: 32,
-                                                                decoration: BoxDecoration(
-                                                                    color: c,
-                                                                    shape: BoxShape
-                                                                        .circle,
-                                                                    border: Border.all(
-                                                                        color: ctrl.penColor ==
-                                                                                c
-                                                                            ? Colors
-                                                                                .black
-                                                                            : Colors
-                                                                                .black12,
-                                                                        width: ctrl.penColor ==
-                                                                                c
-                                                                            ? 3
-                                                                            : 1)))))
-                                                        .toList()),
-                                                Slider(
-                                                    value: ctrl.penWidth,
-                                                    min: 0.5,
-                                                    max: 20.0,
-                                                    onChanged: (val) {
-                                                      ctrl.setPenProps(
-                                                          null, val);
-                                                      setDialogState(() {});
-                                                    })
-                                              ])))))))
-            ]));
+                    ),
+                    child: StatefulBuilder(
+                      builder: (context, setDialogState) => Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Strumento Forma:',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+                          _shapeItem(
+                            context,
+                            'Linea',
+                            Icons.horizontal_rule,
+                            EditingTool.SHAPE_LINE,
+                            ctrl,
+                            setDialogState,
+                          ),
+                          _shapeItem(
+                            context,
+                            'Linea tratteggiata',
+                            Icons.more_horiz,
+                            EditingTool.SHAPE_DASHED_LINE,
+                            ctrl,
+                            setDialogState,
+                          ),
+                          _shapeItem(
+                            context,
+                            'Rettangolo',
+                            Icons.rectangle_outlined,
+                            EditingTool.SHAPE_RECT,
+                            ctrl,
+                            setDialogState,
+                          ),
+                          _shapeItem(
+                            context,
+                            'Cerchio',
+                            Icons.circle_outlined,
+                            EditingTool.SHAPE_CIRCLE,
+                            ctrl,
+                            setDialogState,
+                          ),
+                          _shapeItem(
+                            context,
+                            'Quadrato',
+                            Icons.check_box_outline_blank,
+                            EditingTool.SHAPE_SQUARE,
+                            ctrl,
+                            setDialogState,
+                          ),
+                          _shapeItem(
+                            context,
+                            'Cubo',
+                            Icons.view_in_ar,
+                            EditingTool.SHAPE_CUBE,
+                            ctrl,
+                            setDialogState,
+                          ),
+                          _shapeItem(
+                            context,
+                            'Cilindro',
+                            Icons.album,
+                            EditingTool.SHAPE_CYLINDER,
+                            ctrl,
+                            setDialogState,
+                          ),
+                          _shapeItem(
+                            context,
+                            'Sfera',
+                            Icons.lens,
+                            EditingTool.SHAPE_SPHERE,
+                            ctrl,
+                            setDialogState,
+                          ),
+                          const Divider(),
+                          const Text(
+                            'Proprietà Penna:',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children:
+                                [
+                                      Colors.black,
+                                      Colors.grey,
+                                      Colors.red,
+                                      Colors.blue,
+                                      Colors.green,
+                                    ]
+                                    .map(
+                                      (c) => InkWell(
+                                        onTap: () {
+                                          ctrl.setPenProps(c, null);
+                                          setDialogState(() {});
+                                        },
+                                        child: Container(
+                                          width: 32,
+                                          height: 32,
+                                          decoration: BoxDecoration(
+                                            color: c,
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color: ctrl.penColor == c
+                                                  ? Colors.black
+                                                  : Colors.black12,
+                                              width: ctrl.penColor == c ? 3 : 1,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                          ),
+                          Slider(
+                            value: ctrl.penWidth,
+                            min: 0.5,
+                            max: 20.0,
+                            onChanged: (val) {
+                              ctrl.setPenProps(null, val);
+                              setDialogState(() {});
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
-  Widget _shapeItem(BuildContext context, String title, IconData icon,
-      EditingTool tool, CanvasController ctrl, StateSetter setState) {
+  Widget _shapeItem(
+    BuildContext context,
+    String title,
+    IconData icon,
+    EditingTool tool,
+    CanvasController ctrl,
+    StateSetter setState,
+  ) {
     final isSelected = ctrl.toolData[PointerDeviceKind.stylus] == tool;
     return ListTile(
-      leading: Icon(icon,
-          color: isSelected ? Theme.of(context).colorScheme.primary : null),
-      title: Text(title,
-          style: TextStyle(
-              color: isSelected ? Theme.of(context).colorScheme.primary : null,
-              fontWeight: isSelected ? FontWeight.bold : null)),
+      leading: Icon(
+        icon,
+        color: isSelected ? Theme.of(context).colorScheme.primary : null,
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: isSelected ? Theme.of(context).colorScheme.primary : null,
+          fontWeight: isSelected ? FontWeight.bold : null,
+        ),
+      ),
       onTap: () {
         ctrl.setTool(tool);
         _zoomableKey.currentState?.setState(
-            () => _zoomableKey.currentState!.enabled = ctrl.isPanEnabled);
+          () => _zoomableKey.currentState!.enabled = ctrl.isPanEnabled,
+        );
         setState(() {});
       },
       contentPadding: EdgeInsets.zero,
@@ -585,197 +681,216 @@ class CanvasPageState extends State<CanvasPage> {
         _eraserBtn.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox == null) return;
     double leftPosition = max(
-        16,
-        min(
-            renderBox.localToGlobal(Offset.zero).dx -
-                160 +
-                (renderBox.size.width / 2),
-            MediaQuery.of(context).size.width - 336));
+      16,
+      min(
+        renderBox.localToGlobal(Offset.zero).dx -
+            160 +
+            (renderBox.size.width / 2),
+        MediaQuery.of(context).size.width - 336,
+      ),
+    );
 
     showDialog(
-        context: context,
-        barrierColor: Colors.transparent,
-        builder: (context) => Stack(children: [
-              Positioned(
-                  top: renderBox.localToGlobal(Offset.zero).dy +
-                      renderBox.size.height +
-                      8,
-                  left: leftPosition,
-                  child: ClipRRect(
+      context: context,
+      barrierColor: Colors.transparent,
+      builder: (context) => Stack(
+        children: [
+          Positioned(
+            top:
+                renderBox.localToGlobal(Offset.zero).dy +
+                renderBox.size.height +
+                8,
+            left: leftPosition,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(32),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Material(
+                  color: const Color(0xFF151515).withOpacity(0.6),
+                  elevation: 0,
+                  child: Container(
+                    width: 320,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.1),
+                        width: 1,
+                      ),
                       borderRadius: BorderRadius.circular(32),
-                      child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                          child: Material(
-                              color: const Color(0xFF151515).withOpacity(0.6),
-                              elevation: 0,
-                              child: Container(
-                                  width: 320,
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: Colors.white.withOpacity(0.1),
-                                          width: 1),
-                                      borderRadius: BorderRadius.circular(32)),
-                                  child: StatefulBuilder(
-                                      builder: (context, setDialogState) =>
-                                          Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                const Text('Modalità Gomma:',
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold)),
-                                                const SizedBox(height: 8),
-                                                RadioListTile<EraserMode>(
-                                                    title: const Text(
-                                                        'Pixel per Pixel'),
-                                                    value: EraserMode.pixel,
-                                                    groupValue: ctrl.eraserMode,
-                                                    contentPadding:
-                                                        EdgeInsets.zero,
-                                                    onChanged: (val) {
-                                                      if (val != null) {
-                                                        ctrl.setEraserProps(
-                                                            val, null);
-                                                        setDialogState(() {});
-                                                      }
-                                                    }),
-                                                RadioListTile<EraserMode>(
-                                                    title: const Text(
-                                                        'Intero Tratto'),
-                                                    value: EraserMode.stroke,
-                                                    groupValue: ctrl.eraserMode,
-                                                    contentPadding:
-                                                        EdgeInsets.zero,
-                                                    onChanged: (val) {
-                                                      if (val != null) {
-                                                        ctrl.setEraserProps(
-                                                            val, null);
-                                                        setDialogState(() {});
-                                                      }
-                                                    }),
-                                                const Divider(),
-                                                Text(
-                                                    'Grandezza Gomma: ${(ctrl.eraserWidth * 0.3528).toStringAsFixed(2)} mm',
-                                                    style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold)),
-                                                Slider(
-                                                    value: ctrl.eraserWidth,
-                                                    min: 2.0,
-                                                    max: 40.0,
-                                                    onChanged: (val) {
-                                                      ctrl.setEraserProps(
-                                                          null, val);
-                                                      setDialogState(() {});
-                                                    })
-                                              ])))))))
-            ]));
+                    ),
+                    child: StatefulBuilder(
+                      builder: (context, setDialogState) => Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Modalità Gomma:',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+                          RadioListTile<EraserMode>(
+                            title: const Text('Pixel per Pixel'),
+                            value: EraserMode.pixel,
+                            groupValue: ctrl.eraserMode,
+                            contentPadding: EdgeInsets.zero,
+                            onChanged: (val) {
+                              if (val != null) {
+                                ctrl.setEraserProps(val, null);
+                                setDialogState(() {});
+                              }
+                            },
+                          ),
+                          RadioListTile<EraserMode>(
+                            title: const Text('Intero Tratto'),
+                            value: EraserMode.stroke,
+                            groupValue: ctrl.eraserMode,
+                            contentPadding: EdgeInsets.zero,
+                            onChanged: (val) {
+                              if (val != null) {
+                                ctrl.setEraserProps(val, null);
+                                setDialogState(() {});
+                              }
+                            },
+                          ),
+                          const Divider(),
+                          Text(
+                            'Grandezza Gomma: ${(ctrl.eraserWidth * 0.3528).toStringAsFixed(2)} mm',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Slider(
+                            value: ctrl.eraserWidth,
+                            min: 2.0,
+                            max: 40.0,
+                            onChanged: (val) {
+                              ctrl.setEraserProps(null, val);
+                              setDialogState(() {});
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _openSettingsMenu(
-      BuildContext context,
-      CanvasController ctrl,
-      GlobalKey key,
-      String title,
-      List<Color> colors,
-      Color curC,
-      double curW,
-      Function(Color?, double?) onUpdate) {
+    BuildContext context,
+    CanvasController ctrl,
+    GlobalKey key,
+    String title,
+    List<Color> colors,
+    Color curC,
+    double curW,
+    Function(Color?, double?) onUpdate,
+  ) {
     final renderBox = key.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox == null) return;
     double leftPosition = max(
-        16,
-        min(
-            renderBox.localToGlobal(Offset.zero).dx -
-                160 +
-                (renderBox.size.width / 2),
-            MediaQuery.of(context).size.width - 336));
+      16,
+      min(
+        renderBox.localToGlobal(Offset.zero).dx -
+            160 +
+            (renderBox.size.width / 2),
+        MediaQuery.of(context).size.width - 336,
+      ),
+    );
 
     showDialog(
-        context: context,
-        barrierColor: Colors.transparent,
-        builder: (context) => Stack(children: [
-              Positioned(
-                  top: renderBox.localToGlobal(Offset.zero).dy +
-                      renderBox.size.height +
-                      8,
-                  left: leftPosition,
-                  child: ClipRRect(
+      context: context,
+      barrierColor: Colors.transparent,
+      builder: (context) => Stack(
+        children: [
+          Positioned(
+            top:
+                renderBox.localToGlobal(Offset.zero).dy +
+                renderBox.size.height +
+                8,
+            left: leftPosition,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(32),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Material(
+                  color: const Color(0xFF151515).withOpacity(0.6),
+                  elevation: 0,
+                  child: Container(
+                    width: 320,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.1),
+                        width: 1,
+                      ),
                       borderRadius: BorderRadius.circular(32),
-                      child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                          child: Material(
-                              color: const Color(0xFF151515).withOpacity(0.6),
-                              elevation: 0,
-                              child: Container(
-                                  width: 320,
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: Colors.white.withOpacity(0.1),
-                                          width: 1),
-                                      borderRadius: BorderRadius.circular(32)),
-                                  child: StatefulBuilder(
-                                      builder: (context, setDialogState) =>
-                                          Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(title,
-                                                    style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold)),
-                                                const SizedBox(height: 12),
-                                                Wrap(
-                                                    spacing: 8,
-                                                    runSpacing: 8,
-                                                    children: colors
-                                                        .map((c) => InkWell(
-                                                            onTap: () {
-                                                              onUpdate(c, null);
-                                                              setDialogState(
-                                                                  () =>
-                                                                      curC = c);
-                                                            },
-                                                            child: Container(
-                                                                width: 32,
-                                                                height: 32,
-                                                                decoration: BoxDecoration(
-                                                                    color: c,
-                                                                    shape: BoxShape
-                                                                        .circle,
-                                                                    border: Border.all(
-                                                                        color: curC ==
-                                                                                c
-                                                                            ? Colors
-                                                                                .black
-                                                                            : Colors
-                                                                                .black12,
-                                                                        width: curC ==
-                                                                                c
-                                                                            ? 3
-                                                                            : 1)))))
-                                                        .toList()),
-                                                const SizedBox(height: 24),
-                                                Text(
-                                                    'Spessore: ${(curW * 0.3528).toStringAsFixed(2)} mm',
-                                                    style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold)),
-                                                Slider(
-                                                    value: curW,
-                                                    min: 0.5,
-                                                    max: 30.0,
-                                                    onChanged: (val) {
-                                                      onUpdate(null, val);
-                                                      setDialogState(
-                                                          () => curW = val);
-                                                    })
-                                              ])))))))
-            ]));
+                    ),
+                    child: StatefulBuilder(
+                      builder: (context, setDialogState) => Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 12),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: colors
+                                .map(
+                                  (c) => InkWell(
+                                    onTap: () {
+                                      onUpdate(c, null);
+                                      setDialogState(() => curC = c);
+                                    },
+                                    child: Container(
+                                      width: 32,
+                                      height: 32,
+                                      decoration: BoxDecoration(
+                                        color: c,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: curC == c
+                                              ? Colors.black
+                                              : Colors.black12,
+                                          width: curC == c ? 3 : 1,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                          const SizedBox(height: 24),
+                          Text(
+                            'Spessore: ${(curW * 0.3528).toStringAsFixed(2)} mm',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Slider(
+                            value: curW,
+                            min: 0.5,
+                            max: 30.0,
+                            onChanged: (val) {
+                              onUpdate(null, val);
+                              setDialogState(() => curW = val);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

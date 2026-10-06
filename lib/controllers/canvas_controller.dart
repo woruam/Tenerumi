@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'dart:math' as math;
 import 'package:xournalpp/src/pdf_raster_cache.dart';
@@ -40,10 +41,13 @@ enum PdfInsertMode { start, end, after }
 class PdfInsertChoice {
   final PdfInsertMode mode;
   final int
-      afterPage; // indice 0-based della pagina esistente dopo cui inserire
+  afterPage; // indice 0-based della pagina esistente dopo cui inserire
   final bool newTab;
-  PdfInsertChoice(
-      {required this.mode, this.afterPage = 0, this.newTab = false});
+  PdfInsertChoice({
+    required this.mode,
+    this.afterPage = 0,
+    this.newTab = false,
+  });
 }
 
 class CanvasController extends ChangeNotifier {
@@ -113,30 +117,33 @@ class CanvasController extends ChangeNotifier {
     // Coda-gomma delle penne per tavoletta grafica (Wacom & co.): sempre gomma.
     toolData[PointerDeviceKind.invertedStylus] = EditingTool.ERASER;
 
-    SharedPreferences.getInstance().then((prefs) {
-      final enabled = prefs.getBool(PreferencesKeys.kShapeRecognition);
-      if (enabled != null) shapeRecognition = enabled;
-      touchDrawingEnabled =
-          prefs.getBool(PreferencesKeys.kTouchDrawing) ?? false;
-      toolData[PointerDeviceKind.touch] = touchDrawingEnabled
-          ? toolData[PointerDeviceKind.stylus] ?? EditingTool.STYLUS
-          : EditingTool.MOVE;
-      final bDown = prefs.getString('buttonDownAction') ??
-          prefs.getString('stylusButtonAction');
-      final bUp = prefs.getString('buttonUpAction');
-      if (bDown != null) buttonDownAction = bDown;
-      if (bUp != null) buttonUpAction = bUp;
+    SharedPreferences.getInstance()
+        .then((prefs) {
+          final enabled = prefs.getBool(PreferencesKeys.kShapeRecognition);
+          if (enabled != null) shapeRecognition = enabled;
+          touchDrawingEnabled =
+              prefs.getBool(PreferencesKeys.kTouchDrawing) ?? false;
+          toolData[PointerDeviceKind.touch] = touchDrawingEnabled
+              ? toolData[PointerDeviceKind.stylus] ?? EditingTool.STYLUS
+              : EditingTool.MOVE;
+          final bDown =
+              prefs.getString('buttonDownAction') ??
+              prefs.getString('stylusButtonAction');
+          final bUp = prefs.getString('buttonUpAction');
+          if (bDown != null) buttonDownAction = bDown;
+          if (bUp != null) buttonUpAction = bUp;
 
-      // IL FIX DELLA MEMORIA: Cerchiamo il PDF usando il Titolo del file!
-      if (file?.title != null) {
-        final savedPdf = prefs.getString('pdf_link_${file!.title}');
-        if (savedPdf != null) {
-          _restorePdfBackground(savedPdf);
-        }
-      }
+          // IL FIX DELLA MEMORIA: Cerchiamo il PDF usando il Titolo del file!
+          if (file?.title != null) {
+            final savedPdf = prefs.getString('pdf_link_${file!.title}');
+            if (savedPdf != null) {
+              _restorePdfBackground(savedPdf);
+            }
+          }
 
-      notifyListeners();
-    }).catchError((e) {});
+          notifyListeners();
+        })
+        .catchError((e) {});
   }
 
   @override
@@ -167,10 +174,11 @@ class CanvasController extends ChangeNotifier {
       final p = file!.pages![i];
       if (p.background is! XppBackgroundPdf) {
         p.background = XppBackgroundPdf(
-            filename: pdfPath,
-            page: i,
-            onUnavailable: (path) =>
-                FilePickerCross.fromInternalPath(path: path!));
+          filename: pdfPath,
+          page: i,
+          onUnavailable: (path) =>
+              FilePickerCross.fromInternalPath(path: path!),
+        );
       }
     }
     notifyListeners();
@@ -189,7 +197,8 @@ class CanvasController extends ChangeNotifier {
         if (_disposed || epoch != _pdfEpoch) return;
         if (!_visiblePdfPages.contains(i) ||
             pdfBackgrounds.containsKey(i) ||
-            pdfErrors.containsKey(i)) continue;
+            pdfErrors.containsKey(i))
+          continue;
         try {
           final bytes = await (pdfRasterizer?.call(i) ?? rasterPdfPage(i));
           if (!_disposed &&
@@ -255,13 +264,18 @@ class CanvasController extends ChangeNotifier {
       try {
         // Bound decoded GPU memory even for huge source pages.
         final pixelBudget = math.min(
-            1000000.0, 4000000.0 / math.max(1, _visiblePdfPages.length));
-        final scale =
-            math.min(2.0, math.sqrt(pixelBudget / (page.width * page.height)));
+          1000000.0,
+          4000000.0 / math.max(1, _visiblePdfPages.length),
+        );
+        final scale = math.min(
+          2.0,
+          math.sqrt(pixelBudget / (page.width * page.height)),
+        );
         final image = await page.render(
-            width: page.width * scale,
-            height: page.height * scale,
-            format: pdfx.PdfPageImageFormat.png);
+          width: page.width * scale,
+          height: page.height * scale,
+          format: pdfx.PdfPageImageFormat.png,
+        );
         return image?.bytes;
       } finally {
         await page.close();
@@ -272,8 +286,10 @@ class CanvasController extends ChangeNotifier {
   }
 
   // --- FUNZIONE PER IMPORTARE IL PDF (Ottimizzata) ---
-  Future<void> importPdf(BuildContext context,
-      {void Function(String pdfPath, String title)? onOpenInNewTab}) async {
+  Future<void> importPdf(
+    BuildContext context, {
+    void Function(String pdfPath, String title)? onOpenInNewTab,
+  }) async {
     try {
       final fileData = await FilePickerCross.importFromStorage(
         type: FileTypeCross.custom,
@@ -289,14 +305,17 @@ class CanvasController extends ChangeNotifier {
       final int existingPages = file?.pages?.length ?? 0;
 
       // Chiediamo DOVE inserire il PDF (senza cancellare nulla di esistente).
-      final PdfInsertChoice? choice =
-          await _askPdfInsertPosition(context, existingPages);
+      final PdfInsertChoice? choice = await _askPdfInsertPosition(
+        context,
+        existingPages,
+      );
       if (choice == null) return; // annullato dall'utente
 
       // Opzione "nuova scheda": deleghiamo alla WorkspacePage.
       if (choice.newTab) {
         final storedPath = await fileData.saveToPath(
-            path: 'import_${DateTime.now().microsecondsSinceEpoch}.pdf');
+          path: 'import_${DateTime.now().microsecondsSinceEpoch}.pdf',
+        );
         onOpenInNewTab?.call(storedPath, pdfTitle);
         return;
       }
@@ -353,12 +372,15 @@ class CanvasController extends ChangeNotifier {
         final page = await document.getPage(i);
         try {
           final xppPage = XppPage.empty();
-          xppPage.pageSize =
-              XppPageSize(width: page.width, height: page.height);
+          xppPage.pageSize = XppPageSize(
+            width: page.width,
+            height: page.height,
+          );
           xppPage.background = XppBackgroundPdf(
-              filename: attachmentName,
-              page: i - 1,
-              onUnavailable: (_) async => source);
+            filename: attachmentName,
+            page: i - 1,
+            onUnavailable: (_) async => source,
+          );
           newPages.add(xppPage);
         } finally {
           await page.close();
@@ -407,7 +429,9 @@ class CanvasController extends ChangeNotifier {
 
   // Dialog: chiede dove inserire le pagine del PDF.
   Future<PdfInsertChoice?> _askPdfInsertPosition(
-      BuildContext context, int existingPages) {
+    BuildContext context,
+    int existingPages,
+  ) {
     int afterPage = existingPages > 0 ? existingPages - 1 : 0;
     return showDialog<PdfInsertChoice>(
       context: context,
@@ -425,14 +449,18 @@ class CanvasController extends ChangeNotifier {
                 leading: const Icon(Icons.vertical_align_top),
                 title: const Text("All'inizio"),
                 onTap: () => Navigator.pop(
-                    context, PdfInsertChoice(mode: PdfInsertMode.start)),
+                  context,
+                  PdfInsertChoice(mode: PdfInsertMode.start),
+                ),
               ),
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.vertical_align_bottom),
                 title: const Text('Alla fine'),
                 onTap: () => Navigator.pop(
-                    context, PdfInsertChoice(mode: PdfInsertMode.end)),
+                  context,
+                  PdfInsertChoice(mode: PdfInsertMode.end),
+                ),
               ),
               if (existingPages > 0)
                 Padding(
@@ -446,19 +474,24 @@ class CanvasController extends ChangeNotifier {
                       DropdownButton<int>(
                         value: afterPage,
                         items: List.generate(
-                            existingPages,
-                            (i) => DropdownMenuItem(
-                                value: i, child: Text('${i + 1}'))),
+                          existingPages,
+                          (i) => DropdownMenuItem(
+                            value: i,
+                            child: Text('${i + 1}'),
+                          ),
+                        ),
                         onChanged: (v) => setS(() => afterPage = v ?? 0),
                       ),
                       const Spacer(),
                       TextButton(
                         child: const Text('Inserisci'),
                         onPressed: () => Navigator.pop(
-                            context,
-                            PdfInsertChoice(
-                                mode: PdfInsertMode.after,
-                                afterPage: afterPage)),
+                          context,
+                          PdfInsertChoice(
+                            mode: PdfInsertMode.after,
+                            afterPage: afterPage,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -468,15 +501,18 @@ class CanvasController extends ChangeNotifier {
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.tab),
                 title: const Text('In una nuova scheda'),
-                onTap: () => Navigator.pop(context,
-                    PdfInsertChoice(mode: PdfInsertMode.end, newTab: true)),
+                onTap: () => Navigator.pop(
+                  context,
+                  PdfInsertChoice(mode: PdfInsertMode.end, newTab: true),
+                ),
               ),
             ],
           ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(context, null),
-                child: const Text('Annulla')),
+              onPressed: () => Navigator.pop(context, null),
+              child: const Text('Annulla'),
+            ),
           ],
         ),
       ),
@@ -492,10 +528,11 @@ class CanvasController extends ChangeNotifier {
     try {
       final document = file!;
       // Make existing native PDF references portable on the next save.
-      for (final background in document.pages
-              ?.map((p) => p.background)
-              .whereType<XppBackgroundPdf>() ??
-          <XppBackgroundPdf>[]) {
+      for (final background
+          in document.pages
+                  ?.map((p) => p.background)
+                  .whereType<XppBackgroundPdf>() ??
+              <XppBackgroundPdf>[]) {
         final name = background.filename;
         if (name != null && !document.pdfAttachments.containsKey(name)) {
           document.pdfAttachments[name] = await _readPdfBytes(name);
@@ -503,11 +540,13 @@ class CanvasController extends ChangeNotifier {
       }
       document.previewImage ??= kTransparentImage;
       final data = await document.toFilePickerCrossAsync(
-          filePath: document.suggestedFileName);
+        filePath: document.suggestedFileName,
+      );
       final String? absolutePath;
       if (kIsWeb || document.sourcePath?.startsWith('content://') == true) {
-        absolutePath =
-            await data.exportToStorage(fileName: document.suggestedFileName);
+        absolutePath = await data.exportToStorage(
+          fileName: document.suggestedFileName,
+        );
         if (absolutePath == null) return false;
       } else {
         String destination = document.sourcePath ?? document.suggestedFileName;
@@ -530,26 +569,30 @@ class CanvasController extends ChangeNotifier {
           (jsonDecode(prefs.getString(PreferencesKeys.kRecentFiles) ?? '[]')
                   as List)
               .toList();
-      bool wasFav =
-          files.any((e) => e['path'] == absolutePath && e['favorite'] == true);
+      bool wasFav = files.any(
+        (e) => e['path'] == absolutePath && e['favorite'] == true,
+      );
       files.removeWhere((e) => e['path'] == absolutePath);
       files.add({
-        'preview':
-            file!.previewImage != null ? base64Encode(file!.previewImage!) : "",
+        'preview': file!.previewImage != null
+            ? base64Encode(file!.previewImage!)
+            : "",
         'name': file!.title,
         'path': absolutePath,
-        'favorite': wasFav
+        'favorite': wasFav,
       });
       await prefs.setString(PreferencesKeys.kRecentFiles, jsonEncode(files));
       if (context.mounted)
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text("Documento salvato")));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Documento salvato")));
       if (_revision == savedRevision) hasUnsavedChanges = false;
       return true;
     } catch (e) {
       if (context.mounted)
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("Errore: $e")));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Errore: $e")));
       return false;
     } finally {
       savingFile = false;
@@ -569,6 +612,37 @@ class CanvasController extends ChangeNotifier {
         final double width = xppPage.pageSize?.width ?? PdfPageFormat.a4.width;
         final double height =
             xppPage.pageSize?.height ?? PdfPageFormat.a4.height;
+        final ink = (xppPage.layers?.first.content ?? [])
+            .whereType<XppStroke>()
+            .toList();
+        Uint8List? clippedInk;
+        if (ink.any((s) => s.erasures.isNotEmpty)) {
+          final scale = math.min(2.0, 4096 / math.max(width, height));
+          final recorder = ui.PictureRecorder();
+          final rasterCanvas = Canvas(recorder)..scale(scale);
+          for (final stroke in ink) {
+            rasterCanvas.save();
+            rasterCanvas.translate(
+              stroke.getOffset().dx,
+              stroke.getOffset().dy,
+            );
+            stroke.paintToCanvas(rasterCanvas, Size(width, height));
+            rasterCanvas.restore();
+          }
+          final picture = recorder.endRecording();
+          final image = await picture.toImage(
+            (width * scale).ceil(),
+            (height * scale).ceil(),
+          );
+          try {
+            clippedInk = (await image.toByteData(
+              format: ui.ImageByteFormat.png,
+            ))!.buffer.asUint8List();
+          } finally {
+            image.dispose();
+            picture.dispose();
+          }
+        }
 
         pw.Widget pageContent;
         if (pdfBackgrounds.containsKey(i)) {
@@ -578,15 +652,27 @@ class CanvasController extends ChangeNotifier {
           pageContent = pw.Container();
         }
 
-        pdfDoc.addPage(pw.Page(
+        final inkBytes = clippedInk;
+        pdfDoc.addPage(
+          pw.Page(
             pageFormat: PdfPageFormat(width, height, marginAll: 0),
             build: (pw.Context ctx) {
-              return pw.Stack(children: [
-                pageContent,
-                pw.CustomPaint(
+              return pw.Stack(
+                children: [
+                  pageContent,
+                  if (inkBytes != null)
+                    pw.Image(
+                      pw.MemoryImage(inkBytes),
+                      width: width,
+                      height: height,
+                      fit: pw.BoxFit.fill,
+                    ),
+                  pw.CustomPaint(
                     size: PdfPoint(width, height),
                     painter: (PdfGraphics canvas, PdfPoint size) {
-                      final contents = xppPage.layers?[0].content ?? [];
+                      final contents = inkBytes != null
+                          ? <XppContent?>[]
+                          : (xppPage.layers?[0].content ?? <XppContent?>[]);
                       for (final content in contents) {
                         if (content is XppStroke) {
                           final points = content.points ?? [];
@@ -594,10 +680,11 @@ class CanvasController extends ChangeNotifier {
 
                           final color = content.color ?? Colors.black;
                           final pdfColor = PdfColor(
-                              color.red / 255.0,
-                              color.green / 255.0,
-                              color.blue / 255.0,
-                              color.opacity);
+                            color.red / 255.0,
+                            color.green / 255.0,
+                            color.blue / 255.0,
+                            color.opacity,
+                          );
 
                           double strokeWidth = 2.5;
                           if (points.first.width != null)
@@ -620,22 +707,29 @@ class CanvasController extends ChangeNotifier {
                           canvas.strokePath();
                         }
                       }
-                    })
-              ]);
-            }));
+                    },
+                  ),
+                ],
+              );
+            },
+          ),
+        );
       }
 
       final Uint8List pdfBytes = await pdfDoc.save();
-      await FilePickerCross(pdfBytes,
-              type: FileTypeCross.custom,
-              fileExtension: 'pdf',
-              path: "${file!.title ?? "Documento_Esportato"}.pdf")
-          .exportToStorage();
+      await FilePickerCross(
+        pdfBytes,
+        type: FileTypeCross.custom,
+        fileExtension: 'pdf',
+        path: "${file!.title ?? "Documento_Esportato"}.pdf",
+      ).exportToStorage();
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("PDF esportato con i tuoi appunti!")));
+        const SnackBar(content: Text("PDF esportato con i tuoi appunti!")),
+      );
     } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Errore esportazione PDF: $e")));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Errore esportazione PDF: $e")));
     } finally {
       savingFile = false;
       notifyListeners();
@@ -649,20 +743,21 @@ class CanvasController extends ChangeNotifier {
     hasUnsavedChanges = true;
     file!.pages![pageIndex].layers![0].content ??= [];
     file!.pages![pageIndex].layers![0].content!.add(newContent);
-    pageStackKeys[pageIndex]
-        ?.currentState
-        ?.setPageData(file!.pages![pageIndex]);
+    pageStackKeys[pageIndex]?.currentState?.setPageData(
+      file!.pages![pageIndex],
+    );
     notifyListeners();
   }
 
   void deleteContent(int pageIndex, List<XppContent> deleted) {
     saveSnapshot(pageIndex);
     hasUnsavedChanges = true;
-    file!.pages![pageIndex].layers![0].content!
-        .removeWhere((element) => deleted.contains(element));
-    pageStackKeys[pageIndex]
-        ?.currentState
-        ?.setPageData(file!.pages![pageIndex]);
+    file!.pages![pageIndex].layers![0].content!.removeWhere(
+      (element) => deleted.contains(element),
+    );
+    pageStackKeys[pageIndex]?.currentState?.setPageData(
+      file!.pages![pageIndex],
+    );
     notifyListeners();
   }
 
@@ -671,56 +766,80 @@ class CanvasController extends ChangeNotifier {
     saveSnapshot(pageIndex);
     hasUnsavedChanges = true;
     file!.pages![pageIndex].layers![0].content!.removeLast();
-    pageStackKeys[pageIndex]
-        ?.currentState
-        ?.setPageData(file!.pages![pageIndex]);
+    pageStackKeys[pageIndex]?.currentState?.setPageData(
+      file!.pages![pageIndex],
+    );
     notifyListeners();
   }
 
-  void filterEraser(
-      {required int pageIndex, Offset? coordinates, double? radius}) {
-    List<XppContent?> contents =
-        file!.pages![pageIndex].layers![0].content ?? [];
-    XppContent? strokeToProcess;
+  void filterEraser({
+    required int pageIndex,
+    Offset? coordinates,
+    Offset? previousCoordinates,
+    double? radius,
+  }) {
+    if (coordinates == null) return;
+    final tipRadius = radius ?? 5;
+    final cut = StrokeErasure(
+      previousCoordinates ?? coordinates,
+      coordinates,
+      tipRadius,
+    );
+    final contents = file!.pages![pageIndex].layers![0].content ?? [];
+    final changes = <int, XppContentEraseData>{};
     for (int i = contents.length - 1; i >= 0; i--) {
-      final stroke = contents[i];
-      if (stroke == null) continue;
-      if (stroke.bounds() != null &&
-          stroke.bounds()!.inflate(radius ?? 5.0).contains(coordinates!)) {
-        strokeToProcess = stroke;
+      final content = contents[i];
+      if (content == null) continue;
+      if (content is! XppStroke) {
+        // Whole-object erasing keeps the previous behavior for text/images.
+        if (eraserMode == EraserMode.stroke &&
+            content.bounds()?.inflate(tipRadius).contains(coordinates) ==
+                true) {
+          changes[i] = XppContentEraseData(affected: true, delete: true);
+          break;
+        }
+        continue;
+      }
+      final bounds = content.bounds();
+      if (bounds == null ||
+          !bounds.inflate(tipRadius).overlaps(cut.path.getBounds()))
+        continue;
+      if (eraserMode == EraserMode.stroke) {
+        if (!content.intersectsErasure(cut)) continue;
+        changes[i] = XppContentEraseData(affected: true, delete: true);
         break;
       }
+      final delta = content.eraseAlong(
+        coordinates: coordinates,
+        previousCoordinates: previousCoordinates,
+        radius: tipRadius,
+      );
+      if (delta.affected) changes[i] = delta;
     }
-    if (strokeToProcess != null) {
-      if (!eraserSnapshotTaken) {
-        saveSnapshot(pageIndex);
-        eraserSnapshotTaken = true;
-      }
-      hasUnsavedChanges = true;
-      if (eraserMode == EraserMode.stroke) {
-        file!.pages![pageIndex].layers![0].content!.remove(strokeToProcess);
-      } else {
-        final delta = strokeToProcess.eraseWhere(
-            coordinates: coordinates, radius: radius);
-        if (delta.affected) {
-          final int index = file!.pages![pageIndex].layers![0].content!
-              .indexOf(strokeToProcess);
-          file!.pages![pageIndex].layers![0].content!.removeAt(index);
-          file!.pages![pageIndex].layers![0].content!
-              .insertAll(index, delta.newContent);
-        }
-      }
-      pageStackKeys[pageIndex]
-          ?.currentState
-          ?.setPageData(file!.pages![pageIndex]);
-      notifyListeners();
+    if (changes.isEmpty) return;
+    if (!eraserSnapshotTaken) {
+      saveSnapshot(pageIndex);
+      eraserSnapshotTaken = true;
     }
+    for (final entry in changes.entries) {
+      contents.removeAt(entry.key);
+      contents.insertAll(entry.key, entry.value.newContent);
+    }
+    hasUnsavedChanges = true;
+    pageStackKeys[pageIndex]?.currentState?.setPageData(
+      file!.pages![pageIndex],
+    );
+    notifyListeners();
   }
 
   void saveSnapshot(int pageIndex) {
     if (file?.pages == null || file!.pages!.isEmpty) return;
-    undoStack.add(PageSnapshot(pageIndex,
-        cloneContents(file!.pages![pageIndex].layers![0].content ?? [])));
+    undoStack.add(
+      PageSnapshot(
+        pageIndex,
+        cloneContents(file!.pages![pageIndex].layers![0].content ?? []),
+      ),
+    );
     if (undoStack.length > 50) undoStack.removeAt(0);
     redoStack.clear();
     notifyListeners();
@@ -729,12 +848,16 @@ class CanvasController extends ChangeNotifier {
   void undo() {
     if (undoStack.isEmpty) return;
     final last = undoStack.removeLast();
-    redoStack.add(PageSnapshot(last.pageIndex,
-        cloneContents(file!.pages![last.pageIndex].layers![0].content ?? [])));
+    redoStack.add(
+      PageSnapshot(
+        last.pageIndex,
+        cloneContents(file!.pages![last.pageIndex].layers![0].content ?? []),
+      ),
+    );
     file!.pages![last.pageIndex].layers![0].content = last.content;
-    pageStackKeys[last.pageIndex]
-        ?.currentState
-        ?.setPageData(file!.pages![last.pageIndex]);
+    pageStackKeys[last.pageIndex]?.currentState?.setPageData(
+      file!.pages![last.pageIndex],
+    );
     hasUnsavedChanges = true;
     notifyListeners();
   }
@@ -742,22 +865,25 @@ class CanvasController extends ChangeNotifier {
   void redo() {
     if (redoStack.isEmpty) return;
     final future = redoStack.removeLast();
-    undoStack.add(PageSnapshot(
+    undoStack.add(
+      PageSnapshot(
         future.pageIndex,
-        cloneContents(
-            file!.pages![future.pageIndex].layers![0].content ?? [])));
+        cloneContents(file!.pages![future.pageIndex].layers![0].content ?? []),
+      ),
+    );
     file!.pages![future.pageIndex].layers![0].content = future.content;
-    pageStackKeys[future.pageIndex]
-        ?.currentState
-        ?.setPageData(file!.pages![future.pageIndex]);
+    pageStackKeys[future.pageIndex]?.currentState?.setPageData(
+      file!.pages![future.pageIndex],
+    );
     hasUnsavedChanges = true;
     notifyListeners();
   }
 
   void setTool(EditingTool t) {
     toolData = Map.from(toolData);
-    toolData[PointerDeviceKind.touch] =
-        touchDrawingEnabled ? t : EditingTool.MOVE;
+    toolData[PointerDeviceKind.touch] = touchDrawingEnabled
+        ? t
+        : EditingTool.MOVE;
     toolData[PointerDeviceKind.stylus] = t;
     // La coda-gomma delle penne da tavoletta resta sempre gomma.
     toolData[PointerDeviceKind.invertedStylus] = EditingTool.ERASER;
@@ -766,9 +892,9 @@ class CanvasController extends ChangeNotifier {
 
   void markContentChanged(int pageIndex) {
     hasUnsavedChanges = true;
-    pageStackKeys[pageIndex]
-        ?.currentState
-        ?.setPageData(file!.pages![pageIndex]);
+    pageStackKeys[pageIndex]?.currentState?.setPageData(
+      file!.pages![pageIndex],
+    );
     notifyListeners();
   }
 
@@ -777,16 +903,19 @@ class CanvasController extends ChangeNotifier {
 
     final XppPageSize size =
         (file!.pages!.isNotEmpty && file!.pages!.last.pageSize != null)
-            ? XppPageSize(
-                width: file!.pages!.last.pageSize!.width,
-                height: file!.pages!.last.pageSize!.height)
-            : XppPageSize(width: 595.0, height: 842.0);
+        ? XppPageSize(
+            width: file!.pages!.last.pageSize!.width,
+            height: file!.pages!.last.pageSize!.height,
+          )
+        : XppPageSize(width: 595.0, height: 842.0);
 
     // La nuova pagina EREDITA il template della pagina precedente (righe,
     // quadretti, puntini, Nothing...); se non c'e' (es. pagine PDF), si torna
     // al classico foglio bianco a righe.
     final XppBackground? inherited = _cloneBackgroundForNewPage(
-        file!.pages!.isNotEmpty ? file!.pages!.last.background : null, size);
+      file!.pages!.isNotEmpty ? file!.pages!.last.background : null,
+      size,
+    );
 
     final XppPage newPage = XppPage.empty(
       pageSize: size,
@@ -801,7 +930,9 @@ class CanvasController extends ChangeNotifier {
   /// Ricrea lo stesso tipo di sfondo della pagina precedente, adattato alla
   /// nuova dimensione. Le pagine con sfondo PDF/immagine restituiscono null.
   XppBackground? _cloneBackgroundForNewPage(
-      XppBackground? prev, XppPageSize size) {
+    XppBackground? prev,
+    XppPageSize size,
+  ) {
     if (prev is XppBackgroundNothingDark) {
       return XppBackgroundNothingDark(size: size);
     }
@@ -828,14 +959,14 @@ class CanvasController extends ChangeNotifier {
 
   Color getCurrentToolColor() =>
       toolData[PointerDeviceKind.stylus] == EditingTool.HIGHLIGHT
-          ? highlighterColor
-          : penColor;
+      ? highlighterColor
+      : penColor;
   double getCurrentToolWidth() =>
       toolData[PointerDeviceKind.stylus] == EditingTool.HIGHLIGHT
-          ? highlighterWidth
-          : (toolData[PointerDeviceKind.stylus] == EditingTool.ERASER
-              ? eraserWidth
-              : penWidth);
+      ? highlighterWidth
+      : (toolData[PointerDeviceKind.stylus] == EditingTool.ERASER
+            ? eraserWidth
+            : penWidth);
   void setPenProps(Color? c, double? w) {
     if (c != null) penColor = c;
     if (w != null) penWidth = w;
