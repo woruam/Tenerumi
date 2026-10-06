@@ -152,8 +152,16 @@ abstract class XppStroke extends XppContent {
     canvas.save();
     try {
       final offset = getOffset();
-      if (erasures.isNotEmpty)
-        canvas.clipPath(erasurePath.shift(-offset), clipOp: ClipOp.difference);
+      if (erasures.isNotEmpty) {
+        // Canvas.clipPath only intersects. Subtract cuts from a region outside
+        // the ink's antialiased edge, so clipping never thins untouched ink.
+        final clipRegion = Path.combine(
+          PathOperation.difference,
+          Path()..addRect(bounds()!.inflate(1)),
+          erasurePath,
+        );
+        canvas.clipPath(clipRegion.shift(-offset));
+      }
 
       // Calcoliamo il colore corretto senza sovrascrivere la variabile originale
       Color colorToUse = color ?? Colors.black;
@@ -213,8 +221,7 @@ abstract class XppStroke extends XppContent {
   XppPageContentWidget render() {
     return XppPageContentWidget(
       tool: EditingTool.STYLUS,
-      child:
-          const SizedBox.shrink(), // Non crea piÃ¹ pesanti CustomPaint in un Widget
+      child: const SizedBox.shrink(), // Rendering handled by the page painter.
     );
   }
 
@@ -444,8 +451,7 @@ class XppStrokeHighlight extends XppStroke {
   }
 }
 
-// MANTENIAMO IL PITTORE ORIGINALE perchÃ© il "PointerListener" lo usa
-// in tempo reale per disegnare il tratto che hai sotto la punta della penna!
+// Committed freehand ink shares the live preview geometry.
 class XppStrokePainter extends CustomPainter {
   final List<XppStrokePoint>? points;
   final Color? color;

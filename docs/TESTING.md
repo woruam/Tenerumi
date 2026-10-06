@@ -33,6 +33,7 @@ Gli avvisi e gli errori bloccano la verifica. Le informazioni sullo stile del co
 | `split_resize_test.dart` | Divisore orizzontale/verticale con canvas reali, gesture disabilitate durante drag, nessuno spostamento della matrice, reflow ancorato alla pagina |
 | `ink_preview_test.dart` | 400 campioni conservati in frame simulati a 120 Hz, repaint senza ricostruire il painter, cancellazione |
 | `ink_round_continuity_test.dart` | Confronto raster identico fra anteprima e tratto definitivo, pressione, incroci, estremità arrotondate e invalidazione cache |
+| `pixel_eraser_test.dart` | Punta circolare, sweep fra eventi distanti, tratti sovrapposti, undo per gesto, persistenza, trasformazioni e sfondo |
 | `document_toolbar_test.dart` | Menu visibile su telefono, salvataggio nel pannello con focus, apertura/cancellazione/errore senza perdere documenti |
 | `dynamic_color_adapter_test.dart` | Compatibilità della nuova palette dynamic_color con i ruoli ThemeData di Flutter |
 
@@ -40,7 +41,7 @@ Per una modifica eseguire prima il file pertinente, poi la suite completa. Usare
 
 ## Prove e limiti
 
-La suite aggiornata ha superato 42 test; l'analisi non rileva errori o warning (restano informazioni sullo stile). Le prove sono in `docs/validation/tests.txt`, `analyze.txt` e `open-page-phone.png`; lo stato delle build è riepilogato in `docs/validation/followup-status.md`. `web-build.txt` conserva un tentativo fallito precedente alla correzione dell'adattatore dei colori: non certifica la versione attuale. Il test con 100 pagine verifica quanti widget sono montati; non misura il picco RSS su Android. La cache conserva fino a 32 raster e 16 MiB di PNG per documento; ogni raster è limitato a circa un milione di pixel. Le pagine smontate non conservano canvas; passando scheda si liberano i raster e si conserva lo zoom.
+La suite della revisione precedente ha superato 42 test; la relativa analisi non rileva errori o warning (restano informazioni sullo stile). Il seguito penna/gomma aggiunge 12 test non eseguiti dopo il rifiuto dell'autorizzazione per la cache SDK: consultare `docs/PIXEL_ERASER.md` e `docs/validation/ink-eraser-status.md` per lo stato attuale. Le prove precedenti sono in `docs/validation/tests.txt`, `analyze.txt` e `open-page-phone.png`; lo stato delle build è riepilogato in `docs/validation/followup-status.md`. `web-build.txt` conserva un tentativo fallito precedente alla correzione dell'adattatore dei colori: non certifica la versione attuale. Il test con 100 pagine verifica quanti widget sono montati; non misura il picco RSS su Android. La cache conserva fino a 32 raster e 16 MiB di PNG per documento; ogni raster è limitato a circa un milione di pixel. Le pagine smontate non conservano canvas; passando scheda si liberano i raster e si conserva lo zoom.
 
 Prima di una release eseguire su un dispositivo Android e Windows: PDF di 100 pagine, pan/zoom ripetuti, importazione di due PDF diversi nel mezzo di note esistenti, riapertura del file rinominato su un secondo dispositivo, salvataggio in origine, errori di permesso/SD/cloud, stilo reale con palmo e pulsanti. La build Web riuscita della revisione precedente non certifica i plugin aggiornati: il nuovo tentativo finale è stato rifiutato nella richiesta di autorizzazione, come la build APK finale. I test JVM Android restano da eseguire.
 

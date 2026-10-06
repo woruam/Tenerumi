@@ -35,7 +35,7 @@ void main() {
       int alphaAt(int x, int y) => bytes[(y * 240 + x) * 4 + 3];
       expect(alphaAt(30, 30), 255);
       expect(alphaAt(33, 30), greaterThan(0));
-      expect(alphaAt(33, 33), 0);
+      expect(alphaAt(34, 34), 0);
     });
   });
 

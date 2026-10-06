@@ -36,3 +36,7 @@ in docs/validation/followup-status.md; procedure in docs/TESTING.md e
 docs/ANDROID_PERFORMANCE.md. Misure su dispositivo ancora necessarie per latenza
 e refresh effettivo. Il warning futuro KGP rimane con Flutter 3.44.1; la migrazione
 ufficiale richiede Flutter 3.47+ e AGP 9+.
+
+## Seguito penna/gomma - implementazione e revisione
+Geometria capsule condivisa, gomma circolare swept su tutti tratti sovrapposti, diametro coerente con impostazioni, snapshot uno per gesto, cache native bounded64/25000, attributi .xopp e raster alpha PDF. Aggiunti 12 test predisposti con screenshot; non eseguiti per rifiuto autorizzazione accesso cache SDK. Nessuna build. Revisione statica ha corretto ambiguita ternario export e API clipPath; prove in docs/validation/ink-eraser-*.txt. Analisi finale in corso; riaprire stato risultato prima di dichiarare verifica completa. Portabilita attributi custom .xopp descritta in docs/PIXEL_ERASER.md. Non presente Git.
+Analisi finale lib/test completata exit0: nessun errore o warning, sole informazioni stile. Nuovi test non eseguiti e screenshot non generati; nessuna build. Riepilogo finale docs/validation/ink-eraser-status.md.
