@@ -1,0 +1,29 @@
+# ==========================================
+# 🤖 REGOLE DI OTTIMIZZAZIONE TOKEN PER L'IA
+# ==========================================
+
+# 1. File generati automaticamente (Pesantissimi e inutili per l'IA)
+pubspec.lock
+.flutter-plugins-dependencies
+.metadata
+.dart_tool/
+build/
+
+# 2. Asset multimediali (L'IA impazzisce se cerca di leggere file binari o font)
+assets/
+fonts/
+**/*.png
+**/*.jpg
+**/*.jpeg
+**/*.svg
+**/*.ttf
+**/*.woff
+
+# 3. Cartelle native (Se sviluppi solo in Dart/Flutter, nascondile. 
+# Togli il commento se non vuoi che l'IA ci metta le mani)
+# android/
+# ios/
+# web/
+# linux/
+# macos/
+# windows/

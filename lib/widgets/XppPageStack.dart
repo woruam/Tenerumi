@@ -9,12 +9,13 @@ import 'package:flutter/rendering.dart';
 import 'package:xournalpp/src/XppBackground.dart';
 import 'package:xournalpp/src/XppLayer.dart';
 import 'package:xournalpp/src/XppPage.dart';
-import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart'; 
 
 class XppPageStack extends StatefulWidget {
   final XppPage? page;
+  final bool renderPdfBackground;
 
-  const XppPageStack({Key? key, this.page}) : super(key: key);
+  const XppPageStack({Key? key, this.page, this.renderPdfBackground = true})
+      : super(key: key);
 
   @override
   XppPageStackState createState() => XppPageStackState();
@@ -42,9 +43,10 @@ class XppPageStackState extends State<XppPageStack>
     if (page!.background != null && _lastKnownBackground != page!.background) {
       _lastKnownBackground = page!.background;
       // Il RepaintBoundary per lo sfondo
-      background = RepaintBoundary(
-        child: page!.background!.render()
-      );
+      background =
+          page!.background is XppBackgroundPdf && !widget.renderPdfBackground
+              ? const SizedBox.shrink()
+              : RepaintBoundary(child: page!.background!.render());
     }
     children.add(background);
 
@@ -72,10 +74,14 @@ class XppPageStackState extends State<XppPageStack>
     RenderRepaintBoundary boundary =
         pngKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
     ui.Image image = await boundary.toImage();
-    ByteData byteData = await (image.toByteData(format: ui.ImageByteFormat.png)
-        as FutureOr<ByteData>);
-    Uint8List pngBytes = byteData.buffer.asUint8List();
-    return pngBytes;
+    try {
+      ByteData byteData = await (image.toByteData(
+          format: ui.ImageByteFormat.png) as FutureOr<ByteData>);
+      Uint8List pngBytes = byteData.buffer.asUint8List();
+      return pngBytes;
+    } finally {
+      image.dispose();
+    }
   }
 
   @override
@@ -94,9 +100,10 @@ class XppPageStackState extends State<XppPageStack>
 
 class XppLayerStack extends StatelessWidget {
   final XppLayer? layer;
-  final Size pageSize; 
+  final Size pageSize;
 
-  const XppLayerStack({Key? key, this.layer, required this.pageSize}) : super(key: key);
+  const XppLayerStack({Key? key, this.layer, required this.pageSize})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +112,7 @@ class XppLayerStack extends StatelessWidget {
     return RepaintBoundary(
       child: CustomPaint(
         painter: XppMasterPainter(layerContents: layer!.content!),
-        size: pageSize, 
+        size: pageSize,
       ),
     );
   }
@@ -121,14 +128,14 @@ class XppMasterPainter extends CustomPainter {
     for (var element in layerContents) {
       if (element != null) {
         canvas.save();
-        
+
         final offset = element.getOffset();
         if (offset != null) {
           canvas.translate(offset.dx, offset.dy);
         }
 
         element.paintToCanvas(canvas, size);
-        
+
         canvas.restore();
       }
     }
@@ -138,6 +145,6 @@ class XppMasterPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant XppMasterPainter oldDelegate) {
     // Ora si aggiornerà sempre non appena la gomma "mangia" un pezzo di inchiostro!
-    return true; 
+    return true;
   }
 }

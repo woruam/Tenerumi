@@ -2,8 +2,7 @@ import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:xournalpp/generated/l10n.dart';
-import 'package:xournalpp/pages/CanvasPage.dart';
-import 'package:xournalpp/pages/OpenPage.dart';
+import 'package:xournalpp/pages/WorkspacePage.dart';
 import 'package:xournalpp/src/XppFile.dart';
 import 'package:xournalpp/src/compat/file_picker_cross.dart';
 
@@ -32,22 +31,25 @@ class _DropFileState extends State<DropFile> {
     try {
       final bytes = await xFile.readAsBytes();
       final picker = FilePickerCross(bytes,
-          path: name, type: FileTypeCross.custom, fileExtension: 'xopp');
+          path: xFile.path as String? ?? name,
+          type: FileTypeCross.custom,
+          fileExtension: 'xopp');
       XppFile file;
       if (name.toLowerCase().endsWith('.pdf')) {
         file = await XppFile.importPdf(pdf: picker);
       } else {
-        file = await XppFile.fromFilePickerCross(
-            picker, (percentage) {}, showMissingFileDialog);
+        file = await XppFile.fromFilePickerCross(picker, (percentage) {},
+            (_) async => throw Exception('File non trovato'));
       }
       controller.close();
+      if (!mounted) return;
       setState(() => _loading = false);
-      navigator.push(
-          MaterialPageRoute(builder: (context) => CanvasPage(file: file)));
+      navigator.push(MaterialPageRoute(
+          builder: (context) => WorkspacePage(initialFile: file)));
     } catch (e) {
       controller.close();
-      setState(() => _loading = false);
       if (!mounted) return;
+      setState(() => _loading = false);
       showDialog(
           context: context,
           builder: (context) => AlertDialog(

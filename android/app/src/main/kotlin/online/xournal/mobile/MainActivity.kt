@@ -1,13 +1,84 @@
 package online.xournal.mobile
 
+import android.hardware.display.DisplayManager
+import android.os.Handler
+import android.os.Looper
 import android.view.KeyEvent
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
 import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.android.FlutterView
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity: FlutterActivity() {
     private val CHANNEL = "online.xournal.mobile/pen"
     private var methodChannel: MethodChannel? = null
+    private val displayManager by lazy { getSystemService(DisplayManager::class.java) }
+    private val displayListener = object : DisplayManager.DisplayListener {
+        override fun onDisplayAdded(displayId: Int) = requestHighRefreshRate()
+        override fun onDisplayRemoved(displayId: Int) = requestHighRefreshRate()
+        override fun onDisplayChanged(displayId: Int) {
+            if (window.decorView.display?.displayId == displayId) requestHighRefreshRate()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        displayManager.registerDisplayListener(displayListener, Handler(Looper.getMainLooper()))
+        window.decorView.post { requestHighRefreshRate() }
+    }
+
+    override fun onPause() {
+        displayManager.unregisterDisplayListener(displayListener)
+        super.onPause()
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) requestHighRefreshRate()
+    }
+
+    private fun requestHighRefreshRate() {
+        val display = window.decorView.display ?: return
+        val current = display.mode
+        val preferred = DisplayModePolicy.select(
+            current.physicalWidth, current.physicalHeight,
+            display.supportedModes.map {
+                RefreshMode(it.modeId, it.physicalWidth, it.physicalHeight, it.refreshRate)
+            }
+        ) ?: return
+        val attributes = window.attributes
+        // Updating only on a change prevents a display-listener feedback loop.
+        if (attributes.preferredDisplayModeId != preferred.id) {
+            attributes.preferredDisplayModeId = preferred.id
+            window.attributes = attributes
+        }
+    }
+
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if (event.actionMasked == MotionEvent.ACTION_DOWN ||
+            event.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
+            val tool = event.getToolType(event.actionIndex)
+            if (tool == MotionEvent.TOOL_TYPE_STYLUS || tool == MotionEvent.TOOL_TYPE_ERASER) {
+                // Request on the actual Flutter input target, before it receives DOWN.
+                // Keep Flutter's normal pointer path: no duplicate/custom event stream.
+                findFlutterView(window.decorView)?.requestUnbufferedDispatch(event)
+            }
+        }
+        return super.dispatchTouchEvent(event)
+    }
+
+    private fun findFlutterView(view: View): FlutterView? {
+        if (view is FlutterView) return view
+        if (view is ViewGroup) {
+            for (index in 0 until view.childCount) {
+                findFlutterView(view.getChildAt(index))?.let { return it }
+            }
+        }
+        return null
+    }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -15,7 +86,9 @@ class MainActivity: FlutterActivity() {
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        if (event.action == KeyEvent.ACTION_DOWN) {
+        // repeatCount == 0: reagiamo solo alla PRIMA pressione, NON alle ripetizioni
+        // automatiche del tasto tenuto premuto (che causavano toggle multipli ed erratici).
+        if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
             // Tasto 1: Page Down (di solito quello vicino alla punta)
             if (event.keyCode == KeyEvent.KEYCODE_PAGE_DOWN) {
                 methodChannel?.invokeMethod("redmiPenPageDown", null)

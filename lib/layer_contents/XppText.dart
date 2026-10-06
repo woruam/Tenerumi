@@ -1,5 +1,3 @@
-import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:xournalpp/src/HexColor.dart';
@@ -28,7 +26,7 @@ class XppText extends XppContent {
     final textStyle = TextStyle(
       color: color ?? Colors.black,
       fontSize: this.size ?? 12.0,
-      fontFamily: fontFamily ?? 'Sans', 
+      fontFamily: fontFamily ?? 'Sans',
     );
 
     // Creiamo uno span di testo
@@ -58,7 +56,8 @@ class XppText extends XppContent {
   XppPageContentWidget render() {
     return XppPageContentWidget(
       tool: EditingTool.TEXT,
-      child: const SizedBox.shrink(), // Niente più TextField pesanti in background!
+      child: const SizedBox
+          .shrink(), // Niente più TextField pesanti in background!
     );
   }
 
@@ -114,7 +113,7 @@ class XppText extends XppContent {
 }
 
 // -----------------------------------------------------------------------------
-// Ho mantenuto la vecchia classe RichTextField qui in fondo nel caso servisse 
+// Ho mantenuto la vecchia classe RichTextField qui in fondo nel caso servisse
 // ancora ad altri file dell'app, ma ora non viene più usata per il rendering!
 // -----------------------------------------------------------------------------
 class RichTextField extends StatefulWidget {

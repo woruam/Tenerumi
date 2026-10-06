@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:xournalpp/generated/l10n.dart';
-import 'package:xournalpp/pages/CanvasPage.dart';
+import 'package:xournalpp/pages/WorkspacePage.dart';
 import 'package:xournalpp/pages/OpenPage.dart';
 import 'package:xournalpp/src/XppFile.dart';
 
@@ -49,16 +49,11 @@ class _MainDrawerState extends State<MainDrawer> {
                           .textTheme
                           .headlineMedium
                           ?.copyWith(
-                              color:
-                                  Theme.of(context).colorScheme.onPrimary),
+                              color: Theme.of(context).colorScheme.onPrimary),
                     ),
                     accountEmail: Text(S.of(context).mobileEditionUnofficial,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleSmall
-                            ?.copyWith(
-                                color:
-                                    Theme.of(context).colorScheme.onPrimary)),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            color: Theme.of(context).colorScheme.onPrimary)),
                     currentAccountPicture: Image.asset('assets/xournalpp.png'),
                     decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.primary),
@@ -79,8 +74,9 @@ class _MainDrawerState extends State<MainDrawer> {
                   title: Text(S.of(context).newFile),
                   onTap: () =>
                       Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => CanvasPage(
-                                file: XppFile.empty(background: Colors.white),
+                          builder: (context) => WorkspacePage(
+                                initialFile:
+                                    XppFile.empty(background: Colors.white),
                               ))),
                 ),
                 const Divider(),

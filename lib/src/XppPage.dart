@@ -11,12 +11,19 @@ class XppPage {
 
   XppPage({this.pageSize, this.background, this.layers});
 
-  static XppPage empty({Color? background, XppPageSize? pageSize}) {
+  static XppPage empty(
+      {Color? background, XppPageSize? pageSize, XppBackground? template}) {
+    final XppPageSize size = pageSize ?? XppPageSize.a4;
+    // [template] ha la precedenza: permette di creare pagine con un modello
+    // preciso (righe, quadretti, puntini, Nothing scuro/chiaro...).
+    XppBackground? resolved = template;
+    if (resolved != null) resolved.size ??= size;
+    resolved ??= background != null
+        ? XppBackgroundSolidLined(size: size, color: background)
+        : XppBackground.none;
     return XppPage(
-      pageSize: pageSize ?? XppPageSize.a4,
-      background: background != null 
-          ? XppBackgroundSolidLined(size: pageSize ?? XppPageSize.a4, color: background) 
-          : XppBackground.none,
+      pageSize: size,
+      background: resolved,
       layers: [XppLayer.empty()],
     );
   }

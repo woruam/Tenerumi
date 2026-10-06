@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
-import 'package:xournalpp/src/XppPageSize.dart';
 import 'XppPageContentWidget.dart';
 
 class XppLayer {
@@ -18,7 +17,7 @@ class XppLayer {
 abstract class XppContent {
   Offset? getOffset();
 
-  // VECCHIO METODO: Lo teniamo temporaneamente per non far esplodere tutto subito, 
+  // VECCHIO METODO: Lo teniamo temporaneamente per non far esplodere tutto subito,
   // ma lo elimineremo alla fine.
   XppPageContentWidget render();
 

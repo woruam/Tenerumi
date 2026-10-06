@@ -1,89 +1,242 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'dart:ui';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
-
-// Assicurati che questo percorso punti a dove hai salvato canvas_controller.dart
-import 'package:xournalpp/controllers/canvas_controller.dart'; 
+import 'package:xournalpp/controllers/canvas_controller.dart';
+import 'package:xournalpp/controllers/theme_controller.dart';
 
 class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
   final GlobalKey penKey;
   final GlobalKey highlighterKey;
+  final GlobalKey shapeKey;
   final GlobalKey eraserKey;
   final VoidCallback onPenTap;
   final VoidCallback onHighlighterTap;
+  final VoidCallback onShapeTap;
   final VoidCallback onEraserTap;
+  final VoidCallback onImportPdf;
+  final Function(EditingTool) onToolSelect;
+  final VoidCallback onPomodoroTap;
+  final bool pomodoroActive;
+  final VoidCallback? onOpenFile;
+  final bool openingFile;
 
   const CanvasToolbar({
     Key? key,
     required this.penKey,
     required this.highlighterKey,
+    required this.shapeKey,
     required this.eraserKey,
     required this.onPenTap,
     required this.onHighlighterTap,
+    required this.onShapeTap,
     required this.onEraserTap,
+    required this.onImportPdf,
+    required this.onToolSelect,
+    required this.onPomodoroTap,
+    this.pomodoroActive = false,
+    this.onOpenFile,
+    this.openingFile = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // La magia di Provider: si abbona al Controller!
     final ctrl = context.watch<CanvasController>();
     final stylusTool = ctrl.toolData[PointerDeviceKind.stylus];
+    // Set di icone scelto dall'utente nelle impostazioni (outlined/rounded/sharp).
+    final AppIcons icons = context.watch<ThemeController>().icons;
 
     return AppBar(
       automaticallyImplyLeading: false,
       titleSpacing: 0,
-      elevation: 1,
-      shadowColor: Colors.black12,
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      actions: [
+        PopupMenuButton<String>(
+          key: const ValueKey('document-settings'),
+          tooltip: 'Impostazioni documento',
+          icon: Icon(icons.settings),
+          onSelected: (action) {
+            if (action == 'save') {
+              ctrl.saveFile(context);
+            } else if (action == 'open') {
+              onOpenFile?.call();
+            }
+          },
+          itemBuilder: (_) => [
+            PopupMenuItem(
+              value: 'save',
+              enabled: !ctrl.savingFile,
+              child: const ListTile(
+                leading: Icon(Icons.save_outlined),
+                title: Text('Salva'),
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
+            PopupMenuItem(
+              value: 'open',
+              enabled: onOpenFile != null && !openingFile,
+              child: const ListTile(
+                leading: Icon(Icons.folder_open_outlined),
+                title: Text('Apri file'),
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
+          ],
+        ),
+      ],
+      flexibleSpace: ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.4),
+              border: Border(
+                  bottom: BorderSide(
+                      color: Colors.white.withOpacity(0.1), width: 1)),
+            ),
+          ),
+        ),
+      ),
       title: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: Row(
           children: [
             IconButton(
-              icon: const Icon(Icons.undo), tooltip: 'Annulla',
-              color: ctrl.undoStack.isNotEmpty ? Theme.of(context).colorScheme.onSurface : Colors.grey,
+              icon: Icon(icons.undo),
+              tooltip: 'Annulla',
+              color: ctrl.undoStack.isNotEmpty
+                  ? Theme.of(context).colorScheme.onSurface
+                  : Colors.grey,
               onPressed: ctrl.undoStack.isNotEmpty ? ctrl.undo : null,
-            ), 
+            ),
             IconButton(
-              icon: const Icon(Icons.redo), tooltip: 'Ripristina',
-              color: ctrl.redoStack.isNotEmpty ? Theme.of(context).colorScheme.onSurface : Colors.grey,
+              icon: Icon(icons.redo),
+              tooltip: 'Ripristina',
+              color: ctrl.redoStack.isNotEmpty
+                  ? Theme.of(context).colorScheme.onSurface
+                  : Colors.grey,
               onPressed: ctrl.redoStack.isNotEmpty ? ctrl.redo : null,
             ),
             const SizedBox(height: 30, child: VerticalDivider(width: 20)),
-            
-            IconButton(
-              key: penKey, icon: const Icon(Icons.edit), tooltip: 'Penna',
-              color: stylusTool == EditingTool.STYLUS ? Theme.of(context).colorScheme.primary : null,
-              onPressed: () => stylusTool == EditingTool.STYLUS ? onPenTap() : ctrl.setTool(EditingTool.STYLUS),
+
+            AnimatedScale(
+              scale: stylusTool == EditingTool.STYLUS ? 1.15 : 1.0,
+              duration: const Duration(milliseconds: 150),
+              child: IconButton(
+                key: penKey,
+                icon: Icon(icons.pen),
+                tooltip: 'Penna',
+                color: stylusTool == EditingTool.STYLUS
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.white54,
+                onPressed: () => stylusTool == EditingTool.STYLUS
+                    ? onPenTap()
+                    : onToolSelect(EditingTool.STYLUS),
+              ),
             ),
-            IconButton(
-              key: highlighterKey, icon: const Icon(Icons.highlight), tooltip: 'Evidenziatore',
-              color: stylusTool == EditingTool.HIGHLIGHT ? Theme.of(context).colorScheme.primary : null,
-              onPressed: () => stylusTool == EditingTool.HIGHLIGHT ? onHighlighterTap() : ctrl.setTool(EditingTool.HIGHLIGHT),
+            AnimatedScale(
+              scale: stylusTool == EditingTool.HIGHLIGHT ? 1.15 : 1.0,
+              duration: const Duration(milliseconds: 150),
+              child: IconButton(
+                key: highlighterKey,
+                icon: Icon(icons.highlighter),
+                tooltip: 'Evidenziatore',
+                color: stylusTool == EditingTool.HIGHLIGHT
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.white54,
+                onPressed: () => stylusTool == EditingTool.HIGHLIGHT
+                    ? onHighlighterTap()
+                    : onToolSelect(EditingTool.HIGHLIGHT),
+              ),
             ),
-            IconButton(
-              key: eraserKey, icon: const FaIcon(FontAwesomeIcons.eraser), tooltip: 'Gomma',
-              color: stylusTool == EditingTool.ERASER ? Theme.of(context).colorScheme.primary : null,
-              onPressed: () => stylusTool == EditingTool.ERASER ? onEraserTap() : ctrl.setTool(EditingTool.ERASER),
+            AnimatedScale(
+              scale: ctrl.isShapeTool ? 1.15 : 1.0,
+              duration: const Duration(milliseconds: 150),
+              child: IconButton(
+                key: shapeKey,
+                icon: Icon(icons.shapes),
+                tooltip: 'Forme Geometriche',
+                color: ctrl.isShapeTool
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.white54,
+                onPressed: onShapeTap,
+              ),
             ),
-            IconButton(
-              icon: const Icon(Icons.all_out), tooltip: 'Lazo',
-              color: stylusTool == EditingTool.SELECT ? Theme.of(context).colorScheme.primary : null,
-              onPressed: () => ctrl.setTool(EditingTool.SELECT),
+            AnimatedScale(
+              scale: stylusTool == EditingTool.ERASER ? 1.15 : 1.0,
+              duration: const Duration(milliseconds: 150),
+              child: IconButton(
+                key: eraserKey,
+                icon: const FaIcon(FontAwesomeIcons.eraser),
+                tooltip: 'Gomma',
+                color: stylusTool == EditingTool.ERASER
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.white54,
+                onPressed: () => stylusTool == EditingTool.ERASER
+                    ? onEraserTap()
+                    : onToolSelect(EditingTool.ERASER),
+              ),
             ),
-            IconButton(
-              icon: const Icon(Icons.pan_tool_alt), tooltip: 'Mano (Modalità Sicura)',
-              color: stylusTool == EditingTool.MOVE ? Theme.of(context).colorScheme.primary : null,
-              onPressed: () => ctrl.setTool(EditingTool.MOVE),
+            AnimatedScale(
+              scale: stylusTool == EditingTool.SELECT ? 1.15 : 1.0,
+              duration: const Duration(milliseconds: 150),
+              child: IconButton(
+                icon: Icon(icons.lasso),
+                tooltip: 'Lazo',
+                color: stylusTool == EditingTool.SELECT
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.white54,
+                onPressed: () => onToolSelect(EditingTool.SELECT),
+              ),
             ),
-            
+            AnimatedScale(
+              scale: stylusTool == EditingTool.MOVE ? 1.15 : 1.0,
+              duration: const Duration(milliseconds: 150),
+              child: IconButton(
+                icon: Icon(icons.hand),
+                tooltip: 'Mano (Modalità Sicura)',
+                color: stylusTool == EditingTool.MOVE
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.white54,
+                onPressed: () => onToolSelect(EditingTool.MOVE),
+              ),
+            ),
+
             const SizedBox(height: 30, child: VerticalDivider(width: 20)),
 
-            IconButton(icon: const Icon(Icons.note_add), color: Theme.of(context).colorScheme.primary, onPressed: ctrl.addPage),
+            IconButton(
+                icon: Icon(icons.addPage),
+                tooltip: "Aggiungi Pagina",
+                color: Theme.of(context).colorScheme.primary,
+                onPressed: ctrl.addPage),
+
+            // --- IL TASTO PDF DIRETTAMENTE QUI, BEN VISIBILE ---
+            IconButton(
+              icon: Icon(icons.pdf),
+              tooltip: 'Importa PDF',
+              color: Theme.of(context)
+                  .colorScheme
+                  .primary, // Niente più rosso per forza, segue il tema Nothing
+              onPressed: onImportPdf,
+            ),
+
+            IconButton(
+              icon: Icon(icons.timer),
+              tooltip: 'Pomodoro',
+              color:
+                  pomodoroActive ? Theme.of(context).colorScheme.primary : null,
+              onPressed: onPomodoroTap,
+            ),
             const SizedBox(width: 16),
-            if (ctrl.savingFile) const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+            if (ctrl.savingFile)
+              const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2)),
           ],
         ),
       ),

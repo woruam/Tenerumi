@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart';
@@ -8,6 +9,7 @@ import 'package:xournalpp/layer_contents/XppText.dart';
 import 'package:xournalpp/src/ShapeRecognizer.dart';
 import 'package:xournalpp/src/XppLayer.dart';
 import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
+import 'package:xournalpp/widgets/ZoomableWidget.dart';
 
 class PointerListener extends StatefulWidget {
   final Function(XppContent?)? onNewContent;
@@ -19,36 +21,36 @@ class PointerListener extends StatefulWidget {
   final Color? color;
   final Function({Offset? coordinates, double? radius})? filterEraser;
   final Function()? removeLastContent;
-  
+
   final String buttonDownAction;
   final String buttonUpAction;
-  
+
   final bool shapeRecognition;
   final List<XppContent?> Function()? getPageContent;
   final Function(List<XppContent>)? onDeleteContent;
   final VoidCallback? onContentChanged;
-
-  // --- NUOVA CALLBACK PER ILLUMINARE LA TOOLBAR ---
+  final VoidCallback? onBeforeContentChanged;
   final Function(EditingTool)? onToolChanged;
 
-  const PointerListener(
-      {Key? key,
-      this.onNewContent,
-      this.child,
-      this.toolData = const {},
-      this.translationMatrix,
-      this.onDeviceChange,
-      this.strokeWidth,
-      this.color,
-      this.filterEraser,
-      this.removeLastContent,
-      this.buttonDownAction = 'eraser',
-      this.buttonUpAction = 'select',
-      this.shapeRecognition = false,
-      this.getPageContent,
-      this.onDeleteContent,
-      this.onContentChanged,
-      this.onToolChanged, // Inserita nel costruttore
+  const PointerListener({
+    Key? key,
+    this.onNewContent,
+    this.child,
+    this.toolData = const {},
+    this.translationMatrix,
+    this.onDeviceChange,
+    this.strokeWidth,
+    this.color,
+    this.filterEraser,
+    this.removeLastContent,
+    this.buttonDownAction = 'eraser',
+    this.buttonUpAction = 'select',
+    this.shapeRecognition = false,
+    this.getPageContent,
+    this.onDeleteContent,
+    this.onContentChanged,
+    this.onBeforeContentChanged,
+    this.onToolChanged,
   }) : super(key: key);
 
   @override
@@ -58,10 +60,14 @@ class PointerListener extends StatefulWidget {
 enum _SelectionDragMode { none, lasso, move, resize }
 
 class PointerListenerState extends State<PointerListener> {
-  bool drawingEnabled = true; 
+  bool drawingEnabled = true;
   List<XppStrokePoint> points = [];
+  final _InkPreview _inkPreview = _InkPreview();
   XppStrokeTool tool = XppStrokeTool.PEN;
-  Map<int, DateTime> pointerTimestamps = Map();
+  final Set<int> _touchPointers = {};
+  int? _drawingPointer;
+  bool _multipleTouches = false;
+  int _touchEpoch = 0;
   bool poppedContentForCurrentPointer = false;
 
   List<Offset> _lassoPoints = [];
@@ -70,72 +76,145 @@ class PointerListenerState extends State<PointerListener> {
   _SelectionDragMode _dragMode = _SelectionDragMode.none;
   Offset? _lastDragPosition;
 
-  String? _activeOverrideAction; 
+  /// Azione "fissa" (toggle): attivata dal click del tasto della penna in
+  /// hover (stile Samsung Notes) o dal canale nativo (penne Redmi & simili).
+  String? _activeOverrideAction;
+
+  /// Azione "momentanea" (hold-to-use): attiva SOLO finche' il tasto laterale
+  /// e' tenuto premuto mentre si scrive. Catturata all'inizio del tratto.
+  String? _heldButtonAction;
+
+  /// Stato dei tasti durante l'hover, per rilevare i fronti di salita.
+  int _hoverButtons = 0;
+
+  /// Strumento congelato per il tratto in corso: deciso al pointer-down, cosi'
+  /// premere/rilasciare i tasti a meta' tratto non corrompe il disegno.
+  XppStrokeTool? _strokeTool;
+
   static const platform = MethodChannel('online.xournal.mobile/pen');
+  static final Set<PointerListenerState> _hardwareListeners = {};
+  static PointerListenerState? _hardwareOwner;
+  static MethodChannel? _hardwareChannel;
+
+  static Future<void> _dispatchHardwareCall(MethodCall call) async {
+    final owner = _hardwareOwner;
+    if (owner == null || !owner.mounted) return;
+    if (call.method == 'redmiPenPageDown') {
+      owner._toggleOverride(owner.widget.buttonDownAction);
+    } else if (call.method == 'redmiPenPageUp') {
+      owner._toggleOverride(owner.widget.buttonUpAction);
+    }
+  }
+
+  /// Mappa i bit dei tasti hardware sull'azione configurata.
+  ///
+  /// - kPrimaryStylusButton  (0x02): tasto laterale 1 della penna
+  ///   (S Pen, penne per tavolette grafiche); coincide col tasto DESTRO del mouse.
+  /// - kSecondaryStylusButton (0x04): tasto laterale 2 (penne a due tasti);
+  ///   coincide col tasto CENTRALE del mouse.
+  String? _actionFromButtons(int buttons) {
+    if (buttons & kPrimaryStylusButton != 0) return widget.buttonDownAction;
+    if (buttons & kSecondaryStylusButton != 0) return widget.buttonUpAction;
+    return null;
+  }
+
+  /// L'azione effettiva: il tasto tenuto premuto vince sul toggle fisso.
+  String? get _effectiveOverride => _heldButtonAction ?? _activeOverrideAction;
+
+  void _toggleOverride(String action) {
+    setState(() {
+      _activeOverrideAction = (_activeOverrideAction == action) ? null : action;
+      _notifyParentTool();
+    });
+  }
+
+  /// Click del tasto della penna MENTRE SI E' IN HOVER (senza toccare lo
+  /// schermo): commuta lo strumento in modo fisso, come su Samsung Notes.
+  void _handleHoverButtons(PointerHoverEvent event) {
+    if (event.kind != PointerDeviceKind.stylus &&
+        event.kind != PointerDeviceKind.invertedStylus) {
+      _hoverButtons = event.buttons;
+      return;
+    }
+    _hardwareOwner = this;
+    final int pressed = event.buttons & ~_hoverButtons; // fronti di salita
+    if (pressed & kPrimaryStylusButton != 0) {
+      _toggleOverride(widget.buttonDownAction);
+    } else if (pressed & kSecondaryStylusButton != 0) {
+      _toggleOverride(widget.buttonUpAction);
+    }
+    _hoverButtons = event.buttons;
+  }
 
   @override
   void initState() {
     super.initState();
-    platform.setMethodCallHandler((call) async {
-      setState(() {
-        if (call.method == "redmiPenPageDown") {
-          _activeOverrideAction = (_activeOverrideAction == widget.buttonDownAction) ? null : widget.buttonDownAction;
-          _notifyParentTool(); // Notifica la toolbar dello schermo
-        } else if (call.method == "redmiPenPageUp") {
-          _activeOverrideAction = (_activeOverrideAction == widget.buttonUpAction) ? null : widget.buttonUpAction;
-          _notifyParentTool(); // Notifica la toolbar dello schermo
-        }
-      });
-    });
+    if (_hardwareListeners.isEmpty) {
+      _hardwareChannel = MethodChannel(platform.name, platform.codec,
+          ServicesBinding.instance.defaultBinaryMessenger);
+      _hardwareChannel!.setMethodCallHandler(_dispatchHardwareCall);
+    }
+    _hardwareListeners.add(this);
   }
 
-  // --- LOGICA INTELLIGENTE DI RESET COESISTENZA ---
+  @override
+  void dispose() {
+    _inkPreview.dispose();
+    if (identical(_hardwareOwner, this)) _hardwareOwner = null;
+    _hardwareListeners.remove(this);
+    if (_hardwareListeners.isEmpty) {
+      _hardwareChannel?.setMethodCallHandler(null);
+      _hardwareChannel = null;
+    }
+    super.dispose();
+  }
+
   @override
   void didUpdateWidget(covariant PointerListener oldWidget) {
     if (oldWidget.toolData != widget.toolData) {
-      // Controlliamo quale strumento per la penna (STYLUS) è appena arrivato dalla Toolbar UI
       final currentStylusTool = widget.toolData[PointerDeviceKind.stylus];
-      
-      // Se l'hardware credeva di essere una gomma, ma sulla toolbar hai cliccato altro, resetta l'hardware!
-      if (_activeOverrideAction == 'eraser' && currentStylusTool != EditingTool.ERASER) {
-        _activeOverrideAction = null;
-      } else if (_activeOverrideAction == 'highlighter' && currentStylusTool != EditingTool.HIGHLIGHT) {
-        _activeOverrideAction = null;
-      } else if (_activeOverrideAction == 'select' && currentStylusTool != EditingTool.SELECT) {
+      if ((_activeOverrideAction == 'eraser' &&
+              currentStylusTool != EditingTool.ERASER) ||
+          (_activeOverrideAction == 'highlighter' &&
+              currentStylusTool != EditingTool.HIGHLIGHT) ||
+          (_activeOverrideAction == 'select' &&
+              currentStylusTool != EditingTool.SELECT)) {
         _activeOverrideAction = null;
       }
     }
     super.didUpdateWidget(oldWidget);
   }
 
-  // Helper interno per tradurre l'azione hardware nell'interfaccia grafica
   void _notifyParentTool() {
     if (widget.onToolChanged == null) return;
-    
-    if (_activeOverrideAction == 'eraser') {
-      widget.onToolChanged!(EditingTool.ERASER);
-    } else if (_activeOverrideAction == 'highlighter') {
-      widget.onToolChanged!(EditingTool.HIGHLIGHT);
-    } else if (_activeOverrideAction == 'select') {
-      widget.onToolChanged!(EditingTool.SELECT);
-    } else {
-      widget.onToolChanged!(EditingTool.STYLUS); // Torna alla penna normale standard
+    switch (_activeOverrideAction) {
+      case 'eraser':
+        widget.onToolChanged!(EditingTool.ERASER);
+        break;
+      case 'highlighter':
+        widget.onToolChanged!(EditingTool.HIGHLIGHT);
+        break;
+      case 'select':
+        widget.onToolChanged!(EditingTool.SELECT);
+        break;
+      default:
+        widget.onToolChanged!(EditingTool.STYLUS);
     }
   }
 
   Color _getToolColor(XppStrokeTool currentTool) {
     if (widget.color == null) return Colors.black;
-    if (currentTool == XppStrokeTool.HIGHLIGHTER) {
-      return widget.color!.withOpacity(0.5);
-    }
-    return widget.color!;
+    return currentTool == XppStrokeTool.HIGHLIGHTER
+        ? widget.color!.withOpacity(0.5)
+        : widget.color!;
   }
 
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
       onHover: (event) {
-        widget.onDeviceChange!(device: event.device, kind: event.kind);
+        widget.onDeviceChange?.call(device: event.device, kind: event.kind);
+        _handleHoverButtons(event);
       },
       opaque: false,
       child: Listener(
@@ -144,36 +223,49 @@ class PointerListenerState extends State<PointerListener> {
         onPointerDown: _onPointerDown,
         onPointerUp: _onPointerUp,
         onPointerCancel: (data) {
-          points.clear();
+          _touchPointers.remove(data.pointer);
+          if (_touchPointers.isEmpty) _multipleTouches = false;
+          if (_drawingPointer != data.pointer) return;
+          _drawingPointer = null;
+          clearPoints();
           _lassoPoints.clear();
           _dragMode = _SelectionDragMode.none;
           poppedContentForCurrentPointer = false;
+          _heldButtonAction = null;
+          _strokeTool = null;
         },
         onPointerSignal: (data) {
           setState(() {
             tool = getToolFromPointer(data);
           });
-          widget.onDeviceChange!(device: data.device, kind: data.kind);
+          widget.onDeviceChange?.call(device: data.device, kind: data.kind);
         },
         child: Stack(
           clipBehavior: Clip.none,
           children: [
             widget.child!,
-            if (points.length > 0)
-              CustomPaint(
-                foregroundPainter: XppStrokePainter(
-                    points: points,
-                    color: _getToolColor(tool),
-                    topLeft: const Offset(0, 0),
-                    smoothPressure: tool == XppStrokeTool.PEN,
-                    isComplete: false, 
+            Positioned.fill(
+              child: IgnorePointer(
+                child: RepaintBoundary(
+                  child: CustomPaint(
+                    painter: _ShapePreviewPainter(
+                      points: points,
+                      preview: _inkPreview,
+                      color: () => _getToolColor(tool),
+                      tool: () =>
+                          widget.toolData[PointerDeviceKind.stylus] ??
+                          EditingTool.STYLUS,
+                    ),
+                  ),
                 ),
               ),
+            ),
             if (_lassoPoints.length > 1)
               CustomPaint(
                 foregroundPainter: _LassoPainter(
-                    points: _lassoPoints,
-                    color: Theme.of(context).colorScheme.primary),
+                  points: _lassoPoints,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
             if (_selectionRect != null) ..._buildSelectionOverlay(context),
           ],
@@ -185,6 +277,8 @@ class PointerListenerState extends State<PointerListener> {
   List<Widget> _buildSelectionOverlay(BuildContext context) {
     final rect = _selectionRect!;
     final color = Theme.of(context).colorScheme.primary;
+    final barTop = (rect.top - 44) < 0 ? rect.bottom + 8 : rect.top - 44;
+
     return [
       Positioned(
         left: rect.left,
@@ -217,7 +311,7 @@ class PointerListenerState extends State<PointerListener> {
       ),
       Positioned(
         left: rect.left,
-        top: (rect.top - 44) < 0 ? rect.bottom + 8 : rect.top - 44,
+        top: barTop,
         child: Material(
           color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(20),
@@ -254,21 +348,53 @@ class PointerListenerState extends State<PointerListener> {
   }
 
   void _onPointerDown(PointerDownEvent data) {
-    if (_detectTwoFingerGesture(data, shouldPop: true)) return;
+    _hardwareOwner = this;
+    if (data.kind == PointerDeviceKind.touch) {
+      final session = CanvasTouchScope.of(context);
+      _touchEpoch = session?.cancellationEpoch ?? 0;
+      _touchPointers.add(data.pointer);
+      if (_touchPointers.length > 1) {
+        _multipleTouches = true;
+        setState(() {
+          clearPoints();
+          _lassoPoints.clear();
+        });
+        _drawingPointer = null;
+      }
+      if (_multipleTouches ||
+          _drawingPointer != null ||
+          (session?.pointers ?? 0) > 1 ||
+          widget.toolData[data.kind] == null ||
+          widget.toolData[data.kind] == EditingTool.MOVE) return;
+    } else if (_drawingPointer != null) {
+      return;
+    }
+    if (widget.toolData[data.kind] == EditingTool.MOVE) return;
+    _drawingPointer = data.pointer;
+
+    // HOLD-TO-USE (stile Samsung): se il tasto della penna e' PREMUTO nel
+    // momento in cui la punta tocca lo schermo, per tutto il tratto vale
+    // l'azione mappata su quel tasto (gomma/lazo/evidenziatore).
+    _heldButtonAction = _actionFromButtons(data.buttons);
 
     final currentTool = getToolFromPointer(data);
-    setState(() {
-      tool = currentTool;
-    });
-    widget.onDeviceChange!(device: data.device, kind: data.kind);
+    // Congela lo strumento per l'intero tratto: premere/rilasciare il tasto a
+    // meta' tratto non deve cambiare strumento in corsa.
+    _strokeTool = currentTool;
+    tool = currentTool;
+    widget.onDeviceChange?.call(device: data.device, kind: data.kind);
 
     if (isSelect(data) && drawingEnabled) {
-      final position = data.localPosition;
+      final position = _canvasPoint(data);
       if (_selectionRect != null) {
-        final barTop = (_selectionRect!.top - 44) < 0 ? _selectionRect!.bottom + 8 : _selectionRect!.top - 44;
+        final barTop = (_selectionRect!.top - 44) < 0
+            ? _selectionRect!.bottom + 8
+            : _selectionRect!.top - 44;
         final actionBar = Rect.fromLTWH(_selectionRect!.left, barTop, 112, 40);
         if (actionBar.contains(position)) return;
-        final handle = Rect.fromCircle(center: _selectionRect!.bottomRight, radius: 24);
+
+        final handle =
+            Rect.fromCircle(center: _selectionRect!.bottomRight, radius: 24);
         if (handle.contains(position)) {
           _dragMode = _SelectionDragMode.resize;
         } else if (_selectionRect!.inflate(8).contains(position)) {
@@ -286,27 +412,48 @@ class PointerListenerState extends State<PointerListener> {
         _dragMode = _SelectionDragMode.lasso;
       }
       _lastDragPosition = position;
+      if (_dragMode == _SelectionDragMode.move ||
+          _dragMode == _SelectionDragMode.resize) {
+        widget.onBeforeContentChanged?.call();
+      }
       return;
     }
 
     if (currentTool == XppStrokeTool.ERASER) {
-      widget.filterEraser!(coordinates: Offset(data.localPosition.dx, data.localPosition.dy), radius: (widget.strokeWidth ?? 5) * 2.5);
+      widget.filterEraser!(
+          coordinates: _canvasPoint(data),
+          radius: (widget.strokeWidth ?? 5) * 2.5);
     } else if (isLaTeX(data)) {
-      XppTexImage.edit(context: context, topLeft: data.localPosition, color: widget.color).then((value) {
+      XppTexImage.edit(
+              context: context,
+              topLeft: _canvasPoint(data),
+              color: widget.color)
+          .then((value) {
         widget.onNewContent!(value);
       }).catchError((e) {});
     } else if (isText(data)) {
-      _editText(data.localPosition);
+      _editText(_canvasPoint(data));
+    } else if (currentTool == XppStrokeTool.PEN ||
+        currentTool == XppStrokeTool.HIGHLIGHTER) {
+      _addDrawingPoint(data, currentTool);
     }
   }
 
   void _onPointerMove(PointerMoveEvent data) {
-    if (_detectTwoFingerGesture(data)) return;
-    widget.onDeviceChange!(device: data.device, kind: data.kind);
+    if (data.kind == PointerDeviceKind.touch &&
+        (CanvasTouchScope.of(context)?.cancellationEpoch ?? 0) != _touchEpoch) {
+      clearPoints();
+      _lassoPoints.clear();
+      _drawingPointer = null;
+      return;
+    }
+    if (_drawingPointer != data.pointer ||
+        (data.kind == PointerDeviceKind.touch && _multipleTouches)) return;
+    widget.onDeviceChange?.call(device: data.device, kind: data.kind);
     if (!drawingEnabled) return;
 
-    if (isSelect(data)) {
-      final position = data.localPosition;
+    if (_dragMode != _SelectionDragMode.none || isSelect(data)) {
+      final position = _canvasPoint(data);
       switch (_dragMode) {
         case _SelectionDragMode.lasso:
           setState(() => _lassoPoints.add(position));
@@ -330,7 +477,11 @@ class PointerListenerState extends State<PointerListener> {
               content.scaleBy(factor, anchor);
             }
             setState(() {
-              _selectionRect = Rect.fromLTWH(anchor.dx, anchor.dy, _selectionRect!.width * factor, _selectionRect!.height * factor);
+              _selectionRect = Rect.fromLTWH(
+                  anchor.dx,
+                  anchor.dy,
+                  _selectionRect!.width * factor,
+                  _selectionRect!.height * factor);
             });
             widget.onContentChanged?.call();
           }
@@ -342,39 +493,111 @@ class PointerListenerState extends State<PointerListener> {
       return;
     }
 
-    final currentTool = getToolFromPointer(data);
-
+    final currentTool = _strokeTool ?? getToolFromPointer(data);
     if (currentTool == XppStrokeTool.ERASER) {
-      widget.filterEraser!(coordinates: Offset(data.localPosition.dx, data.localPosition.dy), radius: (widget.strokeWidth ?? 5) * 2.5);
-    } else if (currentTool == XppStrokeTool.HIGHLIGHTER || currentTool == XppStrokeTool.PEN) {
-      double? width = (data.pressure == 0 ? widget.strokeWidth : data.pressure * widget.strokeWidth!);
-      if (currentTool == XppStrokeTool.HIGHLIGHTER) width = width! * 5;
-      points.add(XppStrokePoint(x: data.localPosition.dx, y: data.localPosition.dy, width: width));
-      setState(() {});
+      widget.filterEraser!(
+          coordinates: _canvasPoint(data),
+          radius: (widget.strokeWidth ?? 5) * 2.5);
+    } else if (currentTool == XppStrokeTool.HIGHLIGHTER ||
+        currentTool == XppStrokeTool.PEN) {
+      _addDrawingPoint(data, currentTool);
     }
   }
 
   void _onPointerUp(PointerUpEvent data) {
+    if (data.kind == PointerDeviceKind.touch &&
+        (CanvasTouchScope.of(context)?.cancellationEpoch ?? 0) != _touchEpoch) {
+      clearPoints();
+      _lassoPoints.clear();
+      _drawingPointer = null;
+    }
+    if (data.kind == PointerDeviceKind.touch) {
+      _touchPointers.remove(data.pointer);
+      if (_touchPointers.isEmpty) _multipleTouches = false;
+    }
+    if (_drawingPointer != data.pointer) return;
+    _drawingPointer = null;
+
     if (_dragMode != _SelectionDragMode.none) {
       if (_dragMode == _SelectionDragMode.lasso) _finishLasso();
       _dragMode = _SelectionDragMode.none;
+      _heldButtonAction = null;
+      _strokeTool = null;
       return;
     }
-    
-    final currentTool = getToolFromPointer(data);
-    if (!poppedContentForCurrentPointer && currentTool != XppStrokeTool.ERASER) {
-       saveStroke(currentTool);
+
+    final currentTool = _strokeTool ?? getToolFromPointer(data);
+    if (!poppedContentForCurrentPointer &&
+        currentTool != XppStrokeTool.ERASER) {
+      saveStroke(currentTool);
     }
     poppedContentForCurrentPointer = false;
-    points.clear();
+    clearPoints();
+    // Fine tratto: l'azione "hold-to-use" si spegne col rilascio della punta.
+    _heldButtonAction = null;
+    _strokeTool = null;
+  }
+
+  // Motore di Calcolo Avanzato della Pressione
+  /// Converte l'evento puntatore in coordinate della TELA (foglio non scalato).
+  ///
+  /// Il PointerListener e' figlio dell'InteractiveViewer (zoom/pan) e del
+  /// FittedBox (scala foglio->schermo): Flutter applica GIA' automaticamente
+  /// l'inversa delle relative Matrix4, quindi `localPosition` e' gia' in
+  /// coordinate-tela. Centralizziamo qui la conversione: e' l'unico punto da cui
+  /// passano i punti prima del CustomPainter, ed e' indipendente per pannello
+  /// (split-screen). NB: applicare qui un'altra Matrix4 inversa raddoppierebbe la
+  /// trasformazione e ri-romperebbe l'allineamento in zoom-out.
+  Offset _canvasPoint(PointerEvent data) => data.localPosition;
+
+  void _addDrawingPoint(PointerEvent data, XppStrokeTool currentTool) {
+    double baseWidth = widget.strokeWidth ?? 2.5;
+    double pressure = data.pressure;
+
+    // COMPATIBILITA' TAVOLETTE GRAFICHE: molte tavolette (Wacom, XP-Pen,
+    // Huion collegate ad Android) riportano la pressione su un intervallo
+    // diverso da 0..1. Normalizziamo usando pressureMin/pressureMax forniti
+    // dal driver, cosi' la curva di spessore resta identica su ogni hardware.
+    final double pMin = data.pressureMin;
+    final double pMax = data.pressureMax;
+    final bool isStylusKind = data.kind == PointerDeviceKind.stylus ||
+        data.kind == PointerDeviceKind.invertedStylus;
+    if (isStylusKind && pMax > pMin) {
+      pressure = ((pressure - pMin) / (pMax - pMin)).clamp(0.0, 1.0);
+    }
+
+    // Sicurezza per dispositivi che non passano la pressione
+    if (pressure <= 0.0 || !isStylusKind) {
+      pressure = 0.5;
+    }
+
+    // Curva Esponenziale per lo spessore (la magia per la tua Redmi Pen)
+    double multiplier = 0.1 + ((pressure * pressure) * 3.5);
+    double dynamicThickness = baseWidth * multiplier;
+
+    if (dynamicThickness < 0.5) dynamicThickness = 0.5;
+
+    if (currentTool == XppStrokeTool.HIGHLIGHTER) {
+      dynamicThickness = baseWidth * 6.0;
+    }
+
+    final point = XppStrokePoint(
+        x: _canvasPoint(data).dx,
+        y: _canvasPoint(data).dy,
+        width: dynamicThickness);
+    points.add(point);
+    _inkPreview.append(point,
+        pressureSensitive: currentTool == XppStrokeTool.PEN);
   }
 
   void _finishLasso() {
     final lasso = List<Offset>.of(_lassoPoints);
     setState(() => _lassoPoints.clear());
     if (lasso.length < 3) return;
+
     final content = widget.getPageContent?.call() ?? [];
     final selected = <XppContent>[];
+
     for (final element in content) {
       if (element == null) continue;
       if (element is XppStroke) {
@@ -392,6 +615,7 @@ class PointerListenerState extends State<PointerListener> {
         }
       }
     }
+
     if (selected.isEmpty) {
       setState(() {
         _selectedContent.clear();
@@ -399,6 +623,7 @@ class PointerListenerState extends State<PointerListener> {
       });
       return;
     }
+
     Rect? union;
     for (final element in selected) {
       final b = element.bounds();
@@ -416,7 +641,10 @@ class PointerListenerState extends State<PointerListener> {
     for (int i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
       if ((polygon[i].dy > point.dy) != (polygon[j].dy > point.dy) &&
           point.dx <
-              (polygon[j].dx - polygon[i].dx) * (point.dy - polygon[i].dy) / (polygon[j].dy - polygon[i].dy) + polygon[i].dx) {
+              (polygon[j].dx - polygon[i].dx) *
+                      (point.dy - polygon[i].dy) /
+                      (polygon[j].dy - polygon[i].dy) +
+                  polygon[i].dx) {
         inside = !inside;
       }
     }
@@ -425,100 +653,448 @@ class PointerListenerState extends State<PointerListener> {
 
   Future<void> _editText(Offset position) async {
     final controller = TextEditingController();
-    final result = await showDialog<bool>(
+    try {
+      final result = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
-              title: const Text('Insert text'),
-              content: TextField(
-                  controller: controller,
-                  autofocus: true,
-                  maxLines: null,
-                  decoration: const InputDecoration(border: OutlineInputBorder())),
-              actions: [
-                TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Cancel')),
-                TextButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Okay')),
-              ],
-            ));
-    if (result == true && controller.text.trim().isNotEmpty) {
-      widget.onNewContent!(XppText(
-          text: controller.text, offset: position, color: widget.color, size: (widget.strokeWidth ?? 5) * 3, fontFamily: 'Sans'));
+          title: const Text('Insert text'),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            maxLines: null,
+            decoration: const InputDecoration(border: OutlineInputBorder()),
+          ),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Cancel')),
+            TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Okay')),
+          ],
+        ),
+      );
+      if (mounted && result == true && controller.text.trim().isNotEmpty) {
+        widget.onNewContent!(XppText(
+          text: controller.text,
+          offset: position,
+          color: widget.color,
+          size: (widget.strokeWidth ?? 5) * 3,
+          fontFamily: 'Sans',
+        ));
+      }
+    } finally {
+      controller.dispose();
     }
   }
 
   void clearPoints() {
-    setState(() {
-      points.clear();
-    });
+    points.clear();
+    _inkPreview.clear();
   }
 
   void saveStroke(XppStrokeTool currentTool) {
     if (points.isNotEmpty) {
-      List<XppStrokePoint> strokePoints = List.from(points);
-      if (widget.shapeRecognition && currentTool == XppStrokeTool.PEN) {
-        final recognized = ShapeRecognizer.recognize(strokePoints);
-        if (recognized != null) strokePoints = recognized;
+      var strokePoints = List<XppStrokePoint>.from(points);
+      bool renderAsShape = false;
+      bool renderSmooth = false;
+
+      final currentStylusTool = widget.toolData[PointerDeviceKind.stylus];
+      final isShapeTool = currentStylusTool == EditingTool.SHAPE_LINE ||
+          currentStylusTool == EditingTool.SHAPE_RECT ||
+          currentStylusTool == EditingTool.SHAPE_CIRCLE ||
+          currentStylusTool == EditingTool.SHAPE_SQUARE ||
+          currentStylusTool == EditingTool.SHAPE_DASHED_LINE ||
+          currentStylusTool == EditingTool.SHAPE_CUBE ||
+          currentStylusTool == EditingTool.SHAPE_CYLINDER ||
+          currentStylusTool == EditingTool.SHAPE_SPHERE;
+
+      if ((widget.shapeRecognition || isShapeTool) &&
+          currentTool == XppStrokeTool.PEN) {
+        List<XppStrokePoint>? recognized;
+
+        if (isShapeTool) {
+          final start = Offset(strokePoints.first.x!, strokePoints.first.y!);
+          final end = Offset(strokePoints.last.x!, strokePoints.last.y!);
+          final width =
+              (strokePoints.first.width! + strokePoints.last.width!) / 2;
+
+          if (currentStylusTool == EditingTool.SHAPE_DASHED_LINE) {
+            _commitDashedLine(start, end, width, currentTool);
+            return;
+          }
+
+          if (currentStylusTool == EditingTool.SHAPE_CUBE ||
+              currentStylusTool == EditingTool.SHAPE_CYLINDER ||
+              currentStylusTool == EditingTool.SHAPE_SPHERE) {
+            _commit3DShape(currentStylusTool!, start, end, width, currentTool);
+            return;
+          }
+
+          if (currentStylusTool == EditingTool.SHAPE_LINE) {
+            recognized = [
+              XppStrokePoint(x: start.dx, y: start.dy, width: width),
+              XppStrokePoint(x: end.dx, y: end.dy, width: width),
+            ];
+          } else if (currentStylusTool == EditingTool.SHAPE_RECT ||
+              currentStylusTool == EditingTool.SHAPE_SQUARE) {
+            double left = min(start.dx, end.dx);
+            double top = min(start.dy, end.dy);
+            double right = max(start.dx, end.dx);
+            double bottom = max(start.dy, end.dy);
+
+            if (currentStylusTool == EditingTool.SHAPE_SQUARE) {
+              double side = max(right - left, bottom - top);
+              right = left + side;
+              bottom = top + side;
+            }
+
+            recognized = [
+              XppStrokePoint(x: left, y: top, width: width),
+              XppStrokePoint(x: right, y: top, width: width),
+              XppStrokePoint(x: right, y: bottom, width: width),
+              XppStrokePoint(x: left, y: bottom, width: width),
+              XppStrokePoint(x: left, y: top, width: width),
+            ];
+          } else if (currentStylusTool == EditingTool.SHAPE_CIRCLE) {
+            renderSmooth = true; // cerchio = curva liscia
+            final center = (start + end) / 2;
+            final radius = (end - start).distance / 2;
+            const segments = 64;
+            recognized = List.generate(segments + 1, (i) {
+              final angle = 2 * pi * i / segments;
+              return XppStrokePoint(
+                  x: center.dx + radius * cos(angle),
+                  y: center.dy + radius * sin(angle),
+                  width: width);
+            });
+          }
+        } else {
+          recognized = ShapeRecognizer.recognize(strokePoints);
+        }
+
+        if (recognized != null) {
+          strokePoints = recognized;
+          renderAsShape = true;
+        }
       }
-      XppStroke stroke = XppStroke.byTool(tool: currentTool, points: strokePoints, color: _getToolColor(currentTool));
-      widget.onNewContent!(stroke);
+      widget.onNewContent!(XppStroke.byTool(
+          tool: currentTool,
+          points: strokePoints,
+          color: _getToolColor(currentTool),
+          isShape: renderAsShape,
+          smooth: renderSmooth));
+    }
+  }
+
+  // Linea tratteggiata: emessa come serie di piccole linee solide (i trattini),
+  // cosi' resta nel formato esistente e si salva/renderizza senza modifiche al painter.
+  void _commitDashedLine(
+      Offset start, Offset end, double width, XppStrokeTool currentTool) {
+    final double total = (end - start).distance;
+    if (total <= 0) return;
+    final Offset dir = (end - start) / total;
+    const double dashLen = 14.0;
+    const double gapLen = 9.0;
+    double d = 0;
+    while (d < total) {
+      final Offset a = start + dir * d;
+      final Offset b =
+          start + dir * (d + dashLen > total ? total : d + dashLen);
+      widget.onNewContent!(XppStroke.byTool(
+        tool: currentTool,
+        points: [
+          XppStrokePoint(x: a.dx, y: a.dy, width: width),
+          XppStrokePoint(x: b.dx, y: b.dy, width: width),
+        ],
+        color: _getToolColor(currentTool),
+        isShape: true,
+      ));
+      d += dashLen + gapLen;
+    }
+  }
+
+  // ----- Forme 3D: proiezioni vettoriali 2D (wireframe) dal box di trascinamento -----
+  List<Offset> _ellipse(double cx, double cy, double rx, double ry,
+      {int seg = 48}) {
+    return List.generate(seg + 1, (i) {
+      final double ang = 2 * pi * i / seg;
+      return Offset(cx + rx * cos(ang), cy + ry * sin(ang));
+    });
+  }
+
+  void _emitPolyline(List<Offset> pts, double width, XppStrokeTool currentTool,
+      {bool smooth = false}) {
+    if (pts.length < 2) return;
+    widget.onNewContent!(XppStroke.byTool(
+      tool: currentTool,
+      points: pts
+          .map((p) => XppStrokePoint(x: p.dx, y: p.dy, width: width))
+          .toList(),
+      color: _getToolColor(currentTool),
+      isShape: true,
+      smooth: smooth,
+    ));
+  }
+
+  void _commit3DShape(EditingTool tool, Offset start, Offset end, double width,
+      XppStrokeTool currentTool) {
+    final double left = min(start.dx, end.dx), top = min(start.dy, end.dy);
+    final double right = max(start.dx, end.dx), bottom = max(start.dy, end.dy);
+    final double w = right - left, h = bottom - top;
+    if (w <= 0 || h <= 0) return;
+    final double cx = (left + right) / 2, cy = (top + bottom) / 2;
+    if (tool == EditingTool.SHAPE_CUBE) {
+      final double depth = (w < h ? w : h) * 0.35;
+      final Offset fTL = Offset(left, top + depth),
+          fTR = Offset(right - depth, top + depth);
+      final Offset fBR = Offset(right - depth, bottom),
+          fBL = Offset(left, bottom);
+      final Offset bTL = Offset(left + depth, top), bTR = Offset(right, top);
+      final Offset bBR = Offset(right, bottom - depth),
+          bBL = Offset(left + depth, bottom - depth);
+      _emitPolyline([fTL, fTR, fBR, fBL, fTL], width, currentTool);
+      _emitPolyline([bTL, bTR, bBR, bBL, bTL], width, currentTool);
+      _emitPolyline([fTL, bTL], width, currentTool);
+      _emitPolyline([fTR, bTR], width, currentTool);
+      _emitPolyline([fBR, bBR], width, currentTool);
+      _emitPolyline([fBL, bBL], width, currentTool);
+    } else if (tool == EditingTool.SHAPE_CYLINDER) {
+      final double rx = w / 2, ry = h * 0.12;
+      _emitPolyline(_ellipse(cx, top + ry, rx, ry), width, currentTool,
+          smooth: true);
+      _emitPolyline(_ellipse(cx, bottom - ry, rx, ry), width, currentTool,
+          smooth: true);
+      _emitPolyline([Offset(left, top + ry), Offset(left, bottom - ry)], width,
+          currentTool);
+      _emitPolyline([Offset(right, top + ry), Offset(right, bottom - ry)],
+          width, currentTool);
+    } else if (tool == EditingTool.SHAPE_SPHERE) {
+      final double r = (w < h ? w : h) / 2;
+      _emitPolyline(_ellipse(cx, cy, r, r), width, currentTool, smooth: true);
+      _emitPolyline(_ellipse(cx, cy, r, r * 0.3), width, currentTool,
+          smooth: true);
+      _emitPolyline(_ellipse(cx, cy, r * 0.3, r), width, currentTool,
+          smooth: true);
     }
   }
 
   bool _isActionActive(String targetAction, PointerEvent data) {
-    if (data.kind == PointerDeviceKind.stylus && data.buttons == kSecondaryButton && widget.buttonDownAction == targetAction) return true;
+    // Azione dai tasti tenuti premuti in questo istante (down/move)...
+    final String? held = _heldButtonAction ?? _actionFromButtons(data.buttons);
+    if (held == targetAction) return true;
+    // ...oppure toggle fisso (click in hover / canale nativo Redmi).
     return _activeOverrideAction == targetAction;
   }
 
   bool isPen(PointerEvent data) {
-    if (_activeOverrideAction != null) return false;
-
-    return (widget.toolData.keys.contains(data.kind) && widget.toolData[data.kind] == EditingTool.STYLUS) ||
-        (!widget.toolData.keys.contains(data.kind) && data.kind == PointerDeviceKind.stylus);
+    if (_effectiveOverride != null || _actionFromButtons(data.buttons) != null)
+      return false;
+    final hasKind = widget.toolData.containsKey(data.kind);
+    final currentTool = widget.toolData[data.kind];
+    return (hasKind &&
+            (currentTool == EditingTool.STYLUS ||
+                currentTool == EditingTool.SHAPE_LINE ||
+                currentTool == EditingTool.SHAPE_RECT ||
+                currentTool == EditingTool.SHAPE_CIRCLE ||
+                currentTool == EditingTool.SHAPE_SQUARE ||
+                currentTool == EditingTool.SHAPE_DASHED_LINE ||
+                currentTool == EditingTool.SHAPE_CUBE ||
+                currentTool == EditingTool.SHAPE_CYLINDER ||
+                currentTool == EditingTool.SHAPE_SPHERE)) ||
+        (!hasKind && data.kind == PointerDeviceKind.stylus);
   }
 
-  bool isHighlighter(PointerEvent data) {
-    return (widget.toolData.keys.contains(data.kind) && widget.toolData[data.kind] == EditingTool.HIGHLIGHT) || 
-           _isActionActive('highlighter', data);
-  }
+  bool isHighlighter(PointerEvent data) =>
+      widget.toolData[data.kind] == EditingTool.HIGHLIGHT ||
+      _isActionActive('highlighter', data);
 
   bool isEraser(PointerEvent data) {
-    return (widget.toolData.keys.contains(data.kind) && widget.toolData[data.kind] == EditingTool.ERASER) ||
-        (!widget.toolData.keys.contains(data.kind) && data.kind == PointerDeviceKind.invertedStylus) || 
+    final hasKind = widget.toolData.containsKey(data.kind);
+    return (hasKind && widget.toolData[data.kind] == EditingTool.ERASER) ||
+        (!hasKind && data.kind == PointerDeviceKind.invertedStylus) ||
         _isActionActive('eraser', data);
   }
 
-  bool isSelect(PointerEvent data) {
-    return (widget.toolData.keys.contains(data.kind) && widget.toolData[data.kind] == EditingTool.SELECT) || 
-           _isActionActive('select', data);
-  }
-
-  bool isText(PointerEvent data) {
-    return (widget.toolData.keys.contains(data.kind) && widget.toolData[data.kind] == EditingTool.TEXT);
-  }
-
-  bool isLaTeX(PointerEvent data) {
-    return (widget.toolData.keys.contains(data.kind) && widget.toolData[data.kind] == EditingTool.LATEX);
-  }
+  bool isSelect(PointerEvent data) =>
+      widget.toolData[data.kind] == EditingTool.SELECT ||
+      _isActionActive('select', data);
+  bool isText(PointerEvent data) =>
+      widget.toolData[data.kind] == EditingTool.TEXT;
+  bool isLaTeX(PointerEvent data) =>
+      widget.toolData[data.kind] == EditingTool.LATEX;
 
   XppStrokeTool getToolFromPointer(PointerEvent data) {
-    if (isEraser(data)) return XppStrokeTool.ERASER; 
+    if (isEraser(data)) return XppStrokeTool.ERASER;
     if (isHighlighter(data)) return XppStrokeTool.HIGHLIGHTER;
     return XppStrokeTool.PEN;
   }
+}
 
-  bool _detectTwoFingerGesture(PointerEvent data, {bool shouldPop = false}) {
-    final timestamp = DateTime.now();
-    bool foundCloseOffset = false;
-    pointerTimestamps.remove(data.device);
-    pointerTimestamps.forEach((key, value) {
-      if (value.difference(timestamp).inMilliseconds.abs() < 100) {
-        foundCloseOffset = true;
+class _ShapePreviewPainter extends CustomPainter {
+  final List<XppStrokePoint> points;
+  final Color Function() color;
+  final EditingTool Function() tool;
+  final _InkPreview preview;
+
+  _ShapePreviewPainter(
+      {required this.points,
+      required this.color,
+      required this.tool,
+      required this.preview})
+      : super(repaint: preview);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (points.isEmpty) return;
+    final tool = this.tool();
+
+    final paint = Paint()
+      ..color = color()
+      ..strokeWidth = points.first.width ?? 2.5
+      ..style = PaintingStyle.stroke;
+
+    final start = Offset(points.first.x!, points.first.y!);
+    final end = Offset(points.last.x!, points.last.y!);
+
+    if (tool == EditingTool.SHAPE_LINE) {
+      canvas.drawLine(start, end, paint);
+    } else if (tool == EditingTool.SHAPE_RECT ||
+        tool == EditingTool.SHAPE_SQUARE) {
+      double left = min(start.dx, end.dx);
+      double top = min(start.dy, end.dy);
+      double right = max(start.dx, end.dx);
+      double bottom = max(start.dy, end.dy);
+      if (tool == EditingTool.SHAPE_SQUARE) {
+        double side = max(right - left, bottom - top);
+        right = left + side;
+        bottom = top + side;
       }
-    });
-    if (shouldPop && foundCloseOffset && !poppedContentForCurrentPointer) {
-      poppedContentForCurrentPointer = true;
+      canvas.drawRect(Rect.fromLTRB(left, top, right, bottom), paint);
+    } else if (tool == EditingTool.SHAPE_CIRCLE) {
+      final center = (start + end) / 2;
+      final radius = (end - start).distance / 2;
+      canvas.drawCircle(center, radius, paint);
+    } else if (tool == EditingTool.SHAPE_DASHED_LINE) {
+      final double total = (end - start).distance;
+      if (total > 0) {
+        final Offset dir = (end - start) / total;
+        double d = 0;
+        while (d < total) {
+          final Offset a = start + dir * d;
+          final Offset b = start + dir * (d + 14.0 > total ? total : d + 14.0);
+          canvas.drawLine(a, b, paint);
+          d += 23.0;
+        }
+      }
+    } else if (tool == EditingTool.SHAPE_CUBE) {
+      final double left = min(start.dx, end.dx), top = min(start.dy, end.dy);
+      final double right = max(start.dx, end.dx),
+          bottom = max(start.dy, end.dy);
+      final double depth =
+          ((right - left) < (bottom - top) ? (right - left) : (bottom - top)) *
+              0.35;
+      final Offset fTL = Offset(left, top + depth),
+          fTR = Offset(right - depth, top + depth),
+          fBR = Offset(right - depth, bottom),
+          fBL = Offset(left, bottom);
+      final Offset bTL = Offset(left + depth, top),
+          bTR = Offset(right, top),
+          bBR = Offset(right, bottom - depth),
+          bBL = Offset(left + depth, bottom - depth);
+      final path = Path()
+        ..addPolygon([fTL, fTR, fBR, fBL], true)
+        ..addPolygon([bTL, bTR, bBR, bBL], true)
+        ..moveTo(fTL.dx, fTL.dy)
+        ..lineTo(bTL.dx, bTL.dy)
+        ..moveTo(fTR.dx, fTR.dy)
+        ..lineTo(bTR.dx, bTR.dy)
+        ..moveTo(fBR.dx, fBR.dy)
+        ..lineTo(bBR.dx, bBR.dy)
+        ..moveTo(fBL.dx, fBL.dy)
+        ..lineTo(bBL.dx, bBL.dy);
+      canvas.drawPath(path, paint);
+    } else if (tool == EditingTool.SHAPE_CYLINDER) {
+      final double left = min(start.dx, end.dx), top = min(start.dy, end.dy);
+      final double right = max(start.dx, end.dx),
+          bottom = max(start.dy, end.dy);
+      final double cx = (left + right) / 2,
+          rx = (right - left) / 2,
+          ry = (bottom - top) * 0.12;
+      canvas.drawOval(
+          Rect.fromCenter(
+              center: Offset(cx, top + ry), width: rx * 2, height: ry * 2),
+          paint);
+      canvas.drawOval(
+          Rect.fromCenter(
+              center: Offset(cx, bottom - ry), width: rx * 2, height: ry * 2),
+          paint);
+      canvas.drawLine(Offset(left, top + ry), Offset(left, bottom - ry), paint);
+      canvas.drawLine(
+          Offset(right, top + ry), Offset(right, bottom - ry), paint);
+    } else if (tool == EditingTool.SHAPE_SPHERE) {
+      final double left = min(start.dx, end.dx), top = min(start.dy, end.dy);
+      final double right = max(start.dx, end.dx),
+          bottom = max(start.dy, end.dy);
+      final double cx = (left + right) / 2, cy = (top + bottom) / 2;
+      final double r =
+          ((right - left) < (bottom - top) ? (right - left) : (bottom - top)) /
+              2;
+      canvas.drawCircle(Offset(cx, cy), r, paint);
+      canvas.drawOval(
+          Rect.fromCenter(
+              center: Offset(cx, cy), width: r * 2, height: r * 0.6),
+          paint);
+      canvas.drawOval(
+          Rect.fromCenter(
+              center: Offset(cx, cy), width: r * 0.6, height: r * 2),
+          paint);
+    } else {
+      // Geometry is appended once per input sample, never rebuilt per frame.
+      // A single fill prevents alpha buildup where highlighter segments overlap.
+      canvas.drawPath(preview.path, paint..style = PaintingStyle.fill);
     }
-    pointerTimestamps[data.device] = timestamp;
-    return foundCloseOffset;
+  }
+
+  @override
+  bool shouldRepaint(covariant _ShapePreviewPainter oldDelegate) => true;
+}
+
+/// Live ink follows the current sample without perfect_freehand's streamline
+/// delay. Saved strokes retain the existing smoothing and every raw sample.
+class _InkPreview extends ChangeNotifier {
+  final Path path = Path();
+  Offset? _previous;
+  double _previousRadius = 0;
+
+  void append(XppStrokePoint point, {required bool pressureSensitive}) {
+    final position = point.offset;
+    final pressure = ((point.width ?? 2.5) / 5).clamp(0.1, 1.0);
+    final radius = pressureSensitive ? 5 * (0.5 - 0.7 * (0.5 - pressure)) : 2.5;
+    final previous = _previous;
+    if (previous != null && position != previous) {
+      final delta = position - previous;
+      final normal = Offset(-delta.dy, delta.dx) / delta.distance;
+      // Clockwise winding matches addOval, so overlap stays filled.
+      path.addPolygon([
+        previous - normal * _previousRadius,
+        position - normal * radius,
+        position + normal * radius,
+        previous + normal * _previousRadius,
+      ], true);
+    }
+    path.addOval(Rect.fromCircle(center: position, radius: radius));
+    _previous = position;
+    _previousRadius = radius;
+    // RenderCustomPaint schedules one paint per frame; samples are never dropped.
+    notifyListeners();
+  }
+
+  void clear() {
+    path.reset();
+    _previous = null;
+    _previousRadius = 0;
+    notifyListeners();
   }
 }
 
@@ -531,17 +1107,27 @@ class _LassoPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     if (points.length < 2) return;
-    final paint = Paint()..color = color..strokeWidth = 1.5..style = PaintingStyle.stroke;
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 1.5
+      ..style = PaintingStyle.stroke;
     final path = Path()..moveTo(points.first.dx, points.first.dy);
     for (int i = 1; i < points.length; i++) {
-      if (i.isEven) { path.moveTo(points[i].dx, points[i].dy); } 
-      else { path.lineTo(points[i].dx, points[i].dy); }
+      if (i.isEven) {
+        path.moveTo(points[i].dx, points[i].dy);
+      } else {
+        path.lineTo(points[i].dx, points[i].dy);
+      }
     }
     canvas.drawPath(path, paint);
-    final fill = Paint()..color = color.withOpacity(0.06)..style = PaintingStyle.fill;
+
+    final fill = Paint()
+      ..color = color.withOpacity(0.06)
+      ..style = PaintingStyle.fill;
     final closed = Path()..addPolygon(points, true);
     canvas.drawPath(closed, fill);
   }
+
   @override
   bool shouldRepaint(covariant _LassoPainter oldDelegate) => true;
 }

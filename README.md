@@ -1,29 +1,56 @@
-<h1>
-  <img src="assets/OSIpp.png" width="40">
-  OSIpp
-</h1>
+# <img src="assets/xournalpp-adaptive.png" width="64" style="height: auto;"/> Xournal++ Mobile
 
+***Warning:*** *Xournal++ Mobile is currently in early development and **not** yet stable. Use with caution!*
 
+[![Current version](https://img.shields.io/badge/dynamic/yaml?label=Current%20version&query=version&url=https%3A%2F%2Fgitlab.com%2FTheOneWithTheBraid%2Fxournalpp_mobile%2Fraw%2Fmaster%2Fpubspec.yaml%3Finline%3Dfalse&style=for-the-badge&logo=flutter&logoColor=white)](https://gitlab.com/TheOneWithTheBraid/xournalpp_mobile/-/tags) [![Bitrise build](https://img.shields.io/bitrise/dd58f8fe5b4bf6c0?style=for-the-badge&token=Ihrbr8U0mqFlVBOocwtnQA&logo=bitrise&logoColor=white)](https://app.bitrise.io/app/dd58f8fe5b4bf6c0) [![Gitlab pipeline status](https://img.shields.io/gitlab/pipeline/TheOneWithTheBraid/xournalpp_mobile/master?style=for-the-badge&logo=gitlab&logoColor=white)](https://gitlab.com/TheOneWithTheBraid/xournalpp_mobile/-/pipelines) [![Google Play](https://img.shields.io/endpoint?color=689f38&url=https%3A%2F%2Fplayshields.herokuapp.com%2Fplay%3Fi%3Donline.xournal.mobile%26l%3DGoogle-Play%26m%3D%24version&style=for-the-badge&logo=google-play&logoColor=white)](https://play.google.com/store/apps/details?id=online.xournal.mobile) [![Snap Store](https://img.shields.io/badge/Get%20it%20from%20the-Snap%20Store-%230e8620?style=for-the-badge&logo=snapcraft&logoColor=white)](https://snapcraft.io/xournalpp-mobile)
 
+A port of the main features of Xournal++ to various Flutter platforms like Android, iOS and the Web.
 
+![Feature banner](https://gitlab.com/TheOneWithTheBraid/xournalpp_mobile/-/raw/master/assets/feature-banner.svg)
 
-***Warning:*** *OSIpp is currently in early development and **not** yet stable. Use with caution!*
+## Try it out
 
+***Mission completed:** We can now render strokes, images and text and LaTeX!. We thereby support the full `.xopp` file format.* :tada:
 
+- Web
+  - [Open web app](https://xournal.online/)
+  - [Access via TOR](http://xournaltdtf7ygqxg3qik4tdg476smkukogil74t6oxqiwdnumy53hqd.onion/)
+- Android
+  - [Download in Google Play](https://play.google.com/store/apps/details?id=online.xournal.mobile)
+  - [Download APK](https://gitlab.com/TheOneWithTheBraid/xournalpp_mobile/-/jobs/artifacts/master/browse?job=build%3Aapk)
+- Windows
+  - [Build for Windows](#desktop-support)
+- Linux
+  - [Download for Debian](https://gitlab.com/TheOneWithTheBraid/xournalpp_mobile/-/jobs/artifacts/master/browse?job=build%3Adebian)
+  - [Download for generic Linux](https://gitlab.com/TheOneWithTheBraid/xournalpp_mobile/-/jobs/artifacts/master/download?job=build%3Alinux)
+  - [Download from the Snap Store](https://snapcraft.io/xournalpp-mobile)
 
-A fork of Xournal++ Mobile based on Flutter.
-
+```shell
+sudo snap install xournalpp-mobile
+```
 
 ### Visible parts already working
 
-- [x] 
-
+- [x] Read the document title
+- [x] Read and display the number of pages
+- [x] Create thumbnails of the pages for the navigation bar
+- [x] Smooth fade in after thumbnail rendering
+- [x] Render images on the canvas
+- [x] Render text on the canvas
+- [x] Strokes
+- [x] Highlighter
+- [x] LaTeX
+- [x] Recent files list
+- [ ] Whiteout eraser
+- [x] Saving
+- [x] Basic editing
+- [x] Basic PDF rendering
 
 ## Known issues
 
-- **Immense memory consumption**: *If you open immense files, you get immense memory consumption. That's logic. Usually, Xournal++ Mobile takes twice the file size plus around 50MB for itself.*   PROBABLY FIXED 
-
-
+- **Immense memory consumption**: *If you open immense files, you get immense memory consumption. That's logic. Usually, Xournal++ Mobile takes twice the file size plus around 50MB for itself.*
+- But **why** does it take twice the memory?: *No idea. ¯\\\_(ツ)_/¯*
+- **The snap does not start on Linux when using wayland**: *Please set the environment variable `DISABLE_WAYLAND=1` before you start Xournal++ Mobile.*
 
 ## Getting started
 
@@ -105,6 +132,11 @@ The dark color is Material Blue Grey 900.
 - Emphasis: Glacial Indifference Regular *(400)* `SIL Open Font License`, *light color*, *UPPERCASE*
 - Body: Open Sans Light *(300)* `Apache 2.0`, *light color*
 
+## Misc
+
+*Like this project? [Buy me a Coffee](https://buymeacoff.ee/braid).*
+
+This software is powered by the education software [TestApp](https://testapp.schule) — **Learning. Easily.**
 
 [![TestApp banner](https://gitlab.com/testapp-system/testapp-flutter/-/raw/mobile/assets/Google%20Play%20EN.png)](https://testapp.schule)
 

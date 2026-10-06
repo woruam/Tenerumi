@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 
 import 'package:file_picker/file_picker.dart';
 
@@ -63,30 +64,33 @@ class FilePickerCross {
   /// directly from disk.
   static Future<FilePickerCross> fromInternalPath(
       {required String path}) async {
-    final data = await storage.readFile(await storage.resolve(path));
-    return FilePickerCross(data, path: path);
+    final resolved = await storage.resolve(path);
+    final data = await storage.readFile(resolved);
+    return FilePickerCross(data, path: resolved);
   }
 
   /// Persists the file. Bare names go to the app's documents directory.
   Future<String> saveToPath({required String path}) async {
     final resolved = await storage.resolve(path);
     await storage.writeFile(resolved, _bytes);
-    return path;
+    return resolved;
   }
+
+  static Future<bool> exists(String path) async =>
+      storage.exists(await storage.resolve(path));
 
   /// Shows a "save as" dialog (or triggers a download on the web).
   Future<String?> exportToStorage({String? fileName}) async {
     String name = fileName ?? this.fileName ?? 'export';
     name = name.replaceAll('\\', '/');
     name = name.substring(name.lastIndexOf('/') + 1);
-    final savedPath =
-        await FilePicker.saveFile(fileName: name, bytes: _bytes);
+    final savedPath = await FilePicker.saveFile(fileName: name, bytes: _bytes);
     if (savedPath != null) {
       // On desktop platforms `saveFile` only returns the location and the
       // caller is responsible for writing the bytes.
       await storage.writeFileIfMissing(savedPath, _bytes);
     }
-    return savedPath ?? name;
+    return savedPath ?? (kIsWeb ? name : null);
   }
 
   static Future<void> delete({required String path}) async {

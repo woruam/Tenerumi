@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:xournalpp/generated/l10n.dart';
 import 'package:xournalpp/src/XppBackground.dart';
-import 'package:xournalpp/src/XppPage.dart';
 import 'package:xournalpp/src/XppPageSize.dart';
 
 class ToolBoxBottomSheet extends StatefulWidget {
@@ -225,5 +224,13 @@ enum EditingTool {
   MOVE,
   SELECT,
   ERASER,
-  WHITEOUT
+  WHITEOUT,
+  SHAPE_LINE,
+  SHAPE_RECT,
+  SHAPE_CIRCLE,
+  SHAPE_SQUARE,
+  SHAPE_DASHED_LINE,
+  SHAPE_CUBE,
+  SHAPE_CYLINDER,
+  SHAPE_SPHERE
 }

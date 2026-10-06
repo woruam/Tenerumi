@@ -190,9 +190,8 @@ class EditingToolBarState extends State<EditingToolBar> {
                   ? 'Shape recognition: on'
                   : 'Shape recognition: off',
               elevation: 6,
-              backgroundColor: widget.shapeRecognition
-                  ? null
-                  : Theme.of(context).cardColor,
+              backgroundColor:
+                  widget.shapeRecognition ? null : Theme.of(context).cardColor,
             ),
             Container(
               constraints: BoxConstraints(maxWidth: 256, maxHeight: 48),

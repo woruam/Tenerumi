@@ -5,7 +5,6 @@ import 'dart:ui' as ui;
 
 import 'package:xournalpp/src/compat/file_picker_cross.dart';
 import 'package:flutter/material.dart';
-import 'package:transparent_image/transparent_image.dart';
 import 'package:xml/xml.dart';
 import 'package:xournalpp/src/XppLayer.dart';
 import 'package:xournalpp/src/XppPageContentWidget.dart';
@@ -53,18 +52,19 @@ class XppImage extends XppContent {
 
     if (_decodedImage != null) {
       // L'immagine è decodificata e pronta in RAM: la "stampiamo" alla massima velocità GPU
-      final Rect srcRect = Rect.fromLTWH(0, 0, _decodedImage!.width.toDouble(), _decodedImage!.height.toDouble());
+      final Rect srcRect = Rect.fromLTWH(0, 0, _decodedImage!.width.toDouble(),
+          _decodedImage!.height.toDouble());
       canvas.drawImageRect(_decodedImage!, srcRect, destRect, Paint());
     } else {
       // Disegna un placeholder grigio per far capire che sta caricando
       canvas.drawRect(destRect, Paint()..color = Colors.grey.withOpacity(0.2));
-      
+
       // Avvia la decodifica in background se non è già partita
       if (!_isDecoding) {
         _isDecoding = true;
         ui.decodeImageFromList(data!, (result) {
           _decodedImage = result;
-          // Nota: il Canvas verrà aggiornato automaticamente al prossimo movimento 
+          // Nota: il Canvas verrà aggiornato automaticamente al prossimo movimento
           // della pagina, dello zoom o al prossimo tratto di penna.
         });
       }

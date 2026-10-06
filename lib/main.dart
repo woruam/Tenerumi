@@ -1,7 +1,10 @@
 import 'package:flutter/foundation.dart';
+import 'package:xournalpp/src/dynamic_color_adapter.dart';
 import 'package:flutter/material.dart';
 import 'package:dynamic_color/dynamic_color.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // <-- Serve per salvare il colore!
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:xournalpp/controllers/theme_controller.dart';
 import 'package:xournalpp/pages/OpenPage.dart';
 import 'generated/l10n.dart';
 
@@ -10,7 +13,7 @@ void main() {
   runApp(const XournalppMobile());
 }
 
-const Color kDefaultSeedColor = Colors.indigo;
+const Color kDefaultSeedColor = ThemeController.kDefaultAccent;
 
 const double kFontSizeDivision = 1.6;
 const double kHugeFontSize = 72 / kFontSizeDivision;
@@ -21,7 +24,7 @@ const double kEmphasisFontSize = 25.2 / kFontSizeDivision;
 class XournalppMobile extends StatefulWidget {
   const XournalppMobile({super.key});
 
-  // Questo trucco ci permette di cambiare il colore da qualsiasi altra pagina dell'app!
+  // Compatibilita' col vecchio codice: permette di cambiare tema da altre pagine.
   static _XournalppMobileState of(BuildContext context) =>
       context.findAncestorStateOfType<_XournalppMobileState>()!;
 
@@ -30,106 +33,126 @@ class XournalppMobile extends StatefulWidget {
 }
 
 class _XournalppMobileState extends State<XournalppMobile> {
-  Color _customColor = kDefaultSeedColor;
-  bool _useDynamicColor = true;
+  final ThemeController _theme = ThemeController();
 
   @override
   void initState() {
     super.initState();
-    _loadColorPreference();
+    _theme.load();
   }
 
-  // Carica il colore salvato quando apri l'app
-  Future<void> _loadColorPreference() async {
-    final prefs = await SharedPreferences.getInstance();
-    final colorValue = prefs.getInt('custom_theme_color');
-    final useDyn = prefs.getBool('use_dynamic_color') ?? true;
-
-    if (colorValue != null) {
-      setState(() {
-        _customColor = Color(colorValue);
-        _useDynamicColor = useDyn;
-      });
-    }
+  @override
+  void dispose() {
+    _theme.dispose();
+    super.dispose();
   }
 
-  // Questa è la funzione che chiameremo dalle impostazioni per cambiare colore
-  void updateThemeColor(Color newColor, bool useDynamic) async {
-    setState(() {
-      _customColor = newColor;
-      _useDynamicColor = useDynamic;
-    });
+  /// API storica: ora delega al [ThemeController].
+  /// Vecchia API mantenuta per compatibilità: aggiorna colore o Dynamic Color.
+  void updateThemeColor(Color newColor, bool useDynamic) =>
+      useDynamic ? _theme.setDynamicColor(true) : _theme.setAccent(newColor);
 
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('custom_theme_color', newColor.value);
-    await prefs.setBool('use_dynamic_color', useDynamic);
-  }
+  ThemeData _buildTheme(ThemeController theme, ColorScheme? dynamicScheme) {
+    // Base scura in puro stile Nothing.
+    const brightness = Brightness.dark;
 
-  ThemeData _buildTheme(Brightness brightness, ColorScheme? dynamicScheme) {
     final fallbackScheme = ColorScheme.fromSeed(
-      seedColor: _customColor, 
+      seedColor: theme.accent,
       brightness: brightness,
     );
 
-    var colorScheme = (_useDynamicColor && dynamicScheme != null) 
-        ? dynamicScheme 
+    var colorScheme = (theme.useDynamicColor && dynamicScheme != null)
+        ? dynamicScheme
         : fallbackScheme;
 
-    if (brightness == Brightness.dark) {
-      colorScheme = colorScheme.copyWith(
-        surface: Colors.black, 
-      );
-    }
+    final Color bg = theme.pureBlack ? Colors.black : const Color(0xFF101010);
 
-    // --- MAGIA DEL COLORE DELLA TOOLBAR ---
-    final isDark = brightness == Brightness.dark;
-    
-    // 1. Scegliamo la "tela" di base: grigio molto scuro per la notte, grigio chiaro per il giorno
-    final baseToolbarColor = isDark ? Colors.grey.shade900 : Colors.grey.shade200;
-    
-    // 2. Applichiamo l'influenza del colore dell'utente (primary) al 15% di intensità sopra il grigio
-    final toolbarColor = Color.alphaBlend(
-      colorScheme.primary.withOpacity(0.15), // Se vuoi più riflesso colorato, alza a 0.20 o 0.25!
-      baseToolbarColor,
+    colorScheme = colorScheme.copyWith(
+      surface:
+          theme.pureBlack ? const Color(0xFF0A0A0A) : const Color(0xFF141414),
+      surfaceContainerHighest: const Color(0xFF1A1A1A),
     );
+
+    final TextTheme baseTextTheme = ThemeData.dark().textTheme;
 
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-      fontFamily: 'Open Sans',
-      visualDensity: VisualDensity.adaptivePlatformDensity,
-      scaffoldBackgroundColor: isDark 
-          ? Colors.black 
-          : colorScheme.surfaceContainerHighest,
-          
+      scaffoldBackgroundColor: bg,
+
+      // Tipografia Dot-Matrix (titoli) e Inter (testo)
+      textTheme: GoogleFonts.interTextTheme(baseTextTheme).copyWith(
+        displayLarge: GoogleFonts.vt323(textStyle: baseTextTheme.displayLarge),
+        displayMedium:
+            GoogleFonts.vt323(textStyle: baseTextTheme.displayMedium),
+        displaySmall: GoogleFonts.vt323(textStyle: baseTextTheme.displaySmall),
+        headlineLarge:
+            GoogleFonts.vt323(textStyle: baseTextTheme.headlineLarge),
+        headlineMedium:
+            GoogleFonts.vt323(textStyle: baseTextTheme.headlineMedium),
+        headlineSmall:
+            GoogleFonts.vt323(textStyle: baseTextTheme.headlineSmall),
+        titleLarge: GoogleFonts.vt323(textStyle: baseTextTheme.titleLarge),
+        titleMedium: GoogleFonts.vt323(textStyle: baseTextTheme.titleMedium),
+      ),
+
+      // Styling: Forme Squircle
+      cardTheme: CardThemeData(
+        shape:
+            ContinuousRectangleBorder(borderRadius: BorderRadius.circular(48)),
+        color: const Color(0xFF121212),
+        elevation: 0,
+        margin: EdgeInsets.zero,
+      ),
+      dialogTheme: DialogThemeData(
+        shape:
+            ContinuousRectangleBorder(borderRadius: BorderRadius.circular(56)),
+        backgroundColor: const Color(0xFF151515).withOpacity(0.85),
+        elevation: 0,
+      ),
+      bottomSheetTheme: const BottomSheetThemeData(
+        shape: ContinuousRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(56))),
+        backgroundColor: Color(0xFF151515),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          shape: ContinuousRectangleBorder(
+              borderRadius: BorderRadius.circular(32)),
+        ),
+      ),
       appBarTheme: AppBarTheme(
-        // Applichiamo il nostro colore personalizzato alla Toolbar!
-        backgroundColor: toolbarColor, 
+        backgroundColor: Colors.transparent,
         foregroundColor: colorScheme.onSurface,
-        elevation: 0, 
-        scrolledUnderElevation: 0, // Evita che cambi colore in modo strano quando scorri la pagina
+        elevation: 0,
+        scrolledUnderElevation: 0,
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return DynamicColorBuilder(
-      builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: kIsWeb ? 'Xournal++ Web' : 'Xournal++ Mobile',
-          localizationsDelegates: const [
-            S.delegate,
-            DefaultMaterialLocalizations.delegate,
-          ],
-          supportedLocales: S.delegate.supportedLocales,
-          theme: _buildTheme(Brightness.light, lightDynamic),
-          darkTheme: _buildTheme(Brightness.dark, darkDynamic),
-          themeMode: ThemeMode.system,
-          home: OpenPage(),
-        );
-      },
+    return ChangeNotifierProvider<ThemeController>.value(
+      value: _theme,
+      child: Consumer<ThemeController>(
+        builder: (context, theme, _) => DynamicColorBuilder(
+          builder: (lightDynamic, darkDynamic) {
+            return MaterialApp(
+              debugShowCheckedModeBanner: false,
+              title: kIsWeb ? 'Xournal++ Web' : 'Xournal++ Mobile',
+              localizationsDelegates: const [
+                S.delegate,
+                DefaultMaterialLocalizations.delegate,
+              ],
+              supportedLocales: S.delegate.supportedLocales,
+              theme: _buildTheme(theme, flutterColorScheme(lightDynamic)),
+              darkTheme: _buildTheme(theme, flutterColorScheme(darkDynamic)),
+              themeMode: ThemeMode.dark,
+              home: OpenPage(),
+            );
+          },
+        ),
+      ),
     );
   }
 }

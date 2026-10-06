@@ -5,15 +5,21 @@ import 'dart:typed_data';
 /// (`exportToStorage`).
 Future<String> resolve(String path) async => path;
 
+final _sessionFiles = <String, Uint8List>{};
+
+Future<bool> exists(String path) async => _sessionFiles.containsKey(path);
+
 Future<Uint8List> readFile(String path) async {
+  if (_sessionFiles.containsKey(path)) return _sessionFiles[path]!;
   throw UnsupportedError('Local files are not available on this platform.');
 }
 
 Future<void> writeFile(String path, Uint8List bytes) async {
-  throw UnsupportedError(
-      'Saving local files is not supported on this platform. Use exportToStorage() instead.');
+  _sessionFiles[path] = bytes;
 }
 
 Future<void> writeFileIfMissing(String path, Uint8List bytes) async {}
 
-Future<void> deleteFile(String path) async {}
+Future<void> deleteFile(String path) async {
+  _sessionFiles.remove(path);
+}

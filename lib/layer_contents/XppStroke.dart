@@ -18,6 +18,9 @@ abstract class XppStroke extends XppContent {
   List<XppStrokePoint>? points;
   Color? color;
   EditingTool? editingTool;
+  bool isShape = false; // forma geometrica: linea netta a spessore uniforme
+  bool smooth =
+      false; // forma curva (cerchio/ellisse): render con curva Bezier liscia
 
   @override
   Offset getOffset() {
@@ -58,6 +61,38 @@ abstract class XppStroke extends XppContent {
       colorToUse = colorToUse.withOpacity(.5);
     }
 
+    // Forme geometriche: linea NETTA a spessore uniforme (niente perfect_freehand).
+    if (isShape) {
+      final Offset off = getOffset();
+      double sw = points!.first.width ?? 2.5;
+      if (sw < 1.0) sw = 1.0;
+      final Paint sp = Paint()
+        ..color = colorToUse
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = sw
+        ..strokeCap = StrokeCap.round
+        ..strokeJoin = StrokeJoin.round
+        ..isAntiAlias = true;
+      final XppStrokePoint a = points!.first, b = points!.last;
+      final bool closed = ((a.x! - b.x!).abs() + (a.y! - b.y!).abs()) < 1.0;
+      final List<Offset> pts = [
+        for (final pt in points!) Offset(pt.x! - off.dx, pt.y! - off.dy)
+      ];
+      Path shapePath;
+      if (smooth && pts.length >= 4) {
+        // forme curve (cerchio/sfera/cilindro): curva Bezier liscia a ogni zoom
+        shapePath = _smoothPath(pts, closed);
+      } else {
+        shapePath = Path()..moveTo(pts.first.dx, pts.first.dy);
+        for (int i = 1; i < pts.length; i++) {
+          shapePath.lineTo(pts[i].dx, pts[i].dy);
+        }
+        if (closed) shapePath.close();
+      }
+      canvas.drawPath(shapePath, sp);
+      return;
+    }
+
     // Usiamo il pittore esistente per disegnare DIRETTAMENTE sul Canvas
     final painter = XppStrokePainter(
       points: points,
@@ -74,7 +109,8 @@ abstract class XppStroke extends XppContent {
   XppPageContentWidget render() {
     return XppPageContentWidget(
       tool: EditingTool.STYLUS,
-      child: const SizedBox.shrink(), // Non crea più pesanti CustomPaint in un Widget
+      child: const SizedBox
+          .shrink(), // Non crea più pesanti CustomPaint in un Widget
     );
   }
 
@@ -157,8 +193,8 @@ abstract class XppStroke extends XppContent {
   void translate(Offset delta) {
     for (int i = 0; i < points!.length; i++) {
       final p = points![i];
-      points![i] =
-          XppStrokePoint(x: p.x! + delta.dx, y: p.y! + delta.dy, width: p.width);
+      points![i] = XppStrokePoint(
+          x: p.x! + delta.dx, y: p.y! + delta.dy, width: p.width);
     }
   }
 
@@ -185,7 +221,9 @@ abstract class XppStroke extends XppContent {
   static XppStroke byTool(
       {required XppStrokeTool tool,
       List<XppStrokePoint>? points,
-      Color? color}) {
+      Color? color,
+      bool isShape = false,
+      bool smooth = false}) {
     XppStroke? stroke;
     switch (tool) {
       case XppStrokeTool.PEN:
@@ -198,6 +236,8 @@ abstract class XppStroke extends XppContent {
         stroke = XppStrokeWhiteout(color: color, points: points);
         break;
     }
+    stroke.isShape = isShape;
+    stroke.smooth = smooth;
     return stroke;
   }
 }
@@ -259,7 +299,7 @@ class XppStrokeHighlight extends XppStroke {
   }
 }
 
-// MANTENIAMO IL PITTORE ORIGINALE perché il "PointerListener" lo usa 
+// MANTENIAMO IL PITTORE ORIGINALE perché il "PointerListener" lo usa
 // in tempo reale per disegnare il tratto che hai sotto la punta della penna!
 class XppStrokePainter extends CustomPainter {
   @required
@@ -270,7 +310,7 @@ class XppStrokePainter extends CustomPainter {
   final Offset? topLeft;
   @required
   final bool? smoothPressure;
-  
+
   // Aggiungiamo questa variabile per decidere se il tratto è finito o in corso
   final bool isComplete;
 
@@ -279,7 +319,8 @@ class XppStrokePainter extends CustomPainter {
     this.color,
     this.topLeft,
     this.smoothPressure,
-    this.isComplete = true, // Di default è true (i tratti vecchi salvati sono completi)
+    this.isComplete =
+        true, // Di default è true (i tratti vecchi salvati sono completi)
   });
 
   @override
@@ -290,20 +331,21 @@ class XppStrokePainter extends CustomPainter {
 
     List<pf.Point> pfPoints = points!.map((p) {
       return pf.Point(
-        p.x! - topLeft!.dx, 
-        p.y! - topLeft!.dy, 
-        (smoothPressure == true && p.width != null) ? (p.width! / 5.0).clamp(0.1, 1.0) : 0.5
-      );
+          p.x! - topLeft!.dx,
+          p.y! - topLeft!.dy,
+          (smoothPressure == true && p.width != null)
+              ? (p.width! / 5.0).clamp(0.1, 1.0)
+              : 0.5);
     }).toList();
 
     final outlinePoints = pf.getStroke(
       pfPoints,
       options: pf.StrokeOptions(
-        size: 5, 
-        thinning: isHighlighter ? 0.0 : 0.7, 
-        smoothing: 0.5, 
+        size: 5,
+        thinning: isHighlighter ? 0.0 : 0.7,
+        smoothing: 0.5,
         isComplete: isComplete, // <--- Usa il parametro dinamico!
-        simulatePressure: isHighlighter ? false : !smoothPressure!, 
+        simulatePressure: isHighlighter ? false : !smoothPressure!,
       ),
     );
 
@@ -318,14 +360,14 @@ class XppStrokePainter extends CustomPainter {
       final paint = Paint()
         ..color = color!
         ..style = PaintingStyle.fill;
-        
+
       canvas.drawPath(path, paint);
     }
   }
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
-    return true; 
+    return true;
   }
 }
 
@@ -343,4 +385,39 @@ class XppStrokePoint {
   XppStrokePoint({this.x, this.y, this.width});
 
   Offset get offset => Offset(x!, y!);
+}
+
+/// Curva liscia (Catmull-Rom -> Bezier cubiche) dai punti dati.
+/// Usata per le forme curve (cerchi, ellissi): restano lisce a qualsiasi zoom.
+Path _smoothPath(List<Offset> p, bool closed) {
+  final Path path = Path();
+  final int n = p.length;
+  if (n < 3) {
+    if (n > 0) {
+      path.moveTo(p.first.dx, p.first.dy);
+      for (int i = 1; i < n; i++) {
+        path.lineTo(p[i].dx, p[i].dy);
+      }
+    }
+    return path;
+  }
+  final List<Offset> q =
+      (closed && (p.first - p.last).distance < 1.0) ? p.sublist(0, n - 1) : p;
+  final int m = q.length;
+  Offset at(int i) => closed ? q[((i % m) + m) % m] : q[i.clamp(0, m - 1)];
+  path.moveTo(q[0].dx, q[0].dy);
+  final int segs = closed ? m : m - 1;
+  for (int i = 0; i < segs; i++) {
+    final Offset p0 = at(i - 1);
+    final Offset p1 = at(i);
+    final Offset p2 = at(i + 1);
+    final Offset p3 = at(i + 2);
+    final Offset c1 =
+        Offset(p1.dx + (p2.dx - p0.dx) / 6, p1.dy + (p2.dy - p0.dy) / 6);
+    final Offset c2 =
+        Offset(p2.dx - (p3.dx - p1.dx) / 6, p2.dy - (p3.dy - p1.dy) / 6);
+    path.cubicTo(c1.dx, c1.dy, c2.dx, c2.dy, p2.dx, p2.dy);
+  }
+  if (closed) path.close();
+  return path;
 }
