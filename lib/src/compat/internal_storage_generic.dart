@@ -8,6 +8,7 @@ Future<String> resolve(String path) async => path;
 final _sessionFiles = <String, Uint8List>{};
 
 Future<bool> exists(String path) async => _sessionFiles.containsKey(path);
+Future<DateTime?> lastModified(String path) async => null;
 
 Future<Uint8List> readFile(String path) async {
   if (_sessionFiles.containsKey(path)) return _sessionFiles[path]!;

@@ -110,7 +110,12 @@ Future<Uint8List> buildNotesPdf(
 Future<Uint8List> rasterizeExportPage(
   XppPage page, {
   Uint8List? backgroundBytes,
+  int maxDimension = 4096,
+  int pixelBudget = 4000000,
 }) async {
+  if (maxDimension < 1 || pixelBudget < 1) {
+    throw ArgumentError('Raster budget must be positive');
+  }
   if (page.infinite) page = exportPageSnapshot(page);
   final size = (page.pageSize ?? XppPageSize.a4).toSize();
   if (!size.width.isFinite || !size.height.isFinite || size.isEmpty) {
@@ -119,8 +124,8 @@ Future<Uint8List> rasterizeExportPage(
   final scale = math.min(
     2.0,
     math.min(
-      4096 / math.max(size.width, size.height),
-      math.sqrt(4000000 / (size.width * size.height)),
+      maxDimension / math.max(size.width, size.height),
+      math.sqrt(pixelBudget / (size.width * size.height)),
     ),
   );
   final recorder = ui.PictureRecorder();
@@ -128,8 +133,23 @@ Future<Uint8List> rasterizeExportPage(
   final images = <ui.Image>[];
   ui.Picture? picture;
   ui.Image? output;
-  Future<ui.Image> decode(Uint8List bytes) async {
-    final codec = await ui.instantiateImageCodec(bytes);
+  Future<ui.Image> decode(Uint8List bytes, Rect destination) async {
+    final targetWidth = math.max(
+      1,
+      math.min(maxDimension, (destination.width * scale).ceil()),
+    );
+    final targetHeight = math.max(
+      1,
+      math.min(maxDimension, (destination.height * scale).ceil()),
+    );
+    final codec = maxDimension <= 320
+        ? await ui.instantiateImageCodec(
+            bytes,
+            targetWidth: targetWidth,
+            targetHeight: targetHeight,
+            allowUpscaling: false,
+          )
+        : await ui.instantiateImageCodec(bytes);
     try {
       final image = (await codec.getNextFrame()).image;
       images.add(image);
@@ -149,7 +169,10 @@ Future<Uint8List> rasterizeExportPage(
     canvas.clipRect(Offset.zero & size);
     paintPaperBackground(canvas, size, page.background);
     if (backgroundBytes != null) {
-      drawImage(await decode(backgroundBytes), Offset.zero & size);
+      drawImage(
+        await decode(backgroundBytes, Offset.zero & size),
+        Offset.zero & size,
+      );
     }
     for (final layer in page.layers ?? <XppLayer>[]) {
       if (!layer.visible) continue;
@@ -161,7 +184,10 @@ Future<Uint8List> rasterizeExportPage(
               content.bottomRight == null) {
             throw StateError('Immagine non valida nel documento');
           }
-          drawImage(await decode(content.data!), content.bounds()!);
+          drawImage(
+            await decode(content.data!, content.bounds()!),
+            content.bounds()!,
+          );
         } else {
           canvas.save();
           final offset = content.getOffset();

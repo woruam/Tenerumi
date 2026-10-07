@@ -174,7 +174,7 @@ abstract class XppStroke extends XppContent {
 
       // Forme geometriche: linea NETTA a spessore uniforme (niente perfect_freehand).
       if (isShape) {
-        final Offset off = getOffset();
+        final Offset off = offset;
         double sw = points!.first.width ?? 2.5;
         if (sw < 1.0) sw = 1.0;
         final Paint sp = Paint()
@@ -208,7 +208,7 @@ abstract class XppStroke extends XppContent {
       final painter = XppStrokePainter(
         points: points,
         color: colorToUse,
-        topLeft: getOffset(), // Il pittore disegna partendo da questo offset
+        topLeft: offset, // Reuse the origin already calculated for this paint.
         smoothPressure: tool == XppStrokeTool.PEN,
       );
 

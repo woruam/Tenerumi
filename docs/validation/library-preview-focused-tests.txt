@@ -1,0 +1,18 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart
+00:00 +0: a new blank note already has a UTC modification date
+00:00 +1: modification date survives XOPP and the frozen snapshot
+00:00 +2: recent metadata preserves tags and favorites and refuses stale enrichment
+00:00 +3: thumbnail is bounded, includes negative ink and ignores hidden layers
+00:00 +4: thumbnail loads the PDF background of an unmounted page
+00:00 +5: named autosave updates the home thumbnail, date and existing user metadata
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-home-auto-bb0bc855\xournalpp\recovery-1791396672849691-3183596200-1791396672856693.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-home-auto-bb0bc855/notes.xopp
+00:00 +6: legacy metadata is generated lazily once and persisted without opening an editor
+00:00 +7: hidden queued cards do not read their document
+00:00 +8: Android modification dates are queried without reading the document
+00:00 +9: geometry cache computes bounds once per revision and reflects moved ink
+00:00 +10: home cards show an image and readable last-modified date on a phone
+00:00 +11: missing and transparent previews fall back and use a lazy loader
+00:00 +12: invalid preview and missing date do not break home cards
+00:00 +13: panning reuses geometry; an edited stroke invalidates the cache
+00:00 +14: All tests passed!

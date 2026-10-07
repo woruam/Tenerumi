@@ -113,6 +113,18 @@ class FilePickerCross {
     return storage.exists(await storage.resolve(path));
   }
 
+  static Future<DateTime?> lastModified(String path) async {
+    if (path.startsWith('content://')) {
+      final millis = await _documents.invokeMethod<int>('lastModified', {
+        'uri': path,
+      });
+      return millis == null || millis <= 0
+          ? null
+          : DateTime.fromMillisecondsSinceEpoch(millis, isUtc: true);
+    }
+    return storage.lastModified(await storage.resolve(path));
+  }
+
   /// Shows a "save as" dialog (or triggers a download on the web).
   Future<String?> exportToStorage({String? fileName}) async {
     String name = fileName ?? this.fileName ?? 'export';

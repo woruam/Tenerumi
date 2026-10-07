@@ -35,6 +35,7 @@ class XppFile {
     this.pages,
     this.previewImage,
     this.sourcePath,
+    this.modifiedAt,
     String? documentId,
     Map<String, Uint8List>? pdfAttachments,
   }) : documentId =
@@ -46,6 +47,7 @@ class XppFile {
        pdfAttachments = pdfAttachments ?? {};
   final String documentId;
   bool recovered = false;
+  DateTime? modifiedAt;
 
   static XppFile empty({
     String? title,
@@ -63,7 +65,11 @@ class XppFile {
     if (newPage.background != null) {
       newPage.background!.size = defaultSize;
     }
-    return XppFile(title: title, pages: [newPage]);
+    return XppFile(
+      title: title,
+      pages: [newPage],
+      modifiedAt: DateTime.now().toUtc(),
+    );
   }
 
   static Future<XppFile> importPdf({required FilePickerCross pdf}) async {
@@ -410,6 +416,9 @@ class XppFile {
 
     return XppFile(
       documentId: documentTree.getAttribute('osipp-id'),
+      modifiedAt: DateTime.tryParse(
+        documentTree.getAttribute('osipp-modified-at') ?? '',
+      ),
       title: input['title'] as String,
       previewImage: previewImage,
       pages: pages,
@@ -448,6 +457,11 @@ class XppFile {
           XmlAttribute(XmlName('creator'), 'Xournal++ Mobile'),
           XmlAttribute(XmlName('fileversion'), '4'),
           XmlAttribute(XmlName('osipp-id'), documentId),
+          if (modifiedAt != null)
+            XmlAttribute(
+              XmlName('osipp-modified-at'),
+              modifiedAt!.toUtc().toIso8601String(),
+            ),
         ],
         [
             XmlElement(XmlName('title'), const [], [
@@ -495,9 +509,11 @@ class XppFile {
   }
 
   /// Keep decoded images and UI callbacks out of the isolate message.
-  Future<Uint8List> toUint8ListAsync() {
-    final snapshot = XppFile(
+  XppFile snapshot() {
+    return XppFile(
       documentId: documentId,
+      modifiedAt: modifiedAt,
+      sourcePath: sourcePath,
       title: title,
       previewImage: previewImage,
       pdfAttachments: Map.of(pdfAttachments),
@@ -529,8 +545,13 @@ class XppFile {
         );
       }).toList(),
     );
-    return compute(_serializeFile, snapshot);
   }
+
+  Future<Uint8List> toUint8ListAsync() => snapshot().serializeSnapshotAsync();
+
+  /// Call on a frozen snapshot; avoids cloning the whole document a second time
+  /// when attaching a thumbnail before serialization.
+  Future<Uint8List> serializeSnapshotAsync() => compute(_serializeFile, this);
 
   static Uint8List _serializeFile(XppFile file) => file.toUint8List()!;
 

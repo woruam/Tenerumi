@@ -4,6 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:xournalpp/controllers/canvas_controller.dart';
 import 'package:xournalpp/src/XppBackground.dart';
+import 'package:xournalpp/src/canvas_geometry_cache.dart';
 
 import 'PointerListener.dart';
 import 'ZoomableWidget.dart';
@@ -24,6 +25,13 @@ class InfiniteCanvas extends StatefulWidget {
 
 class _InfiniteCanvasState extends State<InfiniteCanvas> {
   final _touch = CanvasTouchSession();
+  CanvasGeometryCache _geometry = CanvasGeometryCache();
+  @override
+  void didUpdateWidget(InfiniteCanvas oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.canvas != widget.canvas) _geometry = CanvasGeometryCache();
+  }
+
   double _initialScale = 1;
   Offset _anchor = Offset.zero;
   void _zoom(double scale, Offset local, Offset world) {
@@ -131,7 +139,7 @@ class _InfiniteCanvasState extends State<InfiniteCanvas> {
                         onToolChanged: ctrl.setTool,
                         child: CustomPaint(
                           size: size,
-                          painter: _InfinitePainter(ctrl, origin),
+                          painter: _InfinitePainter(ctrl, origin, _geometry),
                         ),
                       ),
                     ),
@@ -154,9 +162,12 @@ class _InfiniteCanvasState extends State<InfiniteCanvas> {
 class _InfinitePainter extends CustomPainter {
   final CanvasController controller;
   final Offset origin;
-  _InfinitePainter(this.controller, this.origin) : super(repaint: controller);
+  final CanvasGeometryCache geometry;
+  _InfinitePainter(this.controller, this.origin, this.geometry)
+    : super(repaint: controller);
   @override
   void paint(Canvas canvas, Size size) {
+    geometry.updateRevision(controller.pluginRevision);
     final page = controller.file!.pages!.first;
     final background = page.background;
     final dark = background is XppBackgroundNothingDark;
@@ -200,10 +211,10 @@ class _InfinitePainter extends CustomPainter {
       if (!layer.visible) continue;
       for (final content in layer.content ?? []) {
         if (content == null) continue;
-        final bounds = content.bounds();
+        final bounds = geometry.bounds(content);
         if (bounds != null && !viewport.overlaps(bounds)) continue;
         canvas.save();
-        final offset = content.getOffset();
+        final offset = geometry.offset(content);
         if (offset != null) canvas.translate(offset.dx, offset.dy);
         content.paintToCanvas(canvas, size);
         canvas.restore();

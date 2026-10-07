@@ -15,6 +15,7 @@ import 'package:xournalpp/src/compat/file_picker_cross.dart';
 import 'package:xournalpp/plugins/plugin_controller.dart';
 import 'package:xournalpp/plugins/plugin_manager_page.dart';
 import 'package:xournalpp/src/autosave_store.dart';
+import 'package:xournalpp/widgets/document_library_card.dart';
 
 class OpenPage extends StatefulWidget {
   @override
@@ -689,9 +690,27 @@ class _OpenPageState extends State<OpenPage> {
                     width: 280,
                     child: Card(
                       child: ListTile(
-                        leading: const Icon(Icons.restore),
-                        title: Text(entry['title'] as String),
-                        subtitle: const Text('Ripristina copia automatica'),
+                        leading: SizedBox(
+                          width: 42,
+                          height: 54,
+                          child: DocumentPreviewImage(
+                            encoded: entry['preview'] is String
+                                ? entry['preview'] as String
+                                : null,
+                            fallbackIcon: Icons.restore,
+                          ),
+                        ),
+                        title: Text(
+                          entry['title'] as String,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: Text(
+                          'Ripristina copia automatica\n${documentModifiedLabel(entry['modifiedAt'] ?? (entry['time'] is int ? DateTime.fromMillisecondsSinceEpoch(entry['time'] as int, isUtc: true).toIso8601String() : null))}',
+                          style: const TextStyle(fontSize: 11),
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                         onTap: () async {
                           try {
                             final file = await AutosaveStore.restore(entry);
@@ -798,111 +817,57 @@ class _OpenPageState extends State<OpenPage> {
                     itemCount: filteredFiles.length,
                     itemBuilder: (context, index) {
                       final fileData = filteredFiles[index];
-                      return Card(
-                        clipBehavior: Clip.antiAlias,
-                        color: Colors.transparent,
-                        shape: ContinuousRectangleBorder(
-                          borderRadius: BorderRadius.circular(40),
-                          side: BorderSide(
-                            color: Colors.white.withOpacity(0.1),
-                            width: 1,
-                          ),
+                      return DocumentLibraryCard(
+                        key: ValueKey(
+                          '${fileData['path'] ?? ''}-${fileData['name'] ?? ''}-$index',
                         ),
-                        child: InkWell(
-                          onTap: () async {
-                            String? savedPath = fileData['path'];
+                        entry: Map<String, dynamic>.from(fileData),
+                        fallbackIcon: icons.file,
+                        onTap: () async {
+                          String? savedPath = fileData['path'];
 
-                            if (savedPath != null && savedPath.isNotEmpty) {
-                              if (await FilePickerCross.exists(savedPath)) {
-                                try {
-                                  final fpc =
-                                      await FilePickerCross.fromInternalPath(
-                                        path: savedPath,
-                                      );
+                          if (savedPath != null && savedPath.isNotEmpty) {
+                            if (await FilePickerCross.exists(savedPath)) {
+                              try {
+                                final fpc =
+                                    await FilePickerCross.fromInternalPath(
+                                      path: savedPath,
+                                    );
 
-                                  XppFile loadedFile =
-                                      await XppFile.fromFilePickerCross(
-                                        fpc,
-                                        (progress) {},
-                                        (_) async =>
-                                            throw Exception('File non trovato'),
-                                      );
+                                XppFile loadedFile =
+                                    await XppFile.fromFilePickerCross(
+                                      fpc,
+                                      (progress) {},
+                                      (_) async =>
+                                          throw Exception('File non trovato'),
+                                    );
 
-                                  loadedFile.title = fileData['name'];
-                                  _openFile(loadedFile);
-                                } catch (e) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        "Errore nella lettura del file.",
-                                      ),
-                                    ),
-                                  );
-                                }
-                              } else {
+                                loadedFile.title = fileData['name'];
+                                _openFile(loadedFile);
+                              } catch (e) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text(
-                                      "Impossibile trovare il file fisico!",
+                                      "Errore nella lettura del file.",
                                     ),
                                   ),
                                 );
                               }
                             } else {
-                              final fileToOpen = XppFile.empty()
-                                ..title = fileData['name'];
-                              _openFile(fileToOpen);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    "Impossibile trovare il file fisico!",
+                                  ),
+                                ),
+                              );
                             }
-                          },
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  color: Colors.white.withOpacity(0.05),
-                                  child:
-                                      fileData['preview'] != null &&
-                                          fileData['preview']
-                                              .toString()
-                                              .isNotEmpty
-                                      ? Image.memory(
-                                          base64Decode(fileData['preview']),
-                                          fit: BoxFit.cover,
-                                        )
-                                      : Icon(
-                                          icons.file,
-                                          size: 64,
-                                          color: Colors.white.withOpacity(0.2),
-                                        ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      fileData['name'] ?? 'Senza titolo',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      fileData['tag'] ?? 'Appunti',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey.shade600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                          } else {
+                            final fileToOpen = XppFile.empty()
+                              ..title = fileData['name'];
+                            _openFile(fileToOpen);
+                          }
+                        },
                       );
                     },
                   ),

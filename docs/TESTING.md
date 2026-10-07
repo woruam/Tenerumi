@@ -94,3 +94,6 @@ La cartella ricevuta non contiene un repository Git: le modifiche e le prove son
 ## Android e input a refresh elevato
 
 SDK minimo corrente: Flutter 3.47 e Dart 3.13, richiesti dalle dipendenze aggiornate. Eseguire scripts/verify-android.ps1 per APK release e test JVM della selezione display; consultare docs/DEPENDENCY_UPGRADE.md, docs/ANDROID_PERFORMANCE.md e docs/INK_PERFORMANCE.md per warning residui e prove sul dispositivo. I frame a 120 Hz simulati nei test non certificano 120 fps o la latenza penna/schermo su hardware.
+
+## Home: anteprime, date e prestazioni
+library_preview_test.dart copre miniature reali, data persistente, note vuote, migrazione delle vecchie note, salvataggio automatico, preservazione dei tag, metadati Android, layout su telefono e cache geometrica durante il pan. Consultare HOME_PREVIEWS_AND_PERFORMANCE.md e validation/library-preview-status.md per dettagli e risultati correnti. Per questa modifica non sono state effettuate build dell'app.

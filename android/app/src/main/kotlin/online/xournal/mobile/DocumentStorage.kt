@@ -3,6 +3,7 @@ package online.xournal.mobile
 import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
+import android.provider.DocumentsContract
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.StandardMethodCodec
@@ -17,6 +18,15 @@ object DocumentStorage {
                     val uri = Uri.parse(requireNotNull(call.argument<String>("uri")))
                     require(uri.scheme == "content") { "Expected a content URI" }
                     when (call.method) {
+                        "lastModified" -> {
+                            val modified = try {
+                                resolver.query(uri, arrayOf(DocumentsContract.Document.COLUMN_LAST_MODIFIED),
+                                    null, null, null)?.use { cursor ->
+                                    if (cursor.moveToFirst() && !cursor.isNull(0)) cursor.getLong(0) else null
+                                }
+                            } catch (_: Exception) { null }
+                            result.success(modified)
+                        }
                         "read" -> {
                             val bytes = resolver.openInputStream(uri)?.use { it.readBytes() }
                                 ?: throw IllegalStateException("Document is unavailable")

@@ -51,6 +51,10 @@ class AutosaveStore {
       'source': file.sourcePath,
       'path': path,
       'time': DateTime.now().millisecondsSinceEpoch,
+      if (file.modifiedAt != null)
+        'modifiedAt': file.modifiedAt!.toUtc().toIso8601String(),
+      if (file.previewImage != null)
+        'preview': base64Encode(file.previewImage!),
     });
     if (!await prefs.setString(indexKey, jsonEncode(entries))) {
       throw StateError('Impossibile aggiornare il recupero');

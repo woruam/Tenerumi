@@ -20,6 +20,10 @@ Future<String> resolve(String path) async {
 Future<Uint8List> readFile(String path) => File(path).readAsBytes();
 
 Future<bool> exists(String path) => File(path).exists();
+Future<DateTime?> lastModified(String path) async {
+  final stat = await File(path).stat();
+  return stat.type == FileSystemEntityType.file ? stat.modified.toUtc() : null;
+}
 
 Future<void> writeFile(String path, Uint8List bytes) async {
   final temporary = File('$path.${DateTime.now().microsecondsSinceEpoch}.tmp');
@@ -35,7 +39,8 @@ Future<void> writeFile(String path, Uint8List bytes) async {
 
     // Rilanciamo l'errore per farlo sapere all'interfaccia grafica
     throw Exception(
-        "Impossibile scrivere il file. Permesso negato o percorso non valido.");
+      "Impossibile scrivere il file. Permesso negato o percorso non valido.",
+    );
   }
 }
 

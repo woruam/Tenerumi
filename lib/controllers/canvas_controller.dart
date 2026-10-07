@@ -1,7 +1,7 @@
-import 'dart:convert';
 import 'dart:async';
 
 import 'package:xournalpp/src/autosave_store.dart';
+import 'package:xournalpp/src/recent_documents.dart';
 
 import 'package:flutter/foundation.dart';
 
@@ -98,6 +98,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     _hasUnsavedChanges = value;
     if (value) {
       _revision++;
+      file?.modifiedAt = DateTime.now().toUtc();
       if (!autosaveEnabled) return;
       _scheduleAutosave();
     }
@@ -141,9 +142,11 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
       autosaving = true;
       notifyListeners();
       try {
-        final bytes = await document.toUint8ListAsync();
+        final snapshot = document.snapshot();
+        await _preparePreview(snapshot);
+        final bytes = await snapshot.serializeSnapshotAsync();
         if (_discardRecovery) return;
-        await AutosaveStore.save(document, bytes);
+        await AutosaveStore.save(snapshot, bytes);
         lastAutosave = DateTime.now();
         // A recovery copy is always secured before touching the original file.
         // Browser documents stay recoverable locally until explicitly exported.
@@ -152,8 +155,10 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
             !savingFile &&
             !_discardRecovery) {
           await FilePickerCross(bytes).saveToPath(path: document.sourcePath!);
+          await RecentDocuments.save(snapshot, document.sourcePath!);
           if (identical(file, document) && _revision == revision) {
             _hasUnsavedChanges = false;
+            document.previewImage = snapshot.previewImage;
           }
         }
         if (!savingFile || document.sourcePath == null) {
@@ -763,9 +768,14 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
           document.pdfAttachments[name] = await _readPdfBytes(name);
         }
       }
-      document.previewImage ??= kTransparentImage;
-      final data = await document.toFilePickerCrossAsync(
-        filePath: document.suggestedFileName,
+      final snapshot = document.snapshot();
+      snapshot.modifiedAt ??= DateTime.now().toUtc();
+      await _preparePreview(snapshot);
+      final data = FilePickerCross(
+        await snapshot.serializeSnapshotAsync(),
+        type: FileTypeCross.custom,
+        fileExtension: 'xopp',
+        path: document.suggestedFileName,
       );
       final String? absolutePath;
       if (saveAs || kIsWeb) {
@@ -786,24 +796,11 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
       }
       document.sourcePath = absolutePath;
 
-      final prefs = await SharedPreferences.getInstance();
-
-      List files = (jsonDecode(
-        prefs.getString(PreferencesKeys.kRecentFiles) ?? '[]',
-      ) as List).toList();
-      bool wasFav = files.any(
-        (e) => e['path'] == absolutePath && e['favorite'] == true,
-      );
-      files.removeWhere((e) => e['path'] == absolutePath);
-      files.add({
-        'preview': file!.previewImage != null
-            ? base64Encode(file!.previewImage!)
-            : "",
-        'name': file!.title,
-        'path': absolutePath,
-        'favorite': wasFav,
-      });
-      await prefs.setString(PreferencesKeys.kRecentFiles, jsonEncode(files));
+      await RecentDocuments.save(snapshot, absolutePath);
+      if (_revision == savedRevision) {
+        document.previewImage = snapshot.previewImage;
+        document.modifiedAt = snapshot.modifiedAt;
+      }
       if (context.mounted)
         ScaffoldMessenger.of(context)
             .showSnackBar(const SnackBar(content: Text("Documento salvato")));
@@ -838,6 +835,44 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
       }
       notifyListeners();
     }
+  }
+
+  Future<void> _preparePreview(XppFile snapshot) async {
+    try {
+      snapshot.previewImage = await buildPreviewBytes(snapshot);
+    } catch (_) {
+      snapshot.previewImage = kTransparentImage;
+    }
+  }
+
+  /// Uses document painters, not a screenshot of mounted pages. Works for
+  /// inactive tabs and infinite notes, including their visible layers.
+  Future<Uint8List> buildPreviewBytes([XppFile? snapshot]) async {
+    final document = snapshot ?? file!;
+    final source = document.pages?.firstOrNull;
+    if (source == null) throw StateError('Documento senza pagine');
+    final page = snapshot == null || source.infinite
+        ? exportPageSnapshot(source)
+        : source;
+    Uint8List? background;
+    if (page.background case final XppBackgroundPdf pdf) {
+      background =
+          pdfBackgrounds[0] ??
+          await (pdfRasterizer?.call(0) ??
+              _rasterPdfBackground(pdf, pixelBudget: 100000));
+      if (background == null) throw StateError('Sfondo PDF non disponibile');
+    } else if (page.background case final XppBackgroundImage image) {
+      if (image.filename == null) {
+        throw StateError('Sfondo immagine non disponibile');
+      }
+      background = await _readPdfBytes(image.filename!);
+    }
+    return rasterizeExportPage(
+      page,
+      backgroundBytes: background,
+      maxDimension: 320,
+      pixelBudget: 100000,
+    );
   }
 
   Future<Uint8List> buildPdfBytes() {

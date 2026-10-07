@@ -121,3 +121,6 @@ La `WorkspacePage` introduce una modalità di **visualizzazione affiancata (Spli
 - **Vincoli del divisore**: il trascinamento è limitato dalla larghezza minima per pannello, sotto la quale il pannello non si riduce ulteriormente; il riposizionamento è fluido (target 60/120 fps) e non interferisce con il tracciamento dello stilo.
 - **Degrado graduale (responsive)**: sotto la soglia minima di larghezza complessiva lo split collassa a vista singola con notifica non invasiva; tornando sopra la soglia può essere riattivato ripristinando l'ultima configurazione.
 - **Coerenza dello stato**: la chiusura di un documento in uno dei due pannelli, in presenza di modifiche non salvate, segue lo stesso prompt di conferma già previsto per le schede.
+
+## Home: anteprime e ultima modifica
+Le schede dei documenti mostrano l'anteprima della prima pagina e la data di ultima modifica nel fuso locale. Salvataggio e autosalvataggio aggiornano i metadati; le note precedenti li recuperano gradualmente. Le miniature hanno dimensioni limitate; la cache geometrica del canvas infinito viene invalidata a ogni modifica del contenuto. Dettagli in docs/HOME_PREVIEWS_AND_PERFORMANCE.md.
