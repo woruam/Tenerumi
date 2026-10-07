@@ -61,3 +61,6 @@ Scelta/creazione tag nel nuovo appunto, riassegnazione da scheda, catalogo persi
 
 ## Audio sincronizzato - 2026-10-08
 Implementati backend Android, audio portabile XOPP, associazioni per campione/tratto, pannello di ascolto e seek dalla penna. Snapshot/eraser/clipboard conservano link e bytes immutabili. Lifecycle finalizza prima di save/close, sospende in background e rilascia risorse; coda svuotata a riposo e preferenze ignorate dopo dispose. 147 regressioni passate, compilazione Kotlin riuscita, analyze senza errori/warning, screenshot docs/validation/audio-timeline-panel.png. Audit e prova hardware pendente descritti in docs/audio-notes.md. Nessun APK né push.
+
+## Eliminazione dalla home - 2026-10-08
+Menu pressione prolungata Cambia tag/Elimina con conferma nominativa. Cancellazione file/recente/recovery, refresh e messaggio errore. Supporto provider Android per content URI; serializzazione recenti azzerata a riposo. 150 test Flutter, analyze senza errori/warning, compilazione Kotlin e screenshot verificati. Dettagli docs/home-note-deletion.md. Nessun APK/push.

@@ -40,3 +40,10 @@ Tag e identita OSI: implementazione e verifica completate (138 test e screenshot
 4. Regressioni, prova visiva e audit risorse; commit.
 
 Audio sincronizzato: completate le fasi 1–4; 147 test, Kotlin Android, analyze e prova visiva verificati. Profilazione hardware e prova microfono reale restano manuali, come documentato nell’audit.
+
+## Eliminazione home
+1. Menu su pressione prolungata e conferma.
+2. Eliminazione storage/indice serializzata e refresh.
+3. Test cancellazione/annullamento/errori/URI e prova visiva; commit.
+
+Eliminazione home: fasi 1–3 completate e verificate con 150 test, analyze, compilazione Kotlin e screenshot.

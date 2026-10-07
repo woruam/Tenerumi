@@ -32,6 +32,12 @@ object DocumentStorage {
                                 ?: throw IllegalStateException("Document is unavailable")
                             result.success(bytes)
                         }
+                        "delete" -> {
+                            if (!DocumentsContract.deleteDocument(resolver, uri)) {
+                                throw IllegalStateException("Impossibile eliminare il documento")
+                            }
+                            result.success(null)
+                        }
                         "write" -> {
                             val bytes = requireNotNull(call.argument<ByteArray>("bytes"))
                             val stream = resolver.openOutputStream(uri, "wt")

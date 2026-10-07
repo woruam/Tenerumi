@@ -31,6 +31,87 @@ class _OpenPageState extends State<OpenPage> {
 
   List<String> tags = ['Tutti', 'Appunti', 'Scuola', 'Lavoro'];
   String selectedTag = 'Tutti';
+  bool _deletingNote = false;
+
+  Future<void> _showNoteActions(Map<String, dynamic> entry) async {
+    if (_deletingNote) return;
+    final action = await showModalBottomSheet<String>(
+      context: context,
+      useSafeArea: true,
+      builder: (sheetContext) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Text(
+              entry['name'] as String? ?? 'Appunto',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.label_outline),
+            title: const Text('Cambia tag'),
+            onTap: () => Navigator.pop(sheetContext, 'tag'),
+          ),
+          ListTile(
+            leading: Icon(
+              Icons.delete_outline,
+              color: Theme.of(context).colorScheme.error,
+            ),
+            title: const Text('Elimina'),
+            onTap: () => Navigator.pop(sheetContext, 'delete'),
+          ),
+          const SizedBox(height: 12),
+        ],
+      ),
+    );
+    if (!mounted) return;
+    if (action == 'tag') await _editNoteTag(entry);
+    if (action == 'delete') await _confirmDeleteNote(entry);
+  }
+
+  Future<void> _confirmDeleteNote(Map<String, dynamic> entry) async {
+    if (_deletingNote) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Eliminare l’appunto?'),
+        content: Text(
+          '“${entry['name'] ?? 'Appunto'}” verrà eliminato insieme ai suoi contenuti e alle registrazioni audio. Questa operazione non può essere annullata.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Annulla'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Elimina'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted || _deletingNote) return;
+    _deletingNote = true;
+    try {
+      await RecentDocuments.delete(entry);
+      if (mounted)
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Appunto eliminato')));
+    } catch (_) {
+      if (mounted)
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Impossibile completare l’eliminazione dell’appunto'),
+          ),
+        );
+    } finally {
+      _deletingNote = false;
+      if (mounted) await _loadRecentFiles();
+    }
+  }
 
   @override
   void initState() {
@@ -895,6 +976,9 @@ class _OpenPageState extends State<OpenPage> {
                         ),
                         entry: Map<String, dynamic>.from(fileData),
                         fallbackIcon: icons.file,
+                        onLongPress: () => _showNoteActions(
+                          Map<String, dynamic>.from(fileData),
+                        ),
                         onTagEdit: () =>
                             _editNoteTag(Map<String, dynamic>.from(fileData)),
                         onTap: () async {

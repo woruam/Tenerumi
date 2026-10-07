@@ -153,6 +153,10 @@ class FilePickerCross {
   }
 
   static Future<void> delete({required String path}) async {
+    if (path.startsWith('content://')) {
+      await _documents.invokeMethod<void>('delete', {'uri': path});
+      return;
+    }
     await storage.deleteFile(await storage.resolve(path));
   }
 }

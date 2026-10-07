@@ -77,6 +77,7 @@ class DocumentLibraryCard extends StatefulWidget {
   final Map<String, dynamic> entry;
   final VoidCallback onTap;
   final VoidCallback? onTagEdit;
+  final VoidCallback? onLongPress;
   final IconData fallbackIcon;
   final LibraryMetadataLoader? metadataLoader;
   const DocumentLibraryCard({
@@ -84,6 +85,7 @@ class DocumentLibraryCard extends StatefulWidget {
     required this.entry,
     required this.onTap,
     this.onTagEdit,
+    this.onLongPress,
     required this.fallbackIcon,
     this.metadataLoader,
   });
@@ -149,7 +151,7 @@ class _DocumentLibraryCardState extends State<DocumentLibraryCard> {
     shape: AppAppearance.panelShape,
     child: InkWell(
       onTap: widget.onTap,
-      onLongPress: widget.onTagEdit,
+      onLongPress: widget.onLongPress ?? widget.onTagEdit,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

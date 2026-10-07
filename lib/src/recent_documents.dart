@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,6 +7,8 @@ import 'package:transparent_image/transparent_image.dart';
 
 import 'XppFile.dart';
 import 'globals.dart';
+import 'compat/file_picker_cross.dart';
+import 'autosave_store.dart';
 
 bool hasDocumentPreview(Object? value) {
   if (value is! String || value.isEmpty) return false;
@@ -23,7 +26,16 @@ class RecentDocuments {
   static Future<void>? _queue;
   static Future<T> _serial<T>(Future<T> Function() operation) {
     final result = (_queue ?? Future.value()).then((_) => operation());
-    _queue = result.then<void>((_) {}, onError: (Object _, StackTrace _) {});
+    final completed = result.then<void>(
+      (_) {},
+      onError: (Object _, StackTrace _) {},
+    );
+    _queue = completed;
+    unawaited(
+      completed.then((_) {
+        if (identical(_queue, completed)) _queue = null;
+      }),
+    );
     return result;
   }
 
@@ -54,6 +66,36 @@ class RecentDocuments {
         'modifiedAt': snapshot.modifiedAt!.toUtc().toIso8601String(),
     });
     await _write(entries);
+  });
+
+  static Future<void> delete(
+    Map<String, dynamic> entry, {
+    Future<void> Function(String)? deleteFile,
+  }) => _serial(() async {
+    final entries = await list();
+    final path = entry['path'];
+    final id = entry['id'];
+    final current = entries
+        .where(
+          (e) => path is String && path.isNotEmpty
+              ? e['path'] == path
+              : id is String && id.isNotEmpty
+              ? e['id'] == id
+              : e['path'] == path && e['name'] == entry['name'],
+        )
+        .firstOrNull;
+    if (current == null) return;
+    if (path is String && path.isNotEmpty) {
+      if (deleteFile != null)
+        await deleteFile(path);
+      else
+        await FilePickerCross.delete(path: path);
+    }
+    entries.remove(current);
+    await _write(entries);
+    final documentId = current['id'];
+    if (documentId is String && documentId.isNotEmpty)
+      await AutosaveStore.remove(documentId);
   });
 
   static Future<void> setTag(Map<String, dynamic> entry, String tag) =>

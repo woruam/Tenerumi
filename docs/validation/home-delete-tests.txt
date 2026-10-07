@@ -1,0 +1,6 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart
+00:00 +0: delete removes only selected file/index/recovery; failure retains entry
+00:00 +1: Android content URI deletion uses document provider and propagates denial
+00:00 +2: home long press shows actions; cancel preserves note; confirmation deletes it
+dynamic_color: Dynamic color not detected on this device.
+00:01 +3: All tests passed!

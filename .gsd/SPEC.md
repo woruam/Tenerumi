@@ -36,3 +36,7 @@ Scelta tag nella creazione note, tag personalizzati persistiti e riassegnazione 
 ## Audio sincronizzato - 2026-10-08
 Status: FINALIZED
 Registrazione Android su azione esplicita, audio portabile negli appunti, tempi per tratto, ascolto interno con evidenziazione e seek dal tratto. Preservare input e strumenti, undo/redo, snapshot e autosave. Limiti memoria, arresto in background, rilascio risorse, test e audit documentati.
+
+## Eliminazione note dalla home - 2026-10-08
+Status: FINALIZED
+Pressione prolungata apre azioni Cambia tag/Elimina; Elimina richiede conferma con nome. Annulla non modifica file/indice. Conferma cancella file e voce recente, copia recovery associata; aggiorna home. Errori visibili senza rimuovere voce se cancellazione file fallisce. Supporto Android content URI e storage locale/Web.
