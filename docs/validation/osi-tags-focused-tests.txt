@@ -1,0 +1,5 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart
+00:00 +0: custom tags persist, include legacy categories and avoid duplicates
+00:00 +1: chosen tags cross snapshots, isolates and subsequent saves
+00:00 +2: phone creates and selects custom tags and opens OSI app info
+00:01 +3: All tests passed!

@@ -1,7 +1,6 @@
+import 'package:xournalpp/widgets/app_info_dialog.dart';
 import 'package:xournalpp/src/app_appearance.dart';
 import 'package:flutter/material.dart';
-import 'package:package_info_plus/package_info_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:xournalpp/generated/l10n.dart';
 import 'package:xournalpp/pages/WorkspacePage.dart';
 import 'package:xournalpp/pages/OpenPage.dart';
@@ -13,20 +12,6 @@ class MainDrawer extends StatefulWidget {
 }
 
 class _MainDrawerState extends State<MainDrawer> {
-  PackageInfo? info;
-
-  @override
-  void initState() {
-    PackageInfo.fromPlatform()
-        .then((value) => setState(() => info = value))
-        .catchError((e) {});
-    super.initState();
-  }
-
-  void _launch(String url) {
-    launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Hero(
@@ -45,7 +30,7 @@ class _MainDrawerState extends State<MainDrawer> {
                   hidden: true,
                   child: UserAccountsDrawerHeader(
                     accountName: Text(
-                      'Xournal++',
+                      'OSI',
                       style: Theme.of(context).textTheme.headlineMedium
                           ?.copyWith(
                             color: Theme.of(context).colorScheme.onSurface,
@@ -99,32 +84,7 @@ class _MainDrawerState extends State<MainDrawer> {
                 ListTile(
                   leading: const Icon(Icons.info),
                   title: Text(S.of(context).about),
-                  onTap: () => showAboutDialog(
-                    context: context,
-                    applicationName: S.of(context).aboutXournalMobileEdition,
-                    applicationVersion:
-                        'Version ${info?.version} build ${info?.buildNumber}',
-                    applicationIcon: Image.asset(
-                      'assets/xournalpp.png',
-                      scale: 8,
-                    ),
-                    applicationLegalese:
-                        'Community revival of Xournal++ Mobile',
-                    children: [
-                      Image.asset('assets/feature-banner.png', scale: 2),
-                      OutlinedButton(
-                        onPressed: () =>
-                            _launch('https://github.com/xournalpp/xournalpp'),
-                        child: Text(S.of(context).aboutXournal),
-                      ),
-                      OutlinedButton(
-                        onPressed: () => _launch(
-                          'https://github.com/xournalpp/xournalpp_mobile',
-                        ),
-                        child: Text(S.of(context).sourceCode),
-                      ),
-                    ],
-                  ),
+                  onTap: () => showOsiAppInfo(context),
                 ),
               ],
             ),

@@ -36,6 +36,7 @@ class XppFile {
     this.previewImage,
     this.sourcePath,
     this.modifiedAt,
+    this.tag,
     String? documentId,
     Map<String, Uint8List>? pdfAttachments,
   }) : documentId =
@@ -48,9 +49,11 @@ class XppFile {
   final String documentId;
   bool recovered = false;
   DateTime? modifiedAt;
+  String? tag;
 
   static XppFile empty({
     String? title,
+    String? tag,
     XppPageSize? pageSize,
     Color? background,
     XppBackground Function(XppPageSize size)? template,
@@ -67,6 +70,7 @@ class XppFile {
     }
     return XppFile(
       title: title,
+      tag: tag,
       pages: [newPage],
       modifiedAt: DateTime.now().toUtc(),
     );
@@ -416,6 +420,7 @@ class XppFile {
 
     return XppFile(
       documentId: documentTree.getAttribute('osipp-id'),
+      tag: documentTree.getAttribute('osipp-tag'),
       modifiedAt: DateTime.tryParse(
         documentTree.getAttribute('osipp-modified-at') ?? '',
       ),
@@ -454,9 +459,10 @@ class XppFile {
       XmlElement(
         XmlName('xournal'),
         [
-          XmlAttribute(XmlName('creator'), 'Xournal++ Mobile'),
+          XmlAttribute(XmlName('creator'), 'OSI'),
           XmlAttribute(XmlName('fileversion'), '4'),
           XmlAttribute(XmlName('osipp-id'), documentId),
+          if (tag != null) XmlAttribute(XmlName('osipp-tag'), tag!),
           if (modifiedAt != null)
             XmlAttribute(
               XmlName('osipp-modified-at'),
@@ -513,6 +519,7 @@ class XppFile {
     return XppFile(
       documentId: documentId,
       modifiedAt: modifiedAt,
+      tag: tag,
       sourcePath: sourcePath,
       title: title,
       previewImage: previewImage,

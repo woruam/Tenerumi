@@ -1,6 +1,8 @@
+import 'package:xournalpp/src/note_tags.dart';
+import 'package:xournalpp/src/recent_documents.dart';
+import 'package:xournalpp/widgets/note_tag_picker.dart';
+import 'package:xournalpp/widgets/app_info_dialog.dart';
 import 'package:xournalpp/src/app_appearance.dart';
-
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -36,18 +38,83 @@ class _OpenPageState extends State<OpenPage> {
     _loadRecentFiles();
   }
 
-  void _loadRecentFiles() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonData = prefs.getString(PreferencesKeys.kRecentFiles) ?? '[]';
+  Future<void> _loadRecentFiles() async {
+    final files = await RecentDocuments.list();
     final recoveries = await AutosaveStore.list();
+    final availableTags = await NoteTags.load();
     if (!mounted) return;
     setState(() {
       recoveryFiles = recoveries;
-      recentFiles = jsonDecode(jsonData);
-      for (var file in recentFiles) {
-        if (file['tag'] == null) file['tag'] = 'Appunti';
+      recentFiles = files;
+      tags = ['Tutti', ...availableTags];
+      if (!tags.contains(selectedTag)) selectedTag = 'Tutti';
+      for (final file in recentFiles) {
+        final currentTag = NoteTags.normalize(
+          file['tag'] as String? ?? 'Appunti',
+        );
+        file['tag'] =
+            availableTags
+                .where((tag) => tag.toLowerCase() == currentTag.toLowerCase())
+                .firstOrNull ??
+            'Appunti';
       }
     });
+  }
+
+  Future<String?> _createTag(BuildContext dialogContext) async {
+    final tag = await showCreateNoteTagDialog(dialogContext);
+    if (tag == null) return null;
+    final available = await NoteTags.load();
+    if (!mounted) return null;
+    setState(() => tags = ['Tutti', ...available]);
+    return tag;
+  }
+
+  Future<void> _editNoteTag(Map<String, dynamic> entry) async {
+    String chosen = entry['tag'] as String? ?? 'Appunti';
+    final result = await showDialog<String>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, update) => AlertDialog(
+          title: const Text('Cambia tag'),
+          content: SizedBox(
+            width: 360,
+            child: NoteTagPicker(
+              tags: tags.where((tag) => tag != 'Tutti').toList(),
+              value: chosen,
+              onChanged: (tag) => update(() => chosen = tag),
+              onCreate: () async {
+                final tag = await _createTag(context);
+                if (context.mounted && tag != null) update(() => chosen = tag);
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Annulla'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, chosen),
+              child: const Text('Salva'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (result == null) return;
+    try {
+      await RecentDocuments.setTag(entry, result);
+      if (!mounted) return;
+      setState(() => selectedTag = result);
+      await _loadRecentFiles();
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Impossibile aggiornare il tag')),
+        );
+      }
+    }
   }
 
   void _openFile(XppFile file) {
@@ -84,6 +151,7 @@ class _OpenPageState extends State<OpenPage> {
     ];
     int selectedTemplate = 1; // default: Righe (come prima)
     bool infinite = false;
+    String noteTag = selectedTag == 'Tutti' ? 'Appunti' : selectedTag;
 
     await showDialog(
       context: context,
@@ -114,6 +182,18 @@ class _OpenPageState extends State<OpenPage> {
                         ),
                       ),
                       const SizedBox(height: 16),
+                      NoteTagPicker(
+                        tags: tags.where((tag) => tag != 'Tutti').toList(),
+                        value: noteTag,
+                        onChanged: (tag) => setDialogState(() => noteTag = tag),
+                        onCreate: () async {
+                          final tag = await _createTag(context);
+                          if (context.mounted && tag != null) {
+                            setDialogState(() => noteTag = tag);
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 8),
                       SwitchListTile(
                         contentPadding: EdgeInsets.zero,
                         title: const Text('Canvas infinito'),
@@ -220,9 +300,11 @@ class _OpenPageState extends State<OpenPage> {
                     final _NoteTemplate chosen = templates[selectedTemplate];
                     final newFile = XppFile.empty(
                       title: title,
+                      tag: noteTag,
                       template: (s) => chosen.builder(s),
                     );
                     newFile.pages!.first.infinite = infinite;
+                    setState(() => selectedTag = noteTag);
                     _openFile(newFile);
                   },
                   style: ElevatedButton.styleFrom(
@@ -597,10 +679,7 @@ class _OpenPageState extends State<OpenPage> {
     return Scaffold(
       // --- 1. APPBAR ---
       appBar: AppBar(
-        title: const Text(
-          'Notes',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        title: const Text('OSI', style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: false,
         actions: [
           if (context.watch<PluginController?>()
@@ -648,7 +727,7 @@ class _OpenPageState extends State<OpenPage> {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    'Xournal Flutter',
+                    'OSI',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -658,7 +737,8 @@ class _OpenPageState extends State<OpenPage> {
               leading: Icon(icons.info),
               title: const Text('Info App'),
               onTap: () {
-                // Azione a tua scelta
+                Navigator.pop(context);
+                showOsiAppInfo(context);
               },
             ),
           ],
@@ -815,6 +895,8 @@ class _OpenPageState extends State<OpenPage> {
                         ),
                         entry: Map<String, dynamic>.from(fileData),
                         fallbackIcon: icons.file,
+                        onTagEdit: () =>
+                            _editNoteTag(Map<String, dynamic>.from(fileData)),
                         onTap: () async {
                           String? savedPath = fileData['path'];
 
@@ -835,6 +917,9 @@ class _OpenPageState extends State<OpenPage> {
                                     );
 
                                 loadedFile.title = fileData['name'];
+                                loadedFile.tag =
+                                    fileData['tag'] as String? ??
+                                    loadedFile.tag;
                                 _openFile(loadedFile);
                               } catch (e) {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -856,7 +941,8 @@ class _OpenPageState extends State<OpenPage> {
                             }
                           } else {
                             final fileToOpen = XppFile.empty()
-                              ..title = fileData['name'];
+                              ..title = fileData['name']
+                              ..tag = fileData['tag'] as String?;
                             _openFile(fileToOpen);
                           }
                         },

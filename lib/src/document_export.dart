@@ -72,7 +72,7 @@ Future<Uint8List> buildNotesPdf(
   if (pages == null || pages.isEmpty) {
     throw StateError('Il documento non contiene pagine');
   }
-  final pdf = pw.Document(title: document.title, creator: 'OSIpp');
+  final pdf = pw.Document(title: document.title, creator: 'OSI');
   for (var index = 0; index < pages.length; index++) {
     final page = pages[index];
     final size = (page.pageSize ?? XppPageSize.a4).toSize();

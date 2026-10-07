@@ -55,3 +55,6 @@ Tema condiviso opaco, bordi sottili e forme continue applicati a libreria, navig
 
 ## Libreria grigia / schede non cliccabili - 2026-10-08
 Riprodotta LocaleDataException nel DateFormat della data durante avvio reale. Precedente test visivo mascherava il difetto inizializzando simboli date: rimossa inizializzazione. Formato numerico locale ora indipendente da Intl. 17 test mirati superati; nuova regressione legacy xopp + creazione/salvataggio/riavvio/riapertura via UI, anteprime decodificate e pixel contenuto verificati. Screenshot home/nota controllati. Analisi senza errori/warning, diff check pulito. Stato e prove in docs/validation/library-grey-status.md. APK su telefono non verificato; serve ricompilazione utente.
+
+## OSI 0.5 e tag - 2026-10-08
+Scelta/creazione tag nel nuovo appunto, riassegnazione da scheda, catalogo persistito con migrazione legacy. Tag in modello, snapshot, .xopp e metadati recenti. Nome pubblico OSI (Android/Web/UI/export), applicationId e dati conservati. Versione 0.5.0+31, Info app condivisa con versione/build runtime, descrizione, credito/licenza. 138 test passati; screenshot telefono verificati; analisi senza errori/warning e diff check pulito. Prove/istruzioni in docs/validation/osi-tags-status.md. Nessun APK generato; richiede ricompilazione per il telefono.

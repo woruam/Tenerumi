@@ -76,12 +76,14 @@ class _DocumentPreviewImageState extends State<DocumentPreviewImage> {
 class DocumentLibraryCard extends StatefulWidget {
   final Map<String, dynamic> entry;
   final VoidCallback onTap;
+  final VoidCallback? onTagEdit;
   final IconData fallbackIcon;
   final LibraryMetadataLoader? metadataLoader;
   const DocumentLibraryCard({
     super.key,
     required this.entry,
     required this.onTap,
+    this.onTagEdit,
     required this.fallbackIcon,
     this.metadataLoader,
   });
@@ -147,19 +149,44 @@ class _DocumentLibraryCardState extends State<DocumentLibraryCard> {
     shape: AppAppearance.panelShape,
     child: InkWell(
       onTap: widget.onTap,
+      onLongPress: widget.onTagEdit,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
             child: ColoredBox(
               color: AppAppearance.raised,
-              child: RepaintBoundary(
-                child: DocumentPreviewImage(
-                  encoded: _data['preview'] is String
-                      ? _data['preview'] as String
-                      : null,
-                  fallbackIcon: widget.fallbackIcon,
-                ),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  RepaintBoundary(
+                    child: DocumentPreviewImage(
+                      encoded: _data['preview'] is String
+                          ? _data['preview'] as String
+                          : null,
+                      fallbackIcon: widget.fallbackIcon,
+                    ),
+                  ),
+                  if (widget.onTagEdit != null)
+                    Positioned(
+                      top: 4,
+                      right: 4,
+                      child: IconButton.filledTonal(
+                        tooltip: 'Cambia tag',
+                        style: IconButton.styleFrom(
+                          backgroundColor: AppAppearance.panel,
+                          foregroundColor: Theme.of(context)
+                              .colorScheme
+                              .onSurfaceVariant,
+                          shape: const CircleBorder(
+                            side: BorderSide(color: AppAppearance.border),
+                          ),
+                        ),
+                        icon: const Icon(Icons.sell_outlined, size: 18),
+                        onPressed: widget.onTagEdit,
+                      ),
+                    ),
+                ],
               ),
             ),
           ),

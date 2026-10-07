@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:xournalpp/src/dynamic_color_adapter.dart';
 import 'package:flutter/material.dart';
 import 'package:dynamic_color/dynamic_color.dart';
@@ -69,7 +68,7 @@ class _XournalppMobileState extends State<XournalppMobile> {
           builder: (lightDynamic, darkDynamic) {
             return MaterialApp(
               debugShowCheckedModeBanner: false,
-              title: kIsWeb ? 'Xournal++ Web' : 'Xournal++ Mobile',
+              title: 'OSI',
               localizationsDelegates: const [
                 S.delegate,
                 DefaultMaterialLocalizations.delegate,

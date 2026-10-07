@@ -46,7 +46,7 @@ class RecentDocuments {
       'path': path,
       'id': snapshot.documentId,
       'favorite': previous?['favorite'] ?? false,
-      'tag': previous?['tag'] ?? 'Appunti',
+      'tag': snapshot.tag ?? previous?['tag'] ?? 'Appunti',
       'preview': snapshot.previewImage == null
           ? (previous?['preview'] ?? '')
           : base64Encode(snapshot.previewImage!),
@@ -55,6 +55,22 @@ class RecentDocuments {
     });
     await _write(entries);
   });
+
+  static Future<void> setTag(Map<String, dynamic> entry, String tag) =>
+      _serial(() async {
+        final entries = await list();
+        final current = entries
+            .where(
+              (e) =>
+                  e['path'] == entry['path'] &&
+                  ((entry['path'] != null && entry['path'] != '') ||
+                      e['name'] == entry['name']),
+            )
+            .firstOrNull;
+        if (current == null) throw StateError('Appunto non disponibile');
+        current['tag'] = tag;
+        await _write(entries);
+      });
 
   static Future<void> enrich(
     Map<String, dynamic> expected,

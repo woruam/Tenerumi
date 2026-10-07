@@ -18,6 +18,7 @@ import 'package:xournalpp/src/XppFile.dart';
 import 'package:xournalpp/src/globals.dart';
 import 'package:xournalpp/src/recent_documents.dart';
 import 'package:xournalpp/widgets/document_library_card.dart';
+import 'package:xournalpp/widgets/note_tag_picker.dart';
 
 import 'document_storage_test.dart' show TestDocumentsProvider;
 import 'pomodoro_appearance_test.dart' show capture;
@@ -131,8 +132,18 @@ void main() {
       await tester.tap(find.text('Nuovo Appunto'));
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextField), 'Appunto appena salvato');
+      await tester.tap(find.text('Crea tag'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField).last, 'Università');
+      await tester.tap(find.text('Crea'));
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<NoteTagPicker>(find.byType(NoteTagPicker)).value,
+        'Università',
+      );
       await tester.tap(find.text('Crea Foglio'));
       await waitFor(tester, find.byType(CanvasPage));
+      expect(workspace(tester).active.file!.tag, 'Università');
       workspace(tester).active.addNewContent(0, redLine());
       await tester.pump();
       await tester.tap(find.byKey(const ValueKey('document-settings')));
@@ -196,8 +207,44 @@ void main() {
         frame.image.dispose();
         codec.dispose();
       });
+      await tester.ensureVisible(find.widgetWithText(FilterChip, 'Università'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(FilterChip, 'Università'));
+      await tester.pumpAndSettle();
+      expect(find.byType(DocumentLibraryCard), findsOneWidget);
+      expect(find.text('Appunto precedente'), findsNothing);
+      await tester.tap(find.byTooltip('Cambia tag'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(DropdownButtonFormField<String>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Scuola').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Salva'));
+      await tester.pumpAndSettle();
+      expect(
+        (await RecentDocuments.list()).singleWhere(
+          (entry) => entry['path'] == savedPath,
+        )['tag'],
+        'Scuola',
+      );
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpWidget(
+        RepaintBoundary(key: key, child: const XournalppMobile()),
+      );
+      await waitFor(tester, find.text('Appunto appena salvato'));
+      await tester.tap(find.widgetWithText(FilterChip, 'Scuola'));
+      await tester.pumpAndSettle();
+      expect(find.byType(DocumentLibraryCard), findsOneWidget);
+      await tester.runAsync(() async {
+        for (final element in previews.evaluate()) {
+          await precacheImage((element.widget as Image).image, element);
+        }
+      });
+      await tester.pumpAndSettle();
+      await capture(tester, key, 'osi-edited-note-tag');
       await tester.tap(find.text('Appunto appena salvato'));
       await waitFor(tester, find.byType(CanvasPage));
+      expect(workspace(tester).active.file!.tag, 'Scuola');
       expect(workspace(tester).active.file!.sourcePath, savedPath);
       expect(
         workspace(tester).active.file!.pages!.first.layers!.first.content,

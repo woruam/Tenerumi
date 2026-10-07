@@ -1,6 +1,6 @@
-Wave 1: storage e serializzazione; navigazione e input; rendering e PDF (attivit‡ indipendenti).
+Wave 1: storage e serializzazione; navigazione e input; rendering e PDF (attivit√† indipendenti).
 Wave 2: integrazione, test unitari/widget, analisi e build Web.
-Wave 3: documentare prove, limiti e ulteriori criticit‡.
+Wave 3: documentare prove, limiti e ulteriori criticit√†.
 
 Follow-up Wave 1: split/reflow; anteprima ink; toolbar; Android (indipendenti).
 Wave 2: integrazione + regressioni + analisi + APK; documentare misure richieste su 90/120Hz.
@@ -25,3 +25,10 @@ Singola fase: cinque constraint, controlli API/null safety, pub get, analyze e c
 ## Libreria grigia dopo salvataggio
 1. Riprodurre errore nel percorso di avvio reale con metadati data.
 2. Correggere e verificare anteprime e riapertura persistita con regressioni e screenshot.
+
+## Tag e identita OSI
+1. Modello e persistenza tag, scelta/creazione/riassegnazione UI.
+2. Branding OSI e Info app con versione reale.
+3. Test di creazione, salvataggio, riapertura, filtri e screenshot.
+
+Tag e identita OSI: implementazione e verifica completate (138 test e screenshot).

@@ -1,9 +1,9 @@
 name: xournalpp
-description: A modernized port of the main features of Xournal++ to Android, Windows, Linux and the Web.
+description: OSI - Appunti, disegno e annotazioni PDF compatibili con Xournal++.
 
 publish_to: none
 
-version: 2.0.0+30
+version: 0.5.0+31
 
 environment:
   sdk: '>=3.13.0 <4.0.0'
