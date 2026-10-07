@@ -1,0 +1,27 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart
+00:00 +0: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: numeric modified dates work without initialized locale symbols
+00:00 +1: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:00 +2: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:00 +3: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:00 +4: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:00 +5: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:00 +6: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:00 +6: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: named autosave updates the home thumbnail, date and existing user metadata
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-home-auto-10b5cbad\xournalpp\recovery-1791411365234465-1130644146-1791411365243600.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-home-auto-10b5cbad/notes.xopp
+00:00 +7: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:00 +8: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:00 +9: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:00 +10: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:00 +11: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+dynamic_color: Dynamic color not detected on this device.
+00:01 +12: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:01 +13: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:01 +14: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:01 +15: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:02 +15: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+dynamic_color: Dynamic color not detected on this device.
+00:02 +16: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-home-reopen-35ebacb4\xournalpp\Appunto appena salvato.xopp
+dynamic_color: Dynamic color not detected on this device.
+00:03 +17: All tests passed!

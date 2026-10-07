@@ -7,7 +7,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:xournalpp/main.dart';
 import 'package:xournalpp/pages/OpenPage.dart';
 import 'package:xournalpp/src/app_appearance.dart';
@@ -27,7 +26,6 @@ Future<void> capture(WidgetTester tester, GlobalKey key, String name) async {
 }
 
 void main() {
-  setUpAll(() => initializeDateFormatting());
   testWidgets(
     'Pomodoro theme fits phone library and settings without backdrop filtering',
     (tester) async {

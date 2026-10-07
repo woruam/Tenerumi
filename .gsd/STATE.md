@@ -52,3 +52,6 @@ Pubspec solo cinque constraint: archive4.3.0 file_picker13.1.0 google_fonts8.2.1
 
 ## Estetica Pomodoro - 2026-10-07
 Tema condiviso opaco, bordi sottili e forme continue applicati a libreria, navigazione, toolbar e menu. Rimosso blur UI; timer e anello isolati; font VT323/Inter locali con licenze OFL. Personalizzazione conservata. 133 test passati, verifica visiva telefono/desktop, analisi senza errori/warning (199 infos), diff check pulito. Prove e limiti in docs/validation/pomodoro-style-status.md. Frame time Android non misurato; nessun APK.
+
+## Libreria grigia / schede non cliccabili - 2026-10-08
+Riprodotta LocaleDataException nel DateFormat della data durante avvio reale. Precedente test visivo mascherava il difetto inizializzando simboli date: rimossa inizializzazione. Formato numerico locale ora indipendente da Intl. 17 test mirati superati; nuova regressione legacy xopp + creazione/salvataggio/riavvio/riapertura via UI, anteprime decodificate e pixel contenuto verificati. Screenshot home/nota controllati. Analisi senza errori/warning, diff check pulito. Stato e prove in docs/validation/library-grey-status.md. APK su telefono non verificato; serve ricompilazione utente.

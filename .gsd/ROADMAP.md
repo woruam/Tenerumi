@@ -21,3 +21,7 @@ Singola fase: cinque constraint, controlli API/null safety, pub get, analyze e c
 ## Estetica Pomodoro
 1. Centralizzare tema e superfici; uniformare componenti e rimuovere blur.
 2. Verificare analisi, regressioni e screenshot; documentare limiti prestazioni.
+
+## Libreria grigia dopo salvataggio
+1. Riprodurre errore nel percorso di avvio reale con metadati data.
+2. Correggere e verificare anteprime e riapertura persistita con regressioni e screenshot.

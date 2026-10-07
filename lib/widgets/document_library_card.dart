@@ -4,15 +4,18 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:xournalpp/src/library_metadata.dart';
 
 String documentModifiedLabel(Object? value) {
-  final date = value is String ? DateTime.tryParse(value) : null;
-  return date == null
-      ? 'Data non disponibile'
-      : 'Modificato il ${DateFormat('dd/MM/yyyy HH:mm').format(date.toLocal())}';
+  final date = value is String ? DateTime.tryParse(value)?.toLocal() : null;
+  if (date == null) return 'Data non disponibile';
+  // This fixed numeric format needs no locale data. In particular, library
+  // cards must also build during a cold start and after metadata is loaded.
+  String twoDigits(int number) => number.toString().padLeft(2, '0');
+  return 'Modificato il ${twoDigits(date.day)}/${twoDigits(date.month)}/'
+      '${date.year.toString().padLeft(4, '0')} '
+      '${twoDigits(date.hour)}:${twoDigits(date.minute)}';
 }
 
 class DocumentPreviewImage extends StatefulWidget {
