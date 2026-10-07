@@ -83,6 +83,8 @@ class MainActivity: FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         methodChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)
+        DocumentStorage.register(flutterEngine.dartExecutor.binaryMessenger, contentResolver)
+        PluginOcr.register(flutterEngine.dartExecutor.binaryMessenger)
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {

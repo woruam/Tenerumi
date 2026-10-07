@@ -1,0 +1,34 @@
+{
+  "apiVersion": 1,
+  "id": "example.anki",
+  "name": "Flashcard per Anki",
+  "version": "2.0.0",
+  "description": "Crea una flashcard o importa una lista JSON; esporta TSV per Anki.",
+  "runtime": "javascript",
+  "permissions": [
+    "ui",
+    "export",
+    "storage",
+    "files.read"
+  ],
+  "modules": {
+    "main.js": "export async function add(context) {\n  const card = await osipp.call('ui.form', {title:'Nuova flashcard', fields:[\n    {id:'front', label:'Domanda', type:'text', multiline:true, required:true},\n    {id:'back', label:'Risposta', type:'text', multiline:true, required:true}\n  ]});\n  if (!card) return;\n  const cards = await osipp.call('state.get', {key:'cards'}) || [];\n  cards.push(card);\n  await osipp.call('state.set', {key:'cards', value:cards});\n  await osipp.call('message', {text:`Flashcard conservate: ${cards.length}`});\n}\nexport async function importCards(context) {\n  const file = await osipp.call('files.open', {encoding:'utf8'});\n  if (!file) return;\n  const cards = JSON.parse(file.text);\n  if (!Array.isArray(cards) || cards.some(c => typeof c.front !== 'string' || typeof c.back !== 'string')) throw new Error('Il JSON deve contenere [{front, back}]');\n  await osipp.call('state.set', {key:'cards', value:cards});\n  await osipp.call('message', {text:`Importate ${cards.length} flashcard`});\n}\nexport async function exportCards(context) {\n  const cards = await osipp.call('state.get', {key:'cards'}) || [];\n  await osipp.call('anki.export', {cards, deck:'OSIpp', name:'flashcard.tsv'});\n}\n"
+  },
+  "commands": [
+    {
+      "id": "add",
+      "label": "Aggiungi flashcard",
+      "handler": "add"
+    },
+    {
+      "id": "import",
+      "label": "Importa flashcard JSON",
+      "handler": "importCards"
+    },
+    {
+      "id": "export",
+      "label": "Esporta per Anki",
+      "handler": "exportCards"
+    }
+  ]
+}

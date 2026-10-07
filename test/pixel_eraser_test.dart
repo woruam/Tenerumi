@@ -36,8 +36,8 @@ void main() {
       );
       expect(result.affected, isTrue);
       final erased = result.newContent.single as XppStroke;
-      expect(erased.visibleInkPath.contains(const Offset(50, 50)), isFalse);
-      expect(erased.visibleInkPath.contains(const Offset(40, 50)), isTrue);
+      expect(erased.containsVisibleInk(const Offset(50, 50)), isFalse);
+      expect(erased.containsVisibleInk(const Offset(40, 50)), isTrue);
       expect(stroke.erasures, isEmpty);
       expect(erased.points!.length, 2);
     },
@@ -54,8 +54,8 @@ void main() {
                 .newContent
                 .single
             as XppStroke;
-    expect(erased.visibleInkPath.contains(const Offset(52.3, 52.3)), isTrue);
-    expect(erased.visibleInkPath.contains(const Offset(52, 50)), isFalse);
+    expect(erased.containsVisibleInk(const Offset(52.3, 52.3)), isTrue);
+    expect(erased.containsVisibleInk(const Offset(52, 50)), isFalse);
   });
 
   test('swept eraser leaves no gaps between distant events', () {
@@ -71,10 +71,10 @@ void main() {
                 .single
             as XppStroke;
     for (double x = 30; x <= 70; x += 2) {
-      expect(erased.visibleInkPath.contains(Offset(x, 50)), isFalse);
+      expect(erased.containsVisibleInk(Offset(x, 50)), isFalse);
     }
-    expect(erased.visibleInkPath.contains(const Offset(20, 50)), isTrue);
-    expect(erased.visibleInkPath.contains(const Offset(80, 50)), isTrue);
+    expect(erased.containsVisibleInk(const Offset(20, 50)), isTrue);
+    expect(erased.containsVisibleInk(const Offset(80, 50)), isTrue);
   });
 
   test(
@@ -82,7 +82,7 @@ void main() {
     () {
       final file = XppFile.empty();
       file.pages!.first.layers!.first.content = [line(), line()];
-      final controller = CanvasController()..file = file;
+      final controller = CanvasController(autosaveEnabled: false)..file = file;
       controller.filterEraser(
         pageIndex: 0,
         coordinates: const Offset(50, 50),
@@ -90,7 +90,7 @@ void main() {
       );
       expect(
         file.pages!.first.layers!.first.content!.whereType<XppStroke>().every(
-          (s) => !s.visibleInkPath.contains(const Offset(50, 50)),
+          (s) => !s.containsVisibleInk(const Offset(50, 50)),
         ),
         isTrue,
       );
@@ -115,7 +115,7 @@ void main() {
   test('eraser hits rendered width outside centerline bounding rectangle', () {
     final file = XppFile.empty();
     file.pages!.first.layers!.first.content = [line()];
-    final controller = CanvasController()..file = file;
+    final controller = CanvasController(autosaveEnabled: false)..file = file;
     controller.filterEraser(
       pageIndex: 0,
       coordinates: const Offset(50, 53),
@@ -153,8 +153,8 @@ void main() {
           reopened.pages!.first.layers!.first.content!.single as XppStroke;
       expect(restored.isShape, isTrue);
       expect(restored.erasures.single.start, const Offset(120, 140));
-      expect(restored.visibleInkPath.contains(const Offset(120, 140)), isFalse);
-      expect(restored.visibleInkPath.contains(const Offset(100, 140)), isTrue);
+      expect(restored.containsVisibleInk(const Offset(120, 140)), isFalse);
+      expect(restored.containsVisibleInk(const Offset(100, 140)), isTrue);
     },
   );
 
@@ -169,7 +169,7 @@ void main() {
               as XppStroke;
       final recorder = ui.PictureRecorder();
       final canvas = Canvas(recorder);
-      canvas.drawColor(Colors.blue, BlendMode.src);
+      canvas.drawColor(const Color(0xff0000ff), BlendMode.src);
       canvas.save();
       canvas.translate(erased.getOffset().dx, erased.getOffset().dy);
       erased.paintToCanvas(canvas, const Size(100, 100));
@@ -185,9 +185,8 @@ void main() {
       expect(pixel(40, 50), [0, 0, 0, 255]);
       final png = await image.toByteData(format: ui.ImageByteFormat.png);
       await Directory('docs/validation').create(recursive: true);
-      await File(
-        'docs/validation/pixel-eraser.png',
-      ).writeAsBytes(png!.buffer.asUint8List());
+      await File('docs/validation/pixel-eraser.png')
+          .writeAsBytes(png!.buffer.asUint8List());
       image.dispose();
       picture.dispose();
     },
@@ -198,37 +197,34 @@ void main() {
     (tester) async {
       final file = XppFile.empty();
       file.pages!.first.layers!.first.content = [line()];
-      final controller = CanvasController()..file = file;
+      final controller = CanvasController(autosaveEnabled: false)..file = file;
       const key = ValueKey('eraser-input');
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: Align(
               alignment: Alignment.topLeft,
-              child: Listener(
-                onPointerUp: (_) => controller.eraserSnapshotTaken = false,
-                onPointerCancel: (_) => controller.eraserSnapshotTaken = false,
-                child: PointerListener(
-                  key: key,
-                  toolData: const {
-                    ui.PointerDeviceKind.stylus: EditingTool.ERASER,
-                  },
-                  strokeWidth: 1,
-                  eraserWidth: 10,
-                  onEraserStart: () => controller.eraserSnapshotTaken = false,
-                  filterEraser:
-                      ({
-                        Offset? coordinates,
-                        Offset? previousCoordinates,
-                        double? radius,
-                      }) => controller.filterEraser(
-                        pageIndex: 0,
-                        coordinates: coordinates,
-                        previousCoordinates: previousCoordinates,
-                        radius: radius,
-                      ),
-                  child: const SizedBox(width: 100, height: 100),
-                ),
+              child: PointerListener(
+                key: key,
+                toolData: const {
+                  ui.PointerDeviceKind.stylus: EditingTool.ERASER,
+                },
+                strokeWidth: 1,
+                eraserWidth: 10,
+                onEraserStart: controller.beginEraserGesture,
+                onEraserEnd: controller.endEraserGesture,
+                filterEraser:
+                    ({
+                      Offset? coordinates,
+                      Offset? previousCoordinates,
+                      double? radius,
+                    }) => controller.filterEraser(
+                      pageIndex: 0,
+                      coordinates: coordinates,
+                      previousCoordinates: previousCoordinates,
+                      radius: radius,
+                    ),
+                child: const SizedBox(width: 100, height: 100),
               ),
             ),
           ),
@@ -257,8 +253,8 @@ void main() {
       controller.undo();
       final undone =
           file.pages!.first.layers!.first.content!.single as XppStroke;
-      expect(undone.visibleInkPath.contains(const Offset(65, 50)), isTrue);
-      expect(undone.visibleInkPath.contains(const Offset(30, 50)), isFalse);
+      expect(undone.containsVisibleInk(const Offset(65, 50)), isTrue);
+      expect(undone.containsVisibleInk(const Offset(30, 50)), isFalse);
       await tester.pumpWidget(const SizedBox.shrink());
       controller.dispose();
     },

@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+
 import 'dart:ui';
+
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
 import 'package:xournalpp/controllers/canvas_controller.dart';
 import 'package:xournalpp/controllers/theme_controller.dart';
+import 'package:xournalpp/plugins/plugin_controller.dart';
+import 'package:xournalpp/plugins/plugin_manager_page.dart';
+
+import 'layers_panel.dart';
 
 class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
   final GlobalKey penKey;
@@ -47,6 +53,7 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
     final stylusTool = ctrl.toolData[PointerDeviceKind.stylus];
     // Set di icone scelto dall'utente nelle impostazioni (outlined/rounded/sharp).
     final AppIcons icons = context.watch<ThemeController>().icons;
+    final plugins = context.watch<PluginController?>();
 
     return AppBar(
       automaticallyImplyLeading: false,
@@ -54,6 +61,53 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       backgroundColor: Colors.transparent,
       actions: [
+        IconButton(
+          key: const ValueKey('layers-manager'),
+          tooltip: 'Livelli',
+          icon: const Icon(Icons.layers_outlined),
+          onPressed: ctrl.file?.pages?.isNotEmpty == true && !ctrl.savingFile
+              ? () => showLayersPanel(context, ctrl)
+              : null,
+        ),
+        IconButton(
+          tooltip: ctrl.autosaveError != null
+              ? 'Autosalvataggio fallito: ${ctrl.autosaveError}'
+              : ctrl.lastAutosave == null
+              ? 'Autosalvataggio attivo'
+              : 'Copia di recupero aggiornata alle ${ctrl.lastAutosave!.hour.toString().padLeft(2, '0')}:${ctrl.lastAutosave!.minute.toString().padLeft(2, '0')}',
+          icon: Icon(
+            ctrl.autosaveError != null
+                ? Icons.error_outline
+                : ctrl.autosaving
+                ? Icons.sync
+                : Icons.cloud_done_outlined,
+          ),
+          onPressed: () async {
+            await ctrl.flushAutosave();
+            if (!context.mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  ctrl.autosaveError != null
+                      ? 'Autosalvataggio non riuscito: ${ctrl.autosaveError}'
+                      : 'Autosalvataggio attivo. Le modifiche sono recuperabili dalla schermata iniziale.',
+                ),
+              ),
+            );
+          },
+        ),
+        if (plugins != null)
+          IconButton(
+            key: const ValueKey('plugin-manager'),
+            tooltip: 'Plugin',
+            icon: const Icon(Icons.extension_outlined),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) =>
+                    PluginManagerPage(plugins: plugins, canvas: ctrl),
+              ),
+            ),
+          ),
         PopupMenuButton<String>(
           key: const ValueKey('document-settings'),
           tooltip: 'Impostazioni documento',
@@ -61,6 +115,10 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
           onSelected: (action) {
             if (action == 'save') {
               ctrl.saveFile(context);
+            } else if (action == 'save-xopp') {
+              ctrl.exportToXopp(context);
+            } else if (action == 'export-pdf') {
+              ctrl.exportToPdf(context);
             } else if (action == 'open') {
               onOpenFile?.call();
             }
@@ -72,6 +130,24 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
               child: const ListTile(
                 leading: Icon(Icons.save_outlined),
                 title: Text('Salva'),
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
+            PopupMenuItem(
+              value: 'save-xopp',
+              enabled: !ctrl.savingFile,
+              child: const ListTile(
+                leading: Icon(Icons.save_as_outlined),
+                title: Text('Salva come XOPP'),
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
+            PopupMenuItem(
+              value: 'export-pdf',
+              enabled: !ctrl.savingFile,
+              child: const ListTile(
+                leading: Icon(Icons.picture_as_pdf_outlined),
+                title: Text('Esporta PDF'),
                 contentPadding: EdgeInsets.zero,
               ),
             ),
@@ -94,8 +170,11 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
             decoration: BoxDecoration(
               color: Colors.black.withOpacity(0.4),
               border: Border(
-                  bottom: BorderSide(
-                      color: Colors.white.withOpacity(0.1), width: 1)),
+                bottom: BorderSide(
+                  color: Colors.white.withOpacity(0.1),
+                  width: 1,
+                ),
+              ),
             ),
           ),
         ),
@@ -209,10 +288,13 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
             const SizedBox(height: 30, child: VerticalDivider(width: 20)),
 
             IconButton(
-                icon: Icon(icons.addPage),
-                tooltip: "Aggiungi Pagina",
-                color: Theme.of(context).colorScheme.primary,
-                onPressed: ctrl.addPage),
+              icon: Icon(icons.addPage),
+              tooltip: "Aggiungi Pagina",
+              color: Theme.of(context).colorScheme.primary,
+              onPressed: ctrl.file?.pages?.firstOrNull?.infinite == true
+                  ? null
+                  : ctrl.addPage,
+            ),
 
             // --- IL TASTO PDF DIRETTAMENTE QUI, BEN VISIBILE ---
             IconButton(
@@ -227,16 +309,18 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
             IconButton(
               icon: Icon(icons.timer),
               tooltip: 'Pomodoro',
-              color:
-                  pomodoroActive ? Theme.of(context).colorScheme.primary : null,
+              color: pomodoroActive
+                  ? Theme.of(context).colorScheme.primary
+                  : null,
               onPressed: onPomodoroTap,
             ),
             const SizedBox(width: 16),
             if (ctrl.savingFile)
               const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2)),
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
           ],
         ),
       ),

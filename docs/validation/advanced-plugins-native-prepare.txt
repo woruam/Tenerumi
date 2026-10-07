@@ -1,0 +1,39 @@
+Resolving dependencies...
+Downloading packages...
++ adaptive_number 1.0.0
++ args 2.4.2 (2.7.0 available)
++ async 2.13.1
++ build_tool 1.0.0 from path C:/Users/aless/AppData/Local/Pub/Cache/hosted/pub.dev/fjs-3.2.0/cargokit/build_tool
++ collection 1.18.0 (1.19.1 available)
++ convert 3.1.1 (3.1.2 available)
++ crypto 3.0.3 (3.0.7 available)
++ ed25519_edwards 0.3.1 (0.3.2 available)
++ fixnum 1.1.1
++ github 9.17.0 (9.26.0 available)
++ hex 0.2.0
++ http 1.1.0 (1.6.0 available)
++ http_parser 4.0.2 (4.1.2 available)
++ json_annotation 4.12.0
++ logging 1.2.0 (1.3.0 available)
++ meta 1.19.0
++ path 1.8.0 (1.9.1 available)
++ petitparser 5.4.0 (7.1.0 available)
++ source_span 1.10.0 (1.10.2 available)
++ string_scanner 1.4.1
++ term_glyph 1.2.2
++ toml 0.14.0 (0.18.0 available)
++ typed_data 1.4.0
++ version 3.0.0 (3.0.2 available)
++ yaml 3.1.2 (3.1.4 available)
+Changed 25 dependencies!
+15 packages have newer versions incompatible with dependency constraints.
+Try `dart pub outdated` for more information.
+Environment variable CARGOKIT_ROOT_PROJECT_DIR: C:\Users\aless\Documents\GitHub\OSIpp
+Environment variable CARGOKIT_TARGET_PLATFORM: windows-x64
+Environment variable CARGOKIT_TARGET_PLATFORM: windows-x64
+Environment variable CARGOKIT_CONFIGURATION: release
+Environment variable CARGOKIT_MANIFEST_DIR: C:\Users\aless\AppData\Local\Pub\Cache\hosted\pub.dev\fjs-3.2.0\libfjs
+Environment variable CARGOKIT_TARGET_TEMP_DIR: C:\Users\aless\Documents\GitHub\OSIpp\build\plugin-test-native
+Environment variable CARGOKIT_OUTPUT_DIR: C:\Users\aless\Documents\GitHub\OSIpp\build\plugin-test-native
+Environment variable CARGOKIT_OUTPUT_DIR: C:\Users\aless\Documents\GitHub\OSIpp\build\plugin-test-native
+Motore verificato pronto. Eseguire flutter test test/plugin_javascript_test.dart.

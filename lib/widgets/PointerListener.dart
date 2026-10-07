@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
+
 import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -8,17 +10,24 @@ import 'package:xournalpp/layer_contents/XppTexImage.dart';
 import 'package:xournalpp/layer_contents/XppText.dart';
 import 'package:xournalpp/src/ShapeRecognizer.dart';
 import 'package:xournalpp/src/ink_geometry.dart';
+import 'package:xournalpp/src/selection_clipboard.dart';
 import 'package:xournalpp/src/XppLayer.dart';
 import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
 import 'package:xournalpp/widgets/ZoomableWidget.dart';
 
 class PointerListener extends StatefulWidget {
+  final bool readOnly;
+  final Offset canvasOrigin;
   final Function(XppContent?)? onNewContent;
   final Function({int? device, PointerDeviceKind? kind})? onDeviceChange;
   final Widget? child;
   final Map<PointerDeviceKind?, EditingTool> toolData;
   final Matrix4? translationMatrix;
   final double? strokeWidth;
+  final double? highlighterWidth;
+  final Color? highlighterColor;
+  final SelectionClipboard? clipboard;
+  final List<XppContent> Function(Offset)? onPasteContent;
   final Color? color;
   final Function({
     Offset? coordinates,
@@ -28,6 +37,7 @@ class PointerListener extends StatefulWidget {
   filterEraser;
   final double? eraserWidth;
   final VoidCallback? onEraserStart;
+  final VoidCallback? onEraserEnd;
   final Function()? removeLastContent;
 
   final String buttonDownAction;
@@ -42,16 +52,23 @@ class PointerListener extends StatefulWidget {
 
   const PointerListener({
     Key? key,
+    this.readOnly = false,
+    this.canvasOrigin = Offset.zero,
     this.onNewContent,
     this.child,
     this.toolData = const {},
     this.translationMatrix,
     this.onDeviceChange,
     this.strokeWidth,
+    this.highlighterWidth,
+    this.highlighterColor,
+    this.clipboard,
+    this.onPasteContent,
     this.color,
     this.filterEraser,
     this.eraserWidth,
     this.onEraserStart,
+    this.onEraserEnd,
     this.removeLastContent,
     this.buttonDownAction = 'eraser',
     this.buttonUpAction = 'select',
@@ -98,6 +115,61 @@ class PointerListenerState extends State<PointerListener> {
   Rect? _selectionRect;
   _SelectionDragMode _dragMode = _SelectionDragMode.none;
   Offset? _lastDragPosition;
+  bool _moveSelectionArmed = false;
+  bool _selectionMutationStarted = false;
+  Timer? _pasteHoldTimer;
+  Offset? _holdScreenPosition;
+  Offset? _pastePosition;
+  bool _longPressConsumed = false;
+
+  void _startPasteHold(PointerDownEvent event) {
+    _pasteHoldTimer?.cancel();
+    _longPressConsumed = false;
+    if (event.kind != PointerDeviceKind.stylus ||
+        widget.clipboard?.hasContent != true ||
+        widget.onPasteContent == null ||
+        isEraser(event) ||
+        isText(event) ||
+        isLaTeX(event)) {
+      return;
+    }
+    _holdScreenPosition = event.position;
+    final position = _canvasPoint(event);
+    _pasteHoldTimer = Timer(kLongPressTimeout, () {
+      if (!mounted || _drawingPointer != event.pointer) return;
+      setState(() {
+        _longPressConsumed = true;
+        clearPoints();
+        _lassoPoints.clear();
+        _dragMode = _SelectionDragMode.none;
+        _pastePosition = position;
+      });
+    });
+  }
+
+  void _clearSelection() {
+    _selectedContent.clear();
+    _selectionRect = null;
+    _moveSelectionArmed = false;
+  }
+
+  void _selectContent(List<XppContent> content) {
+    Rect? bounds;
+    for (final element in content) {
+      final rect = element.bounds();
+      if (rect == null) continue;
+      bounds = bounds == null ? rect : bounds.expandToInclude(rect);
+    }
+    _selectedContent = content;
+    _selectionRect = bounds?.inflate(4);
+    _moveSelectionArmed = false;
+  }
+
+  void _beforeSelectionMutation() {
+    if (_selectionMutationStarted) return;
+    widget.onBeforeContentChanged?.call();
+    _selectionMutationStarted = true;
+  }
 
   /// Azione "fissa" (toggle): attivata dal click del tasto della penna in
   /// hover (stile Samsung Notes) o dal canale nativo (penne Redmi & simili).
@@ -185,6 +257,7 @@ class PointerListenerState extends State<PointerListener> {
 
   @override
   void dispose() {
+    _pasteHoldTimer?.cancel();
     _inkPreview.dispose();
     if (identical(_hardwareOwner, this)) _hardwareOwner = null;
     _hardwareListeners.remove(this);
@@ -197,6 +270,21 @@ class PointerListenerState extends State<PointerListener> {
 
   @override
   void didUpdateWidget(covariant PointerListener oldWidget) {
+    if (widget.readOnly && !oldWidget.readOnly) {
+      _pasteHoldTimer?.cancel();
+      _pastePosition = null;
+      _drawingPointer = null;
+      clearPoints();
+      _lassoPoints.clear();
+      _clearSelection();
+      _dragMode = _SelectionDragMode.none;
+      widget.onEraserEnd?.call();
+    }
+    final content = widget.getPageContent?.call();
+    if (content != null &&
+        _selectedContent.any((item) => !content.contains(item))) {
+      _clearSelection();
+    }
     if (oldWidget.toolData != widget.toolData) {
       final currentStylusTool = widget.toolData[PointerDeviceKind.stylus];
       if ((_activeOverrideAction == 'eraser' &&
@@ -229,10 +317,12 @@ class PointerListenerState extends State<PointerListener> {
   }
 
   Color _getToolColor(XppStrokeTool currentTool) {
-    if (widget.color == null) return Colors.black;
+    final color = currentTool == XppStrokeTool.HIGHLIGHTER
+        ? widget.highlighterColor ?? widget.color
+        : widget.color;
     return currentTool == XppStrokeTool.HIGHLIGHTER
-        ? widget.color!.withOpacity(0.5)
-        : widget.color!;
+        ? (color ?? Colors.black).withOpacity(0.5)
+        : color ?? Colors.black;
   }
 
   @override
@@ -243,67 +333,90 @@ class PointerListenerState extends State<PointerListener> {
         _handleHoverButtons(event);
       },
       opaque: false,
-      child: Listener(
-        behavior: HitTestBehavior.translucent,
-        onPointerMove: _onPointerMove,
-        onPointerDown: _onPointerDown,
-        onPointerUp: _onPointerUp,
-        onPointerCancel: (data) {
-          _touchPointers.remove(data.pointer);
-          if (_touchPointers.isEmpty) _multipleTouches = false;
-          if (_drawingPointer != data.pointer) return;
-          _drawingPointer = null;
-          clearPoints();
-          _lassoPoints.clear();
-          _dragMode = _SelectionDragMode.none;
-          poppedContentForCurrentPointer = false;
-          _heldButtonAction = null;
-          _strokeTool = null;
-        },
-        onPointerSignal: (data) {
-          setState(() {
-            tool = getToolFromPointer(data);
-          });
-          widget.onDeviceChange?.call(device: data.device, kind: data.kind);
-        },
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            widget.child!,
-            Positioned.fill(
-              child: IgnorePointer(
-                child: RepaintBoundary(
-                  child: CustomPaint(
-                    painter: _ShapePreviewPainter(
-                      points: points,
-                      preview: _inkPreview,
-                      color: () => _getToolColor(tool),
-                      tool: () =>
-                          widget.toolData[PointerDeviceKind.stylus] ??
-                          EditingTool.STYLUS,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Listener(
+            behavior: HitTestBehavior.translucent,
+            onPointerMove: _onPointerMove,
+            onPointerDown: _onPointerDown,
+            onPointerUp: _onPointerUp,
+            onPointerCancel: (data) {
+              _pasteHoldTimer?.cancel();
+              _touchPointers.remove(data.pointer);
+              if (_touchPointers.isEmpty) _multipleTouches = false;
+              if (_drawingPointer != data.pointer) return;
+              if (_strokeTool == XppStrokeTool.ERASER) {
+                widget.onEraserEnd?.call();
+              }
+              _drawingPointer = null;
+              _longPressConsumed = false;
+              clearPoints();
+              _lassoPoints.clear();
+              _dragMode = _SelectionDragMode.none;
+              poppedContentForCurrentPointer = false;
+              _heldButtonAction = null;
+              _strokeTool = null;
+            },
+            onPointerSignal: (data) {
+              setState(() {
+                tool = getToolFromPointer(data);
+              });
+              widget.onDeviceChange?.call(device: data.device, kind: data.kind);
+            },
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                widget.child!,
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: RepaintBoundary(
+                      child: CustomPaint(
+                        painter: _ShapePreviewPainter(
+                          origin: widget.canvasOrigin,
+                          points: points,
+                          preview: _inkPreview,
+                          color: () => _getToolColor(tool),
+                          tool: () =>
+                              widget.toolData[PointerDeviceKind.stylus] ??
+                              EditingTool.STYLUS,
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
+                if (_lassoPoints.length > 1)
+                  CustomPaint(
+                    foregroundPainter: _LassoPainter(
+                      origin: widget.canvasOrigin,
+                      points: _lassoPoints,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+              ],
             ),
-            if (_lassoPoints.length > 1)
-              CustomPaint(
-                foregroundPainter: _LassoPainter(
-                  points: _lassoPoints,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-            if (_selectionRect != null) ..._buildSelectionOverlay(context),
-          ],
-        ),
+          ),
+          if (_selectionRect != null) ..._buildSelectionOverlay(context),
+          if (_pastePosition != null) _buildPasteMenu(context),
+        ],
       ),
     );
   }
 
   List<Widget> _buildSelectionOverlay(BuildContext context) {
-    final rect = _selectionRect!;
+    final rect = _selectionRect!.shift(-widget.canvasOrigin);
     final color = Theme.of(context).colorScheme.primary;
-    final barTop = (rect.top - 44) < 0 ? rect.bottom + 8 : rect.top - 44;
+    final pageSize = _canvasSize;
+    final columns = (pageSize.width / 48).floor().clamp(1, 4);
+    final barWidth = columns * 48.0;
+    final barHeight = (4 / columns).ceil() * 48.0;
+    final preferredTop = rect.top >= barHeight + 8
+        ? rect.top - barHeight - 8
+        : rect.bottom + 8;
+    final barPosition = _menuPosition(
+      Offset(rect.left, preferredTop),
+      Size(barWidth, barHeight),
+    );
 
     return [
       Positioned(
@@ -336,44 +449,116 @@ class PointerListenerState extends State<PointerListener> {
         ),
       ),
       Positioned(
-        left: rect.left,
-        top: barTop,
+        left: barPosition.dx,
+        top: barPosition.dy,
         child: Material(
           color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(20),
           elevation: 4,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                iconSize: 20,
-                icon: const Icon(Icons.delete_outline),
-                tooltip: 'Delete selection',
-                onPressed: () {
-                  widget.onDeleteContent?.call(List.of(_selectedContent));
-                  setState(() {
-                    _selectedContent.clear();
-                    _selectionRect = null;
-                  });
-                },
-              ),
-              IconButton(
-                iconSize: 20,
-                icon: const Icon(Icons.check),
-                tooltip: 'Done',
-                onPressed: () => setState(() {
-                  _selectedContent.clear();
-                  _selectionRect = null;
-                }),
-              ),
-            ],
+          child: SizedBox(
+            width: barWidth,
+            child: Wrap(
+              children: [
+                _CanvasActionButton(
+                  actionKey: const ValueKey('selection-delete'),
+                  icon: Icons.delete_outline,
+                  label: 'Elimina',
+                  onPressed: () {
+                    widget.onDeleteContent?.call(List.of(_selectedContent));
+                    setState(_clearSelection);
+                  },
+                ),
+                _CanvasActionButton(
+                  actionKey: const ValueKey('selection-copy'),
+                  icon: Icons.copy,
+                  label: 'Copia',
+                  onPressed: widget.clipboard == null
+                      ? null
+                      : () {
+                          if (widget.clipboard!.copy(_selectedContent)) {
+                            ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Selezione copiata. Tieni premuta la penna per incollare.',
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                ),
+                _CanvasActionButton(
+                  actionKey: const ValueKey('selection-move'),
+                  icon: Icons.open_with,
+                  label: 'Sposta',
+                  selected: _moveSelectionArmed,
+                  onPressed: () => setState(() => _moveSelectionArmed = true),
+                ),
+                _CanvasActionButton(
+                  actionKey: const ValueKey('selection-done'),
+                  icon: Icons.check,
+                  label: 'Fine',
+                  onPressed: () => setState(_clearSelection),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     ];
   }
 
+  Size get _canvasSize {
+    final renderBox = context.findRenderObject();
+    return renderBox is RenderBox && renderBox.hasSize
+        ? renderBox.size
+        : const Size(595, 842);
+  }
+
+  Offset _menuPosition(Offset preferred, Size size) {
+    final page = _canvasSize;
+    return Offset(
+      preferred.dx.clamp(0.0, max(0.0, page.width - size.width)),
+      preferred.dy.clamp(0.0, max(0.0, page.height - size.height)),
+    );
+  }
+
+  Widget _buildPasteMenu(BuildContext context) {
+    final position = _menuPosition(
+      _pastePosition! - widget.canvasOrigin,
+      const Size(160, 48),
+    );
+    return Positioned(
+      left: position.dx,
+      top: position.dy,
+      child: Material(
+        elevation: 4,
+        borderRadius: BorderRadius.circular(20),
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        child: _CanvasActionButton(
+          actionKey: const ValueKey('selection-paste'),
+          icon: Icons.content_paste,
+          label: 'Incolla',
+          showLabel: true,
+          onPressed: () {
+            final pasted = widget.onPasteContent?.call(_pastePosition!) ?? [];
+            setState(() {
+              _pastePosition = null;
+              if (pasted.isNotEmpty) {
+                _selectContent(pasted);
+                _moveSelectionArmed = true;
+              }
+            });
+          },
+        ),
+      ),
+    );
+  }
+
   void _onPointerDown(PointerDownEvent data) {
+    if (widget.readOnly) {
+      widget.onDeviceChange?.call(device: data.device, kind: data.kind);
+      return;
+    }
     _hardwareOwner = this;
     if (data.kind == PointerDeviceKind.touch) {
       final session = CanvasTouchScope.of(context);
@@ -396,13 +581,22 @@ class PointerListenerState extends State<PointerListener> {
     } else if (_drawingPointer != null) {
       return;
     }
-    if (widget.toolData[data.kind] == EditingTool.MOVE) return;
     _drawingPointer = data.pointer;
+    _selectionMutationStarted = false;
+    if (_pastePosition != null) {
+      setState(() => _pastePosition = null);
+    }
 
     // HOLD-TO-USE (stile Samsung): se il tasto della penna e' PREMUTO nel
     // momento in cui la punta tocca lo schermo, per tutto il tratto vale
     // l'azione mappata su quel tasto (gomma/lazo/evidenziatore).
     _heldButtonAction = _actionFromButtons(data.buttons);
+    _startPasteHold(data);
+    if (widget.toolData[data.kind] == EditingTool.MOVE &&
+        !_moveSelectionArmed) {
+      _strokeTool = null;
+      return;
+    }
 
     final currentTool = getToolFromPointer(data);
     // Congela lo strumento per l'intero tratto: premere/rilasciare il tasto a
@@ -411,22 +605,17 @@ class PointerListenerState extends State<PointerListener> {
     tool = currentTool;
     widget.onDeviceChange?.call(device: data.device, kind: data.kind);
 
-    if (isSelect(data) && drawingEnabled) {
+    if ((isSelect(data) || _moveSelectionArmed) && drawingEnabled) {
       final position = _canvasPoint(data);
       if (_selectionRect != null) {
-        final barTop = (_selectionRect!.top - 44) < 0
-            ? _selectionRect!.bottom + 8
-            : _selectionRect!.top - 44;
-        final actionBar = Rect.fromLTWH(_selectionRect!.left, barTop, 112, 40);
-        if (actionBar.contains(position)) return;
-
         final handle = Rect.fromCircle(
           center: _selectionRect!.bottomRight,
           radius: 24,
         );
-        if (handle.contains(position)) {
+        if (!_moveSelectionArmed && handle.contains(position)) {
           _dragMode = _SelectionDragMode.resize;
-        } else if (_selectionRect!.inflate(8).contains(position)) {
+        } else if (_moveSelectionArmed ||
+            _selectionRect!.inflate(8).contains(position)) {
           _dragMode = _SelectionDragMode.move;
         } else {
           setState(() {
@@ -441,10 +630,6 @@ class PointerListenerState extends State<PointerListener> {
         _dragMode = _SelectionDragMode.lasso;
       }
       _lastDragPosition = position;
-      if (_dragMode == _SelectionDragMode.move ||
-          _dragMode == _SelectionDragMode.resize) {
-        widget.onBeforeContentChanged?.call();
-      }
       return;
     }
 
@@ -479,10 +664,15 @@ class PointerListenerState extends State<PointerListener> {
     if (_drawingPointer != data.pointer ||
         (data.kind == PointerDeviceKind.touch && _multipleTouches))
       return;
+    if (_holdScreenPosition != null &&
+        (data.position - _holdScreenPosition!).distance > kTouchSlop) {
+      _pasteHoldTimer?.cancel();
+    }
+    if (_longPressConsumed) return;
     widget.onDeviceChange?.call(device: data.device, kind: data.kind);
     if (!drawingEnabled) return;
 
-    if (_dragMode != _SelectionDragMode.none || isSelect(data)) {
+    if (_dragMode != _SelectionDragMode.none) {
       final position = _canvasPoint(data);
       switch (_dragMode) {
         case _SelectionDragMode.lasso:
@@ -490,6 +680,9 @@ class PointerListenerState extends State<PointerListener> {
           break;
         case _SelectionDragMode.move:
           final delta = position - _lastDragPosition!;
+          if (delta == Offset.zero) break;
+          _pasteHoldTimer?.cancel();
+          _beforeSelectionMutation();
           for (final content in _selectedContent) {
             content.translate(delta);
           }
@@ -503,6 +696,9 @@ class PointerListenerState extends State<PointerListener> {
           final newDistance = (position - anchor).distance;
           if (oldDistance > 5 && newDistance > 5) {
             final factor = newDistance / oldDistance;
+            if (factor == 1) break;
+            _pasteHoldTimer?.cancel();
+            _beforeSelectionMutation();
             for (final content in _selectedContent) {
               content.scaleBy(factor, anchor);
             }
@@ -524,6 +720,9 @@ class PointerListenerState extends State<PointerListener> {
       return;
     }
 
+    if (widget.toolData[data.kind] == EditingTool.MOVE && _strokeTool == null) {
+      return;
+    }
     final currentTool = _strokeTool ?? getToolFromPointer(data);
     if (currentTool == XppStrokeTool.ERASER) {
       _eraseAt(data);
@@ -545,22 +744,39 @@ class PointerListenerState extends State<PointerListener> {
       if (_touchPointers.isEmpty) _multipleTouches = false;
     }
     if (_drawingPointer != data.pointer) return;
+    _pasteHoldTimer?.cancel();
     _drawingPointer = null;
-
-    if (_dragMode != _SelectionDragMode.none) {
-      if (_dragMode == _SelectionDragMode.lasso) _finishLasso();
-      _dragMode = _SelectionDragMode.none;
+    if (_longPressConsumed) {
+      _longPressConsumed = false;
+      clearPoints();
       _heldButtonAction = null;
       _strokeTool = null;
       return;
     }
 
+    if (_dragMode != _SelectionDragMode.none) {
+      if (_dragMode == _SelectionDragMode.lasso) _finishLasso();
+      _dragMode = _SelectionDragMode.none;
+      _moveSelectionArmed = false;
+      _heldButtonAction = null;
+      _strokeTool = null;
+      return;
+    }
+
+    if (widget.toolData[data.kind] == EditingTool.MOVE && _strokeTool == null) {
+      _heldButtonAction = null;
+      return;
+    }
     final currentTool = _strokeTool ?? getToolFromPointer(data);
     if (!poppedContentForCurrentPointer &&
         currentTool != XppStrokeTool.ERASER) {
       saveStroke(currentTool);
     }
-    if (currentTool == XppStrokeTool.ERASER) _eraseAt(data);
+    if (currentTool == XppStrokeTool.ERASER) {
+      _eraseAt(data);
+      // End after the final sample, independent of ancestor event ordering.
+      widget.onEraserEnd?.call();
+    }
     _lastEraserPosition = null;
     poppedContentForCurrentPointer = false;
     clearPoints();
@@ -579,10 +795,13 @@ class PointerListenerState extends State<PointerListener> {
   /// passano i punti prima del CustomPainter, ed e' indipendente per pannello
   /// (split-screen). NB: applicare qui un'altra Matrix4 inversa raddoppierebbe la
   /// trasformazione e ri-romperebbe l'allineamento in zoom-out.
-  Offset _canvasPoint(PointerEvent data) => data.localPosition;
+  Offset _canvasPoint(PointerEvent data) =>
+      data.localPosition + widget.canvasOrigin;
 
   void _addDrawingPoint(PointerEvent data, XppStrokeTool currentTool) {
-    double baseWidth = widget.strokeWidth ?? 2.5;
+    double baseWidth = currentTool == XppStrokeTool.HIGHLIGHTER
+        ? widget.highlighterWidth ?? widget.strokeWidth ?? 15
+        : widget.strokeWidth ?? 2.5;
     double pressure = data.pressure;
 
     // COMPATIBILITA' TAVOLETTE GRAFICHE: molte tavolette (Wacom, XP-Pen,
@@ -610,7 +829,7 @@ class PointerListenerState extends State<PointerListener> {
     if (dynamicThickness < 0.5) dynamicThickness = 0.5;
 
     if (currentTool == XppStrokeTool.HIGHLIGHTER) {
-      dynamicThickness = baseWidth * 6.0;
+      dynamicThickness = baseWidth;
     }
 
     final point = XppStrokePoint(
@@ -659,16 +878,7 @@ class PointerListenerState extends State<PointerListener> {
       return;
     }
 
-    Rect? union;
-    for (final element in selected) {
-      final b = element.bounds();
-      if (b == null) continue;
-      union = union == null ? b : union.expandToInclude(b);
-    }
-    setState(() {
-      _selectedContent = selected;
-      _selectionRect = union?.inflate(4);
-    });
+    setState(() => _selectContent(selected));
   }
 
   static bool _pointInPolygon(Offset point, List<Offset> polygon) {
@@ -1020,13 +1230,134 @@ class PointerListenerState extends State<PointerListener> {
   }
 }
 
+/// Canvas controls must also work when the ancestor recognizer claims stylus
+/// gestures to prevent panning. Raw pen taps bypass that arena; touch/mouse
+/// taps retain the normal recognizer and accessibility activation.
+class _CanvasActionButton extends StatefulWidget {
+  final Key actionKey;
+  final IconData icon;
+  final String label;
+  final VoidCallback? onPressed;
+  final bool selected;
+  final bool showLabel;
+
+  const _CanvasActionButton({
+    required this.actionKey,
+    required this.icon,
+    required this.label,
+    this.onPressed,
+    this.selected = false,
+    this.showLabel = false,
+  });
+
+  @override
+  State<_CanvasActionButton> createState() => _CanvasActionButtonState();
+}
+
+class _CanvasActionButtonState extends State<_CanvasActionButton> {
+  int? _penPointer;
+  Offset? _origin;
+
+  @override
+  Widget build(BuildContext context) {
+    final enabled = widget.onPressed != null;
+    return Semantics(
+      button: true,
+      label: widget.label,
+      enabled: enabled,
+      selected: widget.selected,
+      onTap: widget.onPressed,
+      child: Tooltip(
+        message: widget.label,
+        child: Listener(
+          behavior: HitTestBehavior.opaque,
+          onPointerDown: (event) {
+            if (!enabled ||
+                (event.kind != PointerDeviceKind.stylus &&
+                    event.kind != PointerDeviceKind.invertedStylus)) {
+              return;
+            }
+            _penPointer = event.pointer;
+            _origin = event.position;
+          },
+          onPointerMove: (event) {
+            if (_penPointer == event.pointer &&
+                (event.position - _origin!).distance > kTouchSlop) {
+              _penPointer = null;
+            }
+          },
+          onPointerUp: (event) {
+            if (_penPointer != event.pointer) return;
+            _penPointer = null;
+            final box = context.findRenderObject() as RenderBox;
+            if ((Offset.zero & box.size).contains(
+              box.globalToLocal(event.position),
+            )) {
+              widget.onPressed?.call();
+            }
+          },
+          onPointerCancel: (event) {
+            if (_penPointer == event.pointer) _penPointer = null;
+          },
+          child: GestureDetector(
+            excludeFromSemantics: true,
+            supportedDevices: const {
+              PointerDeviceKind.touch,
+              PointerDeviceKind.mouse,
+              PointerDeviceKind.trackpad,
+            },
+            behavior: HitTestBehavior.opaque,
+            onTap: widget.onPressed,
+            child: SizedBox(
+              key: widget.actionKey,
+              width: widget.showLabel ? 160 : 48,
+              height: 48,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: widget.selected
+                      ? Theme.of(context).colorScheme.primaryContainer
+                      : null,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      widget.icon,
+                      size: 20,
+                      color: enabled ? null : Colors.grey,
+                    ),
+                    if (widget.showLabel) ...[
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          widget.label,
+                          style: Theme.of(context).textTheme.labelLarge,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _ShapePreviewPainter extends CustomPainter {
+  final Offset origin;
   final List<XppStrokePoint> points;
   final Color Function() color;
   final EditingTool Function() tool;
   final _InkPreview preview;
 
   _ShapePreviewPainter({
+    this.origin = Offset.zero,
     required this.points,
     required this.color,
     required this.tool,
@@ -1035,6 +1366,7 @@ class _ShapePreviewPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    canvas.translate(-origin.dx, -origin.dy);
     if (points.isEmpty) return;
     final tool = this.tool();
 
@@ -1182,14 +1514,20 @@ class _InkPreview extends ChangeNotifier {
 }
 
 class _LassoPainter extends CustomPainter {
+  final Offset origin;
   final List<Offset> points;
   final Color color;
 
-  _LassoPainter({required this.points, required this.color});
+  _LassoPainter({
+    required this.points,
+    required this.color,
+    this.origin = Offset.zero,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     if (points.length < 2) return;
+    canvas.translate(-origin.dx, -origin.dy);
     final paint = Paint()
       ..color = color
       ..strokeWidth = 1.5

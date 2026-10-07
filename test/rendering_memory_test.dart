@@ -12,7 +12,7 @@ void main() {
       () async {
     final first = Completer<Uint8List?>();
     final calls = <int>[];
-    final controller = CanvasController(pdfRasterizer: (page) {
+    final controller = CanvasController(autosaveEnabled: false, pdfRasterizer: (page) {
       calls.add(page);
       return first.future;
     });
@@ -29,7 +29,7 @@ void main() {
 
   test('suspended PDF request cannot publish stale page bytes', () async {
     final pending = Completer<Uint8List?>();
-    final controller = CanvasController(pdfRasterizer: (_) => pending.future);
+    final controller = CanvasController(autosaveEnabled: false, pdfRasterizer: (_) => pending.future);
     controller.setVisiblePdfPages({0});
     await Future<void>.delayed(Duration.zero);
     controller.suspendPdfRendering();

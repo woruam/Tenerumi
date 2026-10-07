@@ -15,7 +15,7 @@ class XppPageStack extends StatefulWidget {
   final bool renderPdfBackground;
 
   const XppPageStack({Key? key, this.page, this.renderPdfBackground = true})
-      : super(key: key);
+    : super(key: key);
 
   @override
   XppPageStackState createState() => XppPageStackState();
@@ -28,6 +28,7 @@ class XppPageStackState extends State<XppPageStack>
 
   XppBackground? _lastKnownBackground;
   Widget background = Container();
+  final ValueNotifier<int> _inkRevision = ValueNotifier(0);
 
   @override
   void initState() {
@@ -45,29 +46,41 @@ class XppPageStackState extends State<XppPageStack>
       // Il RepaintBoundary per lo sfondo
       background =
           page!.background is XppBackgroundPdf && !widget.renderPdfBackground
-              ? const SizedBox.shrink()
-              : RepaintBoundary(child: page!.background!.render());
+          ? const SizedBox.shrink()
+          : RepaintBoundary(child: page!.background!.render());
     }
     children.add(background);
 
     // Iteriamo sui layer passando anche le dimensioni della pagina al nuovo pittore
     if (page!.layers != null) {
-      children.addAll(page!.layers!.map((e) => XppLayerStack(
-            layer: e,
-            pageSize: Size(page!.pageSize!.width, page!.pageSize!.height),
-          )));
+      children.addAll(
+        page!.layers!
+            .where((layer) => layer.visible)
+            .map(
+              (e) => XppLayerStack(
+                layer: e,
+                pageSize: Size(page!.pageSize!.width, page!.pageSize!.height),
+                repaint: _inkRevision,
+              ),
+            ),
+      );
     }
 
     return RepaintBoundary(
-        key: pngKey,
-        child: SizedBox(
-            width: page!.pageSize!.width,
-            height: page!.pageSize!.height,
-            child: Stack(children: children)));
+      key: pngKey,
+      child: SizedBox(
+        width: page!.pageSize!.width,
+        height: page!.pageSize!.height,
+        child: Stack(children: children),
+      ),
+    );
   }
 
   void setPageData(XppPage pageData) {
     setState(() => page = pageData);
+    // Editing mutates the same page/layer objects. Notify the painter directly
+    // so its display list and raster cache update without moving the viewport.
+    _inkRevision.value++;
   }
 
   Future<Uint8List> toPng() async {
@@ -76,7 +89,8 @@ class XppPageStackState extends State<XppPageStack>
     ui.Image image = await boundary.toImage();
     try {
       ByteData byteData = await (image.toByteData(
-          format: ui.ImageByteFormat.png) as FutureOr<ByteData>);
+        format: ui.ImageByteFormat.png,
+      ) as FutureOr<ByteData>);
       Uint8List pngBytes = byteData.buffer.asUint8List();
       return pngBytes;
     } finally {
@@ -89,8 +103,17 @@ class XppPageStackState extends State<XppPageStack>
 
   @override
   void didUpdateWidget(covariant XppPageStack oldWidget) {
-    setState(() {});
     super.didUpdateWidget(oldWidget);
+    page = widget.page;
+    if (oldWidget.renderPdfBackground != widget.renderPdfBackground) {
+      _lastKnownBackground = null;
+    }
+  }
+
+  @override
+  void dispose() {
+    _inkRevision.dispose();
+    super.dispose();
   }
 }
 
@@ -101,9 +124,14 @@ class XppPageStackState extends State<XppPageStack>
 class XppLayerStack extends StatelessWidget {
   final XppLayer? layer;
   final Size pageSize;
+  final Listenable? repaint;
 
-  const XppLayerStack({Key? key, this.layer, required this.pageSize})
-      : super(key: key);
+  const XppLayerStack({
+    Key? key,
+    this.layer,
+    required this.pageSize,
+    this.repaint,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +139,10 @@ class XppLayerStack extends StatelessWidget {
 
     return RepaintBoundary(
       child: CustomPaint(
-        painter: XppMasterPainter(layerContents: layer!.content!),
+        painter: XppMasterPainter(
+          layerContents: layer!.content!,
+          repaint: repaint,
+        ),
         size: pageSize,
       ),
     );
@@ -121,7 +152,8 @@ class XppLayerStack extends StatelessWidget {
 class XppMasterPainter extends CustomPainter {
   final List<XppContent?> layerContents;
 
-  XppMasterPainter({required this.layerContents});
+  XppMasterPainter({required this.layerContents, Listenable? repaint})
+    : super(repaint: repaint);
 
   @override
   void paint(Canvas canvas, Size size) {

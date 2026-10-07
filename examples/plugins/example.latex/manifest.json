@@ -1,0 +1,19 @@
+{
+  "apiVersion": 1,
+  "id": "example.latex",
+  "name": "Formule LaTeX",
+  "version": "2.0.0",
+  "description": "Anteprima matematica e inserimento di una formula nel foglio.",
+  "runtime": "javascript",
+  "permissions": [
+    "document.write",
+    "ui"
+  ],
+  "commands": [
+    {
+      "id": "insert",
+      "label": "Inserisci formula",
+      "handler": "insert"
+    }
+  ]
+}

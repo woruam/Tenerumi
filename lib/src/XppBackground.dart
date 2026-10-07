@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:xournalpp/src/compat/file_picker_cross.dart'; // <--- IMPORTANTE: aggiungi questo per FilePickerCross
@@ -32,7 +33,7 @@ String colorToString(Color color) {
 class PDfBackgroundWidget extends StatefulWidget {
   final XppBackgroundPdf provider;
   const PDfBackgroundWidget({Key? key, required this.provider})
-      : super(key: key);
+    : super(key: key);
   @override
   _PDfBackgroundWidgetState createState() => _PDfBackgroundWidgetState();
 }
@@ -43,15 +44,17 @@ class _PDfBackgroundWidgetState extends State<PDfBackgroundWidget>
   Widget build(BuildContext context) {
     super.build(context);
     return FutureBuilder<Uint8List>(
-        future:
-            FilePickerCross.fromInternalPath(path: widget.provider.filename!)
-                .then((value) => pdfImage(value, widget.provider.page))
-                .catchError((e) => widget.provider
-                    .onUnavailable(widget.provider.filename)
-                    .then((value) => pdfImage(value, widget.provider.page))),
-        builder: (context, snapshot) => (snapshot.hasData)
-            ? Image.memory(snapshot.data!)
-            : Center(child: CircularProgressIndicator()));
+      future: FilePickerCross.fromInternalPath(path: widget.provider.filename!)
+          .then((value) => pdfImage(value, widget.provider.page))
+          .catchError(
+            (e) => widget.provider
+                .onUnavailable(widget.provider.filename)
+                .then((value) => pdfImage(value, widget.provider.page)),
+          ),
+      builder: (context, snapshot) => (snapshot.hasData)
+          ? Image.memory(snapshot.data!)
+          : Center(child: CircularProgressIndicator()),
+    );
   }
 
   @override
@@ -63,8 +66,10 @@ class XppBackgroundImage extends XppBackground {
   final XppBackgroundImageDomain domain;
   XppBackgroundType? type = XppBackgroundType.PIXMAP;
 
-  XppBackgroundImage(
-      {this.filename, this.domain = XppBackgroundImageDomain.ABSOLUTE});
+  XppBackgroundImage({
+    this.filename,
+    this.domain = XppBackgroundImageDomain.ABSOLUTE,
+  });
 
   @override
   Widget render() => Container();
@@ -112,7 +117,9 @@ abstract class XppBackgroundSolid extends XppBackground {
       XmlAttribute(XmlName('type'), 'solid'),
       XmlAttribute(XmlName('style'), style),
       XmlAttribute(
-          XmlName('color'), color != null ? colorToString(color!) : 'black'),
+        XmlName('color'),
+        color != null ? colorToString(color!) : 'black',
+      ),
     ]);
   }
 }
@@ -121,10 +128,12 @@ class XppBackgroundSolidLined extends XppBackgroundSolid {
   XppBackgroundSolidLined({super.color, super.size});
   @override
   Widget render() => Container(
-      color: color,
-      child: CustomPaint(
-          painter: _LinePainter(color: color),
-          size: size?.toSize() ?? Size.zero));
+    color: color,
+    child: CustomPaint(
+      painter: _LinePainter(color: color),
+      size: size?.toSize() ?? Size.zero,
+    ),
+  );
   @override
   XmlElement toXmlElement() => generateXmlElement('lined');
 }
@@ -133,10 +142,12 @@ class XppBackgroundSolidRuled extends XppBackgroundSolid {
   XppBackgroundSolidRuled({super.color, super.size});
   @override
   Widget render() => Container(
-      color: color,
-      child: CustomPaint(
-          painter: _RuledPainter(color: color),
-          size: size?.toSize() ?? Size.zero));
+    color: color,
+    child: CustomPaint(
+      painter: _RuledPainter(color: color),
+      size: size?.toSize() ?? Size.zero,
+    ),
+  );
   @override
   XmlElement toXmlElement() => generateXmlElement('ruled');
 }
@@ -145,10 +156,12 @@ class XppBackgroundSolidGraph extends XppBackgroundSolid {
   XppBackgroundSolidGraph({super.color, super.size});
   @override
   Widget render() => Container(
-      color: color,
-      child: CustomPaint(
-          painter: _GraphPainter(color: color),
-          size: size?.toSize() ?? Size.zero));
+    color: color,
+    child: CustomPaint(
+      painter: _GraphPainter(color: color),
+      size: size?.toSize() ?? Size.zero,
+    ),
+  );
   @override
   XmlElement toXmlElement() => generateXmlElement('graph');
 }
@@ -157,10 +170,12 @@ class XppBackgroundSolidDot extends XppBackgroundSolid {
   XppBackgroundSolidDot({super.color, super.size});
   @override
   Widget render() => Container(
-      color: color,
-      child: CustomPaint(
-          painter: _DotPainter(color: color),
-          size: size?.toSize() ?? Size.zero));
+    color: color,
+    child: CustomPaint(
+      painter: _DotPainter(color: color),
+      size: size?.toSize() ?? Size.zero,
+    ),
+  );
   @override
   XmlElement toXmlElement() => generateXmlElement('dotted');
 }
@@ -180,15 +195,18 @@ class XppBackgroundSolidPlain extends XppBackgroundSolid {
 /// Xournal++ desktop.
 class XppBackgroundNothingDark extends XppBackgroundSolid {
   XppBackgroundNothingDark({XppPageSize? size})
-      : super(color: const Color(0xFF0A0A0A), size: size);
+    : super(color: const Color(0xFF0A0A0A), size: size);
   @override
   Widget render() => Container(
-      color: color,
-      child: CustomPaint(
-          painter: _NothingMatrixPainter(
-              dotColor: Colors.white.withOpacity(0.18),
-              accent: const Color(0xFFD71921)),
-          size: size?.toSize() ?? Size.zero));
+    color: color,
+    child: CustomPaint(
+      painter: _NothingMatrixPainter(
+        dotColor: Colors.white.withOpacity(0.18),
+        accent: const Color(0xFFD71921),
+      ),
+      size: size?.toSize() ?? Size.zero,
+    ),
+  );
   @override
   XmlElement toXmlElement() => generateXmlElement('dotted');
 }
@@ -197,15 +215,18 @@ class XppBackgroundNothingDark extends XppBackgroundSolid {
 /// e punto rosso d'accento. Salvato come sfondo "dotted" chiaro.
 class XppBackgroundNothingLight extends XppBackgroundSolid {
   XppBackgroundNothingLight({XppPageSize? size})
-      : super(color: const Color(0xFFF6F5F2), size: size);
+    : super(color: const Color(0xFFF6F5F2), size: size);
   @override
   Widget render() => Container(
-      color: color,
-      child: CustomPaint(
-          painter: _NothingMatrixPainter(
-              dotColor: Colors.black.withOpacity(0.22),
-              accent: const Color(0xFFD71921)),
-          size: size?.toSize() ?? Size.zero));
+    color: color,
+    child: CustomPaint(
+      painter: _NothingMatrixPainter(
+        dotColor: Colors.black.withOpacity(0.22),
+        accent: const Color(0xFFD71921),
+      ),
+      size: size?.toSize() ?? Size.zero,
+    ),
+  );
   @override
   XmlElement toXmlElement() => generateXmlElement('dotted');
 }
@@ -215,10 +236,34 @@ class _NoXppBackground extends XppBackground {
   Widget render() => Container();
   @override
   XmlElement toXmlElement() => XmlElement(XmlName('background'), [
-        XmlAttribute(XmlName('type'), 'solid'),
-        XmlAttribute(XmlName('color'), 'white'),
-        XmlAttribute(XmlName('style'), 'plain'),
-      ]);
+    XmlAttribute(XmlName('type'), 'solid'),
+    XmlAttribute(XmlName('color'), 'white'),
+    XmlAttribute(XmlName('style'), 'plain'),
+  ]);
+}
+
+/// Paints the same paper templates as the editor without mounting a page.
+void paintPaperBackground(Canvas canvas, Size size, XppBackground? background) {
+  canvas.drawRect(
+    Offset.zero & size,
+    Paint()..color = background?.color ?? Colors.white,
+  );
+  final CustomPainter? painter = switch (background) {
+    XppBackgroundSolidLined() => _LinePainter(),
+    XppBackgroundSolidRuled() => _RuledPainter(),
+    XppBackgroundSolidGraph() => _GraphPainter(),
+    XppBackgroundSolidDot() => _DotPainter(),
+    XppBackgroundNothingDark() => _NothingMatrixPainter(
+      dotColor: Colors.white.withValues(alpha: .18),
+      accent: const Color(0xFFD71921),
+    ),
+    XppBackgroundNothingLight() => _NothingMatrixPainter(
+      dotColor: Colors.black.withValues(alpha: .22),
+      accent: const Color(0xFFD71921),
+    ),
+    _ => null,
+  };
+  painter?.paint(canvas, size);
 }
 
 // ... (lascia qui sotto tutti i tuoi Painter: _LinePainter, _RuledPainter, _GraphPainter, _DotPainter)
@@ -234,8 +279,11 @@ class _LinePainter extends CustomPainter {
       ..strokeWidth = 1;
     // 1 because no line at the top
     for (int i = 1; i < size.height / 24; i++) {
-      canvas.drawLine(Offset(0, i * 24.toDouble()),
-          Offset(size.width, i * 24.toDouble()), paint);
+      canvas.drawLine(
+        Offset(0, i * 24.toDouble()),
+        Offset(size.width, i * 24.toDouble()),
+        paint,
+      );
     }
   }
 
@@ -254,8 +302,11 @@ class _RuledPainter extends CustomPainter {
       ..strokeWidth = 1;
     // 1 because no line at the top
     for (int i = 1; i < size.height / 24; i++) {
-      canvas.drawLine(Offset(0, i * 24.toDouble()),
-          Offset(size.width, i * 24.toDouble()), paint);
+      canvas.drawLine(
+        Offset(0, i * 24.toDouble()),
+        Offset(size.width, i * 24.toDouble()),
+        paint,
+      );
     }
   }
 
@@ -274,13 +325,19 @@ class _GraphPainter extends CustomPainter {
       ..strokeWidth = 1;
     // 1 because no line at the top
     for (int i = 1; i < size.height / XppPageSize.pt2mm(5); i++) {
-      canvas.drawLine(Offset(0, i * XppPageSize.pt2mm(5).toDouble()),
-          Offset(size.width, i * XppPageSize.pt2mm(5).toDouble()), paint);
+      canvas.drawLine(
+        Offset(0, i * XppPageSize.pt2mm(5).toDouble()),
+        Offset(size.width, i * XppPageSize.pt2mm(5).toDouble()),
+        paint,
+      );
     }
     // 1 because no line at the beginning
     for (int i = 1; i < size.width / XppPageSize.pt2mm(5); i++) {
-      canvas.drawLine(Offset(i * XppPageSize.pt2mm(5).toDouble(), 0),
-          Offset(i * XppPageSize.pt2mm(5).toDouble(), size.height), paint);
+      canvas.drawLine(
+        Offset(i * XppPageSize.pt2mm(5).toDouble(), 0),
+        Offset(i * XppPageSize.pt2mm(5).toDouble(), size.height),
+        paint,
+      );
     }
   }
 
@@ -302,10 +359,13 @@ class _DotPainter extends CustomPainter {
       // 1 because no line at the beginning
       for (int j = 1; j < size.width / XppPageSize.pt2mm(5); j++) {
         canvas.drawCircle(
-            Offset(j * XppPageSize.pt2mm(5).toDouble(),
-                i * XppPageSize.pt2mm(5).toDouble()),
-            XppPageSize.pt2mm(.5).toDouble(),
-            paint);
+          Offset(
+            j * XppPageSize.pt2mm(5).toDouble(),
+            i * XppPageSize.pt2mm(5).toDouble(),
+          ),
+          XppPageSize.pt2mm(.5).toDouble(),
+          paint,
+        );
       }
     }
   }
@@ -340,8 +400,11 @@ class _NothingMatrixPainter extends CustomPainter {
     for (double y = spacing; y < size.height - 2; y += spacing) {
       final bool isMarginRow = (y - marginY).abs() < spacing / 2;
       for (double x = spacing; x < size.width - 2; x += spacing) {
-        canvas.drawCircle(Offset(x, y), isMarginRow ? 1.1 : 0.8,
-            isMarginRow ? marginDot : dot);
+        canvas.drawCircle(
+          Offset(x, y),
+          isMarginRow ? 1.1 : 0.8,
+          isMarginRow ? marginDot : dot,
+        );
       }
     }
 
@@ -349,12 +412,13 @@ class _NothingMatrixPainter extends CustomPainter {
     final Offset accentPos = Offset(size.width - spacing * 1.5, spacing * 1.5);
     canvas.drawCircle(accentPos, 3.0, Paint()..color = accent);
     canvas.drawCircle(
-        accentPos,
-        6.0,
-        Paint()
-          ..color = accent.withOpacity(0.55)
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 1.0);
+      accentPos,
+      6.0,
+      Paint()
+        ..color = accent.withOpacity(0.55)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.0,
+    );
   }
 
   @override

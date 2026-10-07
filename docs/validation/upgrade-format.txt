@@ -1,0 +1,5 @@
+Formatted lib/main.dart
+Formatted lib/widgets/PointerListener.dart
+Formatted lib/pages/CanvasPage.dart
+Formatted test/pixel_eraser_test.dart
+Formatted 6 files (4 changed) in 0.22 seconds.

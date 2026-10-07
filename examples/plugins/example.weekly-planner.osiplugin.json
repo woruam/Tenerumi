@@ -1,0 +1,130 @@
+{
+  "apiVersion": 1,
+  "id": "example.weekly-planner",
+  "name": "Planner settimanale",
+  "version": "1.0.0",
+  "description": "Genera sette riquadri adattati alle dimensioni del foglio.",
+  "permissions": [
+    "document.write"
+  ],
+  "commands": [
+    {
+      "id": "generate",
+      "label": "Crea settimana",
+      "steps": [
+        {
+          "set": "spacing",
+          "value": {
+            "op": "div",
+            "args": [
+              {
+                "op": "sub",
+                "args": [
+                  {
+                    "var": "page.height"
+                  },
+                  80
+                ]
+              },
+              7
+            ]
+          }
+        },
+        {
+          "set": "days",
+          "value": [
+            "Lunedì",
+            "Martedì",
+            "Mercoledì",
+            "Giovedì",
+            "Venerdì",
+            "Sabato",
+            "Domenica"
+          ]
+        },
+        {
+          "repeat": 7,
+          "as": "i",
+          "steps": [
+            {
+              "set": "y",
+              "value": {
+                "op": "add",
+                "args": [
+                  40,
+                  {
+                    "op": "mul",
+                    "args": [
+                      {
+                        "var": "i"
+                      },
+                      {
+                        "var": "spacing"
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "action": "shape.add",
+              "args": {
+                "kind": "rectangle",
+                "x": 30,
+                "y": {
+                  "var": "y"
+                },
+                "width": {
+                  "op": "sub",
+                  "args": [
+                    {
+                      "var": "page.width"
+                    },
+                    60
+                  ]
+                },
+                "height": {
+                  "op": "sub",
+                  "args": [
+                    {
+                      "var": "spacing"
+                    },
+                    6
+                  ]
+                },
+                "color": "#78909C"
+              }
+            },
+            {
+              "action": "text.add",
+              "args": {
+                "text": {
+                  "op": "at",
+                  "args": [
+                    {
+                      "var": "days"
+                    },
+                    {
+                      "var": "i"
+                    }
+                  ]
+                },
+                "x": 40,
+                "y": {
+                  "op": "add",
+                  "args": [
+                    {
+                      "var": "y"
+                    },
+                    8
+                  ]
+                },
+                "size": 16
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

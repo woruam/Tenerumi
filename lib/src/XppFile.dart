@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 
 import 'package:archive/archive.dart';
@@ -19,6 +21,7 @@ import 'package:xournalpp/src/PdfImage.dart';
 import 'package:xournalpp/src/XppBackground.dart';
 import 'package:xournalpp/src/XppPageSize.dart';
 import 'package:xournalpp/src/content_snapshot.dart';
+
 import 'XppLayer.dart';
 import 'XppPage.dart';
 
@@ -32,8 +35,17 @@ class XppFile {
     this.pages,
     this.previewImage,
     this.sourcePath,
+    String? documentId,
     Map<String, Uint8List>? pdfAttachments,
-  }) : pdfAttachments = pdfAttachments ?? {};
+  }) : documentId =
+           (documentId != null &&
+                   RegExp(r'^[a-zA-Z0-9_-]{1,100}$').hasMatch(documentId)
+               ? documentId
+               : null) ??
+           '${DateTime.now().microsecondsSinceEpoch}-${math.Random.secure().nextInt(1 << 32)}',
+       pdfAttachments = pdfAttachments ?? {};
+  final String documentId;
+  bool recovered = false;
 
   static XppFile empty({
     String? title,
@@ -172,15 +184,19 @@ class XppFile {
     List<int> bytes = GZipDecoder().decodeBytes(input['bytes'] as Uint8List);
     String fileText = utf8.decode(bytes);
 
-    XmlElement documentTree = XmlDocument.parse(
-      fileText,
-    ).findElements('xournal').toList()[0];
+    final documentTree = XmlDocument.parse(fileText)
+        .findElements('xournal')
+        .firstOrNull;
+    if (documentTree == null) {
+      throw const FormatException('Missing xournal root element');
+    }
 
     Uint8List previewImage;
     try {
-      previewImage = base64Decode(
-        documentTree.findElements('preview').toList()[0].innerText,
-      );
+      final preview = documentTree.findElements('preview').firstOrNull;
+      previewImage = preview == null
+          ? kTransparentImage
+          : base64Decode(preview.innerText);
     } catch (e) {
       previewImage = kTransparentImage;
     }
@@ -202,10 +218,10 @@ class XppFile {
       );
 
       XppBackground? background;
-      if (pageElement.findElements('background').isNotEmpty) {
-        XmlElement backgroundElement = pageElement
-            .findElements('background')
-            .toList()[0];
+      final backgroundElement = pageElement
+          .findElements('background')
+          .firstOrNull;
+      if (backgroundElement != null) {
         switch (backgroundElement.getAttribute('type')) {
           case "pixmap":
             background = XppBackgroundImage(
@@ -374,15 +390,26 @@ class XppFile {
 
         final ordered = content.keys.toList()..sort();
         layers.add(
-          XppLayer(content: ordered.map((idx) => content[idx]).toList()),
+          XppLayer(
+            content: ordered.map((idx) => content[idx]).toList(),
+            name: layer.getAttribute('name') ?? 'Livello ${layers.length + 1}',
+            visible: layer.getAttribute('osipp-visible') != 'false',
+            locked: layer.getAttribute('osipp-locked') == 'true',
+          ),
         );
       }
       pages.add(
-        XppPage(background: background, layers: layers, pageSize: pageSize),
+        XppPage(
+          background: background,
+          layers: layers.isEmpty ? [XppLayer.empty()] : layers,
+          pageSize: pageSize,
+          infinite: pageElement.getAttribute('osipp-infinite') == 'true',
+        ),
       );
     }
 
     return XppFile(
+      documentId: documentTree.getAttribute('osipp-id'),
       title: input['title'] as String,
       previewImage: previewImage,
       pages: pages,
@@ -420,6 +447,7 @@ class XppFile {
         [
           XmlAttribute(XmlName('creator'), 'Xournal++ Mobile'),
           XmlAttribute(XmlName('fileversion'), '4'),
+          XmlAttribute(XmlName('osipp-id'), documentId),
         ],
         [
             XmlElement(XmlName('title'), const [], [
@@ -469,12 +497,14 @@ class XppFile {
   /// Keep decoded images and UI callbacks out of the isolate message.
   Future<Uint8List> toUint8ListAsync() {
     final snapshot = XppFile(
+      documentId: documentId,
       title: title,
       previewImage: previewImage,
       pdfAttachments: Map.of(pdfAttachments),
       pages: pages?.map((page) {
         final background = page.background;
         return XppPage(
+          infinite: page.infinite,
           pageSize: page.pageSize,
           background: background is XppBackgroundPdf
               ? XppBackgroundPdf(
@@ -486,6 +516,9 @@ class XppFile {
           layers: page.layers
               ?.map(
                 (layer) => XppLayer(
+                  name: layer.name,
+                  visible: layer.visible,
+                  locked: layer.locked,
                   content: layer.content
                       ?.whereType<XppContent>()
                       .map(cloneContent)

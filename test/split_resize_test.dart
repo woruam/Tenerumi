@@ -28,7 +28,7 @@ void main() {
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
-      final ws = WorkspaceController();
+      final ws = WorkspaceController(autosaveEnabled: false);
       final secondary = XppFile.empty(title: 'Second');
       ws.addDocument(secondary);
       final first = ws.controllerFor(ws.documents.first);

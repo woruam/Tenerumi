@@ -14,6 +14,19 @@ import 'package:xournalpp/widgets/unified_toolbar.dart';
 
 class _SaveSpy extends CanvasController {
   int calls = 0;
+  int pdfCalls = 0;
+  int xoppCalls = 0;
+
+  @override
+  Future<void> exportToPdf(BuildContext context) async {
+    pdfCalls++;
+  }
+
+  @override
+  Future<bool> exportToXopp(BuildContext context) async {
+    xoppCalls++;
+    return false;
+  }
 
   @override
   Future<bool> saveFile(BuildContext context) async {
@@ -47,22 +60,26 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
-  testWidgets('settings stay visible on phone; save follows focused panel',
-      (tester) async {
+  testWidgets('settings stay visible on phone; save follows focused panel', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(380, 800);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     final ws = _ToolbarWorkspace();
     final theme = ThemeController();
-    await tester.pumpWidget(MultiProvider(
-      providers: [
-        ChangeNotifierProvider<ThemeController>.value(value: theme),
-        ChangeNotifierProvider<WorkspaceController>.value(value: ws),
-      ],
-      child: MaterialApp(
-          home: Scaffold(appBar: UnifiedToolbar(onOpenFile: () {}))),
-    ));
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<ThemeController>.value(value: theme),
+          ChangeNotifierProvider<WorkspaceController>.value(value: ws),
+        ],
+        child: MaterialApp(
+          home: Scaffold(appBar: UnifiedToolbar(onOpenFile: () {})),
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
     await _menu(tester);
     expect(find.text('Salva'), findsOneWidget);
@@ -78,6 +95,16 @@ void main() {
     await tester.pumpAndSettle();
     expect(ws.primary.calls, 1);
     expect(ws.secondary.calls, 1);
+    await _menu(tester);
+    await tester.tap(find.text('Salva come XOPP'));
+    await tester.pumpAndSettle();
+    await _menu(tester);
+    await tester.tap(find.text('Esporta PDF'));
+    await tester.pumpAndSettle();
+    expect(ws.primary.pdfCalls, 0);
+    expect(ws.primary.xoppCalls, 0);
+    expect(ws.secondary.pdfCalls, 1);
+    expect(ws.secondary.xoppCalls, 1);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
     ws.dispose();
@@ -88,19 +115,38 @@ void main() {
     final ws = _ToolbarWorkspace();
     ws.primary.savingFile = true;
     final theme = ThemeController();
-    await tester.pumpWidget(MultiProvider(
-      providers: [
-        ChangeNotifierProvider<ThemeController>.value(value: theme),
-        ChangeNotifierProvider<WorkspaceController>.value(value: ws),
-      ],
-      child: const MaterialApp(home: Scaffold(appBar: UnifiedToolbar())),
-    ));
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<ThemeController>.value(value: theme),
+          ChangeNotifierProvider<WorkspaceController>.value(value: ws),
+        ],
+        child: const MaterialApp(home: Scaffold(appBar: UnifiedToolbar())),
+      ),
+    );
     // An active progress indicator does not settle.
     await tester.tap(find.byKey(const ValueKey('document-settings')));
     await tester.pump(const Duration(milliseconds: 300));
-    final save = tester.widget<PopupMenuItem<String>>(find.ancestor(
-        of: find.text('Salva'), matching: find.byType(PopupMenuItem<String>)));
+    final save = tester.widget<PopupMenuItem<String>>(
+      find.ancestor(
+        of: find.text('Salva'),
+        matching: find.byType(PopupMenuItem<String>),
+      ),
+    );
     expect(save.enabled, isFalse);
+    for (final label in ['Salva come XOPP', 'Esporta PDF']) {
+      expect(
+        tester
+            .widget<PopupMenuItem<String>>(
+              find.ancestor(
+                of: find.text(label),
+                matching: find.byType(PopupMenuItem<String>),
+              ),
+            )
+            .enabled,
+        isFalse,
+      );
+    }
     await tester.tap(find.text('Salva'));
     await tester.pump();
     expect(ws.primary.calls, 0);
@@ -110,26 +156,30 @@ void main() {
   });
 
   for (final result in ['success', 'cancel', 'error']) {
-    testWidgets('open file $result preserves existing tabs and split state',
-        (tester) async {
+    testWidgets('open file $result preserves existing tabs and split state', (
+      tester,
+    ) async {
       final theme = ThemeController();
       final initial = XppFile.empty()..title = 'Original';
       final imported = XppFile.empty()..title = 'Imported';
-      await tester.pumpWidget(ChangeNotifierProvider<ThemeController>.value(
-        value: theme,
-        child: MaterialApp(
-          home: WorkspacePage(
-            initialFile: initial,
-            documentOpener: () async {
-              if (result == 'error') throw const FormatException('Bad file');
-              return result == 'cancel' ? null : imported;
-            },
+      await tester.pumpWidget(
+        ChangeNotifierProvider<ThemeController>.value(
+          value: theme,
+          child: MaterialApp(
+            home: WorkspacePage(
+              initialFile: initial,
+              documentOpener: () async {
+                if (result == 'error') throw const FormatException('Bad file');
+                return result == 'cancel' ? null : imported;
+              },
+            ),
           ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
-      final ws =
-          tester.element(find.byType(CanvasPage)).read<WorkspaceController>();
+      final ws = tester
+          .element(find.byType(CanvasPage))
+          .read<WorkspaceController>();
       ws.toggleSplit();
       final secondary = ws.documents[ws.secondaryIndex!];
       ws.focus(WorkspacePanel.secondary);
@@ -149,8 +199,10 @@ void main() {
       } else {
         expect(ws.documents.length, 2);
         expect(ws.activeFile, same(secondary));
-        expect(find.byType(SnackBar),
-            result == 'error' ? findsOneWidget : findsNothing);
+        expect(
+          find.byType(SnackBar),
+          result == 'error' ? findsOneWidget : findsNothing,
+        );
       }
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
@@ -158,26 +210,36 @@ void main() {
     });
   }
 
-  testWidgets('open file cannot launch a second picker while waiting',
-      (tester) async {
+  testWidgets('open file cannot launch a second picker while waiting', (
+    tester,
+  ) async {
     final theme = ThemeController();
     final pending = Completer<XppFile?>();
     int calls = 0;
-    await tester.pumpWidget(ChangeNotifierProvider<ThemeController>.value(
-      value: theme,
-      child: MaterialApp(home: WorkspacePage(documentOpener: () {
-        calls++;
-        return pending.future;
-      })),
-    ));
+    await tester.pumpWidget(
+      ChangeNotifierProvider<ThemeController>.value(
+        value: theme,
+        child: MaterialApp(
+          home: WorkspacePage(
+            documentOpener: () {
+              calls++;
+              return pending.future;
+            },
+          ),
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
     await _menu(tester);
     await tester.tap(find.text('Apri file'));
     await tester.pumpAndSettle();
     await _menu(tester);
-    final open = tester.widget<PopupMenuItem<String>>(find.ancestor(
+    final open = tester.widget<PopupMenuItem<String>>(
+      find.ancestor(
         of: find.text('Apri file'),
-        matching: find.byType(PopupMenuItem<String>)));
+        matching: find.byType(PopupMenuItem<String>),
+      ),
+    );
     expect(open.enabled, isFalse);
     await tester.tap(find.text('Apri file'));
     await tester.pump();

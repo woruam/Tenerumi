@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import 'package:xournalpp/controllers/canvas_controller.dart';
 import 'package:xournalpp/src/XppFile.dart';
+import 'package:xournalpp/src/selection_clipboard.dart';
 
 /// Quale dei due pannelli affiancati ha il focus.
 enum WorkspacePanel { primary, secondary }
@@ -16,11 +17,12 @@ enum WorkspacePanel { primary, secondary }
 /// In questo modo lo stato della toolbar è sollevato fuori dalle singole
 /// [CanvasPage]: una sola toolbar globale, due controller con stato isolato.
 class WorkspaceController extends ChangeNotifier {
-  WorkspaceController({XppFile? initialFile}) {
+  WorkspaceController({XppFile? initialFile, this.autosaveEnabled = true}) {
     final XppFile first =
         initialFile ?? (XppFile.empty()..title = 'Nuovo Documento 1');
     _add(first);
   }
+  final bool autosaveEnabled;
 
   /// Documenti aperti, nell'ordine delle schede.
   final List<XppFile> documents = [];
@@ -28,6 +30,7 @@ class WorkspaceController extends ChangeNotifier {
   /// Un controller per documento: stato di disegno isolato
   /// (strumento, colore, spessore, zoom, tratti, undo/redo).
   final Map<XppFile, CanvasController> _controllers = {};
+  final SelectionClipboard clipboard = SelectionClipboard();
 
   /// Modalità affiancata attiva/disattiva.
   bool splitEnabled = false;
@@ -52,8 +55,12 @@ class WorkspaceController extends ChangeNotifier {
   }
 
   /// Restituisce (creandolo se serve) il [CanvasController] di un documento.
-  CanvasController controllerFor(XppFile file) =>
-      _controllers.putIfAbsent(file, () => CanvasController()..init(file));
+  CanvasController controllerFor(XppFile file) => _controllers.putIfAbsent(
+    file,
+    () =>
+        CanvasController(clipboard: clipboard, autosaveEnabled: autosaveEnabled)
+          ..init(file),
+  );
 
   /// Indice del documento mostrato nel pannello con focus.
   int get _activeIndex {
@@ -77,7 +84,8 @@ class WorkspaceController extends ChangeNotifier {
 
   /// Checks every document, even those without a mounted CanvasPage.
   Future<bool> confirmCloseAll(
-      Future<bool> Function(CanvasController) confirm) async {
+    Future<bool> Function(CanvasController) confirm,
+  ) async {
     for (final file in List<XppFile>.of(documents)) {
       if (!await confirm(controllerFor(file))) return false;
     }
@@ -129,7 +137,8 @@ class WorkspaceController extends ChangeNotifier {
     if (splitEnabled) {
       if (documents.length < 2) {
         _add(
-            XppFile.empty()..title = 'Nuovo Documento ${documents.length + 1}');
+          XppFile.empty()..title = 'Nuovo Documento ${documents.length + 1}',
+        );
       }
       secondaryIndex ??= (primaryIndex == 0) ? 1 : 0;
       if (secondaryIndex == primaryIndex) {

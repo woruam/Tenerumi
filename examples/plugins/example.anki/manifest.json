@@ -1,0 +1,31 @@
+{
+  "apiVersion": 1,
+  "id": "example.anki",
+  "name": "Flashcard per Anki",
+  "version": "2.0.0",
+  "description": "Crea una flashcard o importa una lista JSON; esporta TSV per Anki.",
+  "runtime": "javascript",
+  "permissions": [
+    "ui",
+    "export",
+    "storage",
+    "files.read"
+  ],
+  "commands": [
+    {
+      "id": "add",
+      "label": "Aggiungi flashcard",
+      "handler": "add"
+    },
+    {
+      "id": "import",
+      "label": "Importa flashcard JSON",
+      "handler": "importCards"
+    },
+    {
+      "id": "export",
+      "label": "Esporta per Anki",
+      "handler": "exportCards"
+    }
+  ]
+}

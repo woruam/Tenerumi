@@ -7,6 +7,16 @@ Il progetto è un porting modernizzato delle funzionalità principali di **Xourn
 
 ## Funzionalità Attuali dell'App
 
+### Canvas infinito, autosalvataggio e livelli (7 ottobre 2026)
+
+- Nuove note con superficie infinita opzionale, coordinate libere, pan in entrambi gli assi, zoom e disegno limitato all'area visibile.
+- Autosalvataggio dopo due secondi di inattività o dieci secondi di modifiche continue, copia locale di recupero e aggiornamento dei file già salvati sulle piattaforme native.
+- Ripristino delle copie automatiche dalla schermata iniziale e segnalazione degli errori di salvataggio.
+- Livelli per pagina: aggiunta, selezione, nome, visibilità, blocco, ordine ed eliminazione; strumenti e plugin rispettano il livello attivo.
+- Annulla/ripeti include la gestione dei livelli. PDF ritagliato sul contenuto visibile dei canvas infiniti; XOPP conserva modalità e proprietà dei livelli.
+
+Dettagli e limiti: [Canvas, autosalvataggio e livelli](docs/CANVAS_WORKSPACE.md). Verifica tramite analisi e test, senza build dell'app per questo intervento.
+
 1. **Gestione File e Appunti**
    - Creazione di nuovi documenti vuoti.
    - Apertura di file salvati di recente.

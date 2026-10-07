@@ -1,0 +1,201 @@
+Analyzing OSIpp...                                              
+
+   info - The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/foundation.dart'. Try removing the import directive - lib\controllers\canvas_controller.dart:10:8 - unnecessary_import
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\canvas_controller.dart:193:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\canvas_controller.dart:224:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\canvas_controller.dart:283:7 - curly_braces_in_flow_control_structures
+   info - Don't invoke 'print' in production code. Try using a logging framework - lib\controllers\canvas_controller.dart:363:7 - avoid_print
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\canvas_controller.dart:609:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\canvas_controller.dart:615:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\canvas_controller.dart:712:29 - curly_braces_in_flow_control_structures
+   info - Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check - lib\controllers\canvas_controller.dart:747:28 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check - lib\controllers\canvas_controller.dart:751:28 - use_build_context_synchronously
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\workspace_controller.dart:65:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\workspace_controller.dart:107:7 - curly_braces_in_flow_control_structures
+   info - Unnecessary escape in string literal. Remove the '\' escape - lib\generated\intl\messages_en.dart:63:19 - unnecessary_string_escapes
+   info - Unnecessary escape in string literal. Remove the '\' escape - lib\generated\intl\messages_en.dart:63:47 - unnecessary_string_escapes
+   info - Unnecessary escape in string literal. Remove the '\' escape - lib\generated\intl\messages_en.dart:139:21 - unnecessary_string_escapes
+   info - The file name 'XppImage.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\layer_contents\XppImage.dart:1:1 - file_names
+   info - The file name 'XppStroke.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\layer_contents\XppStroke.dart:1:1 - file_names
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\layer_contents\XppStroke.dart:66:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\layer_contents\XppStroke.dart:72:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\layer_contents\XppStroke.dart:102:13 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\layer_contents\XppStroke.dart:113:9 - curly_braces_in_flow_control_structures
+   info - Function literals shouldn't be passed to 'forEach'. Try using a 'for' loop - lib\layer_contents\XppStroke.dart:122:13 - avoid_function_literals_in_foreach_calls
+   info - Function literals shouldn't be passed to 'forEach'. Try using a 'for' loop - lib\layer_contents\XppStroke.dart:126:13 - avoid_function_literals_in_foreach_calls
+   info - Function literals shouldn't be passed to 'forEach'. Try using a 'for' loop - lib\layer_contents\XppStroke.dart:135:13 - avoid_function_literals_in_foreach_calls
+   info - Function literals shouldn't be passed to 'forEach'. Try using a 'for' loop - lib\layer_contents\XppStroke.dart:139:13 - avoid_function_literals_in_foreach_calls
+   info - Use interpolation to compose strings and values. Try using string interpolation to build the composite string - lib\layer_contents\XppStroke.dart:274:30 - prefer_interpolation_to_compose_strings
+   info - Field overrides a field inherited from 'XppStroke'. Try removing the field, overriding the getter and setter if necessary - lib\layer_contents\XppStroke.dart:403:17 - overridden_fields
+   info - The member 'tool' overrides an inherited member but isn't annotated with '@override'. Try adding the '@override' annotation - lib\layer_contents\XppStroke.dart:403:17 - annotate_overrides
+   info - Field overrides a field inherited from 'XppStroke'. Try removing the field, overriding the getter and setter if necessary - lib\layer_contents\XppStroke.dart:404:25 - overridden_fields
+   info - The member 'points' overrides an inherited member but isn't annotated with '@override'. Try adding the '@override' annotation - lib\layer_contents\XppStroke.dart:404:25 - annotate_overrides
+   info - Field overrides a field inherited from 'XppStroke'. Try removing the field, overriding the getter and setter if necessary - lib\layer_contents\XppStroke.dart:405:10 - overridden_fields
+   info - The member 'color' overrides an inherited member but isn't annotated with '@override'. Try adding the '@override' annotation - lib\layer_contents\XppStroke.dart:405:10 - annotate_overrides
+   info - Field overrides a field inherited from 'XppStroke'. Try removing the field, overriding the getter and setter if necessary - lib\layer_contents\XppStroke.dart:407:16 - overridden_fields
+   info - The member 'editingTool' overrides an inherited member but isn't annotated with '@override'. Try adding the '@override' annotation - lib\layer_contents\XppStroke.dart:407:16 - annotate_overrides
+   info - Field overrides a field inherited from 'XppStroke'. Try removing the field, overriding the getter and setter if necessary - lib\layer_contents\XppStroke.dart:423:17 - overridden_fields
+   info - The member 'tool' overrides an inherited member but isn't annotated with '@override'. Try adding the '@override' annotation - lib\layer_contents\XppStroke.dart:423:17 - annotate_overrides
+   info - Field overrides a field inherited from 'XppStroke'. Try removing the field, overriding the getter and setter if necessary - lib\layer_contents\XppStroke.dart:424:25 - overridden_fields
+   info - The member 'points' overrides an inherited member but isn't annotated with '@override'. Try adding the '@override' annotation - lib\layer_contents\XppStroke.dart:424:25 - annotate_overrides
+   info - Field overrides a field inherited from 'XppStroke'. Try removing the field, overriding the getter and setter if necessary - lib\layer_contents\XppStroke.dart:425:10 - overridden_fields
+   info - The member 'color' overrides an inherited member but isn't annotated with '@override'. Try adding the '@override' annotation - lib\layer_contents\XppStroke.dart:425:10 - annotate_overrides
+   info - Field overrides a field inherited from 'XppStroke'. Try removing the field, overriding the getter and setter if necessary - lib\layer_contents\XppStroke.dart:427:16 - overridden_fields
+   info - The member 'editingTool' overrides an inherited member but isn't annotated with '@override'. Try adding the '@override' annotation - lib\layer_contents\XppStroke.dart:427:16 - annotate_overrides
+   info - Field overrides a field inherited from 'XppStroke'. Try removing the field, overriding the getter and setter if necessary - lib\layer_contents\XppStroke.dart:443:17 - overridden_fields
+   info - The member 'tool' overrides an inherited member but isn't annotated with '@override'. Try adding the '@override' annotation - lib\layer_contents\XppStroke.dart:443:17 - annotate_overrides
+   info - Field overrides a field inherited from 'XppStroke'. Try removing the field, overriding the getter and setter if necessary - lib\layer_contents\XppStroke.dart:444:25 - overridden_fields
+   info - The member 'points' overrides an inherited member but isn't annotated with '@override'. Try adding the '@override' annotation - lib\layer_contents\XppStroke.dart:444:25 - annotate_overrides
+   info - Field overrides a field inherited from 'XppStroke'. Try removing the field, overriding the getter and setter if necessary - lib\layer_contents\XppStroke.dart:445:10 - overridden_fields
+   info - The member 'color' overrides an inherited member but isn't annotated with '@override'. Try adding the '@override' annotation - lib\layer_contents\XppStroke.dart:445:10 - annotate_overrides
+   info - Field overrides a field inherited from 'XppStroke'. Try removing the field, overriding the getter and setter if necessary - lib\layer_contents\XppStroke.dart:447:16 - overridden_fields
+   info - The member 'editingTool' overrides an inherited member but isn't annotated with '@override'. Try adding the '@override' annotation - lib\layer_contents\XppStroke.dart:447:16 - annotate_overrides
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\layer_contents\XppStroke.dart:538:7 - curly_braces_in_flow_control_structures
+   info - The constant name 'PEN' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\layer_contents\XppStroke.dart:546:22 - constant_identifier_names
+   info - The constant name 'HIGHLIGHTER' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\layer_contents\XppStroke.dart:546:27 - constant_identifier_names
+   info - The constant name 'ERASER' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\layer_contents\XppStroke.dart:546:40 - constant_identifier_names
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\layer_contents\XppStroke.dart:573:7 - curly_braces_in_flow_control_structures
+   info - The file name 'XppTexImage.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\layer_contents\XppTexImage.dart:1:1 - file_names
+   info - The file name 'XppText.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\layer_contents\XppText.dart:1:1 - file_names
+   info - Unnecessary 'this.' qualifier. Try removing 'this.' - lib\layer_contents\XppText.dart:67:39 - unnecessary_this
+   info - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter - lib\layer_contents\XppText.dart:125:9 - use_super_parameters
+   info - Invalid use of a private type in a public API. Try making the private type public, or making the API that uses the private type also be private - lib\layer_contents\XppText.dart:130:3 - library_private_types_in_public_api
+   info - Invalid use of a private type in a public API. Try making the private type public, or making the API that uses the private type also be private - lib\main.dart:29:10 - library_private_types_in_public_api
+   info - The file name 'CanvasPage.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\pages\CanvasPage.dart:1:1 - file_names
+   info - The import of 'package:flutter/foundation.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart'. Try removing the import directive - lib\pages\CanvasPage.dart:9:8 - unnecessary_import
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\pages\CanvasPage.dart:48:7 - curly_braces_in_flow_control_structures
+   info - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter - lib\pages\CanvasPage.dart:69:9 - use_super_parameters
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\pages\CanvasPage.dart:107:11 - curly_braces_in_flow_control_structures
+   info - The file name 'OpenPage.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\pages\OpenPage.dart:1:1 - file_names
+   info - Constructors for public widgets should have a named 'key' parameter. Try adding a named parameter to the constructor - lib\pages\OpenPage.dart:15:7 - use_key_in_widget_constructors
+   info - Invalid use of a private type in a public API. Try making the private type public, or making the API that uses the private type also be private - lib\pages\OpenPage.dart:17:3 - library_private_types_in_public_api
+   info - Unnecessary use of multiple underscores. Try using '_' - lib\pages\OpenPage.dart:107:47 - unnecessary_underscores
+   info - Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check - lib\pages\OpenPage.dart:210:18 - use_build_context_synchronously
+   info - Unnecessary use of 'toList' in a spread. Try removing the invocation of 'toList' - lib\pages\OpenPage.dart:305:38 - unnecessary_to_list_in_spreads
+   info - Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check - lib\pages\OpenPage.dart:628:56 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check - lib\pages\OpenPage.dart:634:54 - use_build_context_synchronously
+   info - The file name 'WorkspacePage.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\pages\WorkspacePage.dart:1:1 - file_names
+   info - Constructors for public widgets should have a named 'key' parameter. Try adding a named parameter to the constructor - lib\pages\WorkspacePage.dart:18:3 - use_key_in_widget_constructors
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\pages\WorkspacePage.dart:18:3 - prefer_const_constructors_in_immutables
+   info - Invalid use of a private type in a public API. Try making the private type public, or making the API that uses the private type also be private - lib\pages\WorkspacePage.dart:21:3 - library_private_types_in_public_api
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\pages\WorkspacePage.dart:96:40 - curly_braces_in_flow_control_structures
+   info - The file name 'HexColor.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\src\HexColor.dart:1:1 - file_names
+   info - Use interpolation to compose strings and values. Try using string interpolation to build the composite string - lib\src\HexColor.dart:9:18 - prefer_interpolation_to_compose_strings
+   info - The file name 'PdfImage.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\src\PdfImage.dart:1:1 - file_names
+   info - The file name 'ShapeRecognizer.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\src\ShapeRecognizer.dart:1:1 - file_names
+   info - The file name 'XppBackground.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\src\XppBackground.dart:1:1 - file_names
+   info - Use the generic function type syntax in 'typedef's. Try using the generic function type syntax ('Future<FilePickerCross> Function(String? path)') - lib\src\XppBackground.dart:9:33 - prefer_generic_function_type_aliases
+   info - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter - lib\src\XppBackground.dart:34:9 - use_super_parameters
+   info - Invalid use of a private type in a public API. Try making the private type public, or making the API that uses the private type also be private - lib\src\XppBackground.dart:37:3 - library_private_types_in_public_api
+   info - Field overrides a field inherited from 'XppBackground'. Try removing the field, overriding the getter and setter if necessary - lib\src\XppBackground.dart:64:22 - overridden_fields
+   info - The member 'type' overrides an inherited member but isn't annotated with '@override'. Try adding the '@override' annotation - lib\src\XppBackground.dart:64:22 - annotate_overrides
+   info - Unnecessary 'this.' qualifier. Try removing 'this.' - lib\src\XppBackground.dart:107:5 - unnecessary_this
+   info - Parameter 'size' could be a super parameter. Trying converting 'size' to a super parameter - lib\src\XppBackground.dart:182:3 - use_super_parameters
+   info - Parameter 'size' could be a super parameter. Trying converting 'size' to a super parameter - lib\src\XppBackground.dart:199:3 - use_super_parameters
+   info - The constant name 'ABSOLUTE' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\XppBackground.dart:317:33 - constant_identifier_names
+   info - The constant name 'ATTACH' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\XppBackground.dart:317:43 - constant_identifier_names
+   info - The constant name 'CLONE' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\XppBackground.dart:317:51 - constant_identifier_names
+   info - The constant name 'NONE' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\XppBackground.dart:319:26 - constant_identifier_names
+   info - The constant name 'SOLID' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\XppBackground.dart:319:32 - constant_identifier_names
+   info - The constant name 'PIXMAP' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\XppBackground.dart:319:39 - constant_identifier_names
+   info - The file name 'XppFile.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\src\XppFile.dart:1:1 - file_names
+   info - The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/foundation.dart'. Try removing the import directive - lib\src\XppFile.dart:2:8 - unnecessary_import
+   info - The import of 'dart:ui' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart'. Try removing the import directive - lib\src\XppFile.dart:3:8 - unnecessary_import
+   info - Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check - lib\src\XppFile.dart:96:20 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check - lib\src\XppFile.dart:104:18 - use_build_context_synchronously
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\XppFile.dart:196:9 - curly_braces_in_flow_control_structures
+   info - Function literals shouldn't be passed to 'forEach'. Try using a 'for' loop - lib\src\XppFile.dart:279:24 - avoid_function_literals_in_foreach_calls
+   info - The addition of multiple elements could be inlined. Try using the spread operator ('...') to inline the addition - lib\src\XppFile.dart:438:13 - prefer_spread_collections
+   info - Use interpolation to compose strings and values. Try using string interpolation to build the composite string - lib\src\XppFile.dart:453:12 - prefer_interpolation_to_compose_strings
+   info - The file name 'XppLayer.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\src\XppLayer.dart:1:1 - file_names
+   info - The file name 'XppPage.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\src\XppPage.dart:1:1 - file_names
+   info - The file name 'XppPageContentWidget.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\src\XppPageContentWidget.dart:1:1 - file_names
+   info - Use the generic function type syntax in 'typedef's. Try using the generic function type syntax ('bool Function(Offset offset)') - lib\src\XppPageContentWidget.dart:4:14 - prefer_generic_function_type_aliases
+   info - Use the generic function type syntax in 'typedef's. Try using the generic function type syntax ('bool Function(Offset offset, EditingTool tool)') - lib\src\XppPageContentWidget.dart:5:14 - prefer_generic_function_type_aliases
+   info - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter - lib\src\XppPageContentWidget.dart:19:9 - use_super_parameters
+   info - Invalid use of a private type in a public API. Try making the private type public, or making the API that uses the private type also be private - lib\src\XppPageContentWidget.dart:29:3 - library_private_types_in_public_api
+   info - The file name 'XppPageSize.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\src\XppPageSize.dart:1:1 - file_names
+   info - The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/foundation.dart'. Try removing the import directive - lib\src\compat\file_picker_cross.dart:1:8 - unnecessary_import
+   info - Don't invoke 'print' in production code. Try using a logging framework - lib\src\compat\internal_storage_io.dart:30:5 - avoid_print
+   info - Don't invoke 'print' in production code. Try using a logging framework - lib\src\compat\internal_storage_io.dart:34:5 - avoid_print
+   info - Unnecessary constructor invocation. Try using a collection literal - lib\src\pdf_raster_cache.dart:8:20 - prefer_collection_literals
+   info - The file name 'ContextualBottomSheet.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\widgets\ContextualBottomSheet.dart:1:1 - file_names
+   info - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter - lib\widgets\ContextualBottomSheet.dart:6:9 - use_super_parameters
+   info - The file name 'DropFile.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\widgets\DropFile.dart:1:1 - file_names
+   info - Constructors for public widgets should have a named 'key' parameter. Try adding a named parameter to the constructor - lib\widgets\DropFile.dart:11:7 - use_key_in_widget_constructors
+   info - Invalid use of a private type in a public API. Try making the private type public, or making the API that uses the private type also be private - lib\widgets\DropFile.dart:13:3 - library_private_types_in_public_api
+   info - Use interpolation to compose strings and values. Try using string interpolation to build the composite string - lib\widgets\DropFile.dart:28:49 - prefer_interpolation_to_compose_strings
+   info - Use interpolation to compose strings and values. Try using string interpolation to build the composite string - lib\widgets\DropFile.dart:60:25 - prefer_interpolation_to_compose_strings
+   info - The file name 'EditingToolbar.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\widgets\EditingToolbar.dart:1:1 - file_names
+   info - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter - lib\widgets\EditingToolbar.dart:16:9 - use_super_parameters
+   info - The 'children' argument should be last in widget constructor invocations. Try moving the argument to the end of the argument list - lib\widgets\EditingToolbar.dart:47:11 - sort_child_properties_last
+   info - The 'child' argument should be last in widget constructor invocations. Try moving the argument to the end of the argument list - lib\widgets\EditingToolbar.dart:55:15 - sort_child_properties_last
+   info - The 'child' argument should be last in widget constructor invocations. Try moving the argument to the end of the argument list - lib\widgets\EditingToolbar.dart:70:15 - sort_child_properties_last
+   info - The 'child' argument should be last in widget constructor invocations. Try moving the argument to the end of the argument list - lib\widgets\EditingToolbar.dart:85:15 - sort_child_properties_last
+   info - The 'child' argument should be last in widget constructor invocations. Try moving the argument to the end of the argument list - lib\widgets\EditingToolbar.dart:100:15 - sort_child_properties_last
+   info - The 'child' argument should be last in widget constructor invocations. Try moving the argument to the end of the argument list - lib\widgets\EditingToolbar.dart:115:15 - sort_child_properties_last
+   info - The 'child' argument should be last in widget constructor invocations. Try moving the argument to the end of the argument list - lib\widgets\EditingToolbar.dart:130:15 - sort_child_properties_last
+   info - The 'child' argument should be last in widget constructor invocations. Try moving the argument to the end of the argument list - lib\widgets\EditingToolbar.dart:145:15 - sort_child_properties_last
+   info - The 'child' argument should be last in widget constructor invocations. Try moving the argument to the end of the argument list - lib\widgets\EditingToolbar.dart:160:15 - sort_child_properties_last
+   info - The 'child' argument should be last in widget constructor invocations. Try moving the argument to the end of the argument list - lib\widgets\EditingToolbar.dart:175:15 - sort_child_properties_last
+   info - The 'child' argument should be last in widget constructor invocations. Try moving the argument to the end of the argument list - lib\widgets\EditingToolbar.dart:188:15 - sort_child_properties_last
+   info - Use interpolation to compose strings and values. Try using string interpolation to build the composite string - lib\widgets\EditingToolbar.dart:200:26 - prefer_interpolation_to_compose_strings
+   info - The 'child' argument should be last in widget constructor invocations. Try moving the argument to the end of the argument list - lib\widgets\EditingToolbar.dart:241:15 - sort_child_properties_last
+   info - The file name 'MainDrawer.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\widgets\MainDrawer.dart:1:1 - file_names
+   info - Constructors for public widgets should have a named 'key' parameter. Try adding a named parameter to the constructor - lib\widgets\MainDrawer.dart:9:7 - use_key_in_widget_constructors
+   info - Invalid use of a private type in a public API. Try making the private type public, or making the API that uses the private type also be private - lib\widgets\MainDrawer.dart:11:3 - library_private_types_in_public_api
+   info - The file name 'PointerListener.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\widgets\PointerListener.dart:1:1 - file_names
+   info - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter - lib\widgets\PointerListener.dart:51:9 - use_super_parameters
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\PointerListener.dart:557:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\PointerListener.dart:643:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\PointerListener.dart:1167:7 - curly_braces_in_flow_control_structures
+   info - The file name 'PomodoroTimer.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\widgets\PomodoroTimer.dart:1:1 - file_names
+   info - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter - lib\widgets\PomodoroTimer.dart:30:9 - use_super_parameters
+   info - The file name 'QuotaTile.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\widgets\QuotaTile.dart:1:1 - file_names
+   info - The file name 'ToolBoxBottomSheet.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\widgets\ToolBoxBottomSheet.dart:1:1 - file_names
+   info - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter - lib\widgets\ToolBoxBottomSheet.dart:13:9 - use_super_parameters
+   info - Invalid use of a private type in a public API. Try making the private type public, or making the API that uses the private type also be private - lib\widgets\ToolBoxBottomSheet.dart:18:3 - library_private_types_in_public_api
+   info - The private field _height could be 'final'. Try making the field 'final' - lib\widgets\ToolBoxBottomSheet.dart:22:10 - prefer_final_fields
+   info - Use a 'SizedBox' to add whitespace to a layout. Try using a 'SizedBox' rather than a 'Container' - lib\widgets\ToolBoxBottomSheet.dart:36:31 - sized_box_for_whitespace
+   info - Use a 'SizedBox' to add whitespace to a layout. Try using a 'SizedBox' rather than a 'Container' - lib\widgets\ToolBoxBottomSheet.dart:46:19 - sized_box_for_whitespace
+   info - The 'children' argument should be last in widget constructor invocations. Try moving the argument to the end of the argument list - lib\widgets\ToolBoxBottomSheet.dart:50:23 - sort_child_properties_last
+   info - The constant name 'STYLUS' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\widgets\ToolBoxBottomSheet.dart:219:3 - constant_identifier_names
+   info - The constant name 'HIGHLIGHT' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\widgets\ToolBoxBottomSheet.dart:220:3 - constant_identifier_names
+   info - The constant name 'TEXT' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\widgets\ToolBoxBottomSheet.dart:221:3 - constant_identifier_names
+   info - The constant name 'LATEX' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\widgets\ToolBoxBottomSheet.dart:222:3 - constant_identifier_names
+   info - The constant name 'IMAGE' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\widgets\ToolBoxBottomSheet.dart:223:3 - constant_identifier_names
+   info - The constant name 'MOVE' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\widgets\ToolBoxBottomSheet.dart:224:3 - constant_identifier_names
+   info - The constant name 'SELECT' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\widgets\ToolBoxBottomSheet.dart:225:3 - constant_identifier_names
+   info - The constant name 'ERASER' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\widgets\ToolBoxBottomSheet.dart:226:3 - constant_identifier_names
+   info - The constant name 'WHITEOUT' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\widgets\ToolBoxBottomSheet.dart:227:3 - constant_identifier_names
+   info - The constant name 'SHAPE_LINE' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\widgets\ToolBoxBottomSheet.dart:228:3 - constant_identifier_names
+   info - The constant name 'SHAPE_RECT' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\widgets\ToolBoxBottomSheet.dart:229:3 - constant_identifier_names
+   info - The constant name 'SHAPE_CIRCLE' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\widgets\ToolBoxBottomSheet.dart:230:3 - constant_identifier_names
+   info - The constant name 'SHAPE_SQUARE' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\widgets\ToolBoxBottomSheet.dart:231:3 - constant_identifier_names
+   info - The constant name 'SHAPE_DASHED_LINE' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\widgets\ToolBoxBottomSheet.dart:232:3 - constant_identifier_names
+   info - The constant name 'SHAPE_CUBE' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\widgets\ToolBoxBottomSheet.dart:233:3 - constant_identifier_names
+   info - The constant name 'SHAPE_CYLINDER' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\widgets\ToolBoxBottomSheet.dart:234:3 - constant_identifier_names
+   info - The constant name 'SHAPE_SPHERE' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\widgets\ToolBoxBottomSheet.dart:235:3 - constant_identifier_names
+   info - The file name 'ToolSettingsMenu.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\widgets\ToolSettingsMenu.dart:1:1 - file_names
+   info - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter - lib\widgets\ToolSettingsMenu.dart:9:9 - use_super_parameters
+   info - Invalid use of a private type in a public API. Try making the private type public, or making the API that uses the private type also be private - lib\widgets\ToolSettingsMenu.dart:18:3 - library_private_types_in_public_api
+   info - The file name 'XppPageStack.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\widgets\XppPageStack.dart:1:1 - file_names
+   info - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter - lib\widgets\XppPageStack.dart:17:9 - use_super_parameters
+   info - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter - lib\widgets\XppPageStack.dart:127:9 - use_super_parameters
+   info - Parameter 'repaint' could be a super parameter. Trying converting 'repaint' to a super parameter - lib\widgets\XppPageStack.dart:153:3 - use_super_parameters
+   info - The file name 'XppPagesListView.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\widgets\XppPagesListView.dart:1:1 - file_names
+   info - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter - lib\widgets\XppPagesListView.dart:20:9 - use_super_parameters
+   info - Missing type annotation. Try adding a type annotation - lib\widgets\XppPagesListView.dart:90:3 - strict_top_level_inference
+   info - Use interpolation to compose strings and values. Try using string interpolation to build the composite string - lib\widgets\XppPagesListView.dart:104:29 - prefer_interpolation_to_compose_strings
+   info - Use interpolation to compose strings and values. Try using string interpolation to build the composite string - lib\widgets\XppPagesListView.dart:111:41 - prefer_interpolation_to_compose_strings
+   info - Use interpolation to compose strings and values. Try using string interpolation to build the composite string - lib\widgets\XppPagesListView.dart:118:47 - prefer_interpolation_to_compose_strings
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\XppPagesListView.dart:131:37 - curly_braces_in_flow_control_structures
+   info - Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check - lib\widgets\XppPagesListView.dart:139:32 - use_build_context_synchronously
+   info - The file name 'ZoomableWidget.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\widgets\ZoomableWidget.dart:1:1 - file_names
+   info - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter - lib\widgets\ZoomableWidget.dart:57:9 - use_super_parameters
+   info - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter - lib\widgets\canvas_app_bar.dart:16:9 - use_super_parameters
+   info - The import of 'package:flutter/gestures.dart' is unnecessary because all of the used elements are also provided by the import of 'dart:ui'. Try removing the import directive - lib\widgets\canvas_toolbar.dart:2:8 - unnecessary_import
+   info - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter - lib\widgets\canvas_toolbar.dart:26:9 - use_super_parameters
+   info - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter - lib\widgets\split_screen_view.dart:18:9 - use_super_parameters
+
+197 issues found. (ran in 29.4s)

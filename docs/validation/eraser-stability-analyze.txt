@@ -1,0 +1,197 @@
+﻿INFO|HINT|UNNECESSARY_IMPORT|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\controllers\\canvas_controller.dart|6|8|17|The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/foundation.dart'.
+INFO|LINT|CURLY_BRACES_IN_FLOW_CONTROL_STRUCTURES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\controllers\\canvas_controller.dart|184|7|7|Statements in an if should be enclosed in a block.
+INFO|LINT|CURLY_BRACES_IN_FLOW_CONTROL_STRUCTURES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\controllers\\canvas_controller.dart|215|11|9|Statements in an if should be enclosed in a block.
+INFO|LINT|CURLY_BRACES_IN_FLOW_CONTROL_STRUCTURES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\controllers\\canvas_controller.dart|274|7|12|Statements in an if should be enclosed in a block.
+INFO|LINT|AVOID_PRINT|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\controllers\\canvas_controller.dart|353|7|5|Don't invoke 'print' in production code.
+INFO|LINT|CURLY_BRACES_IN_FLOW_CONTROL_STRUCTURES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\controllers\\canvas_controller.dart|600|9|116|Statements in an if should be enclosed in a block.
+INFO|LINT|CURLY_BRACES_IN_FLOW_CONTROL_STRUCTURES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\controllers\\canvas_controller.dart|607|9|103|Statements in an if should be enclosed in a block.
+INFO|LINT|CURLY_BRACES_IN_FLOW_CONTROL_STRUCTURES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\controllers\\canvas_controller.dart|705|29|45|Statements in an if should be enclosed in a block.
+INFO|LINT|USE_BUILD_CONTEXT_SYNCHRONOUSLY|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\controllers\\canvas_controller.dart|740|28|7|Don't use 'BuildContext's across async gaps.
+INFO|LINT|USE_BUILD_CONTEXT_SYNCHRONOUSLY|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\controllers\\canvas_controller.dart|745|9|7|Don't use 'BuildContext's across async gaps.
+INFO|LINT|CURLY_BRACES_IN_FLOW_CONTROL_STRUCTURES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\controllers\\workspace_controller.dart|61|7|20|Statements in an if should be enclosed in a block.
+INFO|LINT|CURLY_BRACES_IN_FLOW_CONTROL_STRUCTURES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\controllers\\workspace_controller.dart|102|7|37|Statements in an if should be enclosed in a block.
+INFO|LINT|UNNECESSARY_STRING_ESCAPES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\generated\\intl\\messages_en.dart|63|19|1|Unnecessary escape in string literal.
+INFO|LINT|UNNECESSARY_STRING_ESCAPES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\generated\\intl\\messages_en.dart|63|47|1|Unnecessary escape in string literal.
+INFO|LINT|UNNECESSARY_STRING_ESCAPES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\generated\\intl\\messages_en.dart|139|21|1|Unnecessary escape in string literal.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppImage.dart|1|1|0|The file name 'XppImage.dart' isn't a lower_case_with_underscores identifier.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|1|1|0|The file name 'XppStroke.dart' isn't a lower_case_with_underscores identifier.
+INFO|LINT|CURLY_BRACES_IN_FLOW_CONTROL_STRUCTURES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|66|9|110|Statements in an if should be enclosed in a block.
+INFO|LINT|CURLY_BRACES_IN_FLOW_CONTROL_STRUCTURES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|72|7|74|Statements in an if should be enclosed in a block.
+INFO|LINT|CURLY_BRACES_IN_FLOW_CONTROL_STRUCTURES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|102|13|12|Statements in an if should be enclosed in a block.
+INFO|LINT|CURLY_BRACES_IN_FLOW_CONTROL_STRUCTURES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|113|9|12|Statements in an if should be enclosed in a block.
+INFO|LINT|AVOID_FUNCTION_LITERALS_IN_FOREACH_CALLS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|122|13|7|Function literals shouldn't be passed to 'forEach'.
+INFO|LINT|AVOID_FUNCTION_LITERALS_IN_FOREACH_CALLS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|126|13|7|Function literals shouldn't be passed to 'forEach'.
+INFO|LINT|AVOID_FUNCTION_LITERALS_IN_FOREACH_CALLS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|135|13|7|Function literals shouldn't be passed to 'forEach'.
+INFO|LINT|AVOID_FUNCTION_LITERALS_IN_FOREACH_CALLS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|139|13|7|Function literals shouldn't be passed to 'forEach'.
+INFO|LINT|PREFER_INTERPOLATION_TO_COMPOSE_STRINGS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|274|30|20|Use interpolation to compose strings and values.
+INFO|LINT|OVERRIDDEN_FIELDS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|403|17|4|Field overrides a field inherited from 'XppStroke'.
+INFO|LINT|ANNOTATE_OVERRIDES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|403|17|4|The member 'tool' overrides an inherited member but isn't annotated with '@override'.
+INFO|LINT|OVERRIDDEN_FIELDS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|404|25|6|Field overrides a field inherited from 'XppStroke'.
+INFO|LINT|ANNOTATE_OVERRIDES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|404|25|6|The member 'points' overrides an inherited member but isn't annotated with '@override'.
+INFO|LINT|OVERRIDDEN_FIELDS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|405|10|5|Field overrides a field inherited from 'XppStroke'.
+INFO|LINT|ANNOTATE_OVERRIDES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|405|10|5|The member 'color' overrides an inherited member but isn't annotated with '@override'.
+INFO|LINT|OVERRIDDEN_FIELDS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|407|16|11|Field overrides a field inherited from 'XppStroke'.
+INFO|LINT|ANNOTATE_OVERRIDES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|407|16|11|The member 'editingTool' overrides an inherited member but isn't annotated with '@override'.
+INFO|LINT|OVERRIDDEN_FIELDS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|423|17|4|Field overrides a field inherited from 'XppStroke'.
+INFO|LINT|ANNOTATE_OVERRIDES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|423|17|4|The member 'tool' overrides an inherited member but isn't annotated with '@override'.
+INFO|LINT|OVERRIDDEN_FIELDS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|424|25|6|Field overrides a field inherited from 'XppStroke'.
+INFO|LINT|ANNOTATE_OVERRIDES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|424|25|6|The member 'points' overrides an inherited member but isn't annotated with '@override'.
+INFO|LINT|OVERRIDDEN_FIELDS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|425|10|5|Field overrides a field inherited from 'XppStroke'.
+INFO|LINT|ANNOTATE_OVERRIDES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|425|10|5|The member 'color' overrides an inherited member but isn't annotated with '@override'.
+INFO|LINT|OVERRIDDEN_FIELDS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|427|16|11|Field overrides a field inherited from 'XppStroke'.
+INFO|LINT|ANNOTATE_OVERRIDES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|427|16|11|The member 'editingTool' overrides an inherited member but isn't annotated with '@override'.
+INFO|LINT|OVERRIDDEN_FIELDS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|443|17|4|Field overrides a field inherited from 'XppStroke'.
+INFO|LINT|ANNOTATE_OVERRIDES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|443|17|4|The member 'tool' overrides an inherited member but isn't annotated with '@override'.
+INFO|LINT|OVERRIDDEN_FIELDS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|444|25|6|Field overrides a field inherited from 'XppStroke'.
+INFO|LINT|ANNOTATE_OVERRIDES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|444|25|6|The member 'points' overrides an inherited member but isn't annotated with '@override'.
+INFO|LINT|OVERRIDDEN_FIELDS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|445|10|5|Field overrides a field inherited from 'XppStroke'.
+INFO|LINT|ANNOTATE_OVERRIDES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|445|10|5|The member 'color' overrides an inherited member but isn't annotated with '@override'.
+INFO|LINT|OVERRIDDEN_FIELDS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|447|16|11|Field overrides a field inherited from 'XppStroke'.
+INFO|LINT|ANNOTATE_OVERRIDES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|447|16|11|The member 'editingTool' overrides an inherited member but isn't annotated with '@override'.
+INFO|LINT|CURLY_BRACES_IN_FLOW_CONTROL_STRUCTURES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|538|7|13|Statements in an if should be enclosed in a block.
+INFO|LINT|CONSTANT_IDENTIFIER_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|546|22|3|The constant name 'PEN' isn't a lowerCamelCase identifier.
+INFO|LINT|CONSTANT_IDENTIFIER_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|546|27|11|The constant name 'HIGHLIGHTER' isn't a lowerCamelCase identifier.
+INFO|LINT|CONSTANT_IDENTIFIER_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|546|40|6|The constant name 'ERASER' isn't a lowerCamelCase identifier.
+INFO|LINT|CURLY_BRACES_IN_FLOW_CONTROL_STRUCTURES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppStroke.dart|573|7|13|Statements in an if should be enclosed in a block.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppTexImage.dart|1|1|0|The file name 'XppTexImage.dart' isn't a lower_case_with_underscores identifier.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppText.dart|1|1|0|The file name 'XppText.dart' isn't a lower_case_with_underscores identifier.
+INFO|LINT|UNNECESSARY_THIS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppText.dart|67|39|4|Unnecessary 'this.' qualifier.
+INFO|LINT|USE_SUPER_PARAMETERS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppText.dart|125|9|13|Parameter 'key' could be a super parameter.
+INFO|LINT|LIBRARY_PRIVATE_TYPES_IN_PUBLIC_API|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\layer_contents\\XppText.dart|130|3|19|Invalid use of a private type in a public API.
+INFO|LINT|LIBRARY_PRIVATE_TYPES_IN_PUBLIC_API|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\main.dart|28|10|21|Invalid use of a private type in a public API.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\pages\\CanvasPage.dart|1|1|0|The file name 'CanvasPage.dart' isn't a lower_case_with_underscores identifier.
+INFO|HINT|UNNECESSARY_IMPORT|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\pages\\CanvasPage.dart|6|8|33|The import of 'package:flutter/foundation.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart'.
+INFO|LINT|CURLY_BRACES_IN_FLOW_CONTROL_STRUCTURES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\pages\\CanvasPage.dart|45|7|35|Statements in an if should be enclosed in a block.
+INFO|LINT|USE_SUPER_PARAMETERS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\pages\\CanvasPage.dart|66|9|10|Parameter 'key' could be a super parameter.
+INFO|LINT|CURLY_BRACES_IN_FLOW_CONTROL_STRUCTURES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\pages\\CanvasPage.dart|104|11|31|Statements in an if should be enclosed in a block.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\pages\\OpenPage.dart|1|1|0|The file name 'OpenPage.dart' isn't a lower_case_with_underscores identifier.
+INFO|LINT|USE_KEY_IN_WIDGET_CONSTRUCTORS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\pages\\OpenPage.dart|15|7|8|Constructors for public widgets should have a named 'key' parameter.
+INFO|LINT|LIBRARY_PRIVATE_TYPES_IN_PUBLIC_API|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\pages\\OpenPage.dart|17|3|14|Invalid use of a private type in a public API.
+INFO|LINT|UNNECESSARY_UNDERSCORES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\pages\\OpenPage.dart|107|47|2|Unnecessary use of multiple underscores.
+INFO|LINT|USE_BUILD_CONTEXT_SYNCHRONOUSLY|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\pages\\OpenPage.dart|210|9|16|Don't use 'BuildContext's across async gaps.
+INFO|LINT|UNNECESSARY_TO_LIST_IN_SPREADS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\pages\\OpenPage.dart|305|38|6|Unnecessary use of 'toList' in a spread.
+INFO|LINT|USE_BUILD_CONTEXT_SYNCHRONOUSLY|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\pages\\OpenPage.dart|628|56|7|Don't use 'BuildContext's across async gaps.
+INFO|LINT|USE_BUILD_CONTEXT_SYNCHRONOUSLY|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\pages\\OpenPage.dart|634|54|7|Don't use 'BuildContext's across async gaps.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\pages\\WorkspacePage.dart|1|1|0|The file name 'WorkspacePage.dart' isn't a lower_case_with_underscores identifier.
+INFO|LINT|USE_KEY_IN_WIDGET_CONSTRUCTORS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\pages\\WorkspacePage.dart|18|3|13|Constructors for public widgets should have a named 'key' parameter.
+INFO|LINT|PREFER_CONST_CONSTRUCTORS_IN_IMMUTABLES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\pages\\WorkspacePage.dart|18|3|13|Constructors in '@immutable' classes should be declared as 'const'.
+INFO|LINT|LIBRARY_PRIVATE_TYPES_IN_PUBLIC_API|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\pages\\WorkspacePage.dart|21|3|19|Invalid use of a private type in a public API.
+INFO|LINT|CURLY_BRACES_IN_FLOW_CONTROL_STRUCTURES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\pages\\WorkspacePage.dart|96|40|7|Statements in an if should be enclosed in a block.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\HexColor.dart|1|1|0|The file name 'HexColor.dart' isn't a lower_case_with_underscores identifier.
+INFO|LINT|PREFER_INTERPOLATION_TO_COMPOSE_STRINGS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\HexColor.dart|9|18|15|Use interpolation to compose strings and values.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\PdfImage.dart|1|1|0|The file name 'PdfImage.dart' isn't a lower_case_with_underscores identifier.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\ShapeRecognizer.dart|1|1|0|The file name 'ShapeRecognizer.dart' isn't a lower_case_with_underscores identifier.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppBackground.dart|1|1|0|The file name 'XppBackground.dart' isn't a lower_case_with_underscores identifier.
+INFO|LINT|PREFER_GENERIC_FUNCTION_TYPE_ALIASES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppBackground.dart|9|33|24|Use the generic function type syntax in 'typedef's.
+INFO|LINT|USE_SUPER_PARAMETERS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppBackground.dart|34|9|19|Parameter 'key' could be a super parameter.
+INFO|LINT|LIBRARY_PRIVATE_TYPES_IN_PUBLIC_API|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppBackground.dart|37|3|25|Invalid use of a private type in a public API.
+INFO|LINT|OVERRIDDEN_FIELDS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppBackground.dart|64|22|4|Field overrides a field inherited from 'XppBackground'.
+INFO|LINT|ANNOTATE_OVERRIDES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppBackground.dart|64|22|4|The member 'type' overrides an inherited member but isn't annotated with '@override'.
+INFO|LINT|UNNECESSARY_THIS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppBackground.dart|107|5|4|Unnecessary 'this.' qualifier.
+INFO|LINT|USE_SUPER_PARAMETERS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppBackground.dart|182|3|24|Parameter 'size' could be a super parameter.
+INFO|LINT|USE_SUPER_PARAMETERS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppBackground.dart|199|3|25|Parameter 'size' could be a super parameter.
+INFO|LINT|CONSTANT_IDENTIFIER_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppBackground.dart|317|33|8|The constant name 'ABSOLUTE' isn't a lowerCamelCase identifier.
+INFO|LINT|CONSTANT_IDENTIFIER_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppBackground.dart|317|43|6|The constant name 'ATTACH' isn't a lowerCamelCase identifier.
+INFO|LINT|CONSTANT_IDENTIFIER_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppBackground.dart|317|51|5|The constant name 'CLONE' isn't a lowerCamelCase identifier.
+INFO|LINT|CONSTANT_IDENTIFIER_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppBackground.dart|319|26|4|The constant name 'NONE' isn't a lowerCamelCase identifier.
+INFO|LINT|CONSTANT_IDENTIFIER_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppBackground.dart|319|32|5|The constant name 'SOLID' isn't a lowerCamelCase identifier.
+INFO|LINT|CONSTANT_IDENTIFIER_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppBackground.dart|319|39|6|The constant name 'PIXMAP' isn't a lowerCamelCase identifier.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppFile.dart|1|1|0|The file name 'XppFile.dart' isn't a lower_case_with_underscores identifier.
+INFO|HINT|UNNECESSARY_IMPORT|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppFile.dart|2|8|17|The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/foundation.dart'.
+INFO|HINT|UNNECESSARY_IMPORT|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppFile.dart|3|8|9|The import of 'dart:ui' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart'.
+INFO|LINT|USE_BUILD_CONTEXT_SYNCHRONOUSLY|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppFile.dart|96|20|7|Don't use 'BuildContext's across async gaps.
+INFO|LINT|USE_BUILD_CONTEXT_SYNCHRONOUSLY|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppFile.dart|104|9|16|Don't use 'BuildContext's across async gaps.
+INFO|LINT|CURLY_BRACES_IN_FLOW_CONTROL_STRUCTURES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppFile.dart|192|9|62|Statements in an if should be enclosed in a block.
+INFO|LINT|AVOID_FUNCTION_LITERALS_IN_FOREACH_CALLS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppFile.dart|275|24|7|Function literals shouldn't be passed to 'forEach'.
+INFO|LINT|PREFER_SPREAD_COLLECTIONS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppFile.dart|434|13|6|The addition of multiple elements could be inlined.
+INFO|LINT|PREFER_INTERPOLATION_TO_COMPOSE_STRINGS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppFile.dart|449|12|81|Use interpolation to compose strings and values.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppLayer.dart|1|1|0|The file name 'XppLayer.dart' isn't a lower_case_with_underscores identifier.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppPage.dart|1|1|0|The file name 'XppPage.dart' isn't a lower_case_with_underscores identifier.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppPageContentWidget.dart|1|1|0|The file name 'XppPageContentWidget.dart' isn't a lower_case_with_underscores identifier.
+INFO|LINT|PREFER_GENERIC_FUNCTION_TYPE_ALIASES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppPageContentWidget.dart|4|14|20|Use the generic function type syntax in 'typedef's.
+INFO|LINT|PREFER_GENERIC_FUNCTION_TYPE_ALIASES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppPageContentWidget.dart|5|14|19|Use the generic function type syntax in 'typedef's.
+INFO|LINT|USE_SUPER_PARAMETERS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppPageContentWidget.dart|19|9|20|Parameter 'key' could be a super parameter.
+INFO|LINT|LIBRARY_PRIVATE_TYPES_IN_PUBLIC_API|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppPageContentWidget.dart|29|3|26|Invalid use of a private type in a public API.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\XppPageSize.dart|1|1|0|The file name 'XppPageSize.dart' isn't a lower_case_with_underscores identifier.
+INFO|HINT|UNNECESSARY_IMPORT|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\compat\\file_picker_cross.dart|1|8|17|The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/foundation.dart'.
+INFO|LINT|AVOID_PRINT|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\compat\\internal_storage_io.dart|30|5|5|Don't invoke 'print' in production code.
+INFO|LINT|AVOID_PRINT|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\compat\\internal_storage_io.dart|34|5|5|Don't invoke 'print' in production code.
+INFO|LINT|PREFER_COLLECTION_LITERALS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\src\\pdf_raster_cache.dart|8|20|31|Unnecessary constructor invocation.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ContextualBottomSheet.dart|1|1|0|The file name 'ContextualBottomSheet.dart' isn't a lower_case_with_underscores identifier.
+INFO|LINT|USE_SUPER_PARAMETERS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ContextualBottomSheet.dart|6|9|21|Parameter 'key' could be a super parameter.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\DropFile.dart|1|1|0|The file name 'DropFile.dart' isn't a lower_case_with_underscores identifier.
+INFO|LINT|USE_KEY_IN_WIDGET_CONSTRUCTORS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\DropFile.dart|11|7|8|Constructors for public widgets should have a named 'key' parameter.
+INFO|LINT|LIBRARY_PRIVATE_TYPES_IN_PUBLIC_API|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\DropFile.dart|13|3|14|Invalid use of a private type in a public API.
+INFO|LINT|PREFER_INTERPOLATION_TO_COMPOSE_STRINGS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\DropFile.dart|28|49|13|Use interpolation to compose strings and values.
+INFO|LINT|PREFER_INTERPOLATION_TO_COMPOSE_STRINGS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\DropFile.dart|60|25|97|Use interpolation to compose strings and values.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\EditingToolbar.dart|1|1|0|The file name 'EditingToolbar.dart' isn't a lower_case_with_underscores identifier.
+INFO|LINT|USE_SUPER_PARAMETERS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\EditingToolbar.dart|16|9|14|Parameter 'key' could be a super parameter.
+INFO|LINT|SORT_CHILD_PROPERTIES_LAST|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\EditingToolbar.dart|47|11|7832|The 'children' argument should be last in widget constructor invocations.
+INFO|LINT|SORT_CHILD_PROPERTIES_LAST|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\EditingToolbar.dart|55|15|23|The 'child' argument should be last in widget constructor invocations.
+INFO|LINT|SORT_CHILD_PROPERTIES_LAST|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\EditingToolbar.dart|70|15|24|The 'child' argument should be last in widget constructor invocations.
+INFO|LINT|SORT_CHILD_PROPERTIES_LAST|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\EditingToolbar.dart|85|15|27|The 'child' argument should be last in widget constructor invocations.
+INFO|LINT|SORT_CHILD_PROPERTIES_LAST|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\EditingToolbar.dart|100|15|27|The 'child' argument should be last in widget constructor invocations.
+INFO|LINT|SORT_CHILD_PROPERTIES_LAST|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\EditingToolbar.dart|115|15|26|The 'child' argument should be last in widget constructor invocations.
+INFO|LINT|SORT_CHILD_PROPERTIES_LAST|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\EditingToolbar.dart|130|15|28|The 'child' argument should be last in widget constructor invocations.
+INFO|LINT|SORT_CHILD_PROPERTIES_LAST|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\EditingToolbar.dart|145|15|31|The 'child' argument should be last in widget constructor invocations.
+INFO|LINT|SORT_CHILD_PROPERTIES_LAST|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\EditingToolbar.dart|160|15|38|The 'child' argument should be last in widget constructor invocations.
+INFO|LINT|SORT_CHILD_PROPERTIES_LAST|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\EditingToolbar.dart|175|15|33|The 'child' argument should be last in widget constructor invocations.
+INFO|LINT|SORT_CHILD_PROPERTIES_LAST|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\EditingToolbar.dart|188|15|32|The 'child' argument should be last in widget constructor invocations.
+INFO|LINT|PREFER_INTERPOLATION_TO_COMPOSE_STRINGS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\EditingToolbar.dart|200|26|37|Use interpolation to compose strings and values.
+INFO|LINT|SORT_CHILD_PROPERTIES_LAST|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\EditingToolbar.dart|241|15|29|The 'child' argument should be last in widget constructor invocations.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\MainDrawer.dart|1|1|0|The file name 'MainDrawer.dart' isn't a lower_case_with_underscores identifier.
+INFO|LINT|USE_KEY_IN_WIDGET_CONSTRUCTORS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\MainDrawer.dart|9|7|10|Constructors for public widgets should have a named 'key' parameter.
+INFO|LINT|LIBRARY_PRIVATE_TYPES_IN_PUBLIC_API|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\MainDrawer.dart|11|3|16|Invalid use of a private type in a public API.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\PointerListener.dart|1|1|0|The file name 'PointerListener.dart' isn't a lower_case_with_underscores identifier.
+INFO|LINT|USE_SUPER_PARAMETERS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\PointerListener.dart|43|9|15|Parameter 'key' could be a super parameter.
+INFO|LINT|CURLY_BRACES_IN_FLOW_CONTROL_STRUCTURES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\PointerListener.dart|395|9|7|Statements in an if should be enclosed in a block.
+INFO|LINT|CURLY_BRACES_IN_FLOW_CONTROL_STRUCTURES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\PointerListener.dart|481|7|7|Statements in an if should be enclosed in a block.
+INFO|LINT|CURLY_BRACES_IN_FLOW_CONTROL_STRUCTURES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\PointerListener.dart|981|7|13|Statements in an if should be enclosed in a block.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\PomodoroTimer.dart|1|1|0|The file name 'PomodoroTimer.dart' isn't a lower_case_with_underscores identifier.
+INFO|LINT|USE_SUPER_PARAMETERS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\PomodoroTimer.dart|30|9|13|Parameter 'key' could be a super parameter.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\QuotaTile.dart|1|1|0|The file name 'QuotaTile.dart' isn't a lower_case_with_underscores identifier.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolBoxBottomSheet.dart|1|1|0|The file name 'ToolBoxBottomSheet.dart' isn't a lower_case_with_underscores identifier.
+INFO|LINT|USE_SUPER_PARAMETERS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolBoxBottomSheet.dart|13|9|18|Parameter 'key' could be a super parameter.
+INFO|LINT|LIBRARY_PRIVATE_TYPES_IN_PUBLIC_API|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolBoxBottomSheet.dart|18|3|24|Invalid use of a private type in a public API.
+INFO|LINT|PREFER_FINAL_FIELDS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolBoxBottomSheet.dart|22|10|13|The private field _height could be 'final'.
+INFO|LINT|SIZED_BOX_FOR_WHITESPACE|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolBoxBottomSheet.dart|36|31|9|Use a 'SizedBox' to add whitespace to a layout.
+INFO|LINT|SIZED_BOX_FOR_WHITESPACE|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolBoxBottomSheet.dart|46|19|9|Use a 'SizedBox' to add whitespace to a layout.
+INFO|LINT|SORT_CHILD_PROPERTIES_LAST|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolBoxBottomSheet.dart|50|23|7203|The 'children' argument should be last in widget constructor invocations.
+INFO|LINT|CONSTANT_IDENTIFIER_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolBoxBottomSheet.dart|219|3|6|The constant name 'STYLUS' isn't a lowerCamelCase identifier.
+INFO|LINT|CONSTANT_IDENTIFIER_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolBoxBottomSheet.dart|220|3|9|The constant name 'HIGHLIGHT' isn't a lowerCamelCase identifier.
+INFO|LINT|CONSTANT_IDENTIFIER_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolBoxBottomSheet.dart|221|3|4|The constant name 'TEXT' isn't a lowerCamelCase identifier.
+INFO|LINT|CONSTANT_IDENTIFIER_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolBoxBottomSheet.dart|222|3|5|The constant name 'LATEX' isn't a lowerCamelCase identifier.
+INFO|LINT|CONSTANT_IDENTIFIER_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolBoxBottomSheet.dart|223|3|5|The constant name 'IMAGE' isn't a lowerCamelCase identifier.
+INFO|LINT|CONSTANT_IDENTIFIER_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolBoxBottomSheet.dart|224|3|4|The constant name 'MOVE' isn't a lowerCamelCase identifier.
+INFO|LINT|CONSTANT_IDENTIFIER_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolBoxBottomSheet.dart|225|3|6|The constant name 'SELECT' isn't a lowerCamelCase identifier.
+INFO|LINT|CONSTANT_IDENTIFIER_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolBoxBottomSheet.dart|226|3|6|The constant name 'ERASER' isn't a lowerCamelCase identifier.
+INFO|LINT|CONSTANT_IDENTIFIER_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolBoxBottomSheet.dart|227|3|8|The constant name 'WHITEOUT' isn't a lowerCamelCase identifier.
+INFO|LINT|CONSTANT_IDENTIFIER_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolBoxBottomSheet.dart|228|3|10|The constant name 'SHAPE_LINE' isn't a lowerCamelCase identifier.
+INFO|LINT|CONSTANT_IDENTIFIER_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolBoxBottomSheet.dart|229|3|10|The constant name 'SHAPE_RECT' isn't a lowerCamelCase identifier.
+INFO|LINT|CONSTANT_IDENTIFIER_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolBoxBottomSheet.dart|230|3|12|The constant name 'SHAPE_CIRCLE' isn't a lowerCamelCase identifier.
+INFO|LINT|CONSTANT_IDENTIFIER_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolBoxBottomSheet.dart|231|3|12|The constant name 'SHAPE_SQUARE' isn't a lowerCamelCase identifier.
+INFO|LINT|CONSTANT_IDENTIFIER_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolBoxBottomSheet.dart|232|3|17|The constant name 'SHAPE_DASHED_LINE' isn't a lowerCamelCase identifier.
+INFO|LINT|CONSTANT_IDENTIFIER_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolBoxBottomSheet.dart|233|3|10|The constant name 'SHAPE_CUBE' isn't a lowerCamelCase identifier.
+INFO|LINT|CONSTANT_IDENTIFIER_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolBoxBottomSheet.dart|234|3|14|The constant name 'SHAPE_CYLINDER' isn't a lowerCamelCase identifier.
+INFO|LINT|CONSTANT_IDENTIFIER_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolBoxBottomSheet.dart|235|3|12|The constant name 'SHAPE_SPHERE' isn't a lowerCamelCase identifier.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolSettingsMenu.dart|1|1|0|The file name 'ToolSettingsMenu.dart' isn't a lower_case_with_underscores identifier.
+INFO|LINT|USE_SUPER_PARAMETERS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolSettingsMenu.dart|9|9|16|Parameter 'key' could be a super parameter.
+INFO|LINT|LIBRARY_PRIVATE_TYPES_IN_PUBLIC_API|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ToolSettingsMenu.dart|18|3|22|Invalid use of a private type in a public API.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\XppPageStack.dart|1|1|0|The file name 'XppPageStack.dart' isn't a lower_case_with_underscores identifier.
+INFO|LINT|USE_SUPER_PARAMETERS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\XppPageStack.dart|17|9|12|Parameter 'key' could be a super parameter.
+INFO|LINT|USE_SUPER_PARAMETERS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\XppPageStack.dart|127|9|13|Parameter 'key' could be a super parameter.
+INFO|LINT|USE_SUPER_PARAMETERS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\XppPageStack.dart|153|3|16|Parameter 'repaint' could be a super parameter.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\XppPagesListView.dart|1|1|0|The file name 'XppPagesListView.dart' isn't a lower_case_with_underscores identifier.
+INFO|LINT|USE_SUPER_PARAMETERS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\XppPagesListView.dart|20|9|16|Parameter 'key' could be a super parameter.
+INFO|LINT|STRICT_TOP_LEVEL_INFERENCE|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\XppPagesListView.dart|90|3|11|Missing type annotation.
+INFO|LINT|PREFER_INTERPOLATION_TO_COMPOSE_STRINGS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\XppPagesListView.dart|104|29|30|Use interpolation to compose strings and values.
+INFO|LINT|PREFER_INTERPOLATION_TO_COMPOSE_STRINGS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\XppPagesListView.dart|111|41|30|Use interpolation to compose strings and values.
+INFO|LINT|PREFER_INTERPOLATION_TO_COMPOSE_STRINGS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\XppPagesListView.dart|118|47|93|Use interpolation to compose strings and values.
+INFO|LINT|CURLY_BRACES_IN_FLOW_CONTROL_STRUCTURES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\XppPagesListView.dart|131|37|32|Statements in an if should be enclosed in a block.
+INFO|LINT|USE_BUILD_CONTEXT_SYNCHRONOUSLY|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\XppPagesListView.dart|139|32|7|Don't use 'BuildContext's across async gaps.
+INFO|LINT|FILE_NAMES|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ZoomableWidget.dart|1|1|0|The file name 'ZoomableWidget.dart' isn't a lower_case_with_underscores identifier.
+INFO|LINT|USE_SUPER_PARAMETERS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\ZoomableWidget.dart|57|9|14|Parameter 'key' could be a super parameter.
+INFO|LINT|USE_SUPER_PARAMETERS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\canvas_app_bar.dart|16|9|13|Parameter 'key' could be a super parameter.
+INFO|HINT|UNNECESSARY_IMPORT|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\canvas_toolbar.dart|2|8|31|The import of 'package:flutter/gestures.dart' is unnecessary because all of the used elements are also provided by the import of 'dart:ui'.
+INFO|LINT|USE_SUPER_PARAMETERS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\canvas_toolbar.dart|26|9|13|Parameter 'key' could be a super parameter.
+INFO|LINT|USE_SUPER_PARAMETERS|C:\\Users\\aless\\Desktop\\OSIpp-main\\lib\\widgets\\split_screen_view.dart|18|9|15|Parameter 'key' could be a super parameter.

@@ -1,0 +1,15 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart
+00:00 +0: valid images commit; malformed images cannot corrupt a document
+00:00 +1: invalid manifest, permissions and unknown API do not install
+00:00 +2: all bundled examples install and generate undoable notes or persistent tools
+00:00 +3: conditions, foreach, arithmetic, text transforms and storage compose
+00:00 +4: failed plugin rolls back content, state, tool and undo history
+00:00 +5: instruction budget interrupts nested loops without committing partial edits
+00:00 +6: large string expansion is rejected before allocating huge output
+00:00 +7: disable, update and uninstall persist across restarts
+00:00 +8: corrupt installed entries are isolated from healthy plugins
+00:00 +9: required input and types are validated before editing
+00:00 +10: host API extensions preserve transaction and conflict protection
+00:00 +11: execution targets the chosen page and controller only
+00:00 +12: guided creator and command form work on a 380dp phone
+00:01 +13: All tests passed!

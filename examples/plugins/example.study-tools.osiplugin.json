@@ -1,0 +1,69 @@
+{
+  "apiVersion": 1,
+  "id": "example.study-tools",
+  "name": "Strumenti studio",
+  "version": "1.0.0",
+  "description": "Preset penna ed evidenziatore e contatore persistente di utilizzi.",
+  "permissions": [
+    "tool.write",
+    "storage"
+  ],
+  "commands": [
+    {
+      "id": "highlight",
+      "label": "Evidenziatore giallo",
+      "steps": [
+        {
+          "action": "tool.set",
+          "args": {
+            "tool": "highlighter",
+            "width": 18,
+            "color": "#FFF59D"
+          }
+        },
+        {
+          "action": "state.get",
+          "args": {
+            "key": "uses"
+          },
+          "as": "uses"
+        },
+        {
+          "action": "state.set",
+          "args": {
+            "key": "uses",
+            "value": {
+              "op": "add",
+              "args": [
+                1,
+                {
+                  "op": "coalesce",
+                  "args": [
+                    {
+                      "var": "uses"
+                    },
+                    0
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "pen",
+      "label": "Penna blu",
+      "steps": [
+        {
+          "action": "tool.set",
+          "args": {
+            "tool": "pen",
+            "width": 2.5,
+            "color": "#1565C0"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -146,7 +146,7 @@ void main() {
     final directory = (await tester
         .runAsync(() => Directory.systemTemp.createTemp('osipp-save-error-')))!;
     addTearDown(() => directory.delete(recursive: true));
-    final controller = CanvasController()
+    final controller = CanvasController(autosaveEnabled: false)
       ..file = (XppFile.empty(title: 'notes')..sourcePath = directory.path)
       ..hasUnsavedChanges = true;
     addTearDown(controller.dispose);
@@ -167,7 +167,7 @@ void main() {
         .runAsync(() => Directory.systemTemp.createTemp('osipp-save-race-')))!;
     addTearDown(() => directory.delete(recursive: true));
     final path = '${directory.path}${Platform.pathSeparator}notes.xopp';
-    final controller = CanvasController()
+    final controller = CanvasController(autosaveEnabled: false)
       ..file = (XppFile.empty(title: 'notes')..sourcePath = path)
       ..hasUnsavedChanges = true;
     addTearDown(controller.dispose);
@@ -201,10 +201,10 @@ void main() {
     final previousStorage = PathProviderPlatform.instance;
     PathProviderPlatform.instance = TestDocumentsProvider(directory.path);
     addTearDown(() => PathProviderPlatform.instance = previousStorage);
-    final first = CanvasController()
+    final first = CanvasController(autosaveEnabled: false)
       ..file = XppFile.empty(title: 'notes')
       ..hasUnsavedChanges = true;
-    final second = CanvasController()
+    final second = CanvasController(autosaveEnabled: false)
       ..file = XppFile.empty(title: 'notes')
       ..hasUnsavedChanges = true;
     second.file!.pages!.first.layers!.first.content!.add(XppStroke.byTool(

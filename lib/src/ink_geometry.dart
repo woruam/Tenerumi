@@ -2,8 +2,12 @@ import 'dart:ui';
 
 /// Radius used by both live and committed freehand ink.
 double inkRadius(double? width, {required bool pressureSensitive}) {
+  if (!pressureSensitive) {
+    final diameter = width != null && width.isFinite && width > 0 ? width : 5.0;
+    return diameter / 2;
+  }
   final pressure = ((width ?? 2.5) / 5).clamp(0.1, 1.0);
-  return pressureSensitive ? 5 * (0.5 - 0.7 * (0.5 - pressure)) : 2.5;
+  return 5 * (0.5 - 0.7 * (0.5 - pressure));
 }
 
 Path inkStrokePath(

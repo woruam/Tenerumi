@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -26,40 +27,11 @@ abstract class XppStroke extends XppContent {
 
   /// Page-coordinate cuts. They remove only this stroke, never the background.
   List<StrokeErasure> erasures = [];
-  static final _cutCaches =
-      LinkedHashMap<XppStroke, _StrokeCutCache>.identity();
-  static int _cutCachedSamples = 0;
-
-  _StrokeCutCache get _cutCache {
-    var cached = _cutCaches.remove(this);
-    if (cached != null) _cutCachedSamples -= cached.cost;
-    if (cached == null || !cached.matches(this)) cached = _StrokeCutCache(this);
-    if (cached.cost <= 25000) {
-      while (_cutCaches.isNotEmpty &&
-          (_cutCaches.length >= 64 ||
-              _cutCachedSamples + cached.cost > 25000)) {
-        final removed = _cutCaches.remove(_cutCaches.keys.first)!;
-        _cutCachedSamples -= removed.cost;
-      }
-      _cutCaches[this] = cached;
-      _cutCachedSamples += cached.cost;
-    }
-    return cached;
-  }
-
-  void _invalidateCuts() {
-    final removed = _cutCaches.remove(this);
-    if (removed != null) _cutCachedSamples -= removed.cost;
-  }
-
-  Path get erasurePath {
-    final cached = _cutCache.mask;
-    if (cached != null) return cached;
-    var mask = Path();
+  Path _erasurePathIn(Rect visible) {
+    final mask = Path();
     for (final cut in erasures) {
-      mask = Path.combine(PathOperation.union, mask, cut.path);
+      if (cut.bounds.overlaps(visible)) mask.addPath(cut.path, Offset.zero);
     }
-    _cutCache.mask = mask;
     return mask;
   }
 
@@ -101,22 +73,47 @@ abstract class XppStroke extends XppContent {
     return outline;
   }
 
-  Path get visibleInkPath {
-    final cached = _cutCache.visible;
-    if (cached != null) return cached;
-    var path = inkPath;
-    for (final cut in erasures) {
-      path = Path.combine(PathOperation.difference, path, cut.path);
-    }
-    _cutCache.visible = path;
-    return path;
-  }
+  bool containsVisibleInk(Offset point) =>
+      inkPath.contains(point) && !erasures.any((cut) => cut.contains(point));
 
-  bool intersectsErasure(StrokeErasure cut) => Path.combine(
-    PathOperation.intersect,
-    visibleInkPath,
-    cut.path,
-  ).computeMetrics().isNotEmpty;
+  bool intersectsErasure(StrokeErasure cut) {
+    if (!cut.isValid || erasures.any((old) => old.covers(cut))) return false;
+    final samples = points;
+    if (samples == null || samples.isEmpty) return false;
+    double radius(XppStrokePoint p) => isShape
+        ? (p.width ?? 2.5).clamp(1.0, double.infinity) / 2
+        : inkRadius(p.width, pressureSensitive: tool == XppStrokeTool.PEN);
+    if (isShape && smooth && samples.length >= 4) {
+      final positions = samples.map((p) => p.offset).toList();
+      final curve = _smoothPath(
+        positions,
+        (positions.first - positions.last).distance < 1,
+      );
+      for (final metric in curve.computeMetrics()) {
+        var previous = metric.getTangentForOffset(0)?.position;
+        if (previous == null) continue;
+        for (double d = .5; d < metric.length + .5; d += .5) {
+          final next = metric
+              .getTangentForOffset(math.min(d, metric.length))
+              ?.position;
+          if (next == null) continue;
+          if (_segmentDistance(previous!, next, cut.start, cut.end) <=
+              radius(samples.first) + cut.radius)
+            return true;
+          previous = next;
+        }
+      }
+      return false;
+    }
+    for (int i = 0; i < samples.length; i++) {
+      final a = samples[i];
+      final b = samples[math.min(i + 1, samples.length - 1)];
+      if (_segmentDistance(a.offset, b.offset, cut.start, cut.end) <=
+          math.max(radius(a), radius(b)) + cut.radius)
+        return true;
+    }
+    return false;
+  }
 
   @override
   Offset getOffset() {
@@ -150,11 +147,24 @@ abstract class XppStroke extends XppContent {
   void paintToCanvas(Canvas canvas, Size size) {
     if (points == null || points!.isEmpty) return;
     canvas.save();
+    final offset = getOffset();
+    final masked = erasures.isNotEmpty;
+    Rect? layerRegion;
+    if (masked) {
+      // Isolate only visible ink: dstOut must never erase the PDF or another
+      // stroke, and zoom must not allocate an offscreen image of the whole page.
+      final region = bounds()!
+          .shift(-offset)
+          .inflate(1)
+          .intersect(canvas.getLocalClipBounds());
+      if (region.isEmpty) {
+        canvas.restore();
+        return;
+      }
+      layerRegion = region;
+      canvas.saveLayer(region, Paint());
+    }
     try {
-      final offset = getOffset();
-      if (erasures.isNotEmpty)
-        canvas.clipPath(erasurePath.shift(-offset), clipOp: ClipOp.difference);
-
       // Calcoliamo il colore corretto senza sovrascrivere la variabile originale
       Color colorToUse = color ?? Colors.black;
       if (tool == XppStrokeTool.ERASER) colorToUse = Colors.white;
@@ -204,6 +214,17 @@ abstract class XppStroke extends XppContent {
 
       painter.paint(canvas, size);
     } finally {
+      if (masked) {
+        canvas.translate(-offset.dx, -offset.dy);
+        canvas.drawPath(
+          _erasurePathIn(layerRegion!.shift(offset)),
+          Paint()
+            ..color = Colors.black
+            ..blendMode = BlendMode.dstOut
+            ..isAntiAlias = true,
+        );
+        canvas.restore();
+      }
       canvas.restore();
     }
   }
@@ -213,8 +234,7 @@ abstract class XppStroke extends XppContent {
   XppPageContentWidget render() {
     return XppPageContentWidget(
       tool: EditingTool.STYLUS,
-      child:
-          const SizedBox.shrink(), // Non crea piÃ¹ pesanti CustomPaint in un Widget
+      child: const SizedBox.shrink(), // Rendering handled by the page painter.
     );
   }
 
@@ -260,7 +280,9 @@ abstract class XppStroke extends XppContent {
 
   @override
   XppContentEraseData eraseWhere({Offset? coordinates, double? radius}) =>
-      eraseAlong(coordinates: coordinates!, radius: radius ?? 5);
+      coordinates == null
+      ? XppContentEraseData()
+      : eraseAlong(coordinates: coordinates, radius: radius ?? 5);
 
   XppContentEraseData eraseAlong({
     required Offset coordinates,
@@ -274,28 +296,19 @@ abstract class XppStroke extends XppContent {
       radius,
     );
     if (!intersectsErasure(cut)) return XppContentEraseData();
-    final replacement = newStroke(color: color, points: List.of(points!))
+    final cuts = List<StrokeErasure>.of(erasures);
+    if (cuts.isNotEmpty && cuts.last.canMerge(cut)) {
+      cuts[cuts.length - 1] = StrokeErasure(cuts.last.start, cut.end, radius);
+    } else {
+      cuts.add(cut);
+    }
+    final replacement = newStroke(color: color, points: points)
       ..isShape = isShape
       ..smooth = smooth
       ..editingTool = editingTool
-      ..erasures = [...erasures, cut];
-    final visible = Path.combine(
-      PathOperation.difference,
-      visibleInkPath,
-      cut.path,
-    );
-    replacement._cutCache.visible = visible;
-    replacement._cutCache.mask = Path.combine(
-      PathOperation.union,
-      erasurePath,
-      cut.path,
-    );
-    final empty = visible.computeMetrics().isEmpty;
-    return XppContentEraseData(
-      affected: true,
-      delete: empty,
-      newContent: empty ? [] : [replacement],
-    );
+      ..erasures = cuts;
+
+    return XppContentEraseData(affected: true, newContent: [replacement]);
   }
 
   @override
@@ -315,7 +328,15 @@ abstract class XppStroke extends XppContent {
   @override
   Rect? bounds() {
     if (points == null || points!.isEmpty) return null;
-    if (isShape && smooth) return inkPath.getBounds();
+    if (isShape && smooth) {
+      final positions = points!.map((p) => p.offset).toList();
+      return _smoothPath(
+        positions,
+        (positions.first - positions.last).distance < 1,
+      ).getBounds().inflate(
+        (points!.first.width ?? 2.5).clamp(1.0, double.infinity) / 2,
+      );
+    }
     double radius = 0;
     for (final point in points!) {
       final r = isShape
@@ -331,30 +352,24 @@ abstract class XppStroke extends XppContent {
 
   @override
   void translate(Offset delta) {
-    _invalidateCuts();
     erasures = erasures.map((e) => e.translate(delta)).toList();
-    for (int i = 0; i < points!.length; i++) {
-      final p = points![i];
-      points![i] = XppStrokePoint(
-        x: p.x! + delta.dx,
-        y: p.y! + delta.dy,
-        width: p.width,
-      );
-    }
+    points = [
+      for (final p in points!)
+        XppStrokePoint(x: p.x! + delta.dx, y: p.y! + delta.dy, width: p.width),
+    ];
   }
 
   @override
   void scaleBy(double factor, Offset anchor) {
-    _invalidateCuts();
     erasures = erasures.map((e) => e.scale(factor, anchor)).toList();
-    for (int i = 0; i < points!.length; i++) {
-      final p = points![i];
-      points![i] = XppStrokePoint(
-        x: anchor.dx + (p.x! - anchor.dx) * factor,
-        y: anchor.dy + (p.y! - anchor.dy) * factor,
-        width: (p.width ?? 5) * factor,
-      );
-    }
+    points = [
+      for (final p in points!)
+        XppStrokePoint(
+          x: anchor.dx + (p.x! - anchor.dx) * factor,
+          y: anchor.dy + (p.y! - anchor.dy) * factor,
+          width: (p.width ?? 5) * factor,
+        ),
+    ];
   }
 
   XppStroke newStroke({Color? color, List<XppStrokePoint>? points});
@@ -444,8 +459,7 @@ class XppStrokeHighlight extends XppStroke {
   }
 }
 
-// MANTENIAMO IL PITTORE ORIGINALE perchÃ© il "PointerListener" lo usa
-// in tempo reale per disegnare il tratto che hai sotto la punta della penna!
+// Committed freehand ink shares the live preview geometry.
 class XppStrokePainter extends CustomPainter {
   final List<XppStrokePoint>? points;
   final Color? color;
@@ -538,6 +552,32 @@ class StrokeErasure {
   final Offset end;
   final double radius;
 
+  bool get isValid =>
+      radius.isFinite &&
+      radius > 0 &&
+      start.dx.isFinite &&
+      start.dy.isFinite &&
+      end.dx.isFinite &&
+      end.dy.isFinite;
+  Rect get bounds => Rect.fromPoints(start, end).inflate(radius);
+  bool contains(Offset p) => _pointSegmentDistance(p, start, end) <= radius;
+  bool covers(StrokeErasure other) =>
+      isValid &&
+      other.isValid &&
+      _pointSegmentDistance(other.start, start, end) + other.radius <=
+          radius + 1e-9 &&
+      _pointSegmentDistance(other.end, start, end) + other.radius <=
+          radius + 1e-9;
+  bool canMerge(StrokeErasure other) {
+    if (radius != other.radius || (end - other.start).distance > 1e-9)
+      return false;
+    final a = end - start;
+    final b = other.end - other.start;
+    if (a.distanceSquared == 0 || b.distanceSquared == 0) return true;
+    return (a.dx * b.dy - a.dy * b.dx).abs() <= 1e-9 &&
+        a.dx * b.dx + a.dy * b.dy >= 0;
+  }
+
   Path get path {
     final path = Path()
       ..addOval(Rect.fromCircle(center: start, radius: radius))
@@ -585,39 +625,29 @@ class StrokeErasure {
   }
 }
 
-/// Native paths stay outside the sendable document/snapshot model. Retention
-/// is capped by stroke count and sample budget, matching the painter cache.
-class _StrokeCutCache {
-  _StrokeCutCache(XppStroke stroke)
-    : samples = List.of(stroke.points ?? <XppStrokePoint>[]),
-      cuts = List.of(stroke.erasures),
-      shape = stroke.isShape,
-      smooth = stroke.smooth,
-      tool = stroke.tool;
-  final List<XppStrokePoint> samples;
-  final List<StrokeErasure> cuts;
-  final bool shape;
-  final bool smooth;
-  final XppStrokeTool tool;
-  Path? visible;
-  Path? mask;
-  int get cost => samples.length + cuts.length * 6;
-  bool matches(XppStroke stroke) {
-    final points = stroke.points ?? <XppStrokePoint>[];
-    if (shape != stroke.isShape ||
-        smooth != stroke.smooth ||
-        tool != stroke.tool ||
-        samples.length != points.length ||
-        cuts.length != stroke.erasures.length)
-      return false;
-    for (int i = 0; i < samples.length; i++) {
-      if (!identical(samples[i], points[i])) return false;
-    }
-    for (int i = 0; i < cuts.length; i++) {
-      if (!identical(cuts[i], stroke.erasures[i])) return false;
-    }
-    return true;
+double _pointSegmentDistance(Offset p, Offset a, Offset b) {
+  final delta = b - a;
+  if (delta.distanceSquared == 0) return (p - a).distance;
+  final t =
+      (((p - a).dx * delta.dx + (p - a).dy * delta.dy) / delta.distanceSquared)
+          .clamp(0.0, 1.0);
+  return (p - (a + delta * t)).distance;
+}
+
+double _segmentDistance(Offset a, Offset b, Offset c, Offset d) {
+  final ab = b - a;
+  final cd = d - c;
+  final cross = ab.dx * cd.dy - ab.dy * cd.dx;
+  if (cross.abs() > 1e-12) {
+    final ca = c - a;
+    final t = (ca.dx * cd.dy - ca.dy * cd.dx) / cross;
+    final u = (ca.dx * ab.dy - ca.dy * ab.dx) / cross;
+    if (t >= 0 && t <= 1 && u >= 0 && u <= 1) return 0;
   }
+  return math.min(
+    math.min(_pointSegmentDistance(a, c, d), _pointSegmentDistance(b, c, d)),
+    math.min(_pointSegmentDistance(c, a, b), _pointSegmentDistance(d, a, b)),
+  );
 }
 
 class XppStrokePoint {

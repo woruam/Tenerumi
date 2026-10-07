@@ -1,17 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
+
 import 'XppPageContentWidget.dart';
 
 class XppLayer {
-  XppLayer({this.content});
+  XppLayer({
+    this.content,
+    this.name = 'Livello',
+    this.visible = true,
+    this.locked = false,
+  });
+
+  String name;
+  bool visible;
+  bool locked;
 
   List<XppContent?>? content;
 
   static XppLayer empty() => XppLayer(content: []);
 
-  XmlElement toXmlElement() => XmlElement(
-      XmlName('layer'), const [], content!.map((e) => e!.toXmlElement()));
+  XmlElement toXmlElement() => XmlElement(XmlName('layer'), [
+    XmlAttribute(XmlName('name'), name),
+    XmlAttribute(XmlName('osipp-visible'), visible.toString()),
+    XmlAttribute(XmlName('osipp-locked'), locked.toString()),
+  ], (content ?? []).whereType<XppContent>().map((e) => e.toXmlElement()));
 }
 
 abstract class XppContent {
@@ -46,6 +59,9 @@ class XppContentEraseData {
   final bool delete;
   final List<XppContent> newContent;
 
-  XppContentEraseData(
-      {this.affected = false, this.delete = false, this.newContent = const []});
+  XppContentEraseData({
+    this.affected = false,
+    this.delete = false,
+    this.newContent = const [],
+  });
 }

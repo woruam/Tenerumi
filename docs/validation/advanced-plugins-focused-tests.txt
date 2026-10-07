@@ -1,0 +1,25 @@
+Resolving dependencies...
+Downloading packages...
+  cross_file 0.3.5+5 (0.4.0 available)
+  cupertino_ui 1.1.1 (1.1.2 available)
+  dbus 0.7.15 (0.8.0 available)
+  file_picker_linux 2.0.0 (2.0.2 available)
+  fjs 3.2.0 (3.3.2 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  material_ui 1.5.0 (1.6.0 available)
+  qr 3.0.2 (4.0.0 available)
+  test_api 0.7.12 (0.7.14 available)
+  xml 7.0.1 (7.1.0 available)
+Got dependencies!
+10 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart
+00:00 +0: script modules and handlers validated; traversal rejected
+00:00 +1: zip package loads multiple modules and refuses unexpected files
+00:00 +2: Anki export escapes newlines, tabs, HTML and header injection
+00:00 +3: file exports stay staged and disappear on error
+00:00 +4: new host actions enforce permissions at dynamic invocation
+00:00 +5: async OCR and forms compose and late completions cannot edit canvas
+00:00 +6: network calls reject undeclared hosts before contacting server
+00:00 +7: LaTeX renderer produces actual fraction PNG and rejects invalid syntax
+00:01 +8: All tests passed!

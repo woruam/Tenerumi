@@ -16,7 +16,7 @@ void main() {
       ..isShape = true;
     final file = XppFile.empty();
     file.pages!.first.layers!.first.content = [stroke];
-    final controller = CanvasController()..file = file;
+    final controller = CanvasController(autosaveEnabled: false)..file = file;
     controller.saveSnapshot(0);
     stroke.translate(const Offset(20, 10));
     stroke.scaleBy(2, Offset.zero);

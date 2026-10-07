@@ -16,7 +16,9 @@ Jetpack Ink o la predizione del movimento e non garantisce una latenza hardware.
 
 ## Toolchain
 
-- SDK verificato: Flutter 3.44.1, Dart 3.12.1.
+- SDK corrente: Flutter 3.47.6, Dart 3.13.5. Risultati aggiornati in
+  [DEPENDENCY_UPGRADE.md](DEPENDENCY_UPGRADE.md); i log precedenti sotto
+  descrivono le verifiche con il vecchio SDK.
 - AGP 8.12.1, Kotlin Gradle Plugin 2.2.20, wrapper Gradle 8.14, target JVM 17
   per l'app. AGP 8.12.1 soddisfa anche il requisito di package_info_plus.
 - Plugin aggiornati: desktop_drop 0.8.4, dynamic_color 2.1.0,
@@ -24,10 +26,12 @@ Jetpack Ink o la predizione del movimento e non garantisce una latenza hardware.
 
 Built-in Kotlin richiede **Flutter 3.47 o successivo e AGP 9+** secondo la
 [guida ufficiale Flutter](https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-app-developers).
-Con l'SDK installato si conserva quindi KGP e `android.builtInKotlin=false`:
-il warning sulla futura dismissione rimane visibile. I nuovi plugin supportano
-la migrazione futura, ma applicano ancora KGP quando built-in Kotlin è disabilitato.
-Non aggiornare globalmente Flutter né abilitare la flag con Flutter 3.44.
+Con AGP 8.12.1 si conserva KGP e `android.builtInKotlin=false`.
+Flutter 3.47.6 segnala la futura dismissione di Gradle 8.14, AGP 8.12.1 e
+KGP 2.2.20; questi avvisi restano visibili e non vengono aggirati.
+La migrazione a Gradle 9.1+, AGP 9.0.1+ e built-in Kotlin richiede una
+verifica dedicata dei plugin Android. I nuovi plugin supportano la migrazione
+futura, ma applicano ancora KGP quando built-in Kotlin è disabilitato.
 
 La verifica Gradle identifica `:printing:compileDebugJavaWithJavac` come origine
 dei tre warning Java 8: printing 5.14.3 compilava a source/target 8 con JDK 21.

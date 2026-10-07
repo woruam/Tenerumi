@@ -14,7 +14,7 @@ class HexColor extends Color {
     return int.parse(hexColor, radix: 16);
   }
 
-  HexColor(final String hexColor) : super(_getColorFromHex(hexColor));
+  HexColor(String hexColor) : super(_getColorFromHex(hexColor));
 }
 
 extension ColorX on Color {

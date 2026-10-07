@@ -1,0 +1,273 @@
+
+> Configure project :gradle
+WARNING: Unsupported Kotlin plugin version.
+The `embedded-kotlin` and `kotlin-dsl` plugins rely on features of Kotlin `2.0.21` that might work differently than in the requested version `2.2.20`.
+
+> Task :gradle:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle:compileKotlin UP-TO-DATE
+> Task :gradle:compileJava NO-SOURCE
+> Task :gradle:compileGroovy NO-SOURCE
+> Task :gradle:pluginDescriptors UP-TO-DATE
+> Task :gradle:processResources UP-TO-DATE
+> Task :gradle:classes UP-TO-DATE
+> Task :gradle:jar UP-TO-DATE
+
+> Configure project :app
+Warning: Flutter support for your project's Gradle version (8.14.0) will soon be dropped. Please upgrade your Gradle version to a version of at least 9.1.0 soon.
+Alternatively, use the flag "--android-skip-build-dependency-validation" to bypass this check.
+
+Potential fix: Your project's gradle version is typically defined in the gradle wrapper file. By default, this can be found at C:\Users\aless\Documents\GitHub\OSIpp\android/gradle/wrapper/gradle-wrapper.properties. 
+For more information, see https://docs.gradle.org/current/userguide/gradle_wrapper.html.
+
+Warning: Flutter support for your project's Android Gradle Plugin version (Android Gradle Plugin version 8.12.1) will soon be dropped. Please upgrade your Android Gradle Plugin version to a version of at least Android Gradle Plugin version 9.0.1 soon.
+Alternatively, use the flag "--android-skip-build-dependency-validation" to bypass this check.
+
+Potential fix: Your project's AGP version is typically defined in the plugins block of the `settings.gradle` file (C:\Users\aless\Documents\GitHub\OSIpp\android/settings.gradle), by a plugin with the id of com.android.application. 
+If you don't see a plugins block, your project was likely created with an older template version. In this case it is most likely defined in the top-level build.gradle file (C:\Users\aless\Documents\GitHub\OSIpp\android/build.gradle) by the following line in the dependencies block of the buildscript: "classpath 'com.android.tools.build:gradle:<version>'".
+
+Warning: Flutter support for your project's Kotlin version (2.2.20) will soon be dropped. Please upgrade your Kotlin version to a version of at least 2.3.20 soon.
+Alternatively, use the flag "--android-skip-build-dependency-validation" to bypass this check.
+
+Potential fix: Your project's KGP version is typically defined in the plugins block of the `settings.gradle` file (C:\Users\aless\Documents\GitHub\OSIpp\android/settings.gradle), by a plugin with the id of org.jetbrains.kotlin.android. 
+If you don't see a plugins block, your project was likely created with an older template version, in which case it is most likely defined in the top-level build.gradle file (C:\Users\aless\Documents\GitHub\OSIpp\android/build.gradle) by the ext.kotlin_version property.
+
+
+> Task :android_file_picker:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :android_file_picker:preBuild UP-TO-DATE
+> Task :android_file_picker:preReleaseBuild UP-TO-DATE
+> Task :android_file_picker:generateReleaseResValues UP-TO-DATE
+> Task :android_file_picker:generateReleaseResources UP-TO-DATE
+> Task :android_file_picker:packageReleaseResources UP-TO-DATE
+> Task :android_file_picker:parseReleaseLocalResources UP-TO-DATE
+> Task :android_file_picker:generateReleaseRFile UP-TO-DATE
+> Task :android_file_picker:compileReleaseKotlin UP-TO-DATE
+> Task :android_file_picker:javaPreCompileRelease UP-TO-DATE
+> Task :android_file_picker:compileReleaseJavaWithJavac NO-SOURCE
+> Task :android_file_picker:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :android_file_picker:processReleaseJavaRes UP-TO-DATE
+> Task :app:buildKotlinToolingMetadata UP-TO-DATE
+> Task :android_file_picker:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :android_file_picker:writeReleaseAarMetadata UP-TO-DATE
+> Task :app:validateCompileSdkVersion
+> Task :app:preBuild
+> Task :app:preReleaseBuild
+> Task :desktop_drop:preBuild UP-TO-DATE
+> Task :desktop_drop:preReleaseBuild UP-TO-DATE
+> Task :desktop_drop:writeReleaseAarMetadata UP-TO-DATE
+> Task :dynamic_color:preBuild UP-TO-DATE
+> Task :dynamic_color:preReleaseBuild UP-TO-DATE
+> Task :dynamic_color:writeReleaseAarMetadata UP-TO-DATE
+> Task :jni:preBuild UP-TO-DATE
+> Task :jni:preReleaseBuild UP-TO-DATE
+> Task :jni:writeReleaseAarMetadata UP-TO-DATE
+> Task :jni_flutter:preBuild UP-TO-DATE
+> Task :jni_flutter:preReleaseBuild UP-TO-DATE
+> Task :jni_flutter:writeReleaseAarMetadata UP-TO-DATE
+> Task :package_info_plus:preBuild UP-TO-DATE
+> Task :package_info_plus:preReleaseBuild UP-TO-DATE
+> Task :package_info_plus:writeReleaseAarMetadata UP-TO-DATE
+> Task :pdfx:preBuild UP-TO-DATE
+> Task :pdfx:preReleaseBuild UP-TO-DATE
+> Task :pdfx:writeReleaseAarMetadata UP-TO-DATE
+> Task :shared_preferences_android:preBuild UP-TO-DATE
+> Task :shared_preferences_android:preReleaseBuild UP-TO-DATE
+> Task :shared_preferences_android:writeReleaseAarMetadata UP-TO-DATE
+> Task :url_launcher_android:preBuild UP-TO-DATE
+> Task :url_launcher_android:preReleaseBuild UP-TO-DATE
+> Task :url_launcher_android:writeReleaseAarMetadata UP-TO-DATE
+> Task :app:checkReleaseAarMetadata UP-TO-DATE
+> Task :app:cleanMergeReleaseAssets
+> Task :app:compileFlutterBuildRelease
+> Task :android_file_picker:mergeReleaseShaders UP-TO-DATE
+> Task :android_file_picker:compileReleaseShaders NO-SOURCE
+> Task :android_file_picker:generateReleaseAssets UP-TO-DATE
+> Task :android_file_picker:mergeReleaseAssets UP-TO-DATE
+> Task :app:mergeReleaseShaders UP-TO-DATE
+> Task :app:compileReleaseShaders NO-SOURCE
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :desktop_drop:mergeReleaseShaders UP-TO-DATE
+> Task :desktop_drop:compileReleaseShaders NO-SOURCE
+> Task :desktop_drop:generateReleaseAssets UP-TO-DATE
+> Task :desktop_drop:mergeReleaseAssets UP-TO-DATE
+> Task :dynamic_color:mergeReleaseShaders UP-TO-DATE
+> Task :dynamic_color:compileReleaseShaders NO-SOURCE
+> Task :dynamic_color:generateReleaseAssets UP-TO-DATE
+> Task :dynamic_color:mergeReleaseAssets UP-TO-DATE
+> Task :jni:mergeReleaseShaders UP-TO-DATE
+> Task :jni:compileReleaseShaders NO-SOURCE
+> Task :jni:generateReleaseAssets UP-TO-DATE
+> Task :jni:mergeReleaseAssets UP-TO-DATE
+> Task :jni_flutter:mergeReleaseShaders UP-TO-DATE
+> Task :jni_flutter:compileReleaseShaders NO-SOURCE
+> Task :jni_flutter:generateReleaseAssets UP-TO-DATE
+> Task :jni_flutter:mergeReleaseAssets UP-TO-DATE
+> Task :package_info_plus:mergeReleaseShaders UP-TO-DATE
+> Task :package_info_plus:compileReleaseShaders NO-SOURCE
+> Task :package_info_plus:generateReleaseAssets UP-TO-DATE
+> Task :package_info_plus:mergeReleaseAssets UP-TO-DATE
+> Task :pdfx:mergeReleaseShaders UP-TO-DATE
+> Task :pdfx:compileReleaseShaders NO-SOURCE
+> Task :pdfx:generateReleaseAssets UP-TO-DATE
+> Task :pdfx:mergeReleaseAssets UP-TO-DATE
+> Task :shared_preferences_android:mergeReleaseShaders UP-TO-DATE
+> Task :shared_preferences_android:compileReleaseShaders NO-SOURCE
+> Task :shared_preferences_android:generateReleaseAssets UP-TO-DATE
+> Task :shared_preferences_android:mergeReleaseAssets UP-TO-DATE
+> Task :url_launcher_android:mergeReleaseShaders UP-TO-DATE
+> Task :url_launcher_android:compileReleaseShaders NO-SOURCE
+> Task :url_launcher_android:generateReleaseAssets UP-TO-DATE
+> Task :url_launcher_android:mergeReleaseAssets UP-TO-DATE
+> Task :app:mergeReleaseAssets
+> Task :app:copyFlutterAssetsRelease
+> Task :app:generateReleaseResValues UP-TO-DATE
+> Task :desktop_drop:generateReleaseResValues UP-TO-DATE
+> Task :desktop_drop:generateReleaseResources UP-TO-DATE
+> Task :desktop_drop:packageReleaseResources UP-TO-DATE
+> Task :dynamic_color:generateReleaseResValues UP-TO-DATE
+> Task :dynamic_color:generateReleaseResources UP-TO-DATE
+> Task :dynamic_color:packageReleaseResources UP-TO-DATE
+> Task :jni:generateReleaseResValues UP-TO-DATE
+> Task :jni:generateReleaseResources UP-TO-DATE
+> Task :jni:packageReleaseResources UP-TO-DATE
+> Task :jni_flutter:generateReleaseResValues UP-TO-DATE
+> Task :jni_flutter:generateReleaseResources UP-TO-DATE
+> Task :jni_flutter:packageReleaseResources UP-TO-DATE
+> Task :package_info_plus:generateReleaseResValues UP-TO-DATE
+> Task :package_info_plus:generateReleaseResources UP-TO-DATE
+> Task :package_info_plus:packageReleaseResources UP-TO-DATE
+> Task :pdfx:generateReleaseResValues UP-TO-DATE
+> Task :pdfx:generateReleaseResources UP-TO-DATE
+> Task :pdfx:packageReleaseResources UP-TO-DATE
+> Task :shared_preferences_android:generateReleaseResValues UP-TO-DATE
+> Task :shared_preferences_android:generateReleaseResources UP-TO-DATE
+> Task :shared_preferences_android:packageReleaseResources UP-TO-DATE
+> Task :url_launcher_android:generateReleaseResValues UP-TO-DATE
+> Task :url_launcher_android:generateReleaseResources UP-TO-DATE
+> Task :url_launcher_android:packageReleaseResources UP-TO-DATE
+> Task :app:mapReleaseSourceSetPaths UP-TO-DATE
+> Task :app:generateReleaseResources UP-TO-DATE
+> Task :app:mergeReleaseResources UP-TO-DATE
+> Task :app:packageReleaseResources UP-TO-DATE
+> Task :app:parseReleaseLocalResources UP-TO-DATE
+> Task :app:createReleaseCompatibleScreenManifests UP-TO-DATE
+> Task :android_file_picker:extractDeepLinksRelease UP-TO-DATE
+> Task :android_file_picker:processReleaseManifest UP-TO-DATE
+> Task :app:extractDeepLinksRelease UP-TO-DATE
+> Task :desktop_drop:extractDeepLinksRelease UP-TO-DATE
+> Task :desktop_drop:processReleaseManifest UP-TO-DATE
+> Task :dynamic_color:extractDeepLinksRelease UP-TO-DATE
+> Task :dynamic_color:processReleaseManifest UP-TO-DATE
+> Task :jni:extractDeepLinksRelease UP-TO-DATE
+> Task :jni:processReleaseManifest UP-TO-DATE
+> Task :jni_flutter:extractDeepLinksRelease UP-TO-DATE
+> Task :jni_flutter:processReleaseManifest UP-TO-DATE
+> Task :package_info_plus:extractDeepLinksRelease UP-TO-DATE
+> Task :package_info_plus:processReleaseManifest UP-TO-DATE
+> Task :pdfx:extractDeepLinksRelease UP-TO-DATE
+> Task :pdfx:processReleaseManifest UP-TO-DATE
+> Task :shared_preferences_android:extractDeepLinksRelease UP-TO-DATE
+> Task :shared_preferences_android:processReleaseManifest UP-TO-DATE
+> Task :url_launcher_android:extractDeepLinksRelease UP-TO-DATE
+> Task :url_launcher_android:processReleaseManifest UP-TO-DATE
+> Task :app:processReleaseMainManifest UP-TO-DATE
+> Task :app:outputReleaseAppLinkSettings UP-TO-DATE
+> Task :app:processReleaseManifest UP-TO-DATE
+> Task :app:processReleaseManifestForPackage UP-TO-DATE
+> Task :desktop_drop:parseReleaseLocalResources UP-TO-DATE
+> Task :desktop_drop:generateReleaseRFile UP-TO-DATE
+> Task :dynamic_color:parseReleaseLocalResources UP-TO-DATE
+> Task :dynamic_color:generateReleaseRFile UP-TO-DATE
+> Task :jni:parseReleaseLocalResources UP-TO-DATE
+> Task :jni:generateReleaseRFile UP-TO-DATE
+> Task :jni_flutter:parseReleaseLocalResources UP-TO-DATE
+> Task :jni_flutter:generateReleaseRFile UP-TO-DATE
+> Task :package_info_plus:parseReleaseLocalResources UP-TO-DATE
+> Task :package_info_plus:generateReleaseRFile UP-TO-DATE
+> Task :pdfx:parseReleaseLocalResources UP-TO-DATE
+> Task :pdfx:generateReleaseRFile UP-TO-DATE
+> Task :shared_preferences_android:parseReleaseLocalResources UP-TO-DATE
+> Task :shared_preferences_android:generateReleaseRFile UP-TO-DATE
+> Task :url_launcher_android:parseReleaseLocalResources UP-TO-DATE
+> Task :url_launcher_android:generateReleaseRFile UP-TO-DATE
+> Task :app:processReleaseResources UP-TO-DATE
+> Task :desktop_drop:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :desktop_drop:compileReleaseKotlin UP-TO-DATE
+> Task :desktop_drop:javaPreCompileRelease UP-TO-DATE
+> Task :desktop_drop:compileReleaseJavaWithJavac NO-SOURCE
+> Task :desktop_drop:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :dynamic_color:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :dynamic_color:compileReleaseKotlin UP-TO-DATE
+> Task :dynamic_color:javaPreCompileRelease UP-TO-DATE
+> Task :dynamic_color:compileReleaseJavaWithJavac NO-SOURCE
+> Task :dynamic_color:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :jni:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :jni:compileReleaseKotlin NO-SOURCE
+> Task :jni:javaPreCompileRelease UP-TO-DATE
+> Task :jni:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :jni:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :jni_flutter:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :jni_flutter:compileReleaseKotlin NO-SOURCE
+> Task :jni_flutter:javaPreCompileRelease UP-TO-DATE
+> Task :jni_flutter:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :jni_flutter:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :package_info_plus:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :package_info_plus:compileReleaseKotlin UP-TO-DATE
+> Task :package_info_plus:javaPreCompileRelease UP-TO-DATE
+> Task :package_info_plus:compileReleaseJavaWithJavac NO-SOURCE
+> Task :package_info_plus:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :pdfx:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :pdfx:compileReleaseKotlin UP-TO-DATE
+> Task :pdfx:javaPreCompileRelease UP-TO-DATE
+> Task :pdfx:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :pdfx:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :shared_preferences_android:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :shared_preferences_android:compileReleaseKotlin UP-TO-DATE
+> Task :shared_preferences_android:javaPreCompileRelease UP-TO-DATE
+> Task :shared_preferences_android:compileReleaseJavaWithJavac NO-SOURCE
+> Task :shared_preferences_android:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :url_launcher_android:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :url_launcher_android:generateReleaseBuildConfig UP-TO-DATE
+> Task :url_launcher_android:compileReleaseKotlin UP-TO-DATE
+> Task :url_launcher_android:javaPreCompileRelease UP-TO-DATE
+> Task :url_launcher_android:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :url_launcher_android:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :app:compileReleaseKotlin UP-TO-DATE
+> Task :app:javaPreCompileRelease UP-TO-DATE
+> Task :app:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :app:preReleaseUnitTestBuild
+> Task :app:javaPreCompileReleaseUnitTest
+> Task :app:processReleaseJavaRes UP-TO-DATE
+> Task :desktop_drop:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :desktop_drop:processReleaseJavaRes UP-TO-DATE
+> Task :dynamic_color:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :dynamic_color:processReleaseJavaRes UP-TO-DATE
+> Task :jni:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :jni:processReleaseJavaRes NO-SOURCE
+> Task :jni_flutter:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :app:bundleReleaseClassesToCompileJar
+> Task :jni_flutter:processReleaseJavaRes NO-SOURCE
+> Task :app:bundleReleaseClassesToRuntimeJar
+> Task :package_info_plus:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :package_info_plus:processReleaseJavaRes UP-TO-DATE
+> Task :pdfx:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :pdfx:processReleaseJavaRes UP-TO-DATE
+> Task :shared_preferences_android:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :shared_preferences_android:processReleaseJavaRes UP-TO-DATE
+> Task :url_launcher_android:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :url_launcher_android:processReleaseJavaRes UP-TO-DATE
+> Task :app:compileReleaseUnitTestKotlin
+> Task :app:compileReleaseUnitTestJavaWithJavac NO-SOURCE
+> Task :app:processReleaseUnitTestJavaRes
+> Task :app:testReleaseUnitTest
+
+[Incubating] Problems report is available at: file:///C:/Users/aless/Documents/GitHub/OSIpp/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.14/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 1m 54s
+171 actionable tasks: 11 executed, 160 up-to-date

@@ -14,6 +14,7 @@ import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
 import 'package:xournalpp/src/globals.dart';
 
 class _SaveController extends CanvasController {
+  _SaveController() : super(autosaveEnabled: false);
   bool succeeds = false;
   int attempts = 0;
   @override
@@ -73,7 +74,7 @@ void main() {
       () async {
     SharedPreferences.setMockInitialValues(
         {PreferencesKeys.kTouchDrawing: true});
-    final controller = CanvasController()..init(XppFile.empty());
+    final controller = CanvasController(autosaveEnabled: false)..init(XppFile.empty());
     await Future<void>.delayed(Duration.zero);
     expect(controller.touchDrawingEnabled, isTrue);
     controller.setTool(EditingTool.HIGHLIGHT);
@@ -86,7 +87,7 @@ void main() {
   });
 
   test('exit checks inactive and secondary documents in order', () async {
-    final ws = WorkspaceController();
+    final ws = WorkspaceController(autosaveEnabled: false);
     ws.addDocument(XppFile.empty()..title = 'inactive');
     ws.addDocument(XppFile.empty()..title = 'secondary');
     final visited = <CanvasController>[];
@@ -102,7 +103,7 @@ void main() {
   });
 
   test('cancel stops remaining close checks', () async {
-    final ws = WorkspaceController();
+    final ws = WorkspaceController(autosaveEnabled: false);
     ws.addDocument(XppFile.empty());
     var calls = 0;
     expect(
@@ -117,7 +118,7 @@ void main() {
   });
 
   test('closing preceding tab preserves selected document', () async {
-    final ws = WorkspaceController();
+    final ws = WorkspaceController(autosaveEnabled: false);
     final selected = XppFile.empty();
     ws.addDocument(selected);
     ws.setPrimary(1);

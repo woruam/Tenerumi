@@ -35,7 +35,7 @@ void main() {
       int alphaAt(int x, int y) => bytes[(y * 240 + x) * 4 + 3];
       expect(alphaAt(30, 30), 255);
       expect(alphaAt(33, 30), greaterThan(0));
-      expect(alphaAt(33, 33), 0);
+      expect(alphaAt(34, 34), 0);
     });
   });
 
@@ -125,9 +125,8 @@ void main() {
           final proof = await picture.toImage(480, 180);
           final png = await proof.toByteData(format: ui.ImageByteFormat.png);
           await Directory('docs/validation').create(recursive: true);
-          await File(
-            'docs/validation/ink-round-continuity.png',
-          ).writeAsBytes(png!.buffer.asUint8List());
+          await File('docs/validation/ink-round-continuity.png')
+              .writeAsBytes(png!.buffer.asUint8List());
           proof.dispose();
           picture.dispose();
         }

@@ -1,0 +1,17 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_javascript_test.dart
+00:00 +0: (setUpAll)
+00:00 +0: real JavaScript supports imports, loops, async host calls and single undo
+00:00 +1: real JS exceptions and missing permissions roll back the whole command
+00:00 +2: native interrupt cancels an infinite loop and a following plugin still runs
+00:00 +2 -1: native interrupt cancels an infinite loop and a following plugin still runs [E]
+  Bad state: ID già installato: modifica il plugin o usa un altro ID
+  package:xournalpp/plugins/plugin_controller.dart 211:9   PluginController.install.<fn>
+  package:xournalpp/plugins/plugin_controller.dart 198:22  PluginController._exclusive
+  package:xournalpp/plugins/plugin_controller.dart 207:12  PluginController.install
+  
+00:00 +2 -1: shipped LaTeX, Anki and OCR scripts execute through asynchronous providers
+00:00 +3 -1: (tearDownAll)
+00:00 +3 -1: Some tests failed.
+
+Failing tests:
+  C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_javascript_test.dart: native interrupt cancels an infinite loop and a following plugin still runs

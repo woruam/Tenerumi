@@ -1,0 +1,24 @@
+{
+  "apiVersion": 1,
+  "id": "example.ocr",
+  "name": "OCR immagini",
+  "version": "2.0.0",
+  "description": "Riconosce il testo da una foto, permette di correggerlo e lo inserisce nel foglio. OCR locale Android.",
+  "runtime": "javascript",
+  "permissions": [
+    "files.read",
+    "ocr",
+    "ui",
+    "document.write"
+  ],
+  "modules": {
+    "main.js": "export async function recognize(context) {\n  const capabilities = await osipp.call('capabilities');\n  if (!capabilities.ocr) throw new Error('Questo esempio richiede Android. Per un OCR remoto crea un provider http.request.');\n  const image = await osipp.call('files.open', {type:'image'});\n  if (!image) return;\n  const result = await osipp.call('ocr.recognize', {base64:image.base64});\n  if (!result.text.trim()) { await osipp.call('message', {text:'Nessun testo riconosciuto'}); return; }\n  const edited = await osipp.call('ui.form', {title:'Correggi testo riconosciuto', fields:[\n    {id:'text', label:'Testo', type:'text', multiline:true, required:true, default:result.text}\n  ]});\n  if (edited) await osipp.call('text.add', {text:edited.text, x:40, y:40, size:16});\n}\n"
+  },
+  "commands": [
+    {
+      "id": "recognize",
+      "label": "Leggi testo da immagine",
+      "handler": "recognize"
+    }
+  ]
+}

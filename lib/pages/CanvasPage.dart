@@ -1,8 +1,12 @@
 import 'dart:math';
+
 import 'package:xournalpp/src/document_scene_geometry.dart';
 import 'package:xournalpp/widgets/split_resize_scope.dart';
 import 'package:xournalpp/widgets/virtual_page_column.dart';
+import 'package:xournalpp/widgets/infinite_canvas.dart';
+
 import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -241,6 +245,15 @@ class CanvasPageState extends State<CanvasPage> {
                     },
                     child: LayoutBuilder(
                       builder: (context, constraints) {
+                        if (ctrl.file?.pages?.firstOrNull?.infinite == true) {
+                          return IgnorePointer(
+                            ignoring: resizing,
+                            child: InfiniteCanvas(
+                              canvas: ctrl,
+                              transform: _zoomController,
+                            ),
+                          );
+                        }
                         final displayWidth = _layoutPageWidth(
                           constraints.maxWidth,
                           resizing,
@@ -296,128 +309,137 @@ class CanvasPageState extends State<CanvasPage> {
                                           .pageSize!
                                           .ratio,
                                       child: FittedBox(
-                                        child: Listener(
-                                          onPointerUp: (_) =>
-                                              ctrl.eraserSnapshotTaken = false,
-                                          onPointerCancel: (_) =>
-                                              ctrl.eraserSnapshotTaken = false,
-                                          child: PointerListener(
-                                            translationMatrix:
-                                                _zoomController.value,
-                                            toolData: ctrl.toolData,
-                                            strokeWidth: ctrl
-                                                .getCurrentToolWidth(),
-                                            color: ctrl.getCurrentToolColor(),
-                                            shapeRecognition:
-                                                ctrl.shapeRecognition,
-                                            buttonDownAction:
-                                                ctrl.buttonDownAction,
-                                            buttonUpAction: ctrl.buttonUpAction,
+                                        child: PointerListener(
+                                          key: ObjectKey(
+                                            ctrl.activeLayer(pageIndex),
+                                          ),
+                                          readOnly: !ctrl.canEditLayer(
+                                            pageIndex,
+                                          ),
+                                          translationMatrix:
+                                              _zoomController.value,
+                                          toolData: ctrl.toolData,
+                                          strokeWidth: ctrl
+                                              .getCurrentToolWidth(),
+                                          highlighterWidth:
+                                              ctrl.highlighterWidth,
+                                          highlighterColor:
+                                              ctrl.highlighterColor,
+                                          clipboard: ctrl.clipboard,
+                                          onPasteContent: (position) =>
+                                              ctrl.pasteSelection(
+                                                pageIndex,
+                                                position,
+                                              ),
+                                          color: ctrl.getCurrentToolColor(),
+                                          shapeRecognition:
+                                              ctrl.shapeRecognition,
+                                          buttonDownAction:
+                                              ctrl.buttonDownAction,
+                                          buttonUpAction: ctrl.buttonUpAction,
 
-                                            // IL FIX DELLA SCRITTURA ANCHE QUI
-                                            onToolChanged: (tool) {
-                                              ctrl.setTool(tool);
-                                              _zoomableKey.currentState
-                                                  ?.setState(
-                                                    () =>
-                                                        _zoomableKey
-                                                                .currentState!
-                                                                .enabled =
-                                                            ctrl.isPanEnabled,
-                                                  );
-                                            },
+                                          // IL FIX DELLA SCRITTURA ANCHE QUI
+                                          onToolChanged: (tool) {
+                                            ctrl.setTool(tool);
+                                            _zoomableKey.currentState?.setState(
+                                              () =>
+                                                  _zoomableKey
+                                                          .currentState!
+                                                          .enabled =
+                                                      ctrl.isPanEnabled,
+                                            );
+                                          },
 
-                                            getPageContent: () =>
-                                                ctrl
-                                                    .file!
-                                                    .pages![pageIndex]
-                                                    .layers![0]
-                                                    .content ??
-                                                [],
-                                            onDeviceChange:
-                                                ({
-                                                  int? device,
-                                                  PointerDeviceKind? kind,
-                                                }) {},
-                                            onDeleteContent: (deleted) =>
-                                                ctrl.deleteContent(
-                                                  pageIndex,
-                                                  deleted,
-                                                ),
-                                            onBeforeContentChanged: () =>
-                                                ctrl.saveSnapshot(pageIndex),
-                                            onContentChanged: () => ctrl
-                                                .markContentChanged(pageIndex),
-                                            removeLastContent: () => ctrl
-                                                .removeLastContent(pageIndex),
-                                            filterEraser:
-                                                ({
-                                                  Offset? coordinates,
-                                                  Offset? previousCoordinates,
-                                                  double? radius,
-                                                }) => ctrl.filterEraser(
-                                                  pageIndex: pageIndex,
-                                                  coordinates: coordinates,
-                                                  previousCoordinates:
-                                                      previousCoordinates,
-                                                  radius: radius,
-                                                ),
-                                            eraserWidth: ctrl.eraserWidth,
-                                            onEraserStart: () =>
-                                                ctrl.eraserSnapshotTaken =
-                                                    false,
-                                            onNewContent: (newContent) =>
-                                                ctrl.addNewContent(
-                                                  pageIndex,
-                                                  newContent,
-                                                ),
+                                          getPageContent: () =>
+                                              ctrl
+                                                  .activeLayer(pageIndex)
+                                                  .content ??
+                                              [],
+                                          onDeviceChange:
+                                              ({
+                                                int? device,
+                                                PointerDeviceKind? kind,
+                                              }) {
+                                                ctrl.activePageIndex =
+                                                    pageIndex;
+                                              },
+                                          onDeleteContent: (deleted) =>
+                                              ctrl.deleteContent(
+                                                pageIndex,
+                                                deleted,
+                                              ),
+                                          onBeforeContentChanged: () =>
+                                              ctrl.saveSnapshot(pageIndex),
+                                          onContentChanged: () => ctrl
+                                              .markContentChanged(pageIndex),
+                                          removeLastContent: () =>
+                                              ctrl.removeLastContent(pageIndex),
+                                          filterEraser:
+                                              ({
+                                                Offset? coordinates,
+                                                Offset? previousCoordinates,
+                                                double? radius,
+                                              }) => ctrl.filterEraser(
+                                                pageIndex: pageIndex,
+                                                coordinates: coordinates,
+                                                previousCoordinates:
+                                                    previousCoordinates,
+                                                radius: radius,
+                                              ),
+                                          eraserWidth: ctrl.eraserWidth,
+                                          onEraserStart:
+                                              ctrl.beginEraserGesture,
+                                          onEraserEnd: ctrl.endEraserGesture,
+                                          onNewContent: (newContent) =>
+                                              ctrl.addNewContent(
+                                                pageIndex,
+                                                newContent,
+                                              ),
 
-                                            child: SizedBox(
-                                              width: ctrl
-                                                  .file!
-                                                  .pages![pageIndex]
-                                                  .pageSize!
-                                                  .width,
-                                              height: ctrl
-                                                  .file!
-                                                  .pages![pageIndex]
-                                                  .pageSize!
-                                                  .height,
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(4),
-                                                child: Stack(
-                                                  fit: StackFit.expand,
-                                                  children: [
-                                                    // 1. IL PDF SULLO SFONDO (Se caricato)
-                                                    if (ctrl.pdfBackgrounds
-                                                        .containsKey(pageIndex))
-                                                      Image.memory(
-                                                        ctrl.pdfBackgrounds[pageIndex]!,
-                                                        fit: BoxFit.fill,
-                                                      ),
-                                                    if (ctrl.pdfErrors
-                                                        .containsKey(pageIndex))
-                                                      const Center(
-                                                        child: Text(
-                                                          'Sfondo PDF non disponibile',
-                                                          style: TextStyle(
-                                                            color: Colors.red,
-                                                          ),
+                                          child: SizedBox(
+                                            width: ctrl
+                                                .file!
+                                                .pages![pageIndex]
+                                                .pageSize!
+                                                .width,
+                                            height: ctrl
+                                                .file!
+                                                .pages![pageIndex]
+                                                .pageSize!
+                                                .height,
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                              child: Stack(
+                                                fit: StackFit.expand,
+                                                children: [
+                                                  // 1. IL PDF SULLO SFONDO (Se caricato)
+                                                  if (ctrl.pdfBackgrounds
+                                                      .containsKey(pageIndex))
+                                                    Image.memory(
+                                                      ctrl.pdfBackgrounds[pageIndex]!,
+                                                      fit: BoxFit.fill,
+                                                    ),
+                                                  if (ctrl.pdfErrors
+                                                      .containsKey(pageIndex))
+                                                    const Center(
+                                                      child: Text(
+                                                        'Sfondo PDF non disponibile',
+                                                        style: TextStyle(
+                                                          color: Colors.red,
                                                         ),
                                                       ),
-                                                    // 2. LA TELA REALE PER L'INCHIOSTRO (Sopra)
-                                                    XppPageStack(
-                                                      renderPdfBackground:
-                                                          false,
-                                                      key: ctrl
-                                                          .pageStackKeys[pageIndex],
-                                                      page: ctrl
-                                                          .file!
-                                                          .pages![pageIndex],
                                                     ),
-                                                  ],
-                                                ),
+                                                  // 2. LA TELA REALE PER L'INCHIOSTRO (Sopra)
+                                                  XppPageStack(
+                                                    renderPdfBackground: false,
+                                                    key: ctrl
+                                                        .pageStackKeys[pageIndex],
+                                                    page: ctrl
+                                                        .file!
+                                                        .pages![pageIndex],
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                           ),
