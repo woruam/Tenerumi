@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:xournalpp/src/dynamic_color_adapter.dart';
 import 'package:flutter/material.dart';
 import 'package:dynamic_color/dynamic_color.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:xournalpp/src/app_appearance.dart';
 import 'package:provider/provider.dart';
 import 'package:xournalpp/controllers/theme_controller.dart';
 import 'package:xournalpp/pages/OpenPage.dart';
@@ -57,102 +57,6 @@ class _XournalppMobileState extends State<XournalppMobile> {
   void updateThemeColor(Color newColor, bool useDynamic) =>
       useDynamic ? _theme.setDynamicColor(true) : _theme.setAccent(newColor);
 
-  ThemeData _buildTheme(ThemeController theme, ColorScheme? dynamicScheme) {
-    // Base scura in puro stile Nothing.
-    const brightness = Brightness.dark;
-
-    final fallbackScheme = ColorScheme.fromSeed(
-      seedColor: theme.accent,
-      brightness: brightness,
-    );
-
-    var colorScheme = (theme.useDynamicColor && dynamicScheme != null)
-        ? dynamicScheme
-        : fallbackScheme;
-
-    final Color bg = theme.pureBlack ? Colors.black : const Color(0xFF101010);
-
-    colorScheme = colorScheme.copyWith(
-      surface: theme.pureBlack
-          ? const Color(0xFF0A0A0A)
-          : const Color(0xFF141414),
-      surfaceContainerHighest: const Color(0xFF1A1A1A),
-    );
-
-    final TextTheme baseTextTheme = ThemeData.dark().textTheme;
-
-    return ThemeData(
-      useMaterial3: true,
-      colorScheme: colorScheme,
-      scaffoldBackgroundColor: bg,
-
-      // Tipografia Dot-Matrix (titoli) e Inter (testo)
-      // Google Fonts 9's TextTheme belongs to material_ui. Apply individual
-      // fonts to Flutter's shared TextStyle type to retain the SDK TextTheme.
-      textTheme: baseTextTheme.copyWith(
-        displayLarge: GoogleFonts.vt323(textStyle: baseTextTheme.displayLarge),
-        displayMedium: GoogleFonts.vt323(
-          textStyle: baseTextTheme.displayMedium,
-        ),
-        displaySmall: GoogleFonts.vt323(textStyle: baseTextTheme.displaySmall),
-        headlineLarge: GoogleFonts.vt323(
-          textStyle: baseTextTheme.headlineLarge,
-        ),
-        headlineMedium: GoogleFonts.vt323(
-          textStyle: baseTextTheme.headlineMedium,
-        ),
-        headlineSmall: GoogleFonts.vt323(
-          textStyle: baseTextTheme.headlineSmall,
-        ),
-        titleLarge: GoogleFonts.vt323(textStyle: baseTextTheme.titleLarge),
-        titleMedium: GoogleFonts.vt323(textStyle: baseTextTheme.titleMedium),
-        titleSmall: GoogleFonts.inter(textStyle: baseTextTheme.titleSmall),
-        bodyLarge: GoogleFonts.inter(textStyle: baseTextTheme.bodyLarge),
-        bodyMedium: GoogleFonts.inter(textStyle: baseTextTheme.bodyMedium),
-        bodySmall: GoogleFonts.inter(textStyle: baseTextTheme.bodySmall),
-        labelLarge: GoogleFonts.inter(textStyle: baseTextTheme.labelLarge),
-        labelMedium: GoogleFonts.inter(textStyle: baseTextTheme.labelMedium),
-        labelSmall: GoogleFonts.inter(textStyle: baseTextTheme.labelSmall),
-      ),
-
-      // Styling: Forme Squircle
-      cardTheme: CardThemeData(
-        shape: ContinuousRectangleBorder(
-          borderRadius: BorderRadius.circular(48),
-        ),
-        color: const Color(0xFF121212),
-        elevation: 0,
-        margin: EdgeInsets.zero,
-      ),
-      dialogTheme: DialogThemeData(
-        shape: ContinuousRectangleBorder(
-          borderRadius: BorderRadius.circular(56),
-        ),
-        backgroundColor: const Color(0xFF151515).withOpacity(0.85),
-        elevation: 0,
-      ),
-      bottomSheetTheme: const BottomSheetThemeData(
-        shape: ContinuousRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(56)),
-        ),
-        backgroundColor: Color(0xFF151515),
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          shape: ContinuousRectangleBorder(
-            borderRadius: BorderRadius.circular(32),
-          ),
-        ),
-      ),
-      appBarTheme: AppBarTheme(
-        backgroundColor: Colors.transparent,
-        foregroundColor: colorScheme.onSurface,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -171,8 +75,10 @@ class _XournalppMobileState extends State<XournalppMobile> {
                 DefaultMaterialLocalizations.delegate,
               ],
               supportedLocales: S.delegate.supportedLocales,
-              theme: _buildTheme(theme, flutterColorScheme(lightDynamic)),
-              darkTheme: _buildTheme(theme, flutterColorScheme(darkDynamic)),
+              theme: AppAppearance.buildTheme(
+                theme,
+                flutterColorScheme(darkDynamic),
+              ),
               themeMode: ThemeMode.dark,
               home: OpenPage(),
             );

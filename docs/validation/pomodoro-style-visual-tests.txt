@@ -1,0 +1,6 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart
+00:00 +0: (setUpAll)
+00:00 +0: Pomodoro theme fits phone library and settings without backdrop filtering
+dynamic_color: Dynamic color not detected on this device.
+00:01 +1: (tearDownAll)
+00:01 +1: All tests passed!

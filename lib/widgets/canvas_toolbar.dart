@@ -1,3 +1,4 @@
+import 'package:xournalpp/src/app_appearance.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 
@@ -164,17 +165,11 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ],
       flexibleSpace: ClipRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.4),
-              border: Border(
-                bottom: BorderSide(
-                  color: Colors.white.withOpacity(0.1),
-                  width: 1,
-                ),
-              ),
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppAppearance.panel,
+            border: Border(
+              bottom: BorderSide(color: AppAppearance.border, width: 1),
             ),
           ),
         ),

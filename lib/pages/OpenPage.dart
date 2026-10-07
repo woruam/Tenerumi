@@ -1,5 +1,6 @@
+import 'package:xournalpp/src/app_appearance.dart';
+
 import 'dart:convert';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
@@ -266,330 +267,318 @@ class _OpenPageState extends State<OpenPage> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             final cs = Theme.of(context).colorScheme;
-            return BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: AlertDialog(
-                backgroundColor: const Color(0xFF151515).withOpacity(0.6),
-                title: const Text(
-                  'Settings',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                content: SingleChildScrollView(
-                  // Evita errori di overflow se lo schermo è piccolo
-                  child: SizedBox(
-                    width: 420,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SwitchListTile(
-                          contentPadding: EdgeInsets.zero,
-                          title: const Text('Disegna con le dita'),
-                          subtitle: const Text(
-                            'Un dito disegna; due dita spostano e ingrandiscono. Disattiva per ignorare il palmo.',
-                          ),
-                          value: touchDrawing,
-                          onChanged: (value) async {
-                            await prefs.setBool(
-                              PreferencesKeys.kTouchDrawing,
-                              value,
-                            );
-                            setDialogState(() => touchDrawing = value);
-                          },
+            return AlertDialog(
+              backgroundColor: AppAppearance.panel,
+              title: const Text(
+                'Settings',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              content: SingleChildScrollView(
+                // Evita errori di overflow se lo schermo è piccolo
+                child: SizedBox(
+                  width: 420,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: const Text('Disegna con le dita'),
+                        subtitle: const Text(
+                          'Un dito disegna; due dita spostano e ingrandiscono. Disattiva per ignorare il palmo.',
                         ),
-                        // ==========================================
-                        // SEZIONE TEMA
-                        // ==========================================
-                        const Text(
-                          'TEMA',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey,
-                          ),
+                        value: touchDrawing,
+                        onChanged: (value) async {
+                          await prefs.setBool(
+                            PreferencesKeys.kTouchDrawing,
+                            value,
+                          );
+                          setDialogState(() => touchDrawing = value);
+                        },
+                      ),
+                      // ==========================================
+                      // SEZIONE TEMA
+                      // ==========================================
+                      const Text(
+                        'TEMA',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey,
                         ),
-                        const SizedBox(height: 12),
-                        // Material You: usa i colori dello sfondo di Android.
-                        SwitchListTile(
-                          contentPadding: EdgeInsets.zero,
-                          title: const Text('Colori dinamici (Material You)'),
-                          subtitle: const Text(
-                            'Segue lo sfondo del telefono',
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          value: theme.useDynamicColor,
-                          onChanged: (v) {
-                            theme.setDynamicColor(v);
-                            setDialogState(() {});
-                          },
+                      ),
+                      const SizedBox(height: 12),
+                      // Material You: usa i colori dello sfondo di Android.
+                      SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: const Text('Colori dinamici (Material You)'),
+                        subtitle: const Text(
+                          'Segue lo sfondo del telefono',
+                          style: TextStyle(fontSize: 12),
                         ),
-                        // Nero puro: sfondi #000 per schermi OLED.
-                        SwitchListTile(
-                          contentPadding: EdgeInsets.zero,
-                          title: const Text('Nero puro (OLED)'),
-                          subtitle: const Text(
-                            'Sfondi completamente neri',
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          value: theme.pureBlack,
-                          onChanged: (v) {
-                            theme.setPureBlack(v);
-                            setDialogState(() {});
-                          },
+                        value: theme.useDynamicColor,
+                        onChanged: (v) {
+                          theme.setDynamicColor(v);
+                          setDialogState(() {});
+                        },
+                      ),
+                      // Nero puro: sfondi #000 per schermi OLED.
+                      SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: const Text('Nero puro (OLED)'),
+                        subtitle: const Text(
+                          'Sfondi completamente neri',
+                          style: TextStyle(fontSize: 12),
                         ),
-                        const SizedBox(height: 8),
-                        Opacity(
-                          opacity: theme.useDynamicColor ? 0.35 : 1,
-                          child: IgnorePointer(
-                            ignoring: theme.useDynamicColor,
-                            child: Wrap(
-                              spacing: 12,
-                              runSpacing: 12,
-                              children: [
-                                // Colori manuali predefiniti
-                                ...colors.map((color) {
-                                  final bool sel =
-                                      !theme.useDynamicColor &&
-                                      theme.accent.value == color.value;
-                                  return InkWell(
-                                    onTap: () {
-                                      theme.setAccent(color);
-                                      setDialogState(() {});
-                                    },
-                                    child: CircleAvatar(
-                                      backgroundColor: color,
-                                      radius: 22,
-                                      child: sel
-                                          ? Icon(
-                                              Icons.check,
-                                              color:
-                                                  color.computeLuminance() > 0.5
-                                                  ? Colors.black
-                                                  : Colors.white,
-                                            )
-                                          : null,
+                        value: theme.pureBlack,
+                        onChanged: (v) {
+                          theme.setPureBlack(v);
+                          setDialogState(() {});
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                      Opacity(
+                        opacity: theme.useDynamicColor ? 0.35 : 1,
+                        child: IgnorePointer(
+                          ignoring: theme.useDynamicColor,
+                          child: Wrap(
+                            spacing: 12,
+                            runSpacing: 12,
+                            children: [
+                              // Colori manuali predefiniti
+                              ...colors.map((color) {
+                                final bool sel =
+                                    !theme.useDynamicColor &&
+                                    theme.accent.value == color.value;
+                                return InkWell(
+                                  onTap: () {
+                                    theme.setAccent(color);
+                                    setDialogState(() {});
+                                  },
+                                  child: CircleAvatar(
+                                    backgroundColor: color,
+                                    radius: 22,
+                                    child: sel
+                                        ? Icon(
+                                            Icons.check,
+                                            color:
+                                                color.computeLuminance() > 0.5
+                                                ? Colors.black
+                                                : Colors.white,
+                                          )
+                                        : null,
+                                  ),
+                                );
+                              }).toList(),
+                              // Colore personalizzato: apre la ruota dei colori.
+                              InkWell(
+                                onTap: () async {
+                                  Color picked = theme.accent;
+                                  final bool? ok = await showDialog<bool>(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: const Text(
+                                        'Colore personalizzato',
+                                      ),
+                                      content: SingleChildScrollView(
+                                        child: ColorPicker(
+                                          pickerColor: picked,
+                                          onColorChanged: (c) => picked = c,
+                                          enableAlpha: false,
+                                          labelTypes: const [],
+                                          pickerAreaBorderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, false),
+                                          child: const Text('Annulla'),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, true),
+                                          child: const Text('Applica'),
+                                        ),
+                                      ],
                                     ),
                                   );
-                                }).toList(),
-                                // Colore personalizzato: apre la ruota dei colori.
-                                InkWell(
-                                  onTap: () async {
-                                    Color picked = theme.accent;
-                                    final bool? ok = await showDialog<bool>(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                        title: const Text(
-                                          'Colore personalizzato',
-                                        ),
-                                        content: SingleChildScrollView(
-                                          child: ColorPicker(
-                                            pickerColor: picked,
-                                            onColorChanged: (c) => picked = c,
-                                            enableAlpha: false,
-                                            labelTypes: const [],
-                                            pickerAreaBorderRadius:
-                                                BorderRadius.circular(12),
-                                          ),
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context, false),
-                                            child: const Text('Annulla'),
-                                          ),
-                                          ElevatedButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context, true),
-                                            child: const Text('Applica'),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                    if (ok == true) {
-                                      theme.setAccent(picked);
-                                      setDialogState(() {});
-                                    }
-                                  },
-                                  child: Container(
-                                    width: 44,
-                                    height: 44,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      gradient: const SweepGradient(
-                                        colors: [
-                                          Colors.red,
-                                          Colors.orange,
-                                          Colors.yellow,
-                                          Colors.green,
-                                          Colors.cyan,
-                                          Colors.blue,
-                                          Colors.purple,
-                                          Colors.red,
-                                        ],
-                                      ),
-                                      border: Border.all(
-                                        color: cs.outline.withOpacity(0.4),
-                                      ),
+                                  if (ok == true) {
+                                    theme.setAccent(picked);
+                                    setDialogState(() {});
+                                  }
+                                },
+                                child: Container(
+                                  width: 44,
+                                  height: 44,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    gradient: const SweepGradient(
+                                      colors: [
+                                        Colors.red,
+                                        Colors.orange,
+                                        Colors.yellow,
+                                        Colors.green,
+                                        Colors.cyan,
+                                        Colors.blue,
+                                        Colors.purple,
+                                        Colors.red,
+                                      ],
                                     ),
-                                    child: const Icon(
-                                      Icons.colorize,
-                                      size: 20,
-                                      color: Colors.white,
+                                    border: Border.all(
+                                      color: cs.outline.withOpacity(0.4),
                                     ),
                                   ),
+                                  child: const Icon(
+                                    Icons.colorize,
+                                    size: 20,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
+                      ),
 
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 16.0),
-                          child: Divider(),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                        child: Divider(),
+                      ),
+
+                      // ==========================================
+                      // SEZIONE ICONE
+                      // ==========================================
+                      const Text(
+                        'STILE ICONE',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey,
                         ),
+                      ),
+                      const SizedBox(height: 12),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: AppIconStyle.values.map((style) {
+                          final labels = ['Linea', 'Tonde', 'Nette'];
+                          return ChoiceChip(
+                            label: Text(labels[style.index]),
+                            selected: theme.iconStyle == style,
+                            onSelected: (_) {
+                              theme.setIconStyle(style);
+                              setDialogState(() {});
+                            },
+                          );
+                        }).toList(),
+                      ),
 
-                        // ==========================================
-                        // SEZIONE ICONE
-                        // ==========================================
-                        const Text(
-                          'STILE ICONE',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey,
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                        child: Divider(),
+                      ),
+
+                      // ==========================================
+                      // SEZIONE PENNA
+                      // ==========================================
+                      const Text(
+                        'PENNA (Tasti Fisici)',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      const Text(
+                        'Tasto 1 (Vicino alla punta)',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      DropdownButton<String>(
+                        isExpanded: true,
+                        value: buttonDown,
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'eraser',
+                            child: Text('Gomma'),
                           ),
-                        ),
-                        const SizedBox(height: 12),
-                        SegmentedButton<AppIconStyle>(
-                          segments: const [
-                            ButtonSegment(
-                              value: AppIconStyle.outlined,
-                              label: Text('Linea'),
-                              icon: Icon(Icons.edit_outlined),
-                            ),
-                            ButtonSegment(
-                              value: AppIconStyle.rounded,
-                              label: Text('Tonde'),
-                              icon: Icon(Icons.edit_rounded),
-                            ),
-                            ButtonSegment(
-                              value: AppIconStyle.sharp,
-                              label: Text('Nette'),
-                              icon: Icon(Icons.edit_sharp),
-                            ),
-                          ],
-                          selected: {theme.iconStyle},
-                          onSelectionChanged: (sel) {
-                            theme.setIconStyle(sel.first);
-                            setDialogState(() {});
-                          },
-                        ),
-
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 16.0),
-                          child: Divider(),
-                        ),
-
-                        // ==========================================
-                        // SEZIONE PENNA
-                        // ==========================================
-                        const Text(
-                          'PENNA (Tasti Fisici)',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey,
+                          DropdownMenuItem(
+                            value: 'select',
+                            child: Text('Lazo'),
                           ),
-                        ),
-                        const SizedBox(height: 12),
-
-                        const Text(
-                          'Tasto 1 (Vicino alla punta)',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        DropdownButton<String>(
-                          isExpanded: true,
-                          value: buttonDown,
-                          items: const [
-                            DropdownMenuItem(
-                              value: 'eraser',
-                              child: Text('Gomma'),
-                            ),
-                            DropdownMenuItem(
-                              value: 'select',
-                              child: Text('Lazo'),
-                            ),
-                            DropdownMenuItem(
-                              value: 'highlighter',
-                              child: Text('Evidenziatore'),
-                            ),
-                          ],
-                          onChanged: (v) {
-                            if (v != null) {
-                              setDialogState(() => buttonDown = v);
-                              prefs.setString(
-                                'buttonDownAction',
-                                v,
-                              ); // Salva in memoria!
-                            }
-                          },
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        const Text(
-                          'Tasto 2 (Superiore)',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        DropdownButton<String>(
-                          isExpanded: true,
-                          value: buttonUp,
-                          items: const [
-                            DropdownMenuItem(
-                              value: 'eraser',
-                              child: Text('Gomma'),
-                            ),
-                            DropdownMenuItem(
-                              value: 'select',
-                              child: Text('Lazo'),
-                            ),
-                            DropdownMenuItem(
-                              value: 'highlighter',
-                              child: Text('Evidenziatore'),
-                            ),
-                          ],
-                          onChanged: (v) {
-                            if (v != null) {
-                              setDialogState(() => buttonUp = v);
-                              prefs.setString(
-                                'buttonUpAction',
-                                v,
-                              ); // Salva in memoria!
-                            }
-                          },
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Suggerimento: tieni premuto il tasto mentre scrivi per usare '
-                          'l\'azione solo in quel tratto, oppure premilo mentre la penna '
-                          'e\' sollevata (in hover) per attivare/disattivare l\'azione, '
-                          'come su Samsung Notes.',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey.shade500,
+                          DropdownMenuItem(
+                            value: 'highlighter',
+                            child: Text('Evidenziatore'),
                           ),
+                        ],
+                        onChanged: (v) {
+                          if (v != null) {
+                            setDialogState(() => buttonDown = v);
+                            prefs.setString(
+                              'buttonDownAction',
+                              v,
+                            ); // Salva in memoria!
+                          }
+                        },
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      const Text(
+                        'Tasto 2 (Superiore)',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      DropdownButton<String>(
+                        isExpanded: true,
+                        value: buttonUp,
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'eraser',
+                            child: Text('Gomma'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'select',
+                            child: Text('Lazo'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'highlighter',
+                            child: Text('Evidenziatore'),
+                          ),
+                        ],
+                        onChanged: (v) {
+                          if (v != null) {
+                            setDialogState(() => buttonUp = v);
+                            prefs.setString(
+                              'buttonUpAction',
+                              v,
+                            ); // Salva in memoria!
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Suggerimento: tieni premuto il tasto mentre scrivi per usare '
+                        'l\'azione solo in quel tratto, oppure premilo mentre la penna '
+                        'e\' sollevata (in hover) per attivare/disattivare l\'azione, '
+                        'come su Samsung Notes.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade500,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Chiudi'),
-                  ),
-                ],
               ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Chiudi'),
+                ),
+              ],
             );
           },
         );
@@ -643,7 +632,10 @@ class _OpenPageState extends State<OpenPage> {
           children: [
             DrawerHeader(
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primaryContainer,
+                color: AppAppearance.panel,
+                border: const Border(
+                  bottom: BorderSide(color: AppAppearance.border),
+                ),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

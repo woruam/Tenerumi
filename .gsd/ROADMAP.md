@@ -17,3 +17,7 @@ Una wave: sostituzione motore maschera e collisione, riduzione allocazioni; test
 
 ## Dipendenze richieste
 Singola fase: cinque constraint, controlli API/null safety, pub get, analyze e correzioni indotte. Nessuna build.
+
+## Estetica Pomodoro
+1. Centralizzare tema e superfici; uniformare componenti e rimuovere blur.
+2. Verificare analisi, regressioni e screenshot; documentare limiti prestazioni.

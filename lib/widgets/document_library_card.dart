@@ -1,3 +1,5 @@
+import 'package:xournalpp/src/app_appearance.dart';
+
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -138,13 +140,8 @@ class _DocumentLibraryCardState extends State<DocumentLibraryCard> {
   @override
   Widget build(BuildContext context) => Card(
     clipBehavior: Clip.antiAlias,
-    color: Colors.transparent,
-    shape: ContinuousRectangleBorder(
-      borderRadius: BorderRadius.circular(40),
-      side: BorderSide(
-        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .1),
-      ),
-    ),
+    color: AppAppearance.panel,
+    shape: AppAppearance.panelShape,
     child: InkWell(
       onTap: widget.onTap,
       child: Column(
@@ -152,8 +149,7 @@ class _DocumentLibraryCardState extends State<DocumentLibraryCard> {
         children: [
           Expanded(
             child: ColoredBox(
-              color: Theme.of(context).colorScheme.onSurface
-                  .withValues(alpha: .05),
+              color: AppAppearance.raised,
               child: RepaintBoundary(
                 child: DocumentPreviewImage(
                   encoded: _data['preview'] is String

@@ -49,3 +49,6 @@ Utente conferma dialogo Android ATTENDI/CHIUDI (ANR). Trace dispositivo non forn
 
 ## Aggiornamento dipendenze richieste - 2026-10-06
 Pubspec solo cinque constraint: archive4.3.0 file_picker13.1.0 google_fonts8.2.1 pdf3.13.1 xml7.0.1. Lock risolve esattamente, intl0.20.2 material_ui1.2.0 vector_math2.2.0 invariati. FilePicker13 adattato pickFile/readAsBytes, Uri saveFile senza secondo write; null safe PDF e parser firstOrNull root/preview/background. Font compatibili senza modifiche, manifest senza storage legacy. Pub get exit0. Flutter analyze finale --no-pub --no-fatal-infos exit0:0errors0warnings197infospreesistenti; nessuna deprecazione. Nessuna build/test. Stato docs/validation/dependency-update-status.md, log dependency-update-pub-get.txt/dependency-update-analyze.txt. No Git.
+
+## Estetica Pomodoro - 2026-10-07
+Tema condiviso opaco, bordi sottili e forme continue applicati a libreria, navigazione, toolbar e menu. Rimosso blur UI; timer e anello isolati; font VT323/Inter locali con licenze OFL. Personalizzazione conservata. 133 test passati, verifica visiva telefono/desktop, analisi senza errori/warning (199 infos), diff check pulito. Prove e limiti in docs/validation/pomodoro-style-status.md. Frame time Android non misurato; nessun APK.

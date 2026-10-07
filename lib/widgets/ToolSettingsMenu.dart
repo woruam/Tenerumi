@@ -1,3 +1,4 @@
+import 'package:xournalpp/src/app_appearance.dart';
 import 'package:flutter/material.dart';
 
 class ToolSettingsMenu extends StatefulWidget {
@@ -48,25 +49,19 @@ class _ToolSettingsMenuState extends State<ToolSettingsMenu> {
     return Container(
       width: 320, // Larghezza fissa per il menu a tendina
       padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Color(0xFF2D2D2D), // Sfondo scuro elegante
-        borderRadius:
-            BorderRadius.circular(16), // Bordi arrotondati su tutti i lati
-        boxShadow: [
-          BoxShadow(
-              color: Colors.black38,
-              blurRadius: 12,
-              spreadRadius: 2,
-              offset: Offset(0, 4))
-        ],
+      decoration: const ShapeDecoration(
+        color: AppAppearance.panel,
+        shape: AppAppearance.panelShape,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // --- SELEZIONE COLORE ---
-          Text("Palette Colori",
-              style: TextStyle(color: Colors.white70, fontSize: 14)),
+          Text(
+            "Palette Colori",
+            style: TextStyle(color: Colors.white70, fontSize: 14),
+          ),
           SizedBox(height: 12),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -86,21 +81,20 @@ class _ToolSettingsMenuState extends State<ToolSettingsMenu> {
                       color: color,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color:
-                            isSelected ? Colors.blueAccent : Colors.transparent,
+                        color: isSelected
+                            ? Theme.of(context).colorScheme.primary
+                            : AppAppearance.border,
                         width: 3,
                       ),
-                      boxShadow: [
-                        if (color == Colors.black || color == Colors.white)
-                          BoxShadow(color: Colors.black26, blurRadius: 2)
-                      ],
                     ),
                     child: isSelected
-                        ? Icon(Icons.keyboard_arrow_down,
+                        ? Icon(
+                            Icons.keyboard_arrow_down,
                             color: color == Colors.white
                                 ? Colors.black
                                 : Colors.white,
-                            size: 20)
+                            size: 20,
+                          )
                         : null,
                   ),
                 );
@@ -116,10 +110,14 @@ class _ToolSettingsMenuState extends State<ToolSettingsMenu> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Spessore del pennello",
-                  style: TextStyle(color: Colors.white, fontSize: 16)),
-              Text(_thickness.toStringAsFixed(1),
-                  style: TextStyle(color: Colors.white70)),
+              Text(
+                "Spessore del pennello",
+                style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
+              Text(
+                _thickness.toStringAsFixed(1),
+                style: TextStyle(color: Colors.white70),
+              ),
             ],
           ),
           SizedBox(height: 8),

@@ -50,6 +50,12 @@ flutter:
   assets:
     - assets/
   fonts:
+    - family: VT323
+      fonts:
+        - asset: fonts/VT323/VT323-Regular.ttf
+    - family: Inter
+      fonts:
+        - asset: fonts/Inter/Inter-Variable.ttf
     - family: Open Sans
       fonts:
         - asset: fonts/Open Sans/OpenSans-Regular.ttf

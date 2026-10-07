@@ -20,3 +20,7 @@ Eliminare Path.combine da input e rendering gomma; cancellare con maschera alpha
 ## Dipendenze richieste - 2026-10-06
 Status: FINALIZED
 Aggiornare solo archive4.3.0, file_picker13.1.0, google_fonts8.2.1, pdf3.13.1, xml7.0.1 nei constraint diretti. Mantenere intl/material_ui/vector_math. Verificare path nullable, nodi XML mancanti, font e manifest. Eseguire pub get e analyze, nessun upgrade globale o build.
+
+## Estetica Pomodoro - 2026-10-07
+Status: FINALIZED
+Uniformare libreria, navigazione, toolbar e menu al Pomodoro con superfici opache, bordi sottili e forme continue. Conservare personalizzazione e funzioni. Eliminare blur sul canvas, isolare repaint timer e verificare layout e interazioni.

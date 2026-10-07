@@ -1,3 +1,4 @@
+import 'package:xournalpp/src/app_appearance.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -66,7 +67,10 @@ class _WorkspacePageState extends State<WorkspacePage> {
           : await XppFile.open(
               (_) {},
               (_) => FilePickerCross.importFromStorage(
-                  type: FileTypeCross.custom, fileExtension: 'pdf'));
+                type: FileTypeCross.custom,
+                fileExtension: 'pdf',
+              ),
+            );
       if (!mounted || file == null || _allowPop) return;
       _ws.addDocument(file);
       _ws.setPrimary(_ws.documents.indexOf(file));
@@ -74,7 +78,8 @@ class _WorkspacePageState extends State<WorkspacePage> {
       // The compatibility picker reports cancellation as this sentinel.
       if (mounted && error != 'No file selected.') {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Impossibile aprire il file: $error')));
+          SnackBar(content: Text('Impossibile aprire il file: $error')),
+        );
       }
     } finally {
       if (mounted) setState(() => _openingFile = false);
@@ -93,7 +98,8 @@ class _WorkspacePageState extends State<WorkspacePage> {
     if (_checkingClose ||
         _allowPop ||
         index < 0 ||
-        index >= _ws.documents.length) return;
+        index >= _ws.documents.length)
+      return;
     if (_ws.documents.length <= 1) {
       await _exitWorkspace();
       return;
@@ -101,8 +107,10 @@ class _WorkspacePageState extends State<WorkspacePage> {
     _checkingClose = true;
     try {
       final XppFile f = _ws.documents[index];
-      final bool canClose =
-          await confirmDocumentClose(context, _ws.controllerFor(f));
+      final bool canClose = await confirmDocumentClose(
+        context,
+        _ws.controllerFor(f),
+      );
       if (!canClose || !mounted) return;
       canvasKeys.remove(f);
       _zoomControllers.remove(f)?.dispose();
@@ -117,9 +125,11 @@ class _WorkspacePageState extends State<WorkspacePage> {
     if (_checkingClose || _allowPop) return;
     _checkingClose = true;
     try {
-      final allowed = !checkDocuments ||
+      final allowed =
+          !checkDocuments ||
           await _ws.confirmCloseAll(
-              (controller) => confirmDocumentClose(context, controller));
+            (controller) => confirmDocumentClose(context, controller),
+          );
       if (!allowed || !mounted) return;
       setState(() => _allowPop = true);
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -146,7 +156,8 @@ class _WorkspacePageState extends State<WorkspacePage> {
       child: Consumer<WorkspaceController>(
         builder: (context, ws, _) {
           // Indice secondario valido solo se diverso dal primario (evita doppia GlobalKey).
-          final int? secIdx = (ws.secondaryIndex != null &&
+          final int? secIdx =
+              (ws.secondaryIndex != null &&
                   ws.secondaryIndex! != ws.primaryIndex &&
                   ws.secondaryIndex! >= 0 &&
                   ws.secondaryIndex! < ws.documents.length)
@@ -180,12 +191,18 @@ class _WorkspacePageState extends State<WorkspacePage> {
                         child: canSplit
                             ? SplitScreenView(
                                 primaryWidget: _buildPanel(
-                                    ws.primaryIndex, WorkspacePanel.primary),
+                                  ws.primaryIndex,
+                                  WorkspacePanel.primary,
+                                ),
                                 secondaryWidget: _buildPanel(
-                                    secIdx, WorkspacePanel.secondary),
+                                  secIdx,
+                                  WorkspacePanel.secondary,
+                                ),
                               )
                             : _buildPanel(
-                                ws.primaryIndex, WorkspacePanel.primary),
+                                ws.primaryIndex,
+                                WorkspacePanel.primary,
+                              ),
                       ),
                     ],
                   ),
@@ -212,10 +229,14 @@ class _WorkspacePageState extends State<WorkspacePage> {
             final Size screen = MediaQuery.of(context).size;
             setState(() {
               _pomodoroPos = Offset(
-                (_pomodoroPos.dx - details.delta.dx)
-                    .clamp(0.0, screen.width - 260),
-                (_pomodoroPos.dy + details.delta.dy)
-                    .clamp(0.0, screen.height - 220),
+                (_pomodoroPos.dx - details.delta.dx).clamp(
+                  0.0,
+                  screen.width - 260,
+                ),
+                (_pomodoroPos.dy + details.delta.dy).clamp(
+                  0.0,
+                  screen.height - 220,
+                ),
               );
             });
           },
@@ -223,10 +244,15 @@ class _WorkspacePageState extends State<WorkspacePage> {
             onClose: () => setState(() => _showPomodoro = false),
             onPhaseComplete: (finished, next) {
               if (!mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(finished == PomodoroPhase.work
-                      ? "Sessione finita! Tempo di pausa."
-                      : "Pausa finita! Si torna a lavorare.")));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    finished == PomodoroPhase.work
+                        ? "Sessione finita! Tempo di pausa."
+                        : "Pausa finita! Si torna a lavorare.",
+                  ),
+                ),
+              );
             },
           ),
         ),
@@ -241,10 +267,7 @@ class _WorkspacePageState extends State<WorkspacePage> {
       height: 50,
       child: Row(
         children: [
-          IconButton(
-            icon: Icon(icons.back),
-            onPressed: _exitWorkspace,
-          ),
+          IconButton(icon: Icon(icons.back), onPressed: _exitWorkspace),
           Expanded(
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
@@ -258,11 +281,16 @@ class _WorkspacePageState extends State<WorkspacePage> {
                     margin: const EdgeInsets.only(right: 2),
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     decoration: BoxDecoration(
-                      color: active
-                          ? cs.surfaceContainerHighest.withOpacity(0.9)
-                          : Colors.transparent,
-                      borderRadius:
-                          const BorderRadius.vertical(top: Radius.circular(12)),
+                      color: active ? AppAppearance.raised : Colors.transparent,
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(20),
+                      ),
+                      border: Border(
+                        bottom: BorderSide(
+                          color: active ? cs.primary : AppAppearance.border,
+                          width: active ? 2 : 1,
+                        ),
+                      ),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -275,9 +303,10 @@ class _WorkspacePageState extends State<WorkspacePage> {
                             style: TextStyle(
                               color: active
                                   ? cs.onSurface
-                                  : Colors.grey.withOpacity(0.5),
-                              fontWeight:
-                                  active ? FontWeight.bold : FontWeight.normal,
+                                  : cs.onSurfaceVariant,
+                              fontWeight: active
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
                             ),
                           ),
                         ),
@@ -318,10 +347,13 @@ class _WorkspacePageState extends State<WorkspacePage> {
     return CanvasPage(
       key: _keyFor(file),
       file: file,
-      zoomController:
-          _zoomControllers.putIfAbsent(file, TransformationController.new),
-      controller: _ws
-          .controllerFor(file), // controller posseduto dal WorkspaceController
+      zoomController: _zoomControllers.putIfAbsent(
+        file,
+        TransformationController.new,
+      ),
+      controller: _ws.controllerFor(
+        file,
+      ), // controller posseduto dal WorkspaceController
       showInternalToolbar: false, // la toolbar e' unica e globale
       onFocus: () =>
           _ws.focus(panel), // tocco -> questo pannello prende il focus

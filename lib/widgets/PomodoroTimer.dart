@@ -1,5 +1,8 @@
+import 'package:xournalpp/src/app_appearance.dart';
+
 import 'dart:async';
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -25,10 +28,10 @@ enum PomodoroPhase { work, shortBreak, longBreak }
 class PomodoroTimer extends StatefulWidget {
   final VoidCallback? onClose;
   final void Function(PomodoroPhase finished, PomodoroPhase next)?
-      onPhaseComplete;
+  onPhaseComplete;
 
   const PomodoroTimer({Key? key, this.onClose, this.onPhaseComplete})
-      : super(key: key);
+    : super(key: key);
 
   @override
   State<PomodoroTimer> createState() => _PomodoroTimerState();
@@ -92,6 +95,7 @@ class _PomodoroTimerState extends State<PomodoroTimer>
   Future<void> _loadSettings() async {
     try {
       final prefs = await SharedPreferences.getInstance();
+      if (!mounted) return;
       setState(() {
         workMinutes = prefs.getInt(_kWork) ?? workMinutes;
         shortBreakMinutes = prefs.getInt(_kShort) ?? shortBreakMinutes;
@@ -221,7 +225,7 @@ class _PomodoroTimerState extends State<PomodoroTimer>
   Color get _accent {
     switch (_phase) {
       case PomodoroPhase.work:
-        return const Color(0xFFD71921); // rosso firma Nothing
+        return Theme.of(context).colorScheme.primary; // accento globale
       case PomodoroPhase.shortBreak:
         return const Color(0xFF26A69A);
       case PomodoroPhase.longBreak:
@@ -232,8 +236,9 @@ class _PomodoroTimerState extends State<PomodoroTimer>
   @override
   Widget build(BuildContext context) {
     final total = _phaseDuration(_phase).inSeconds;
-    final progress =
-        total == 0 ? 0.0 : (1 - (_remaining.inSeconds / total)).clamp(0.0, 1.0);
+    final progress = total == 0
+        ? 0.0
+        : (1 - (_remaining.inSeconds / total)).clamp(0.0, 1.0);
     final accent = _accent;
     final icons = context.watch<ThemeController>().icons;
 
@@ -244,173 +249,208 @@ class _PomodoroTimerState extends State<PomodoroTimer>
 
     final TextStyle timeStyle =
         (Theme.of(context).textTheme.displaySmall ?? const TextStyle())
-            .copyWith(
-      color: Colors.white,
-      fontSize: 38,
-    );
+            .copyWith(color: Colors.white, fontSize: 38);
 
-    return Material(
-      color: Colors.transparent,
-      child: Container(
-        width: 252,
-        padding: const EdgeInsets.all(16),
-        decoration: ShapeDecoration(
-          color: const Color(0xF0101010),
-          shape: ContinuousRectangleBorder(
-            borderRadius: BorderRadius.circular(40),
-            side: BorderSide(color: Colors.white.withOpacity(0.1), width: 1),
+    return RepaintBoundary(
+      child: Material(
+        color: Colors.transparent,
+        child: Container(
+          width: 252,
+          padding: const EdgeInsets.all(16),
+          decoration: const ShapeDecoration(
+            color: AppAppearance.panel,
+            shape: AppAppearance.panelShape,
           ),
-          shadows: const [
-            BoxShadow(
-                color: Colors.black45,
-                blurRadius: 14,
-                spreadRadius: 2,
-                offset: Offset(0, 5)),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration:
-                      BoxDecoration(shape: BoxShape.circle, color: accent),
-                ),
-                const SizedBox(width: 8),
-                const Expanded(
-                  child: Text('POMODORO',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 2,
-                          fontSize: 12)),
-                ),
-                InkWell(
-                  onTap: () => setState(() => _showSettings = !_showSettings),
-                  child: Icon(icons.tune,
-                      color: _showSettings ? accent : Colors.white70, size: 18),
-                ),
-                const SizedBox(width: 12),
-                InkWell(
-                  onTap: widget.onClose,
-                  child: Icon(icons.close, color: Colors.white70, size: 18),
-                ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Center(
-              child: Text(_phaseLabel,
-                  style: TextStyle(
-                      color: accent,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 1.5,
-                      fontSize: 11)),
-            ),
-            const SizedBox(height: 10),
-            Center(
-              child: Stack(
-                alignment: Alignment.center,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
                 children: [
-                  SizedBox(
-                    height: 118,
-                    width: 118,
-                    child: CustomPaint(
-                      painter: _DotRingPainter(
-                        progress: progress,
-                        accent: accent,
-                        base: Colors.white12,
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: accent,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Expanded(
+                    child: Text(
+                      'POMODORO',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2,
+                        fontSize: 12,
                       ),
                     ),
                   ),
-                  Text(_timeString, style: timeStyle),
+                  InkWell(
+                    onTap: () => setState(() => _showSettings = !_showSettings),
+                    child: Icon(
+                      icons.tune,
+                      color: _showSettings ? accent : Colors.white70,
+                      size: 18,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  InkWell(
+                    onTap: widget.onClose,
+                    child: Icon(icons.close, color: Colors.white70, size: 18),
+                  ),
                 ],
               ),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(cyclesBeforeLongBreak, (i) {
-                final done = i < filledDots;
-                return Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 3),
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: done ? accent : Colors.white24),
-                );
-              }),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _circleButton(
-                    icon: _running ? icons.pause : icons.play,
+              const SizedBox(height: 6),
+              Center(
+                child: Text(
+                  _phaseLabel,
+                  style: TextStyle(
                     color: accent,
-                    onTap: _running ? _pause : _start),
-                _circleButton(
-                    icon: icons.reset, color: Colors.white24, onTap: _reset),
-                _circleButton(
-                    icon: icons.skip,
-                    color: Colors.white24,
-                    onTap: () => _completePhase(manual: true)),
-              ],
-            ),
-            if (_showSettings) ...[
-              const SizedBox(height: 12),
-              Divider(color: Colors.grey.shade800),
-              _durationRow('Lavoro', workMinutes, (v) {
-                setState(() => workMinutes = v);
-                _applyDurations();
-              }, min: 1, max: 90),
-              _durationRow('Pausa breve', shortBreakMinutes, (v) {
-                setState(() => shortBreakMinutes = v);
-                _applyDurations();
-              }, min: 1, max: 30),
-              _durationRow('Pausa lunga', longBreakMinutes, (v) {
-                setState(() => longBreakMinutes = v);
-                _applyDurations();
-              }, min: 1, max: 60),
-              _durationRow('Cicli', cyclesBeforeLongBreak, (v) {
-                setState(() => cyclesBeforeLongBreak = v);
-                _persistSettings();
-              }, min: 1, max: 8, suffix: ''),
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Row(
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 1.5,
+                    fontSize: 11,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Center(
+                child: Stack(
+                  alignment: Alignment.center,
                   children: [
-                    const Expanded(
-                      child: Text('Avvio automatico',
-                          style:
-                              TextStyle(color: Colors.white70, fontSize: 13)),
+                    SizedBox(
+                      height: 118,
+                      width: 118,
+                      child: RepaintBoundary(
+                        child: CustomPaint(
+                          painter: _DotRingPainter(
+                            progress: progress,
+                            accent: accent,
+                            base: Colors.white12,
+                          ),
+                        ),
+                      ),
                     ),
-                    Switch(
-                      value: autoStartNext,
-                      activeColor: accent,
-                      onChanged: (v) {
-                        setState(() => autoStartNext = v);
-                        _persistSettings();
-                      },
-                    ),
+                    Text(_timeString, style: timeStyle),
                   ],
                 ),
               ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(cyclesBeforeLongBreak, (i) {
+                  final done = i < filledDots;
+                  return Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: done ? accent : Colors.white24,
+                    ),
+                  );
+                }),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _circleButton(
+                    icon: _running ? icons.pause : icons.play,
+                    color: accent,
+                    onTap: _running ? _pause : _start,
+                  ),
+                  _circleButton(
+                    icon: icons.reset,
+                    color: Colors.white24,
+                    onTap: _reset,
+                  ),
+                  _circleButton(
+                    icon: icons.skip,
+                    color: Colors.white24,
+                    onTap: () => _completePhase(manual: true),
+                  ),
+                ],
+              ),
+              if (_showSettings) ...[
+                const SizedBox(height: 12),
+                Divider(color: Colors.grey.shade800),
+                _durationRow(
+                  'Lavoro',
+                  workMinutes,
+                  (v) {
+                    setState(() => workMinutes = v);
+                    _applyDurations();
+                  },
+                  min: 1,
+                  max: 90,
+                ),
+                _durationRow(
+                  'Pausa breve',
+                  shortBreakMinutes,
+                  (v) {
+                    setState(() => shortBreakMinutes = v);
+                    _applyDurations();
+                  },
+                  min: 1,
+                  max: 30,
+                ),
+                _durationRow(
+                  'Pausa lunga',
+                  longBreakMinutes,
+                  (v) {
+                    setState(() => longBreakMinutes = v);
+                    _applyDurations();
+                  },
+                  min: 1,
+                  max: 60,
+                ),
+                _durationRow(
+                  'Cicli',
+                  cyclesBeforeLongBreak,
+                  (v) {
+                    setState(() => cyclesBeforeLongBreak = v);
+                    _persistSettings();
+                  },
+                  min: 1,
+                  max: 8,
+                  suffix: '',
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Row(
+                    children: [
+                      const Expanded(
+                        child: Text(
+                          'Avvio automatico',
+                          style: TextStyle(color: Colors.white70, fontSize: 13),
+                        ),
+                      ),
+                      Switch(
+                        value: autoStartNext,
+                        activeColor: accent,
+                        onChanged: (v) {
+                          setState(() => autoStartNext = v);
+                          _persistSettings();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _circleButton(
-      {required IconData icon,
-      required Color color,
-      required VoidCallback onTap}) {
+  Widget _circleButton({
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
     return Material(
       color: color,
       shape: const CircleBorder(),
@@ -418,36 +458,54 @@ class _PomodoroTimerState extends State<PomodoroTimer>
         customBorder: const CircleBorder(),
         onTap: onTap,
         child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Icon(icon, color: Colors.white, size: 22)),
+          padding: const EdgeInsets.all(10),
+          child: Icon(icon, color: Colors.white, size: 22),
+        ),
       ),
     );
   }
 
-  Widget _durationRow(String label, int value, ValueChanged<int> onChanged,
-      {required int min, required int max, String suffix = ' min'}) {
+  Widget _durationRow(
+    String label,
+    int value,
+    ValueChanged<int> onChanged, {
+    required int min,
+    required int max,
+    String suffix = ' min',
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
           Expanded(
-              child: Text(label,
-                  style: const TextStyle(color: Colors.white70, fontSize: 13))),
+            child: Text(
+              label,
+              style: const TextStyle(color: Colors.white70, fontSize: 13),
+            ),
+          ),
           InkWell(
             onTap: value > min ? () => onChanged(value - 1) : null,
-            child: Icon(Icons.remove_circle_outline,
-                color: value > min ? Colors.white : Colors.white24, size: 20),
+            child: Icon(
+              Icons.remove_circle_outline,
+              color: value > min ? Colors.white : Colors.white24,
+              size: 20,
+            ),
           ),
           Container(
             width: 46,
             alignment: Alignment.center,
-            child: Text('$value$suffix',
-                style: const TextStyle(color: Colors.white, fontSize: 13)),
+            child: Text(
+              '$value$suffix',
+              style: const TextStyle(color: Colors.white, fontSize: 13),
+            ),
           ),
           InkWell(
             onTap: value < max ? () => onChanged(value + 1) : null,
-            child: Icon(Icons.add_circle_outline,
-                color: value < max ? Colors.white : Colors.white24, size: 20),
+            child: Icon(
+              Icons.add_circle_outline,
+              color: value < max ? Colors.white : Colors.white24,
+              size: 20,
+            ),
           ),
         ],
       ),
@@ -461,8 +519,11 @@ class _DotRingPainter extends CustomPainter {
   final Color accent;
   final Color base;
 
-  _DotRingPainter(
-      {required this.progress, required this.accent, required this.base});
+  _DotRingPainter({
+    required this.progress,
+    required this.accent,
+    required this.base,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -471,18 +532,21 @@ class _DotRingPainter extends CustomPainter {
     final radius = math.min(size.width, size.height) / 2 - 4;
     final int lit = (progress * dots).round();
 
+    final paint = Paint();
     for (int i = 0; i < dots; i++) {
       // Si parte dall'alto (ore 12) e si gira in senso orario.
       final angle = -math.pi / 2 + 2 * math.pi * i / dots;
       final pos =
           center + Offset(radius * math.cos(angle), radius * math.sin(angle));
       final bool on = i < lit;
-      final paint = Paint()..color = on ? accent : base;
+      paint.color = on ? accent : base;
       canvas.drawCircle(pos, on ? 2.6 : 1.8, paint);
     }
   }
 
   @override
   bool shouldRepaint(covariant _DotRingPainter old) =>
-      old.progress != progress || old.accent != accent;
+      (old.progress * 48).round() != (progress * 48).round() ||
+      old.accent != accent ||
+      old.base != base;
 }
