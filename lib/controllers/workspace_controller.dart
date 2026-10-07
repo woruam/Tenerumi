@@ -87,7 +87,9 @@ class WorkspaceController extends ChangeNotifier {
     Future<bool> Function(CanvasController) confirm,
   ) async {
     for (final file in List<XppFile>.of(documents)) {
-      if (!await confirm(controllerFor(file))) return false;
+      final controller = controllerFor(file);
+      await controller.audio.stop();
+      if (!await confirm(controller)) return false;
     }
     return true;
   }
@@ -173,6 +175,7 @@ class WorkspaceController extends ChangeNotifier {
       c.dispose();
     }
     _controllers.clear();
+    clipboard.clear();
     super.dispose();
   }
 }

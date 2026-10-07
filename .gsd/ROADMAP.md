@@ -32,3 +32,11 @@ Singola fase: cinque constraint, controlli API/null safety, pub get, analyze e c
 3. Test di creazione, salvataggio, riapertura, filtri e screenshot.
 
 Tag e identita OSI: implementazione e verifica completate (138 test e screenshot).
+
+## Audio sincronizzato
+1. Metadati immutabili e persistenza XOPP.
+2. Backend Android e coordinamento lifecycle; associazione input e playback.
+3. Pannello audio e overlay isolato.
+4. Regressioni, prova visiva e audit risorse; commit.
+
+Audio sincronizzato: completate le fasi 1–4; 147 test, Kotlin Android, analyze e prova visiva verificati. Profilazione hardware e prova microfono reale restano manuali, come documentato nell’audit.

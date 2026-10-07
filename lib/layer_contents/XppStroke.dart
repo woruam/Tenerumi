@@ -1,3 +1,5 @@
+import 'package:xournalpp/src/note_audio.dart';
+
 import 'dart:collection';
 import 'dart:math' as math;
 
@@ -21,6 +23,7 @@ abstract class XppStroke extends XppContent {
   List<XppStrokePoint>? points;
   Color? color;
   EditingTool? editingTool;
+  StrokeAudioLink? audioLink;
   bool isShape = false; // forma geometrica: linea netta a spessore uniforme
   bool smooth =
       false; // forma curva (cerchio/ellisse): render con curva Bezier liscia
@@ -256,6 +259,7 @@ abstract class XppStroke extends XppContent {
       XmlName('stroke'),
       [
         XmlAttribute(XmlName('tool'), toolString),
+        ...?audioLink?.attributes,
         XmlAttribute(XmlName('color'), color!.toHexTriplet()),
         if (isShape) XmlAttribute(XmlName('osipp-shape'), 'true'),
         if (smooth) XmlAttribute(XmlName('osipp-smooth'), 'true'),
@@ -303,6 +307,7 @@ abstract class XppStroke extends XppContent {
       cuts.add(cut);
     }
     final replacement = newStroke(color: color, points: points)
+      ..audioLink = audioLink
       ..isShape = isShape
       ..smooth = smooth
       ..editingTool = editingTool

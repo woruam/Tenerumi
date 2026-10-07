@@ -1,3 +1,5 @@
+import 'audio_timeline_overlay.dart';
+
 import 'dart:math' as math;
 
 import 'package:flutter/gestures.dart';
@@ -105,6 +107,8 @@ class _InfiniteCanvasState extends State<InfiniteCanvas> {
                     child: CanvasTouchScope(
                       session: _touch,
                       child: PointerListener(
+                        audio: ctrl.audio,
+                        onListenAt: (p) => ctrl.listenAt(0, p),
                         key: ObjectKey(ctrl.activeLayer(0)),
                         readOnly: !ctrl.canEditLayer(0),
                         canvasOrigin: origin,
@@ -137,9 +141,24 @@ class _InfiniteCanvasState extends State<InfiniteCanvas> {
                         onEraserStart: ctrl.beginEraserGesture,
                         onEraserEnd: ctrl.endEraserGesture,
                         onToolChanged: ctrl.setTool,
-                        child: CustomPaint(
-                          size: size,
-                          painter: _InfinitePainter(ctrl, origin, _geometry),
+                        child: Stack(
+                          children: [
+                            CustomPaint(
+                              size: size,
+                              painter: _InfinitePainter(
+                                ctrl,
+                                origin,
+                                _geometry,
+                              ),
+                            ),
+                            Positioned.fill(
+                              child: AudioTimelineOverlay(
+                                page: ctrl.file!.pages![0],
+                                audio: ctrl.audio,
+                                origin: origin,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),

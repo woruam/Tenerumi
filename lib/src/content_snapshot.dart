@@ -16,6 +16,7 @@ XppContent cloneContent(XppContent content) {
             )
             .toList(),
       )
+      ..audioLink = content.audioLink
       ..editingTool = content.editingTool
       ..isShape = content.isShape
       ..smooth = content.smooth

@@ -6,6 +6,8 @@ Future<bool> confirmDocumentClose(
   BuildContext context,
   CanvasController controller,
 ) async {
+  await controller.audio.stop();
+  if (!context.mounted) return false;
   if (!controller.hasUnsavedChanges) return true;
   final choice = await showDialog<String>(
     context: context,

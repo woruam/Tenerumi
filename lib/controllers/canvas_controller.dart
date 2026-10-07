@@ -1,5 +1,9 @@
 import 'dart:async';
 
+import 'note_audio_controller.dart';
+
+import 'package:xournalpp/src/note_audio.dart';
+
 import 'package:xournalpp/src/autosave_store.dart';
 import 'package:xournalpp/src/recent_documents.dart';
 
@@ -73,6 +77,35 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   Future<String?> _exportDocument(FilePickerCross data) =>
       documentExporter?.call(data) ?? data.exportToStorage();
   XppFile? file;
+  late final NoteAudioController audio = NoteAudioController(
+    file!,
+    onModeChanged: notifyListeners,
+    onDocumentChanged: () {
+      if (_disposed) {
+        _hasUnsavedChanges = true;
+        _revision++;
+      } else {
+        hasUnsavedChanges = true;
+        notifyListeners();
+      }
+    },
+  );
+  void listenAt(int page, Offset position) {
+    for (final layer in file!.pages![page].layers!.reversed) {
+      if (!layer.visible) continue;
+      for (final stroke
+          in (layer.content ?? []).whereType<XppStroke>().toList().reversed) {
+        final link = stroke.audioLink;
+        if (link != null &&
+            !stroke.erasures.any((cut) => cut.contains(position)) &&
+            (stroke.containsVisibleInk(position) ||
+                stroke.shouldSelectAt(coordinates: position))) {
+          unawaited(audio.play(link.recordingId, position: link.startMs));
+          return;
+        }
+      }
+    }
+  }
 
   Color penColor = Colors.black;
   double penWidth = 2.5;
@@ -186,7 +219,9 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state != AppLifecycleState.resumed) {
+    if (state == AppLifecycleState.paused) {
+      unawaited(audio.suspend().then((_) => flushAutosave()));
+    } else if (state != AppLifecycleState.resumed) {
       unawaited(flushAutosave());
     }
   }
@@ -315,6 +350,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
 
     SharedPreferences.getInstance()
         .then((prefs) {
+          if (_disposed) return;
           final enabled = prefs.getBool(PreferencesKeys.kShapeRecognition);
           if (enabled != null) shapeRecognition = enabled;
           touchDrawingEnabled =
@@ -351,7 +387,11 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   void dispose() {
     _eraserBounds.clear();
     WidgetsBinding.instance.removeObserver(this);
-    unawaited(flushAutosave());
+    if (file != null) {
+      unawaited(
+        audio.stop().then((_) => flushAutosave()).whenComplete(audio.dispose),
+      );
+    }
     _disposed = true;
     _pdfEpoch++;
     _pdfSources.clear();
@@ -751,10 +791,12 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
 
   Future<bool> _saveFile(BuildContext context, {bool saveAs = false}) async {
     if (savingFile || file == null) return false;
-    final savedRevision = _revision;
     savingFile = true;
     notifyListeners();
     try {
+      if (audio.recording || audio.busy) await audio.stop();
+      if (!context.mounted || _disposed) return false;
+      final savedRevision = _revision;
       final document = file!;
       if (_autosaveQueue != null) await _autosaveQueue;
       // Make existing native PDF references portable on the next save.
@@ -963,6 +1005,19 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   List<XppContent> pasteSelection(int pageIndex, Offset position) {
     if (!canEditLayer(pageIndex)) return [];
     final pasted = clipboard.pasteAt(position);
+    var bytes = audio.totalBytes;
+    for (final stroke in pasted.whereType<XppStroke>()) {
+      final id = stroke.audioLink?.recordingId;
+      if (id == null || file!.recordings.containsKey(id)) continue;
+      final recording = clipboard.recordings[id];
+      if (recording != null &&
+          bytes + recording.bytes.length <= maxAudioBytes) {
+        file!.recordings[id] = recording;
+        bytes += recording.bytes.length;
+      } else {
+        stroke.audioLink = null;
+      }
+    }
     if (pasted.isEmpty) return pasted;
     saveSnapshot(pageIndex);
     final layer = activeLayer(pageIndex);
@@ -1108,6 +1163,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   void setTool(EditingTool t) {
+    if (audio.listenMode) audio.setListenMode(false);
     toolData = Map.from(toolData);
     toolData[PointerDeviceKind.touch] = touchDrawingEnabled
         ? t

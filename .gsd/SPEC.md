@@ -32,3 +32,7 @@ Riprodurre e correggere schede e area home grigie dopo salvataggio, apertura doc
 ## Tag e identita OSI - 2026-10-08
 Status: FINALIZED
 Scelta tag nella creazione note, tag personalizzati persistiti e riassegnazione delle note esistenti. Tag conservati in snapshot/salvataggi e filtri home. Rinominare superfici pubbliche e label Android/Web in OSI senza cambiare applicationId o storage. Versione 0.5 (pacchetto 0.5.0+31) e Info app funzionante con versione, build e descrizione. Verificare regressioni, persistenza e layout telefono.
+
+## Audio sincronizzato - 2026-10-08
+Status: FINALIZED
+Registrazione Android su azione esplicita, audio portabile negli appunti, tempi per tratto, ascolto interno con evidenziazione e seek dal tratto. Preservare input e strumenti, undo/redo, snapshot e autosave. Limiti memoria, arresto in background, rilascio risorse, test e audit documentati.

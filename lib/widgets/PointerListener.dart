@@ -1,4 +1,8 @@
 import 'dart:async';
+
+import 'package:xournalpp/controllers/note_audio_controller.dart';
+import 'package:xournalpp/src/note_audio.dart';
+
 import 'dart:math';
 import 'dart:ui';
 
@@ -16,6 +20,8 @@ import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
 import 'package:xournalpp/widgets/ZoomableWidget.dart';
 
 class PointerListener extends StatefulWidget {
+  final NoteAudioController? audio;
+  final void Function(Offset)? onListenAt;
   final bool readOnly;
   final Offset canvasOrigin;
   final Function(XppContent?)? onNewContent;
@@ -53,6 +59,8 @@ class PointerListener extends StatefulWidget {
   const PointerListener({
     Key? key,
     this.readOnly = false,
+    this.audio,
+    this.onListenAt,
     this.canvasOrigin = Offset.zero,
     this.onNewContent,
     this.child,
@@ -101,6 +109,8 @@ class PointerListenerState extends State<PointerListener> {
   }
 
   bool drawingEnabled = true;
+  AudioInput? _audioInput;
+  StrokeAudioLink? _audioLink;
   List<XppStrokePoint> points = [];
   final _InkPreview _inkPreview = _InkPreview();
   XppStrokeTool tool = XppStrokeTool.PEN;
@@ -475,7 +485,11 @@ class PointerListenerState extends State<PointerListener> {
                   onPressed: widget.clipboard == null
                       ? null
                       : () {
-                          if (widget.clipboard!.copy(_selectedContent)) {
+                          if (widget.clipboard!.copy(
+                            _selectedContent,
+                            audio:
+                                widget.audio?.document.recordings ?? const {},
+                          )) {
                             ScaffoldMessenger.maybeOf(context)?.showSnackBar(
                               const SnackBar(
                                 content: Text(
@@ -581,6 +595,12 @@ class PointerListenerState extends State<PointerListener> {
     } else if (_drawingPointer != null) {
       return;
     }
+    if (widget.audio?.listenMode == true) {
+      if (data.kind != PointerDeviceKind.invertedStylus &&
+          (data.buttons & (kPrimaryStylusButton | kSecondaryStylusButton)) == 0)
+        widget.onListenAt?.call(_canvasPoint(data));
+      return;
+    }
     _drawingPointer = data.pointer;
     _selectionMutationStarted = false;
     if (_pastePosition != null) {
@@ -649,6 +669,7 @@ class PointerListenerState extends State<PointerListener> {
       _editText(_canvasPoint(data));
     } else if (currentTool == XppStrokeTool.PEN ||
         currentTool == XppStrokeTool.HIGHLIGHTER) {
+      _audioInput = widget.audio?.beginInput();
       _addDrawingPoint(data, currentTool);
     }
   }
@@ -770,6 +791,7 @@ class PointerListenerState extends State<PointerListener> {
     final currentTool = _strokeTool ?? getToolFromPointer(data);
     if (!poppedContentForCurrentPointer &&
         currentTool != XppStrokeTool.ERASER) {
+      _audioLink = widget.audio?.endInput(_audioInput, points.length);
       saveStroke(currentTool);
     }
     if (currentTool == XppStrokeTool.ERASER) {
@@ -838,6 +860,7 @@ class PointerListenerState extends State<PointerListener> {
       width: dynamicThickness,
     );
     points.add(point);
+    widget.audio?.sampleInput(_audioInput);
     _inkPreview.append(
       point,
       pressureSensitive: currentTool == XppStrokeTool.PEN,
@@ -938,9 +961,22 @@ class PointerListenerState extends State<PointerListener> {
   }
 
   void clearPoints() {
+    _audioInput = null;
+    _audioLink = null;
     _lastEraserPosition = null;
     points.clear();
     _inkPreview.clear();
+  }
+
+  void _emitAudioStroke(XppStroke stroke) {
+    final link = _audioLink;
+    if (link != null) {
+      stroke.audioLink =
+          !stroke.isShape && link.samples.length == stroke.points!.length
+          ? link
+          : StrokeAudioLink(link.recordingId, link.startMs, link.endMs);
+    }
+    widget.onNewContent?.call(stroke);
   }
 
   void saveStroke(XppStrokeTool currentTool) {
@@ -1030,7 +1066,7 @@ class PointerListenerState extends State<PointerListener> {
           renderAsShape = true;
         }
       }
-      widget.onNewContent!(
+      _emitAudioStroke(
         XppStroke.byTool(
           tool: currentTool,
           points: strokePoints,
@@ -1060,7 +1096,7 @@ class PointerListenerState extends State<PointerListener> {
       final Offset a = start + dir * d;
       final Offset b =
           start + dir * (d + dashLen > total ? total : d + dashLen);
-      widget.onNewContent!(
+      _emitAudioStroke(
         XppStroke.byTool(
           tool: currentTool,
           points: [
@@ -1096,7 +1132,7 @@ class PointerListenerState extends State<PointerListener> {
     bool smooth = false,
   }) {
     if (pts.length < 2) return;
-    widget.onNewContent!(
+    _emitAudioStroke(
       XppStroke.byTool(
         tool: currentTool,
         points: pts

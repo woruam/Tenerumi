@@ -1,4 +1,7 @@
 import 'dart:convert';
+
+import 'note_audio.dart';
+
 import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:ui';
@@ -39,13 +42,15 @@ class XppFile {
     this.tag,
     String? documentId,
     Map<String, Uint8List>? pdfAttachments,
+    Map<String, NoteRecording>? recordings,
   }) : documentId =
            (documentId != null &&
                    RegExp(r'^[a-zA-Z0-9_-]{1,100}$').hasMatch(documentId)
                ? documentId
                : null) ??
            '${DateTime.now().microsecondsSinceEpoch}-${math.Random.secure().nextInt(1 << 32)}',
-       pdfAttachments = pdfAttachments ?? {};
+       pdfAttachments = pdfAttachments ?? {},
+       recordings = recordings ?? {};
   final String documentId;
   bool recovered = false;
   DateTime? modifiedAt;
@@ -393,6 +398,10 @@ class XppFile {
                   isShape: strokeElement.getAttribute('osipp-shape') == 'true',
                   smooth: strokeElement.getAttribute('osipp-smooth') == 'true',
                 )
+                ..audioLink = StrokeAudioLink.decode(
+                  strokeElement,
+                  points.length,
+                )
                 ..erasures = StrokeErasure.decode(
                   strokeElement.getAttribute('osipp-erasures'),
                 );
@@ -429,6 +438,9 @@ class XppFile {
       pages: pages,
       sourcePath: input['path'] as String?,
       pdfAttachments: attachments,
+      recordings: NoteRecording.decode(
+        documentTree.findElements('osipp-audio'),
+      ),
     );
   }
 
@@ -438,6 +450,7 @@ class XppFile {
   String? title;
   String? sourcePath;
   final Map<String, Uint8List> pdfAttachments;
+  final Map<String, NoteRecording> recordings;
 
   static String titleFromPath(String? path) {
     final normalized = (path ?? '').replaceAll('\\', '/');
@@ -488,6 +501,7 @@ class XppFile {
               ),
             ),
           )
+          ..addAll(recordings.values.map((e) => e.toXml()))
           ..addAll(pages!.map((e) => e.toXmlElement())),
       ),
     ]);
@@ -524,6 +538,7 @@ class XppFile {
       title: title,
       previewImage: previewImage,
       pdfAttachments: Map.of(pdfAttachments),
+      recordings: Map.of(recordings),
       pages: pages?.map((page) {
         final background = page.background;
         return XppPage(

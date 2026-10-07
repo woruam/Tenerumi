@@ -58,3 +58,6 @@ Riprodotta LocaleDataException nel DateFormat della data durante avvio reale. Pr
 
 ## OSI 0.5 e tag - 2026-10-08
 Scelta/creazione tag nel nuovo appunto, riassegnazione da scheda, catalogo persistito con migrazione legacy. Tag in modello, snapshot, .xopp e metadati recenti. Nome pubblico OSI (Android/Web/UI/export), applicationId e dati conservati. Versione 0.5.0+31, Info app condivisa con versione/build runtime, descrizione, credito/licenza. 138 test passati; screenshot telefono verificati; analisi senza errori/warning e diff check pulito. Prove/istruzioni in docs/validation/osi-tags-status.md. Nessun APK generato; richiede ricompilazione per il telefono.
+
+## Audio sincronizzato - 2026-10-08
+Implementati backend Android, audio portabile XOPP, associazioni per campione/tratto, pannello di ascolto e seek dalla penna. Snapshot/eraser/clipboard conservano link e bytes immutabili. Lifecycle finalizza prima di save/close, sospende in background e rilascia risorse; coda svuotata a riposo e preferenze ignorate dopo dispose. 147 regressioni passate, compilazione Kotlin riuscita, analyze senza errori/warning, screenshot docs/validation/audio-timeline-panel.png. Audit e prova hardware pendente descritti in docs/audio-notes.md. Nessun APK né push.

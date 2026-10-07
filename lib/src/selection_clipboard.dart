@@ -1,5 +1,9 @@
 import 'dart:ui';
 
+import 'note_audio.dart';
+
+import 'package:xournalpp/layer_contents/XppStroke.dart';
+
 import 'package:xournalpp/src/XppLayer.dart';
 import 'package:xournalpp/src/content_snapshot.dart';
 
@@ -8,10 +12,19 @@ import 'package:xournalpp/src/content_snapshot.dart';
 class SelectionClipboard {
   List<XppContent> _content = [];
   Offset _origin = Offset.zero;
+  final Map<String, NoteRecording> recordings = {};
+
+  void clear() {
+    _content.clear();
+    recordings.clear();
+  }
 
   bool get hasContent => _content.isNotEmpty;
 
-  bool copy(Iterable<XppContent> selection) {
+  bool copy(
+    Iterable<XppContent> selection, {
+    Map<String, NoteRecording> audio = const {},
+  }) {
     final copies = selection.map(cloneContent).toList();
     Rect? bounds;
     for (final content in copies) {
@@ -20,6 +33,11 @@ class SelectionClipboard {
       bounds = bounds == null ? rect : bounds.expandToInclude(rect);
     }
     if (copies.isEmpty || bounds == null) return false;
+    recordings.clear();
+    for (final stroke in copies.whereType<XppStroke>()) {
+      final id = stroke.audioLink?.recordingId;
+      if (id != null && audio.containsKey(id)) recordings[id] = audio[id]!;
+    }
     _content = copies;
     _origin = bounds.topLeft;
     return true;

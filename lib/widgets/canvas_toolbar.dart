@@ -1,3 +1,5 @@
+import 'note_audio_panel.dart';
+
 import 'package:xournalpp/src/app_appearance.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
@@ -179,6 +181,7 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: Row(
           children: [
+            NoteAudioButton(audio: ctrl.audio),
             IconButton(
               icon: Icon(icons.undo),
               tooltip: 'Annulla',

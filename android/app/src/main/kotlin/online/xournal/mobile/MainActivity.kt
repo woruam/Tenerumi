@@ -15,6 +15,7 @@ import io.flutter.plugin.common.MethodChannel
 class MainActivity: FlutterActivity() {
     private val CHANNEL = "online.xournal.mobile/pen"
     private var methodChannel: MethodChannel? = null
+    private var noteAudio: NoteAudio? = null
     private val displayManager by lazy { getSystemService(DisplayManager::class.java) }
     private val displayListener = object : DisplayManager.DisplayListener {
         override fun onDisplayAdded(displayId: Int) = requestHighRefreshRate()
@@ -26,11 +27,13 @@ class MainActivity: FlutterActivity() {
 
     override fun onResume() {
         super.onResume()
+        noteAudio?.resume()
         displayManager.registerDisplayListener(displayListener, Handler(Looper.getMainLooper()))
         window.decorView.post { requestHighRefreshRate() }
     }
 
     override fun onPause() {
+        noteAudio?.interrupt(leaving = true)
         displayManager.unregisterDisplayListener(displayListener)
         super.onPause()
     }
@@ -83,8 +86,18 @@ class MainActivity: FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         methodChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)
+        noteAudio = NoteAudio(this, flutterEngine.dartExecutor.binaryMessenger)
         DocumentStorage.register(flutterEngine.dartExecutor.binaryMessenger, contentResolver)
         PluginOcr.register(flutterEngine.dartExecutor.binaryMessenger)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (noteAudio?.permissionResult(requestCode, grantResults) != true) super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    override fun onDestroy() {
+        noteAudio?.close(); noteAudio = null
+        super.onDestroy()
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {

@@ -1,3 +1,5 @@
+import '../widgets/audio_timeline_overlay.dart';
+
 import 'package:xournalpp/src/app_appearance.dart';
 
 import 'dart:math';
@@ -312,6 +314,9 @@ class CanvasPageState extends State<CanvasPage> {
                                           .ratio,
                                       child: FittedBox(
                                         child: PointerListener(
+                                          audio: ctrl.audio,
+                                          onListenAt: (p) =>
+                                              ctrl.listenAt(pageIndex, p),
                                           key: ObjectKey(
                                             ctrl.activeLayer(pageIndex),
                                           ),
@@ -440,6 +445,14 @@ class CanvasPageState extends State<CanvasPage> {
                                                     page: ctrl
                                                         .file!
                                                         .pages![pageIndex],
+                                                  ),
+                                                  Positioned.fill(
+                                                    child: AudioTimelineOverlay(
+                                                      page: ctrl
+                                                          .file!
+                                                          .pages![pageIndex],
+                                                      audio: ctrl.audio,
+                                                    ),
                                                   ),
                                                 ],
                                               ),
