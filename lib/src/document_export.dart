@@ -7,6 +7,10 @@ import 'package:flutter/foundation.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:xournalpp/layer_contents/XppImage.dart';
+import 'package:xournalpp/layer_contents/XppStroke.dart';
+import 'package:xournalpp/layer_contents/XppText.dart';
+import 'package:xournalpp/layer_contents/XppTexImage.dart';
+import 'package:xournalpp/src/ink_geometry.dart';
 import 'package:xournalpp/src/XppBackground.dart';
 import 'package:xournalpp/src/XppFile.dart';
 import 'package:xournalpp/src/XppLayer.dart';
@@ -74,7 +78,7 @@ Future<Uint8List> buildNotesPdf(
     throw StateError('Il documento non contiene pagine');
   }
   final title = document.title;
-  final rasters = <Map<String, Object>>[];
+  final exportPages = <Map<String, Object>>[];
   for (var index = 0; index < pages.length; index++) {
     final page = pages[index];
     final size = (page.pageSize ?? XppPageSize.a4).toSize();
@@ -88,12 +92,102 @@ Future<Uint8List> buildNotesPdf(
         );
       }
     }
-    final png = await rasterizeExportPage(page, backgroundBytes: background);
-    rasters.add({'png': png, 'width': size.width, 'height': size.height});
+    final parts = <Map<String, Object>>[];
+    final paper = XppPage(
+      pageSize: page.pageSize,
+      background: page.background,
+      layers: [],
+    );
+    parts.add({
+      'png': await rasterizeExportPage(paper, backgroundBytes: background),
+    });
+    final pending = <XppContent?>[];
+    Future<void> flush() async {
+      if (pending.isEmpty) return;
+      final overlay = XppPage(
+        pageSize: page.pageSize,
+        layers: [XppLayer(content: List.of(pending))],
+      );
+      Rect? bounds;
+      for (final content in pending) {
+        final rect = content == null
+            ? null
+            : _exportContentBounds(content, size);
+        if (rect != null && rect.isFinite) {
+          bounds = bounds == null ? rect : bounds.expandToInclude(rect);
+        }
+      }
+      final crop = (bounds?.inflate(4) ?? (Offset.zero & size)).intersect(
+        Offset.zero & size,
+      );
+      if (!crop.isEmpty) {
+        parts.add({
+          'png': await rasterizeExportPage(
+            overlay,
+            paintBackground: false,
+            region: crop,
+            maxScale: 4,
+          ),
+          'left': crop.left,
+          'top': crop.top,
+          'width': crop.width,
+          'height': crop.height,
+        });
+      }
+      pending.clear();
+    }
+
+    int batch = 0;
+    for (final layer in page.layers ?? <XppLayer>[]) {
+      if (!layer.visible) continue;
+      for (final content in layer.content ?? <XppContent?>[]) {
+        if (++batch % 64 == 0) await Future<void>.delayed(Duration.zero);
+        if (content is XppStroke &&
+            !content.isShape &&
+            content.tool != XppStrokeTool.ERASER) {
+          await flush();
+          parts.add({
+            'ink': [
+              for (final p in content.points ?? <XppStrokePoint>[])
+                [
+                  p.x!,
+                  p.y!,
+                  inkRadius(
+                    p.width,
+                    pressureSensitive: content.tool == XppStrokeTool.PEN,
+                  ),
+                ],
+            ],
+            'color': (content.color ?? Colors.black).toARGB32(),
+            'opacity': content.tool == XppStrokeTool.HIGHLIGHTER
+                ? .5
+                : (content.color ?? Colors.black).a,
+            'cuts': [
+              for (final cut in content.erasures.where((cut) => cut.isValid))
+                [
+                  cut.start.dx,
+                  cut.start.dy,
+                  cut.end.dx,
+                  cut.end.dy,
+                  cut.radius,
+                ],
+            ],
+          });
+        } else if (content != null) {
+          pending.add(content);
+        }
+      }
+    }
+    await flush();
+    exportPages.add({
+      'parts': parts,
+      'width': size.width,
+      'height': size.height,
+    });
     // Release this page's GPU resources before starting the next page.
     await Future<void>.delayed(Duration.zero);
   }
-  return compute(_assemblePdf, {'title': title, 'pages': rasters});
+  return compute(_assemblePdf, {'title': title, 'pages': exportPages});
 }
 
 /// PNG decoding, PDF image compression and final document encoding are CPU
@@ -102,16 +196,134 @@ Future<Uint8List> _assemblePdf(Map<String, Object?> input) async {
   final pdf = pw.Document(title: input['title'] as String?, creator: 'OSI');
   for (final item in input['pages'] as List<Map<String, Object>>) {
     final width = item['width'] as double, height = item['height'] as double;
-    final image = pw.MemoryImage(item['png'] as Uint8List);
     pdf.addPage(
       pw.Page(
         pageFormat: PdfPageFormat(width, height, marginAll: 0),
-        build: (_) =>
-            pw.Image(image, width: width, height: height, fit: pw.BoxFit.fill),
+        build: (_) => pw.Stack(
+          children: [
+            for (final part in item['parts'] as List<Map<String, Object>>)
+              if (part['png'] != null)
+                pw.Positioned(
+                  left: (part['left'] as double?) ?? 0,
+                  top: (part['top'] as double?) ?? 0,
+                  child: pw.Image(
+                    pw.MemoryImage(part['png'] as Uint8List),
+                    width: (part['width'] as double?) ?? width,
+                    height: (part['height'] as double?) ?? height,
+                    fit: pw.BoxFit.fill,
+                  ),
+                )
+              else
+                pw.CustomPaint(
+                  size: PdfPoint(width, height),
+                  painter: (canvas, _) =>
+                      _paintPdfInk(canvas, part, width, height),
+                ),
+          ],
+        ),
       ),
     );
   }
   return pdf.save();
+}
+
+// Selection bounds are approximate for text. Export crops must measure actual
+// glyphs and wrapped lines, otherwise a sharp crop can silently truncate them.
+Rect? _exportContentBounds(XppContent content, Size pageSize) {
+  TextStyle? style;
+  String? text;
+  Offset? offset;
+  if (content is XppText) {
+    text = content.text;
+    offset = content.offset;
+    style = TextStyle(
+      fontSize: content.size ?? 12,
+      fontFamily: content.fontFamily ?? 'Sans',
+    );
+  } else if (content is XppTexImage) {
+    text = content.text;
+    offset = content.topLeft;
+    style = const TextStyle(
+      fontSize: 18,
+      fontStyle: FontStyle.italic,
+      fontFamily: 'serif',
+    );
+  }
+  if (style == null || offset == null) return content.bounds();
+  final painter = TextPainter(
+    text: TextSpan(text: text, style: style),
+    textDirection: TextDirection.ltr,
+  );
+  try {
+    painter.layout(
+      maxWidth: content is XppText ? pageSize.width : double.infinity,
+    );
+    return offset & painter.size;
+  } finally {
+    painter.dispose();
+  }
+}
+
+// Uses the same circles and tapered quadrilaterals as InkGeometry. A single
+// nonzero fill per stroke prevents dark seams at highlighter intersections.
+void _paintPdfInk(
+  PdfGraphics canvas,
+  Map<String, Object> part,
+  double width,
+  double height,
+) {
+  final samples = part['ink'] as List<List<double>>;
+  if (samples.isEmpty) return;
+  void polygon(List<List<double>> vertices) {
+    canvas.moveTo(vertices.first[0], height - vertices.first[1]);
+    for (final p in vertices.skip(1)) {
+      canvas.lineTo(p[0], height - p[1]);
+    }
+    canvas.closePath();
+  }
+
+  List<List<double>> quad(List<double> a, List<double> b) {
+    final dx = b[0] - a[0], dy = b[1] - a[1];
+    final distance = math.sqrt(dx * dx + dy * dy);
+    final nx = -dy / distance, ny = dx / distance;
+    return [
+      [a[0] - nx * a[2], a[1] - ny * a[2]],
+      [b[0] - nx * b[2], b[1] - ny * b[2]],
+      [b[0] + nx * b[2], b[1] + ny * b[2]],
+      [a[0] + nx * a[2], a[1] + ny * a[2]],
+    ];
+  }
+
+  canvas.saveContext();
+  // Intersect complements of each primitive: overlapping cuts subtract their
+  // union, rather than producing the holes of a single even-odd mask.
+  for (final cut in part['cuts'] as List<List<double>>) {
+    final a = [cut[0], cut[1], cut[4]], b = [cut[2], cut[3], cut[4]];
+    for (final p in [a, b]) {
+      canvas.drawRect(0, 0, width, height);
+      canvas.drawEllipse(p[0], height - p[1], p[2], p[2]);
+      canvas.clipPath(evenOdd: true);
+    }
+    if (a[0] != b[0] || a[1] != b[1]) {
+      canvas.drawRect(0, 0, width, height);
+      polygon(quad(a, b));
+      canvas.clipPath(evenOdd: true);
+    }
+  }
+  canvas.setFillColor(PdfColor.fromInt(part['color'] as int));
+  canvas.setGraphicState(PdfGraphicState(opacity: part['opacity'] as double));
+  List<double>? previous;
+  for (final p in samples) {
+    if (previous != null && (p[0] != previous[0] || p[1] != previous[1])) {
+      polygon(quad(previous, p));
+    }
+    // Flipping the page Y axis reverses polygon winding.
+    canvas.drawEllipse(p[0], height - p[1], p[2], p[2], clockwise: false);
+    canvas.closePath();
+    previous = p;
+  }
+  canvas.fillPath();
+  canvas.restoreContext();
 }
 
 /// Shares the editor's content painters; images are decoded before painting,
@@ -119,6 +331,9 @@ Future<Uint8List> _assemblePdf(Map<String, Object?> input) async {
 Future<Uint8List> rasterizeExportPage(
   XppPage page, {
   Uint8List? backgroundBytes,
+  bool paintBackground = true,
+  Rect? region,
+  double maxScale = 2,
   int maxDimension = 4096,
   int pixelBudget = 4000000,
 }) async {
@@ -130,15 +345,18 @@ Future<Uint8List> rasterizeExportPage(
   if (!size.width.isFinite || !size.height.isFinite || size.isEmpty) {
     throw StateError('Dimensioni della pagina non valide');
   }
+  final area = region ?? (Offset.zero & size);
   final scale = math.min(
-    2.0,
+    maxScale,
     math.min(
-      maxDimension / math.max(size.width, size.height),
-      math.sqrt(pixelBudget / (size.width * size.height)),
+      maxDimension / math.max(area.width, area.height),
+      math.sqrt(pixelBudget / (area.width * area.height)),
     ),
   );
   final recorder = ui.PictureRecorder();
-  final canvas = Canvas(recorder)..scale(scale);
+  final canvas = Canvas(recorder)
+    ..scale(scale)
+    ..translate(-area.left, -area.top);
   final images = <ui.Image>[];
   ui.Picture? picture;
   ui.Image? output;
@@ -174,7 +392,7 @@ Future<Uint8List> rasterizeExportPage(
   );
   try {
     canvas.clipRect(Offset.zero & size);
-    paintPaperBackground(canvas, size, page.background);
+    if (paintBackground) paintPaperBackground(canvas, size, page.background);
     if (backgroundBytes != null) {
       drawImage(
         await decode(backgroundBytes, Offset.zero & size),
@@ -208,8 +426,8 @@ Future<Uint8List> rasterizeExportPage(
     }
     picture = recorder.endRecording();
     output = await picture.toImage(
-      math.max(1, (size.width * scale).ceil()),
-      math.max(1, (size.height * scale).ceil()),
+      math.max(1, (area.width * scale).ceil()),
+      math.max(1, (area.height * scale).ceil()),
     );
     final data = await output.toByteData(format: ui.ImageByteFormat.png);
     if (data == null) throw StateError('Impossibile creare la pagina PDF');

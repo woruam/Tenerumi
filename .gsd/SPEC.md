@@ -48,3 +48,7 @@ Pannello laterale non modale con livelli e miniature pagine lazy/cachate, selezi
 ## Reattività e memoria - 2026-10-08
 Status: FINALIZED
 Ridurre lavoro per frame nello scorrimento senza cambiare input, palm rejection, zoom, livelli, audio o paginazione. Ridurre lavoro UI e duplicazioni nei salvataggi XOPP/PDF mantenendo contenuto, qualità e compatibilità. Cache native limitate con rilascio esplicito e callback tardivi innocui. Regressioni complete, misure riproducibili su dati sintetici e audit; non presentare misure desktop come prestazioni Android.
+
+## Qualità PDF - 2026-10-08
+Status: FINALIZED
+Conservare nitidezza dei tratti esportati usando geometria vettoriale con pressione, trasparenza, tagli gomma e ordine livelli. Preservare contenuti misti e budget memoria del renderer. Regressioni export e audit; nessuna build APK.

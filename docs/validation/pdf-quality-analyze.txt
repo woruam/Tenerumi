@@ -1,0 +1,26 @@
+Analyzing document_export.dart, canvas_controller.dart, document_export_test.dart, performance_resources_test.dart...
+
+   info - lib\controllers\canvas_controller.dart:16:8 - The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/foundation.dart'. Try removing the import directive. - unnecessary_import
+   info - lib\controllers\canvas_controller.dart:413:7 - Statements in an if should be enclosed in a block. Try wrapping the statement in a block. - curly_braces_in_flow_control_structures
+   info - lib\controllers\canvas_controller.dart:444:11 - Statements in an if should be enclosed in a block. Try wrapping the statement in a block. - curly_braces_in_flow_control_structures
+   info - lib\controllers\canvas_controller.dart:464:38 - Unnecessary use of multiple underscores. Try using '_'. - unnecessary_underscores
+   info - lib\controllers\canvas_controller.dart:517:7 - Statements in an if should be enclosed in a block. Try wrapping the statement in a block. - curly_braces_in_flow_control_structures
+   info - lib\controllers\canvas_controller.dart:530:7 - Statements in an if should be enclosed in a block. Try wrapping the statement in a block. - curly_braces_in_flow_control_structures
+   info - lib\controllers\canvas_controller.dart:665:7 - Don't invoke 'print' in production code. Try using a logging framework. - avoid_print
+   info - lib\controllers\canvas_controller.dart:888:11 - Statements in an if should be enclosed in a block. Try wrapping the statement in a block. - curly_braces_in_flow_control_structures
+   info - lib\controllers\canvas_controller.dart:925:9 - Statements in an if should be enclosed in a block. Try wrapping the statement in a block. - curly_braces_in_flow_control_structures
+   info - lib\controllers\canvas_controller.dart:945:9 - Statements in an if should be enclosed in a block. Try wrapping the statement in a block. - curly_braces_in_flow_control_structures
+   info - lib\controllers\canvas_controller.dart:965:9 - Statements in an if should be enclosed in a block. Try wrapping the statement in a block. - curly_braces_in_flow_control_structures
+   info - lib\controllers\canvas_controller.dart:970:38 - Unnecessary use of multiple underscores. Try using '_'. - unnecessary_underscores
+   info - lib\controllers\canvas_controller.dart:991:9 - Statements in an if should be enclosed in a block. Try wrapping the statement in a block. - curly_braces_in_flow_control_structures
+   info - lib\controllers\canvas_controller.dart:1065:13 - Statements in an if should be enclosed in a block. Try wrapping the statement in a block. - curly_braces_in_flow_control_structures
+   info - lib\controllers\canvas_controller.dart:1081:7 - Statements in an if should be enclosed in a block. Try wrapping the statement in a block. - curly_braces_in_flow_control_structures
+   info - lib\controllers\canvas_controller.dart:1355:7 - Statements in an if should be enclosed in a block. Try wrapping the statement in a block. - curly_braces_in_flow_control_structures
+   info - lib\controllers\canvas_controller.dart:1383:11 - Statements in an if should be enclosed in a block. Try wrapping the statement in a block. - curly_braces_in_flow_control_structures
+   info - lib\controllers\canvas_controller.dart:1421:7 - Statements in an if should be enclosed in a block. Try wrapping the statement in a block. - curly_braces_in_flow_control_structures
+   info - lib\src\document_export.dart:2:8 - The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/foundation.dart'. Try removing the import directive. - unnecessary_import
+   info - test\document_export_test.dart:3:8 - The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/services.dart'. Try removing the import directive. - unnecessary_import
+   info - test\performance_resources_test.dart:9:8 - The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/services.dart'. Try removing the import directive. - unnecessary_import
+   info - test\performance_resources_test.dart:210:11 - Statements in a for should be enclosed in a block. Try wrapping the statement in a block. - curly_braces_in_flow_control_structures
+
+22 issues found.

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -49,6 +50,64 @@ XppStroke line(Offset a, Offset b, {Color color = Colors.black}) =>
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => SharedPreferences.setMockInitialValues({}));
+
+  testWidgets('PDF keeps pressure ink, overlapping erasures and layer order', (
+    tester,
+  ) async {
+    final file = XppFile.empty(title: 'PDF quality');
+    final page = file.pages!.first;
+    page.pageSize = XppPageSize(width: 160, height: 180);
+    page.layers!.first.content!.addAll([
+      XppStrokePen(
+        color: Colors.red,
+        points: [
+          XppStrokePoint(x: 20, y: 30, width: .5),
+          XppStrokePoint(x: 140, y: 30, width: 5),
+        ],
+      ),
+      line(const Offset(20, 60), const Offset(140, 60))
+        ..erasures = [
+          StrokeErasure(const Offset(70, 55), const Offset(85, 65), 7),
+          StrokeErasure(const Offset(80, 55), const Offset(95, 65), 7),
+        ],
+      XppStrokeHighlight(
+        color: Colors.yellow,
+        points: [
+          XppStrokePoint(x: 20, y: 100, width: 16),
+          XppStrokePoint(x: 140, y: 100, width: 16),
+          XppStrokePoint(x: 20, y: 100, width: 16),
+        ],
+      ),
+      XppText(
+        text: 'OSI\nWWW',
+        fontFamily: 'Inter',
+        offset: const Offset(20, 125),
+        size: 16,
+        color: Colors.blue,
+      ),
+      line(const Offset(20, 150), const Offset(140, 150), color: Colors.green),
+    ]);
+    page.layers!.add(
+      XppLayer(
+        visible: false,
+        content: [line(const Offset(0, 0), const Offset(160, 180))],
+      ),
+    );
+    await tester.runAsync(() async {
+      await (FontLoader(
+        'Inter',
+      )..addFont(rootBundle.load('fonts/Inter/Inter-Variable.ttf'))).load();
+      final bytes = await buildNotesPdf(
+        file,
+        loadBackground: (_, _) async => null,
+      );
+      expect(latin1.decode(bytes), contains('%PDF-'));
+      await File('docs/validation/pdf-quality.pdf').writeAsBytes(bytes);
+      await File('docs/validation/pdf-quality-reference.png')
+          .writeAsBytes(await rasterizeExportPage(page, maxScale: 4));
+    });
+    expect(page.layers!.first.content, hasLength(5));
+  });
 
   testWidgets(
     'Android document URI can be saved again and reopened from the library',
@@ -259,7 +318,9 @@ void main() {
         ],
       );
       final requested = <int>[];
-      final ctrl = CanvasController(autosaveEnabled: false, pdfRasterizer: (index) async {
+      final ctrl = CanvasController(
+        autosaveEnabled: false,
+        pdfRasterizer: (index) async {
           requested.add(index);
           return background;
         },
@@ -338,7 +399,9 @@ void main() {
       FilePickerCross? captured;
       String? destination;
       final ctrl =
-          CanvasController(autosaveEnabled: false, documentExporter: (data) async {
+          CanvasController(
+              autosaveEnabled: false,
+              documentExporter: (data) async {
                 captured = data;
                 return destination;
               },
@@ -397,7 +460,9 @@ void main() {
       final file = XppFile.empty(title: 'Appunti')
         ..sourcePath = 'original.xopp';
       final ctrl =
-          CanvasController(autosaveEnabled: false, documentExporter: (data) async {
+          CanvasController(
+              autosaveEnabled: false,
+              documentExporter: (data) async {
                 captured = data;
                 return null;
               },

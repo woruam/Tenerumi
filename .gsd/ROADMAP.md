@@ -63,3 +63,10 @@ Navigazione workspace: fasi 1–4 completate. 161 test Flutter, compilazione Kot
 4. Regressioni, benchmark, analisi e audit; commit.
 
 Reattività e memoria: fasi 1–4 completate. 169 regressioni, benchmark strutturale/compressione, analyze senza errori/warning, Kotlin riuscito. Audit docs/performance-and-memory.md; misure Android hardware restano manuali.
+
+## Qualità PDF
+1. Export ibrido: inchiostro vettoriale e fallback fedele per contenuti speciali.
+2. Migliorare risoluzione PDF visibile entro budget esistenti.
+3. Regressioni, analisi e documentazione; commit.
+
+Qualità PDF: fasi 1–3 completate e verificate; confronto indipendente PDF/canvas, suite completa e audit docs/pdf-quality.md.

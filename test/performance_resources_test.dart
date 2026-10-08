@@ -59,6 +59,7 @@ class _PdfBackend extends PdfxPlatform {
 class _PdfDocument extends pdfx.PdfDocument {
   final Uint8List png;
   int pageOpens = 0, pageCloses = 0, documentCloses = 0;
+  final renderedAreas = <double>[];
   _PdfDocument(this.png) : super(sourceName: 'test', id: 'test', pagesCount: 3);
   @override
   Future<pdfx.PdfPage> getPage(
@@ -86,8 +87,8 @@ class _PdfPage extends pdfx.PdfPage {
         document: doc,
         id: 'page',
         pageNumber: number,
-        width: 100,
-        height: 100,
+        width: 595,
+        height: 842,
         autoCloseAndroid: false,
       );
   @override
@@ -100,7 +101,11 @@ class _PdfPage extends pdfx.PdfPage {
     int quality = 100,
     bool forPrint = false,
     bool removeTempFile = true,
-  }) async => _PdfImage(png, pageNumber);
+  }) async {
+    (document as _PdfDocument).renderedAreas.add(width * height);
+    return _PdfImage(png, pageNumber);
+  }
+
   @override
   Future<void> close() async {
     (document as _PdfDocument).pageCloses++;
@@ -446,12 +451,18 @@ void main() {
         }
         expect(backend.documents, hasLength(1));
         expect(backend.documents.single.pageCloses, 3);
+        for (final area in backend.documents.single.renderedAreas) {
+          expect(area, closeTo(4000000 / 3, 1));
+        }
         ctrl.suspendPdfRendering();
         await Future<void>.delayed(const Duration(milliseconds: 20));
         expect(backend.documents.single.documentCloses, 1);
         await ctrl.buildPdfBytes();
         expect(backend.documents, hasLength(2));
         expect(backend.documents.last.pageCloses, 3);
+        for (final area in backend.documents.last.renderedAreas) {
+          expect(area, closeTo(4000000, 1));
+        }
         expect(backend.documents.last.documentCloses, 1);
         backend.pending = Completer<pdfx.PdfDocument>();
         ctrl.setVisiblePdfPages({0});

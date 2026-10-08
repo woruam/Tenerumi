@@ -70,3 +70,6 @@ Pannello laterale Livelli/Pagine con anteprime lazy, inserimento prima/dopo anch
 
 ## Reattività, export e memoria - 2026-10-08
 Virtualizzazione a range stabile/ricerca binaria, paint esplicito su revisione, badge zoom separato. XOPP gzip1 senza copie superflue e riuso checkpoint validato; PDF assemblato in worker, immagini alla risoluzione output e handle sorgenti condivisi/chiusi. Immagini native spostate fuori modello, cache a fonti deboli con ownership dei renderer, decode tardivi rilasciati, niente listener permanenti per import. Dispose TextPainter/controller formule; code svuotate a riposo. 169 test, benchmark 10.000 pagine/300 pan zero ricostruzioni, benchmark gzip lossless, analyze senza errori/warning, Kotlin riuscito. Limiti hardware/target cache morbido/audio RAM documentati in docs/performance-and-memory.md. Nessun APK/push.
+
+## Qualità PDF — 2026-10-08
+Export ibrido con tratti a mano libera vettoriali, pressione e gomma locale; fallback trasparenti ritagliati fino a 288 dpi. Renderer PDF utilizza il budget condiviso di quattro milioni di pixel. 170 test completi, otto test risorse/rendering, analyze senza errori/warning e confronto Poppler riusciti. Audit docs/pdf-quality.md; riesportare i vecchi PDF da XOPP. Verifica hardware Android ancora manuale.

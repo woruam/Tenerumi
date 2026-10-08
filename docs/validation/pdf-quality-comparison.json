@@ -1,0 +1,84 @@
+{
+  "vector_curve_commands": 52,
+  "erasure_clips": 6,
+  "render_dpi": 288,
+  "mean_channel_difference": [
+    0.2447287326388889,
+    0.25712239583333335,
+    0.2754448784722222
+  ],
+  "pixel_checks": {
+    "pressure_ink": {
+      "pdf": [
+        244,
+        67,
+        54
+      ],
+      "canvas": [
+        244,
+        67,
+        54
+      ]
+    },
+    "erased_overlap": {
+      "pdf": [
+        255,
+        255,
+        255
+      ],
+      "canvas": [
+        255,
+        255,
+        255
+      ]
+    },
+    "remaining_ink": {
+      "pdf": [
+        0,
+        0,
+        0
+      ],
+      "canvas": [
+        0,
+        0,
+        0
+      ]
+    },
+    "highlighter_overlap": {
+      "pdf": [
+        255,
+        244,
+        156
+      ],
+      "canvas": [
+        255,
+        245,
+        157
+      ]
+    },
+    "later_layer": {
+      "pdf": [
+        76,
+        175,
+        80
+      ],
+      "canvas": [
+        76,
+        175,
+        80
+      ]
+    },
+    "hidden_layer": {
+      "pdf": [
+        255,
+        255,
+        255
+      ],
+      "canvas": [
+        255,
+        255,
+        255
+      ]
+    }
+  }
+}

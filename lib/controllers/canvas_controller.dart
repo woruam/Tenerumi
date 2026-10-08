@@ -548,7 +548,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
         document,
         background,
         pixelBudget: math.min(
-          1000000.0,
+          4000000.0,
           4000000.0 / math.max(1, _visiblePdfPages.length),
         ),
       );
@@ -583,7 +583,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     final page = await document.getPage((background.page ?? 0) + 1);
     try {
       final scale = math.min(
-        2.0,
+        4.0,
         math.min(
           4096 / math.max(page.width, page.height),
           math.sqrt(pixelBudget / (page.width * page.height)),
