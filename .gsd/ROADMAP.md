@@ -83,3 +83,5 @@ Analisi provenienza: fasi 1–3 completate; dati upstream acquisiti, rapporto e 
 2. H: spostare EditingTool nel dominio, migrare import e unificare proprietà preservando semantica osservabile.
 3. A: minimi/massimi/raggio con singolo passaggio; nessuna nuova cache.
 4. Regressioni, misura strutturale, analisi e documentazione.
+
+G/H/A: fasi 1–4 completate nell’ordine richiesto. Regressioni complete, misura strutturale e audit verificati.

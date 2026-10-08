@@ -2,6 +2,8 @@
 
 Data: 8 ottobre 2026. Analisi statica del codice, senza modifiche al funzionamento dell’app.
 
+**Seguito:** G, H e A sono stati implementati nell’ordine richiesto; risultati in [ottimizzazioni-gha.md](ottimizzazioni-gha.md). Gli altri punti restano proposte. I dati e i riferimenti sottostanti descrivono lo snapshot storico indicato.
+
 ## Risultato principale
 
 OSI deriva chiaramente dalla base di **Xournal++ Mobile**, ma oggi contiene una notevole estensione e riscrittura. Escludendo i file generati delle traduzioni, **29 degli 85 file Dart hanno lo stesso percorso di un file upstream**: 2 sono testualmente identici, 1 conserva esattamente gli stessi token, 26 sono modificati. Gli altri 56 file non hanno un corrispondente nello stesso percorso upstream.

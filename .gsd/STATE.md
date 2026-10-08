@@ -82,3 +82,6 @@ Rimossi 12 file legacy senza utilizzatori attivi, RichTextField e contratto rend
 
 ## Interventi G/H/A — fase H
 EditingTool spostato in src/editing_tool.dart senza cambiare ordine/nomi; import runtime/test migrati e vecchia bottom sheet rimossa. Proprietà dei tratti conservate solo nella base; firme, mutabilità e default editingTool osservabile null preservati. Test clone/XML/mutazioni e regressioni selezione/gomma/audio riusciti. A da completare.
+
+## Interventi G/H/A — completati il 9 ottobre 2026
+A: estremi/raggio in un passaggio, curve invariate, nessuna cache aggiuntiva. 10.000 campioni: 50.002 accessi oracle vs 10.001 nuovo bounds. 174 test completi riusciti; analyze senza errori/warning (180 info), confronto PDF/Poppler riuscito. Audit docs/ottimizzazioni-gha.md. B/C/D/E/F/I/J esclusi; nessuna build APK/push.

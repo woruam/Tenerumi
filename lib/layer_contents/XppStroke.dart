@@ -119,29 +119,25 @@ abstract class XppStroke extends XppContent {
 
   @override
   Offset getOffset() {
-    if (points == null || points!.isEmpty) return const Offset(0, 0);
-    double? x = points![0].x;
-    points!.forEach((point) {
-      if (point.x! < x!) x = point.x;
-    });
-    double y = points![0].y!;
-    points!.forEach((point) {
+    final samples = points;
+    if (samples == null || samples.isEmpty) return Offset.zero;
+    var x = samples.first.x!, y = samples.first.y!;
+    for (final point in samples) {
+      if (point.x! < x) x = point.x!;
       if (point.y! < y) y = point.y!;
-    });
-    return (Offset(x!, y));
+    }
+    return Offset(x, y);
   }
 
   Offset get bottomRight {
-    if (points == null || points!.isEmpty) return const Offset(0, 0);
-    double? x = points![0].x;
-    points!.forEach((point) {
-      if (point.x! > x!) x = point.x;
-    });
-    double y = points![0].y!;
-    points!.forEach((point) {
+    final samples = points;
+    if (samples == null || samples.isEmpty) return Offset.zero;
+    var x = samples.first.x!, y = samples.first.y!;
+    for (final point in samples) {
+      if (point.x! > x) x = point.x!;
       if (point.y! > y) y = point.y!;
-    });
-    return (Offset(x!, y));
+    }
+    return Offset(x, y);
   }
 
   // --- NUOVO METODO AD ALTE PRESTAZIONI ---
@@ -332,8 +328,19 @@ abstract class XppStroke extends XppContent {
         (points!.first.width ?? 2.5).clamp(1.0, double.infinity) / 2,
       );
     }
+    final samples = points!;
+    final first = samples.first;
+    var minX = first.x!, minY = first.y!;
+    var maxX = minX, maxY = minY;
     double radius = 0;
-    for (final point in points!) {
+    // Scan extrema and pressure together. Recompute after any mutation rather
+    // than retaining geometry whose validity depends on mutable sample lists.
+    for (final point in samples) {
+      final x = point.x!, y = point.y!;
+      if (x < minX) minX = x;
+      if (y < minY) minY = y;
+      if (x > maxX) maxX = x;
+      if (y > maxY) maxY = y;
       final r = isShape
           ? (point.width ?? 2.5).clamp(1.0, double.infinity) / 2
           : inkRadius(
@@ -342,7 +349,7 @@ abstract class XppStroke extends XppContent {
             );
       if (r > radius) radius = r;
     }
-    return Rect.fromPoints(getOffset(), bottomRight).inflate(radius);
+    return Rect.fromLTRB(minX, minY, maxX, maxY).inflate(radius);
   }
 
   @override

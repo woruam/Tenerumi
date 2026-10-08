@@ -1,0 +1,7 @@
+{
+  "samples": 10000,
+  "legacy_bounds_reads": 50002,
+  "single_pass_bounds_reads": 10001,
+  "same_bounds": true,
+  "measurement": "Point-list visits, not FPS or Android timings"
+}
