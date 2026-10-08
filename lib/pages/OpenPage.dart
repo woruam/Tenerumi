@@ -1,3 +1,4 @@
+import 'package:xournalpp/src/workspace_session.dart';
 import 'package:xournalpp/src/note_tags.dart';
 import 'package:xournalpp/src/recent_documents.dart';
 import 'package:xournalpp/widgets/note_tag_picker.dart';
@@ -117,6 +118,19 @@ class _OpenPageState extends State<OpenPage> {
   void initState() {
     super.initState();
     _loadRecentFiles();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _restoreWorkspace());
+  }
+
+  Future<void> _restoreWorkspace() async {
+    final restored = await WorkspaceSession.restore();
+    if (!mounted ||
+        restored == null ||
+        ModalRoute.of(context)?.isCurrent != true)
+      return;
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => WorkspacePage(restored: restored)),
+    );
+    if (mounted) await _loadRecentFiles();
   }
 
   Future<void> _loadRecentFiles() async {

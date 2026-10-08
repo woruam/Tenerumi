@@ -9,13 +9,13 @@ Attivare Ascolta dal tratto, chiudere il pannello e toccare con la punta della p
 
 ## Persistenza e limiti
 - Registrazione/riproduzione native disponibili su Android; sulle altre piattaforme i comandi sono disabilitati, i dati audio nel documento restano conservati.
-- AAC mono in contenitore M4A, 22.050 Hz, 48 kbit/s; massimo 30 minuti/12 MiB per registrazione e 32 MiB compressi di audio per appunto. Per iniziare una nuova registrazione viene riservata la capienza massima di 12 MiB.
+- AAC mono in contenitore M4A, 22.050 Hz, 48 kbit/s; massimo 120 minuti/48 MiB per registrazione e 128 MiB compressi di audio per appunto. Per iniziare una nuova registrazione viene riservata la capienza massima di 48 MiB.
 - Audio compresso incorporato nel file XOPP, insieme agli ID e ai tempi dei tratti: riapertura, esportazione, recovery dopo finalizzazione e copia/incolla tra appunti conservano l’associazione.
 - I metadati audio sono estensioni OSI (`osipp-audio`, attributi dei tratti). Non viene promessa riproduzione in Xournal++ desktop. L’ispirazione funzionale è la registrazione mentre si scrive e il suo strumento Play Object: [manuale Xournal++](https://github.com/xournalpp/xournalpp/wiki/User-Manual/d682c9284055575d14b18a31b6076b73d965939a).
 - Audio ancora in registrazione resta temporaneamente su disco: un arresto improvviso del processo prima della finalizzazione può perderlo. Salvare arresta e incorpora la registrazione; il recupero di una registrazione non finalizzata dopo crash non è implementato.
 
 ## Audit memoria e lifecycle
-Nessuna elaborazione PCM, buffer audio o chiamata di piattaforma nel percorso dei movimenti della penna. Durante la registrazione si aggiunge solo un intero temporale per campione. I dati compressi sono immutabili e condivisi da snapshot/clipboard; undo conserva i piccoli link temporali senza duplicare l’audio. La serializzazione XML/base64 e il passaggio al worker producono copie temporanee, quindi il limite di 32 MiB non è un limite al picco totale di RAM.
+Nessuna elaborazione PCM, buffer audio o chiamata di piattaforma nel percorso dei movimenti della penna. Durante la registrazione si aggiunge solo un intero temporale per campione. I dati compressi sono immutabili e condivisi da snapshot/clipboard; undo conserva i piccoli link temporali senza duplicare l’audio. La serializzazione XML/base64 e il passaggio al worker producono copie temporanee, quindi il limite di 128 MiB non è un limite al picco totale di RAM.
 
 Un solo recorder/player nativo e una coda di operazioni tra appunti. Timer cancellati dopo pausa/completamento, cambio proprietario e chiusura; coda azzerata quando vuota per non trattenere zone/controller. I risultati tardivi dopo dispose non aggiornano notifier disposti e la chiusura di una scheda non rilascia il recorder di un’altra. Preferenze asincrone ignorate dopo dispose. Clipboard svuotata alla chiusura della workspace.
 

@@ -145,7 +145,7 @@ class PointerListenerState extends State<PointerListener> {
     }
     _holdScreenPosition = event.position;
     final position = _canvasPoint(event);
-    _pasteHoldTimer = Timer(kLongPressTimeout, () {
+    _pasteHoldTimer = Timer(const Duration(milliseconds: 1100), () {
       if (!mounted || _drawingPointer != event.pointer) return;
       setState(() {
         _longPressConsumed = true;
@@ -569,6 +569,10 @@ class PointerListenerState extends State<PointerListener> {
   }
 
   void _onPointerDown(PointerDownEvent data) {
+    if (data.kind == PointerDeviceKind.touch &&
+        ((CanvasTouchScope.of(context)?.rejects(data) ?? false) ||
+            data.radiusMajor > 28))
+      return;
     if (widget.readOnly) {
       widget.onDeviceChange?.call(device: data.device, kind: data.kind);
       return;

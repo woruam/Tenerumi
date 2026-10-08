@@ -47,3 +47,11 @@ Audio sincronizzato: completate le fasi 1–4; 147 test, Kotlin Android, analyze
 3. Test cancellazione/annullamento/errori/URI e prova visiva; commit.
 
 Eliminazione home: fasi 1–3 completate e verificate con 150 test, analyze, compilazione Kotlin e screenshot.
+
+## Navigazione workspace
+1. Modello pagine/inserimento/auto-generazione, limiti audio e piccoli miglioramenti UI.
+2. Side panel livelli/pagine e apertura libreria interna.
+3. Gesti con palm rejection e persistenza sessione.
+4. Test, compile, screenshot e audit regressioni; commit.
+
+Navigazione workspace: fasi 1–4 completate. 161 test Flutter, compilazione Kotlin Android, analisi senza errori/warning e screenshot desktop/telefono; audit docs/workspace-navigation.md. Profilazione hardware e registrazione lunga rimangono prove manuali.

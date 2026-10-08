@@ -1,0 +1,26 @@
+# Pagine, livelli e continuità di OSI
+
+Il pulsante Livelli apre un pannello laterale non modale con due schede: Livelli e Pagine. Il pannello segue il documento con focus, anche in schermo diviso. Le miniature scorrono e un tocco porta alla pagina scelta. I comandi dei livelli (visibilità, blocco, ordine, nome, eliminazione) restano disponibili. Il pulsante Aggiungi Pagina propone prima/dopo la pagina visualizzata, anche sui PDF: il nuovo foglio è vuoto, delle stesse dimensioni, e non cambia l’indice originale delle pagine PDF.
+
+Il colore della penna e dell’evidenziatore è visibile nelle icone. Le superfici dei fogli hanno angoli squadrati. Incolla con la stylo richiede 1,1 secondi di pressione ferma, e continua ad annullarsi quando si muove la penna.
+
+Negli appunti finiti nativi si aggiunge un foglio quando un tratto raggiunge l’ultimo 12% dell’ultima pagina. Si può anche trascinare verso l’alto oltre il fondo del documento (almeno 80 punti di gesto); lo zoom e il disegno non attivano questa azione. Una pagina vuota generata automaticamente non ne genera altre. PDF e fogli infiniti conservano l’aggiunta manuale. Il comportamento è persistito nel file XOPP; vecchie note senza PDF mantengono l’autogenerazione.
+
+Apri file, nel menu documento, mostra gli appunti salvati nella libreria, oltre all’opzione dal dispositivo. Un appunto già aperto viene selezionato senza duplicarlo. Le schede restano aperte passando a un’altra app. Il ripristino dopo ricreazione conserva ordine delle schede, pagina, zoom, split e focus. Le preferenze contengono metadati e piccoli template di fogli vuoti; i contenuti e l’audio sono letti dai file originali o dai checkpoint su disco. Le modifiche non salvate recuperate rimangono da salvare. L’uscita esplicita e confermata cancella la sessione. Un file rimosso o illeggibile viene saltato nel ripristino. Lo stato di strumenti/livelli selezionati e la cronologia undo non sono persistiti dopo la terminazione del processo.
+
+## Input e risorse
+
+- Zoom/pan tramite un unico riconoscitore di scala filtrato: contatti del palmo con raggio maggiore di 28 punti, terzo dito, touch durante lo stilo e nei 300 ms successivi al suo hover vengono esclusi. I device che non riportano raggio/hover continuano a usare la protezione durante lo stilo.
+- Cambio numero dita: nuovo ancoraggio alla matrice corrente. Dopo un pinch il dito rimasto non scorre finché non si sollevano tutte le dita. Nessuna inerzia che trasformi il rilascio dello zoom in un salto di pagina. Doppio tap solo dito; mouse/trackpad e rotella conservati sulla tela finita (rotella: zoom); touch e mouse/trackpad/rotella conservati su quella infinita. La stessa protezione è applicata al foglio infinito.
+- L’inserimento sposta i riferimenti di livelli, stack UI e snapshot undo/redo; invalida le rasterizzazioni PDF obsolete tramite epoch. Non modifica i link temporali dei tratti.
+- Miniature soltanto per righe montate, massimo 180 px/50.000 pixel, rendering serializzato e aggiornamento dopo 650 ms di quiete. Lo scorrimento senza modifiche non le rigenera. Timer/listener sono rimossi e immagini evitte dalla cache quando sostituite o smontate. La coda dei rendering si azzera a riposo. Pagina/documento PDF e immagini native temporanee sono chiusi nel percorso finally già usato dagli export.
+- Controller zoom e canvas restano di proprietà della workspace; cambio scheda non li distrugge. La chiusura li rilascia. Timer/listener della sessione vengono rimossi al dispose; salvataggi delle preferenze serializzati e coda svuotata a riposo. Un’operazione in ritardo non ricrea un controller per una scheda chiusa.
+- Audio: 120 minuti, 48 MiB per registrazione, 128 MiB per appunto, stessi limiti Dart/Android. Le nuove registrazioni riservano 48 MiB; il formato rimane AAC mono 48 kbit/s su disco. Nessun buffer PCM e nessuna chiamata piattaforma sul movimento della penna. Snapshot condividono bytes immutabili. Anche il decoder verifica il limite della singola registrazione, la quota totale e gli ID duplicati.
+
+Il limite audio riguarda bytes compressi, non il picco di RAM. XML/base64, serializzazione nel worker e scambio con Android creano copie temporanee: con 128 MiB di audio il picco può essere molto superiore. L’aumento richiesto rende indispensabile una prova sul telefono con note grandi. L’audit del codice e i test non sostituiscono una profilazione di memoria su hardware.
+
+## Verifica
+
+161 test Flutter superati, inclusi inserimento/undo/PDF, autogenerazione, tempi Incolla, pinch/palmo su canvas finito e infinito, nessuna inerzia, apertura libreria interna, checkpoint audio e ripristino di due schede con template/zoom/split/focus. Analisi lib/test: nessun errore o warning (info di stile). Compilazione Android `:app:compileDebugKotlin` riuscita. Screenshot desktop e telefono in docs/validation/osi-sidebar-*.png. Nessun APK o push.
+
+Da provare su dispositivo: registrazione continua di 120 minuti; RAM durante save/reopen con 128 MiB audio; lifecycle con Android che termina il processo, provider PDF/content URI, hover/raggio reali della stylo, scrittura e pinch con palmo appoggiato. Non è disponibile in questa sessione un telefono collegato per questi controlli.

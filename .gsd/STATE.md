@@ -64,3 +64,6 @@ Implementati backend Android, audio portabile XOPP, associazioni per campione/tr
 
 ## Eliminazione dalla home - 2026-10-08
 Menu pressione prolungata Cambia tag/Elimina con conferma nominativa. Cancellazione file/recente/recovery, refresh e messaggio errore. Supporto provider Android per content URI; serializzazione recenti azzerata a riposo. 150 test Flutter, analyze senza errori/warning, compilazione Kotlin e screenshot verificati. Dettagli docs/home-note-deletion.md. Nessun APK/push.
+
+## Navigazione e continuità workspace - 2026-10-08
+Pannello laterale Livelli/Pagine con anteprime lazy, inserimento prima/dopo anche nei PDF, undo/livelli rimappati. Icone colore, fogli squadrati, Incolla 1100 ms. Auto pagina solo note native finite, no catene vuote. Audio scelto dall’utente 120 minuti/48 MiB per registrazione/128 MiB per appunto. Apertura note interne in schede, sessione ripristinata con template, pagina, zoom, split/focus e checkpoint. Gesti filtrati palmo/stilo/terzo contatto, ancoraggio al cambio dita e nessuna inerzia; coordinate penna verificate a zoom 2.3. 161 regressioni, Kotlin riuscito, analisi senza errori/warning, screenshot telefono/desktop. Audit e limiti hardware docs/workspace-navigation.md; nessun APK/push.

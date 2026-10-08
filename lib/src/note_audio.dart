@@ -3,8 +3,9 @@ import 'dart:typed_data';
 
 import 'package:xml/xml.dart';
 
-const maxAudioBytes = 32 * 1024 * 1024;
-const maxRecordingMs = 30 * 60 * 1000;
+const maxAudioBytes = 128 * 1024 * 1024;
+const maxRecordingBytes = 48 * 1024 * 1024;
+const maxRecordingMs = 120 * 60 * 1000;
 bool validAudioId(String id) => RegExp(r'^[a-zA-Z0-9_-]{1,100}$').hasMatch(id);
 
 /// Immutable metadata; snapshots share compressed bytes, never decoded samples.
@@ -32,11 +33,16 @@ class NoteRecording {
       if (!validAudioId(id) ||
           duration <= 0 ||
           duration > maxRecordingMs + 5000 ||
-          encoded.length > (maxAudioBytes - total) * 4 ~/ 3 + 4)
+          encoded.length > (maxAudioBytes - total) * 4 ~/ 3 + 4 ||
+          encoded.length > maxRecordingBytes * 4 ~/ 3 + 4)
         continue;
       try {
         final data = base64Decode(encoded);
-        if (data.isEmpty || total + data.length > maxAudioBytes) continue;
+        if (data.isEmpty ||
+            data.length > maxRecordingBytes ||
+            total + data.length > maxAudioBytes ||
+            result.containsKey(id))
+          continue;
         total += data.length;
         result[id] = NoteRecording(id, duration, data);
       } on FormatException {

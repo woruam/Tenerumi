@@ -297,6 +297,8 @@ void main() {
           kind: ui.PointerDeviceKind.stylus,
         );
         await tester.pump(const Duration(milliseconds: 600));
+        expect(find.text('Incolla'), findsNothing);
+        await tester.pump(const Duration(milliseconds: 600));
         expect(find.text('Incolla'), findsOneWidget);
         await gesture.up();
         await tester.pump();
@@ -340,7 +342,7 @@ void main() {
       screen(tester, const Offset(150, 170)),
       kind: ui.PointerDeviceKind.stylus,
     );
-    await tester.pump(const Duration(milliseconds: 600));
+    await tester.pump(const Duration(milliseconds: 1200));
     await hold.up();
     await tester.pump();
     await penTap(tester, find.byKey(const ValueKey('selection-paste')));
@@ -370,7 +372,7 @@ void main() {
         screen(tester, const Offset(20, 140)),
         kind: ui.PointerDeviceKind.stylus,
       );
-      await tester.pump(const Duration(milliseconds: 600));
+      await tester.pump(const Duration(milliseconds: 1200));
       expect(find.text('Incolla'), findsNothing);
       await first.up();
       await tester.pump();
@@ -381,7 +383,7 @@ void main() {
         kind: ui.PointerDeviceKind.stylus,
       );
       await gesture.moveTo(screen(tester, const Offset(70, 180)));
-      await tester.pump(const Duration(milliseconds: 600));
+      await tester.pump(const Duration(milliseconds: 1200));
       expect(find.text('Incolla'), findsNothing);
       await gesture.up();
       expect(contents(ctrl).length, 2);

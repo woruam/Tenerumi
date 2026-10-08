@@ -1,0 +1,273 @@
+Starting a Gradle Daemon (subsequent builds will be faster)
+
+> Configure project :gradle
+WARNING: Unsupported Kotlin plugin version.
+The `embedded-kotlin` and `kotlin-dsl` plugins rely on features of Kotlin `2.0.21` that might work differently than in the requested version `2.2.20`.
+
+> Task :gradle:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle:compileKotlin UP-TO-DATE
+> Task :gradle:compileJava NO-SOURCE
+> Task :gradle:compileGroovy NO-SOURCE
+> Task :gradle:pluginDescriptors UP-TO-DATE
+> Task :gradle:processResources UP-TO-DATE
+> Task :gradle:classes UP-TO-DATE
+> Task :gradle:jar UP-TO-DATE
+
+> Configure project :app
+Warning: Flutter support for your project's Gradle version (8.14.0) will soon be dropped. Please upgrade your Gradle version to a version of at least 9.1.0 soon.
+Alternatively, use the flag "--android-skip-build-dependency-validation" to bypass this check.
+
+Potential fix: Your project's gradle version is typically defined in the gradle wrapper file. By default, this can be found at C:\Users\aless\Documents\GitHub\OSIpp\android/gradle/wrapper/gradle-wrapper.properties.
+For more information, see https://docs.gradle.org/current/userguide/gradle_wrapper.html.
+
+Warning: Flutter support for your project's Android Gradle Plugin version (Android Gradle Plugin version 8.12.1) will soon be dropped. Please upgrade your Android Gradle Plugin version to a version of at least Android Gradle Plugin version 9.0.1 soon.
+Alternatively, use the flag "--android-skip-build-dependency-validation" to bypass this check.
+
+Potential fix: Your project's AGP version is typically defined in the plugins block of the `settings.gradle` file (C:\Users\aless\Documents\GitHub\OSIpp\android/settings.gradle), by a plugin with the id of com.android.application.
+If you don't see a plugins block, your project was likely created with an older template version. In this case it is most likely defined in the top-level build.gradle file (C:\Users\aless\Documents\GitHub\OSIpp\android/build.gradle) by the following line in the dependencies block of the buildscript: "classpath 'com.android.tools.build:gradle:<version>'".
+
+Warning: Flutter support for your project's Kotlin version (2.2.20) will soon be dropped. Please upgrade your Kotlin version to a version of at least 2.3.20 soon.
+Alternatively, use the flag "--android-skip-build-dependency-validation" to bypass this check.
+
+Potential fix: Your project's KGP version is typically defined in the plugins block of the `settings.gradle` file (C:\Users\aless\Documents\GitHub\OSIpp\android/settings.gradle), by a plugin with the id of org.jetbrains.kotlin.android.
+If you don't see a plugins block, your project was likely created with an older template version, in which case it is most likely defined in the top-level build.gradle file (C:\Users\aless\Documents\GitHub\OSIpp\android/build.gradle) by the ext.kotlin_version property.
+
+
+> Task :android_file_picker:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :android_file_picker:preBuild UP-TO-DATE
+> Task :android_file_picker:preDebugBuild UP-TO-DATE
+> Task :android_file_picker:generateDebugResValues UP-TO-DATE
+> Task :android_file_picker:generateDebugResources UP-TO-DATE
+> Task :android_file_picker:packageDebugResources UP-TO-DATE
+> Task :android_file_picker:parseDebugLocalResources UP-TO-DATE
+> Task :android_file_picker:generateDebugRFile UP-TO-DATE
+> Task :android_file_picker:compileDebugKotlin UP-TO-DATE
+> Task :android_file_picker:javaPreCompileDebug UP-TO-DATE
+> Task :android_file_picker:compileDebugJavaWithJavac NO-SOURCE
+> Task :android_file_picker:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :android_file_picker:compileDebugLibraryResources UP-TO-DATE
+> Task :android_file_picker:writeDebugAarMetadata UP-TO-DATE
+> Task :app:validateCompileSdkVersion
+> Task :app:preBuild
+> Task :app:preDebugBuild
+> Task :desktop_drop:preBuild UP-TO-DATE
+> Task :desktop_drop:preDebugBuild UP-TO-DATE
+> Task :desktop_drop:writeDebugAarMetadata UP-TO-DATE
+> Task :dynamic_color:preBuild UP-TO-DATE
+> Task :dynamic_color:preDebugBuild UP-TO-DATE
+> Task :dynamic_color:writeDebugAarMetadata UP-TO-DATE
+> Task :fjs:preBuild UP-TO-DATE
+> Task :fjs:preDebugBuild UP-TO-DATE
+> Task :fjs:writeDebugAarMetadata UP-TO-DATE
+> Task :jni:preBuild UP-TO-DATE
+> Task :jni:preDebugBuild UP-TO-DATE
+> Task :jni:writeDebugAarMetadata UP-TO-DATE
+> Task :jni_flutter:preBuild UP-TO-DATE
+> Task :jni_flutter:preDebugBuild UP-TO-DATE
+> Task :jni_flutter:writeDebugAarMetadata UP-TO-DATE
+> Task :package_info_plus:preBuild UP-TO-DATE
+> Task :package_info_plus:preDebugBuild UP-TO-DATE
+> Task :package_info_plus:writeDebugAarMetadata UP-TO-DATE
+> Task :pdfx:preBuild UP-TO-DATE
+> Task :pdfx:preDebugBuild UP-TO-DATE
+> Task :pdfx:writeDebugAarMetadata UP-TO-DATE
+> Task :shared_preferences_android:preBuild UP-TO-DATE
+> Task :shared_preferences_android:preDebugBuild UP-TO-DATE
+> Task :shared_preferences_android:writeDebugAarMetadata UP-TO-DATE
+> Task :url_launcher_android:preBuild UP-TO-DATE
+> Task :url_launcher_android:preDebugBuild UP-TO-DATE
+> Task :url_launcher_android:writeDebugAarMetadata UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:cleanMergeDebugAssets
+> Task :app:compileFlutterBuildDebug
+> Task :android_file_picker:mergeDebugShaders UP-TO-DATE
+> Task :android_file_picker:compileDebugShaders NO-SOURCE
+> Task :android_file_picker:generateDebugAssets UP-TO-DATE
+> Task :android_file_picker:mergeDebugAssets UP-TO-DATE
+> Task :app:mergeDebugShaders UP-TO-DATE
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :desktop_drop:mergeDebugShaders UP-TO-DATE
+> Task :desktop_drop:compileDebugShaders NO-SOURCE
+> Task :desktop_drop:generateDebugAssets UP-TO-DATE
+> Task :desktop_drop:mergeDebugAssets UP-TO-DATE
+> Task :dynamic_color:mergeDebugShaders UP-TO-DATE
+> Task :dynamic_color:compileDebugShaders NO-SOURCE
+> Task :dynamic_color:generateDebugAssets UP-TO-DATE
+> Task :dynamic_color:mergeDebugAssets UP-TO-DATE
+> Task :fjs:mergeDebugShaders UP-TO-DATE
+> Task :fjs:compileDebugShaders NO-SOURCE
+> Task :fjs:generateDebugAssets UP-TO-DATE
+> Task :fjs:mergeDebugAssets UP-TO-DATE
+> Task :jni:mergeDebugShaders UP-TO-DATE
+> Task :jni:compileDebugShaders NO-SOURCE
+> Task :jni:generateDebugAssets UP-TO-DATE
+> Task :jni:mergeDebugAssets UP-TO-DATE
+> Task :jni_flutter:mergeDebugShaders UP-TO-DATE
+> Task :jni_flutter:compileDebugShaders NO-SOURCE
+> Task :jni_flutter:generateDebugAssets UP-TO-DATE
+> Task :jni_flutter:mergeDebugAssets UP-TO-DATE
+> Task :package_info_plus:mergeDebugShaders UP-TO-DATE
+> Task :package_info_plus:compileDebugShaders NO-SOURCE
+> Task :package_info_plus:generateDebugAssets UP-TO-DATE
+> Task :package_info_plus:mergeDebugAssets UP-TO-DATE
+> Task :pdfx:mergeDebugShaders UP-TO-DATE
+> Task :pdfx:compileDebugShaders NO-SOURCE
+> Task :pdfx:generateDebugAssets UP-TO-DATE
+> Task :pdfx:mergeDebugAssets UP-TO-DATE
+> Task :shared_preferences_android:mergeDebugShaders UP-TO-DATE
+> Task :shared_preferences_android:compileDebugShaders NO-SOURCE
+> Task :shared_preferences_android:generateDebugAssets UP-TO-DATE
+> Task :shared_preferences_android:mergeDebugAssets UP-TO-DATE
+> Task :url_launcher_android:mergeDebugShaders UP-TO-DATE
+> Task :url_launcher_android:compileDebugShaders NO-SOURCE
+> Task :url_launcher_android:generateDebugAssets UP-TO-DATE
+> Task :url_launcher_android:mergeDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets
+> Task :app:copyFlutterAssetsDebug
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :desktop_drop:generateDebugResValues UP-TO-DATE
+> Task :desktop_drop:generateDebugResources UP-TO-DATE
+> Task :desktop_drop:packageDebugResources UP-TO-DATE
+> Task :dynamic_color:generateDebugResValues UP-TO-DATE
+> Task :dynamic_color:generateDebugResources UP-TO-DATE
+> Task :dynamic_color:packageDebugResources UP-TO-DATE
+> Task :fjs:generateDebugResValues UP-TO-DATE
+> Task :fjs:generateDebugResources UP-TO-DATE
+> Task :fjs:packageDebugResources UP-TO-DATE
+> Task :jni:generateDebugResValues UP-TO-DATE
+> Task :jni:generateDebugResources UP-TO-DATE
+> Task :jni:packageDebugResources UP-TO-DATE
+> Task :jni_flutter:generateDebugResValues UP-TO-DATE
+> Task :jni_flutter:generateDebugResources UP-TO-DATE
+> Task :jni_flutter:packageDebugResources UP-TO-DATE
+> Task :package_info_plus:generateDebugResValues UP-TO-DATE
+> Task :package_info_plus:generateDebugResources UP-TO-DATE
+> Task :package_info_plus:packageDebugResources UP-TO-DATE
+> Task :pdfx:generateDebugResValues UP-TO-DATE
+> Task :pdfx:generateDebugResources UP-TO-DATE
+> Task :pdfx:packageDebugResources UP-TO-DATE
+> Task :shared_preferences_android:generateDebugResValues UP-TO-DATE
+> Task :shared_preferences_android:generateDebugResources UP-TO-DATE
+> Task :shared_preferences_android:packageDebugResources UP-TO-DATE
+> Task :url_launcher_android:generateDebugResValues UP-TO-DATE
+> Task :url_launcher_android:generateDebugResources UP-TO-DATE
+> Task :url_launcher_android:packageDebugResources UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :android_file_picker:extractDeepLinksDebug UP-TO-DATE
+> Task :android_file_picker:processDebugManifest UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :desktop_drop:extractDeepLinksDebug UP-TO-DATE
+> Task :desktop_drop:processDebugManifest UP-TO-DATE
+> Task :dynamic_color:extractDeepLinksDebug UP-TO-DATE
+> Task :dynamic_color:processDebugManifest UP-TO-DATE
+> Task :fjs:extractDeepLinksDebug UP-TO-DATE
+> Task :fjs:processDebugManifest UP-TO-DATE
+> Task :jni:extractDeepLinksDebug UP-TO-DATE
+> Task :jni:processDebugManifest UP-TO-DATE
+> Task :jni_flutter:extractDeepLinksDebug UP-TO-DATE
+> Task :jni_flutter:processDebugManifest UP-TO-DATE
+> Task :package_info_plus:extractDeepLinksDebug UP-TO-DATE
+> Task :package_info_plus:processDebugManifest UP-TO-DATE
+> Task :pdfx:extractDeepLinksDebug UP-TO-DATE
+> Task :pdfx:processDebugManifest UP-TO-DATE
+> Task :shared_preferences_android:extractDeepLinksDebug UP-TO-DATE
+> Task :shared_preferences_android:processDebugManifest UP-TO-DATE
+> Task :url_launcher_android:extractDeepLinksDebug UP-TO-DATE
+> Task :url_launcher_android:processDebugManifest UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:outputDebugAppLinkSettings UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :desktop_drop:compileDebugLibraryResources UP-TO-DATE
+> Task :desktop_drop:parseDebugLocalResources UP-TO-DATE
+> Task :desktop_drop:generateDebugRFile UP-TO-DATE
+> Task :dynamic_color:compileDebugLibraryResources UP-TO-DATE
+> Task :dynamic_color:parseDebugLocalResources UP-TO-DATE
+> Task :dynamic_color:generateDebugRFile UP-TO-DATE
+> Task :fjs:compileDebugLibraryResources UP-TO-DATE
+> Task :fjs:parseDebugLocalResources UP-TO-DATE
+> Task :fjs:generateDebugRFile UP-TO-DATE
+> Task :jni:compileDebugLibraryResources UP-TO-DATE
+> Task :jni:parseDebugLocalResources UP-TO-DATE
+> Task :jni:generateDebugRFile UP-TO-DATE
+> Task :jni_flutter:compileDebugLibraryResources UP-TO-DATE
+> Task :jni_flutter:parseDebugLocalResources UP-TO-DATE
+> Task :jni_flutter:generateDebugRFile UP-TO-DATE
+> Task :package_info_plus:compileDebugLibraryResources UP-TO-DATE
+> Task :package_info_plus:parseDebugLocalResources UP-TO-DATE
+> Task :package_info_plus:generateDebugRFile UP-TO-DATE
+> Task :pdfx:compileDebugLibraryResources UP-TO-DATE
+> Task :pdfx:parseDebugLocalResources UP-TO-DATE
+> Task :pdfx:generateDebugRFile UP-TO-DATE
+> Task :shared_preferences_android:compileDebugLibraryResources UP-TO-DATE
+> Task :shared_preferences_android:parseDebugLocalResources UP-TO-DATE
+> Task :shared_preferences_android:generateDebugRFile UP-TO-DATE
+> Task :url_launcher_android:compileDebugLibraryResources UP-TO-DATE
+> Task :url_launcher_android:parseDebugLocalResources UP-TO-DATE
+> Task :url_launcher_android:generateDebugRFile UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :desktop_drop:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :desktop_drop:compileDebugKotlin UP-TO-DATE
+> Task :desktop_drop:javaPreCompileDebug UP-TO-DATE
+> Task :desktop_drop:compileDebugJavaWithJavac NO-SOURCE
+> Task :desktop_drop:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :dynamic_color:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :dynamic_color:compileDebugKotlin UP-TO-DATE
+> Task :dynamic_color:javaPreCompileDebug UP-TO-DATE
+> Task :dynamic_color:compileDebugJavaWithJavac NO-SOURCE
+> Task :dynamic_color:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :fjs:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :fjs:compileDebugKotlin NO-SOURCE
+> Task :fjs:javaPreCompileDebug UP-TO-DATE
+> Task :fjs:compileDebugJavaWithJavac NO-SOURCE
+> Task :fjs:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :jni:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :jni:compileDebugKotlin NO-SOURCE
+> Task :jni:javaPreCompileDebug UP-TO-DATE
+> Task :jni:compileDebugJavaWithJavac UP-TO-DATE
+> Task :jni:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :jni_flutter:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :jni_flutter:compileDebugKotlin NO-SOURCE
+> Task :jni_flutter:javaPreCompileDebug UP-TO-DATE
+> Task :jni_flutter:compileDebugJavaWithJavac UP-TO-DATE
+> Task :jni_flutter:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :package_info_plus:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :package_info_plus:compileDebugKotlin UP-TO-DATE
+> Task :package_info_plus:javaPreCompileDebug UP-TO-DATE
+> Task :package_info_plus:compileDebugJavaWithJavac NO-SOURCE
+> Task :package_info_plus:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :pdfx:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :pdfx:compileDebugKotlin UP-TO-DATE
+> Task :pdfx:javaPreCompileDebug UP-TO-DATE
+> Task :pdfx:compileDebugJavaWithJavac UP-TO-DATE
+> Task :pdfx:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :shared_preferences_android:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :shared_preferences_android:compileDebugKotlin UP-TO-DATE
+> Task :shared_preferences_android:javaPreCompileDebug UP-TO-DATE
+> Task :shared_preferences_android:compileDebugJavaWithJavac NO-SOURCE
+> Task :shared_preferences_android:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :url_launcher_android:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :url_launcher_android:generateDebugBuildConfig UP-TO-DATE
+> Task :url_launcher_android:compileDebugKotlin UP-TO-DATE
+> Task :url_launcher_android:javaPreCompileDebug UP-TO-DATE
+> Task :url_launcher_android:compileDebugJavaWithJavac UP-TO-DATE
+> Task :url_launcher_android:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :app:compileDebugKotlin
+
+[Incubating] Problems report is available at: file:///C:/Users/aless/Documents/GitHub/OSIpp/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.14/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 48s
+167 actionable tasks: 6 executed, 161 up-to-date

@@ -21,6 +21,7 @@ class UnifiedToolbar extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback? onPomodoroTap;
   final bool pomodoroActive;
   final VoidCallback? onOpenFile;
+  final VoidCallback? onNavigationTap;
   final bool openingFile;
 
   /// Callback della WorkspacePage per aprire un PDF in una scheda separata:
@@ -33,6 +34,7 @@ class UnifiedToolbar extends StatefulWidget implements PreferredSizeWidget {
     this.onPomodoroTap,
     this.pomodoroActive = false,
     this.onOpenFile,
+    this.onNavigationTap,
     this.openingFile = false,
     this.onOpenPdfInNewTab,
   });
@@ -110,6 +112,7 @@ class _UnifiedToolbarState extends State<UnifiedToolbar> {
         onPomodoroTap: widget.onPomodoroTap ?? () {},
         pomodoroActive: widget.pomodoroActive,
         onOpenFile: widget.onOpenFile,
+        onNavigationTap: widget.onNavigationTap,
         openingFile: widget.openingFile,
         onToolSelect: (tool) => ctrl.setTool(tool), // -> pannello attivo
       ),

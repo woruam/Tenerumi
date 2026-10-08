@@ -7,7 +7,17 @@ Future<void> showLayersPanel(
 ) => showModalBottomSheet<void>(
   context: context,
   isScrollControlled: true,
-  builder: (_) => AnimatedBuilder(
+  builder: (_) => SizedBox(
+    height: MediaQuery.sizeOf(context).height * .65,
+    child: LayersPanel(controller: controller),
+  ),
+);
+
+class LayersPanel extends StatelessWidget {
+  final CanvasController controller;
+  const LayersPanel({super.key, required this.controller});
+  @override
+  Widget build(BuildContext context) => AnimatedBuilder(
     animation: controller,
     builder: (context, _) {
       final page = controller.activePageIndex.clamp(
@@ -17,7 +27,6 @@ Future<void> showLayersPanel(
       final layers = controller.file!.pages![page].layers!;
       return SafeArea(
         child: SizedBox(
-          height: MediaQuery.sizeOf(context).height * 0.65,
           child: Column(
             children: [
               ListTile(
@@ -52,7 +61,17 @@ Future<void> showLayersPanel(
                           visible: !layer.visible,
                         ),
                       ),
-                      title: Text(layer.name),
+                      title: Tooltip(
+                        message: layer.name,
+                        child: Text(
+                          layer.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ),
+                      selectedTileColor: Theme.of(context).colorScheme.primary
+                          .withValues(alpha: .08),
                       onTap: () => controller.selectLayer(page, index),
                       subtitle: Text(
                         layer.locked
@@ -187,5 +206,5 @@ Future<void> showLayersPanel(
         ),
       );
     },
-  ),
-);
+  );
+}

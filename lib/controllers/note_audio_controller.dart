@@ -131,8 +131,8 @@ class NoteAudioController extends ChangeNotifier {
       return;
     }
     if (recording) return;
-    if (totalBytes + 12 * 1024 * 1024 > maxAudioBytes) {
-      error = 'Limite audio dell’appunto raggiunto (32 MB)';
+    if (totalBytes + maxRecordingBytes > maxAudioBytes) {
+      error = 'Limite audio dell’appunto raggiunto (128 MB)';
       return;
     }
     await _claim();
@@ -178,7 +178,9 @@ class NoteAudioController extends ChangeNotifier {
         raw['bytes'] is Uint8List &&
         (raw['duration'] as int? ?? 0) > 0) {
       final bytes = raw['bytes'] as Uint8List;
-      if (bytes.isNotEmpty && totalBytes + bytes.length <= maxAudioBytes) {
+      if (bytes.isNotEmpty &&
+          bytes.length <= maxRecordingBytes &&
+          totalBytes + bytes.length <= maxAudioBytes) {
         _stoppedAt = min(_stoppedAt, raw['duration'] as int);
         document.recordings[id] = NoteRecording(
           id,

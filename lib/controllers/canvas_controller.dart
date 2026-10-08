@@ -393,6 +393,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
       );
     }
     _disposed = true;
+    pageNavigation.dispose();
     _pdfEpoch++;
     _pdfSources.clear();
     _visiblePdfPages.clear();
@@ -655,6 +656,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
 
     if (_disposed) return;
     file!.pdfAttachments[attachmentName] = source.toUint8List();
+    file!.autoGeneratePages = false;
     file!.pages!.insertAll(insertAt, newPages);
     _activeLayers.clear();
 
@@ -879,6 +881,47 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
+  Future<void>? _thumbnailQueue;
+  Future<Uint8List> buildPageThumbnail(int index) {
+    final page = file!.pages![index];
+    final result = (_thumbnailQueue ?? Future.value()).then((_) {
+      if (_disposed || !file!.pages!.contains(page))
+        throw StateError('Anteprima non disponibile');
+      return _renderPageThumbnail(page, file!.pages!.indexOf(page));
+    });
+    final completed = result.then<void>(
+      (_) {},
+      onError: (Object _, StackTrace __) {},
+    );
+    _thumbnailQueue = completed;
+    unawaited(
+      completed.then((_) {
+        if (identical(_thumbnailQueue, completed)) _thumbnailQueue = null;
+      }),
+    );
+    return result;
+  }
+
+  Future<Uint8List> _renderPageThumbnail(XppPage source, int index) async {
+    final page = exportPageSnapshot(source);
+    Uint8List? background;
+    if (page.background case final XppBackgroundPdf pdf) {
+      background =
+          await (pdfRasterizer?.call(index) ??
+              _rasterPdfBackground(pdf, pixelBudget: 50000));
+      if (background == null) throw StateError('Sfondo non disponibile');
+    } else if (page.background case final XppBackgroundImage image) {
+      if (image.filename != null)
+        background = await _readPdfBytes(image.filename!);
+    }
+    return rasterizeExportPage(
+      page,
+      backgroundBytes: background,
+      maxDimension: 180,
+      pixelBudget: 50000,
+    );
+  }
+
   Future<void> _preparePreview(XppFile snapshot) async {
     try {
       snapshot.previewImage = await buildPreviewBytes(snapshot);
@@ -984,6 +1027,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     hasUnsavedChanges = true;
     activeLayer(pageIndex).content ??= [];
     activeLayer(pageIndex).content!.add(newContent);
+    _growAfterInk(pageIndex, newContent);
     pageStackKeys[pageIndex]?.currentState?.setPageData(
       file!.pages![pageIndex],
     );
@@ -1182,34 +1226,112 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     notifyListeners();
   }
 
-  void addPage() {
-    if (file!.pages!.any((page) => page.infinite)) return;
-    hasUnsavedChanges = true;
+  final ValueNotifier<int> pageNavigation = ValueNotifier(0);
+  XppPage? _lastAutomaticBlank;
+  void setActivePage(int index) {
+    if (_disposed || file?.pages?.isEmpty != false) return;
+    final next = index.clamp(0, file!.pages!.length - 1);
+    if (next == activePageIndex) return;
+    activePageIndex = next;
+    notifyListeners();
+  }
 
-    final XppPageSize size =
-        (file!.pages!.isNotEmpty && file!.pages!.last.pageSize != null)
-        ? XppPageSize(
-            width: file!.pages!.last.pageSize!.width,
-            height: file!.pages!.last.pageSize!.height,
-          )
-        : XppPageSize(width: 595.0, height: 842.0);
+  void goToPage(int index) {
+    setActivePage(index);
+    pageNavigation.value++;
+  }
 
-    // La nuova pagina EREDITA il template della pagina precedente (righe,
-    // quadretti, puntini, Nothing...); se non c'e' (es. pagine PDF), si torna
-    // al classico foglio bianco a righe.
-    final XppBackground? inherited = _cloneBackgroundForNewPage(
-      file!.pages!.isNotEmpty ? file!.pages!.last.background : null,
-      size,
+  void addPage() => insertPage(after: true);
+  void insertPage({required bool after}) => insertBlankPage(
+    activePageIndex + (after ? 1 : 0),
+    reference: activePageIndex,
+    navigate: true,
+  );
+
+  void insertBlankPage(
+    int at, {
+    required int reference,
+    bool navigate = false,
+  }) {
+    final pages = file?.pages;
+    if (_disposed ||
+        pages == null ||
+        pages.isEmpty ||
+        pages.any((p) => p.infinite) ||
+        pages.length >= 10000)
+      return;
+    final previous = pages[reference.clamp(0, pages.length - 1)];
+    final size = XppPageSize(
+      width: previous.pageSize!.width,
+      height: previous.pageSize!.height,
     );
-
-    final XppPage newPage = XppPage.empty(
+    final page = XppPage.empty(
       pageSize: size,
       template:
-          inherited ?? XppBackgroundSolidLined(color: Colors.white, size: size),
+          _cloneBackgroundForNewPage(previous.background, size) ??
+          XppBackgroundSolidLined(color: Colors.white, size: size),
     );
+    at = at.clamp(0, pages.length);
+    // Index changes preserve layer selection and existing ink undo history.
+    void shift<T>(Map<int, T> map) {
+      final old = Map<int, T>.of(map);
+      map.clear();
+      for (final e in old.entries) {
+        map[e.key >= at ? e.key + 1 : e.key] = e.value;
+      }
+    }
 
-    file!.pages!.add(newPage);
+    shift(_activeLayers);
+    shift(pageStackKeys);
+    for (final stack in [undoStack, redoStack]) {
+      for (var i = 0; i < stack.length; i++) {
+        final old = stack[i];
+        if (old.pageIndex >= at)
+          stack[i] = PageSnapshot(
+            old.pageIndex + 1,
+            old.layers,
+            old.activeIndex,
+          );
+      }
+    }
+    _pdfEpoch++;
+    _visiblePdfPages = {};
+    pdfBackgrounds.clear();
+    pdfErrors.clear();
+    pages.insert(at, page);
+    if (activePageIndex >= at) activePageIndex++;
+    hasUnsavedChanges = true;
     notifyListeners();
+    if (navigate) goToPage(at);
+  }
+
+  bool get automaticPagesEnabled =>
+      file?.autoGeneratePages == true &&
+      file!.pages!.every(
+        (p) => !p.infinite && p.background is! XppBackgroundPdf,
+      );
+  bool requestNextPageFromScroll() {
+    if (!automaticPagesEnabled) return false;
+    final last = file!.pages!.last;
+    final empty = last.layers!.every((l) => l.content?.isEmpty != false);
+    if (empty && identical(last, _lastAutomaticBlank)) return false;
+    insertBlankPage(file!.pages!.length, reference: file!.pages!.length - 1);
+    _lastAutomaticBlank = file!.pages!.last;
+    return !identical(last, _lastAutomaticBlank);
+  }
+
+  void _growAfterInk(int page, XppContent content) {
+    if (!automaticPagesEnabled ||
+        page != file!.pages!.length - 1 ||
+        content is! XppStroke ||
+        content.tool == XppStrokeTool.ERASER)
+      return;
+    final bounds = content.bounds();
+    if (bounds != null &&
+        bounds.bottom >= file!.pages![page].pageSize!.height * .88) {
+      insertBlankPage(file!.pages!.length, reference: page);
+      _lastAutomaticBlank = file!.pages!.last;
+    }
   }
 
   /// Ricrea lo stesso tipo di sfondo della pagina precedente, adattato alla

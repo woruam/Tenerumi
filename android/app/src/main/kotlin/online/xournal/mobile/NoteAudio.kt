@@ -51,7 +51,7 @@ class NoteAudio(private val activity: MainActivity, messenger: BinaryMessenger) 
     private var grantedPending: MethodChannel.Result? = null
     private var closed = false
     private var foreground = true
-    private val limit = 12 * 1024 * 1024L
+    private val limit = 48 * 1024 * 1024L
 
     init {
         // Only our disposable files, never document files.
@@ -85,7 +85,7 @@ class NoteAudio(private val activity: MainActivity, messenger: BinaryMessenger) 
                         releasePlayer()
                         if (recorder != null) throw IllegalStateException("Ferma prima la registrazione")
                         val bytes = call.argument<ByteArray>("bytes") ?: throw IllegalArgumentException()
-                        if (bytes.size > 32 * 1024 * 1024) throw IllegalArgumentException()
+                        if (bytes.size > 48 * 1024 * 1024) throw IllegalArgumentException()
                         val seek = call.argument<Int>("position") ?: 0
                         playResult = result
                         val file = File.createTempFile("osi-audio-play-", ".m4a", activity.cacheDir)
@@ -150,7 +150,7 @@ class NoteAudio(private val activity: MainActivity, messenger: BinaryMessenger) 
             media.setAudioChannels(1)
             media.setAudioSamplingRate(22050)
             media.setAudioEncodingBitRate(48000)
-            media.setMaxDuration(30 * 60 * 1000)
+            media.setMaxDuration(120 * 60 * 1000)
             media.setMaxFileSize(limit)
             media.setOutputFile(file.absolutePath)
             media.setOnInfoListener { _, what, _ ->

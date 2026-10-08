@@ -133,6 +133,7 @@ class CanvasPageState extends State<CanvasPage> {
     // Usa il controller esterno se fornito (split: lo possiede il WorkspaceController),
     // altrimenti la pagina ne crea uno proprio (uso a tab singola).
     _controller = widget.controller ?? (CanvasController()..init(widget.file));
+    _controller.pageNavigation.addListener(_navigateToPage);
     // Scheda nuova creata per un PDF: importiamolo appena pronta la UI.
     if (widget.pdfToImportPath != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -145,11 +146,24 @@ class CanvasPageState extends State<CanvasPage> {
     }
   }
 
+  void _navigateToPage() {
+    final pages = _controller.file?.pages;
+    if (pages == null || _pageDisplayWidth == null) return;
+    double top = 24;
+    for (var i = 0; i < _controller.activePageIndex; i++) {
+      top += _pageDisplayWidth! / pages[i].pageSize!.ratio + 24;
+    }
+    final matrix = _zoomController.value.clone();
+    matrix.setEntry(1, 3, 24 - top * matrix.getMaxScaleOnAxis());
+    _zoomController.value = matrix;
+  }
+
   Future<bool> promptSaveIfUnsaved() =>
       confirmDocumentClose(context, _controller);
 
   @override
   void dispose() {
+    _controller.pageNavigation.removeListener(_navigateToPage);
     _controller.suspendPdfRendering();
     if (widget.zoomController == null) _zoomController.dispose();
     if (widget.controller == null) _controller.dispose();
@@ -268,6 +282,22 @@ class CanvasPageState extends State<CanvasPage> {
                           child: ZoomableWidget(
                             key: _zoomableKey,
                             controller: _zoomController,
+                            sceneSize: Size(
+                              displayWidth + 32,
+                              24 +
+                                  (ctrl.file?.pages ?? []).fold<double>(
+                                    0,
+                                    (sum, page) =>
+                                        sum +
+                                        displayWidth / page.pageSize!.ratio +
+                                        24,
+                                  ),
+                            ),
+                            stylusPanEnabled: ctrl.isPanEnabled,
+                            onEndReached: () {
+                              if (ctrl.requestNextPageFromScroll())
+                                ctrl.goToPage(ctrl.file!.pages!.length - 1);
+                            },
                             interactionsEnabled: !resizing,
                             touchDrawingEnabled:
                                 ctrl.touchDrawingEnabled && !ctrl.isPanEnabled,
@@ -283,6 +313,7 @@ class CanvasPageState extends State<CanvasPage> {
                                   displayWidth / page.pageSize!.ratio,
                               ],
                               onVisiblePages: ctrl.setVisiblePdfPages,
+                              onCurrentPage: ctrl.setActivePage,
                               pageBuilder: (pageIndex) {
                                 ctrl.pageStackKeys.putIfAbsent(
                                   pageIndex,
@@ -303,6 +334,8 @@ class CanvasPageState extends State<CanvasPage> {
                                     ],
                                   ),
                                   child: Card(
+                                    shape: const RoundedRectangleBorder(),
+                                    clipBehavior: Clip.hardEdge,
                                     elevation: 0,
                                     margin: EdgeInsets.zero,
                                     color: Colors.white,
@@ -414,9 +447,7 @@ class CanvasPageState extends State<CanvasPage> {
                                                 .pages![pageIndex]
                                                 .pageSize!
                                                 .height,
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
+                                            child: ClipRect(
                                               child: Stack(
                                                 fit: StackFit.expand,
                                                 children: [

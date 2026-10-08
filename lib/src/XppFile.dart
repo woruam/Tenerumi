@@ -40,6 +40,7 @@ class XppFile {
     this.sourcePath,
     this.modifiedAt,
     this.tag,
+    this.autoGeneratePages = false,
     String? documentId,
     Map<String, Uint8List>? pdfAttachments,
     Map<String, NoteRecording>? recordings,
@@ -55,6 +56,7 @@ class XppFile {
   bool recovered = false;
   DateTime? modifiedAt;
   String? tag;
+  bool autoGeneratePages;
 
   static XppFile empty({
     String? title,
@@ -76,6 +78,7 @@ class XppFile {
     return XppFile(
       title: title,
       tag: tag,
+      autoGeneratePages: true,
       pages: [newPage],
       modifiedAt: DateTime.now().toUtc(),
     );
@@ -85,6 +88,7 @@ class XppFile {
     final pageCount = await pdfPageCount(pdf);
     final pdfName = pdf.path ?? 'background.pdf';
     XppFile file = XppFile.empty(title: titleFromPath(pdf.fileName))
+      ..autoGeneratePages = false
       ..pages!.clear();
     file.pdfAttachments[pdfName] = pdf.toUint8List();
     Future<FilePickerCross> onUnavailable(String? p) async => pdf;
@@ -430,6 +434,10 @@ class XppFile {
     return XppFile(
       documentId: documentTree.getAttribute('osipp-id'),
       tag: documentTree.getAttribute('osipp-tag'),
+      autoGeneratePages:
+          documentTree.getAttribute('osipp-auto-pages') == 'true' ||
+          (documentTree.getAttribute('osipp-auto-pages') == null &&
+              !pages.any((p) => p.background is XppBackgroundPdf)),
       modifiedAt: DateTime.tryParse(
         documentTree.getAttribute('osipp-modified-at') ?? '',
       ),
@@ -475,6 +483,7 @@ class XppFile {
           XmlAttribute(XmlName('creator'), 'OSI'),
           XmlAttribute(XmlName('fileversion'), '4'),
           XmlAttribute(XmlName('osipp-id'), documentId),
+          XmlAttribute(XmlName('osipp-auto-pages'), '$autoGeneratePages'),
           if (tag != null) XmlAttribute(XmlName('osipp-tag'), tag!),
           if (modifiedAt != null)
             XmlAttribute(
@@ -534,6 +543,7 @@ class XppFile {
       documentId: documentId,
       modifiedAt: modifiedAt,
       tag: tag,
+      autoGeneratePages: autoGeneratePages,
       sourcePath: sourcePath,
       title: title,
       previewImage: previewImage,

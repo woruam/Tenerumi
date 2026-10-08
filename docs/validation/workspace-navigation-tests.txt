@@ -1,0 +1,12 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart
+00:00 +0: insertion remaps layers and ink undo without changing PDF ordinals
+00:00 +1: native notes grow near bottom and prevent automatic blank chains; PDFs stay finite
+00:00 +2: session restores saved files and focus, skipping missing tabs; explicit clear persists
+00:00 +3: restoration prefers checkpoint over original and preserves audio synchronization
+00:00 +4: pinch pointer drop remains stable and palm is rejected, infinite=false
+00:00 +5: pinch pointer drop remains stable and palm is rejected, infinite=true
+00:00 +6: upward swipe on last native page grows once without inertia
+00:00 +7: saved app notes open without leaving workspace
+00:01 +8: sidebar stays open for layer switching, page insertion and thumbnails; workspace survives background
+00:02 +9: workspace recreates both tabs, split focus, template and zoom after process loss
+00:03 +10: All tests passed!

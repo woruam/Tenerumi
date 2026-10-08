@@ -192,7 +192,7 @@ class _NoteAudioPanelState extends State<NoteAudioPanel> {
                       : audio.setListenMode,
                 ),
                 const Text(
-                  'Il microfono si ferma salvando o lasciando l’app. Massimo 30 minuti per registrazione e 32 MB per appunto.',
+                  'Il microfono si ferma salvando o lasciando l’app. Massimo 120 minuti e 48 MB per registrazione, 128 MB per appunto.',
                   style: TextStyle(fontSize: 12),
                 ),
               ],

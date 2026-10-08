@@ -34,7 +34,11 @@ class _InfiniteCanvasState extends State<InfiniteCanvas> {
     if (oldWidget.canvas != widget.canvas) _geometry = CanvasGeometryCache();
   }
 
-  double _initialScale = 1;
+  double _initialScale = 1, _gestureScale = 1;
+  int _gesturePointers = 0;
+  bool _pinched = false, _suppressed = false;
+  final Set<int> _touchIds = {};
+  DateTime? _hover;
   Offset _anchor = Offset.zero;
   void _zoom(double scale, Offset local, Offset world) {
     final z = scale.clamp(0.1, 10.0);
@@ -45,9 +49,27 @@ class _InfiniteCanvasState extends State<InfiniteCanvas> {
 
   @override
   Widget build(BuildContext context) => Listener(
+    onPointerHover: (event) {
+      if (event.kind == PointerDeviceKind.stylus) _hover = DateTime.now();
+    },
     onPointerDown: (event) {
+      if (event.kind == PointerDeviceKind.stylus ||
+          event.kind == PointerDeviceKind.invertedStylus) {
+        _touch.stylusPointers.add(event.pointer);
+        _touch.cancellationEpoch++;
+        _suppressed = true;
+      }
       if (event.kind == PointerDeviceKind.touch) {
-        _touch.pointers++;
+        if (_touch.rejects(event) ||
+            _touchIds.length >= 2 ||
+            (_hover != null &&
+                DateTime.now().difference(_hover!).inMilliseconds <= 300)) {
+          _touch.rejectedPointers.add(event.pointer);
+          return;
+        }
+        if (_touchIds.isEmpty) _pinched = false;
+        _touchIds.add(event.pointer);
+        _touch.pointers = _touchIds.length;
         if (_touch.pointers == 2) _touch.cancellationEpoch++;
       }
     },
@@ -65,24 +87,53 @@ class _InfiniteCanvasState extends State<InfiniteCanvas> {
         });
       }
     },
-    child: GestureDetector(
+    child: RawGestureDetector(
       behavior: HitTestBehavior.opaque,
-      supportedDevices: const {
-        PointerDeviceKind.touch,
-        PointerDeviceKind.mouse,
-        PointerDeviceKind.trackpad,
-      },
-      onScaleStart: (details) {
-        _initialScale = widget.transform.value.getMaxScaleOnAxis();
-        _anchor = widget.transform.toScene(details.localFocalPoint);
-      },
-      onScaleUpdate: (details) {
-        if (widget.canvas.touchDrawingEnabled &&
-            !widget.canvas.isPanEnabled &&
-            details.pointerCount < 2) {
-          return;
-        }
-        _zoom(_initialScale * details.scale, details.localFocalPoint, _anchor);
+      gestures: {
+        CanvasScaleRecognizer:
+            GestureRecognizerFactoryWithHandlers<CanvasScaleRecognizer>(
+              () => CanvasScaleRecognizer(),
+              (instance) {
+                instance.allow = (event) =>
+                    event.kind != PointerDeviceKind.stylus &&
+                    event.kind != PointerDeviceKind.invertedStylus &&
+                    !_touch.rejects(event) &&
+                    (event.kind != PointerDeviceKind.touch ||
+                        _touchIds.length < 2 ||
+                        _touchIds.contains(event.pointer)) &&
+                    (_hover == null ||
+                        DateTime.now().difference(_hover!).inMilliseconds >
+                            300);
+                instance.onStart = (details) {
+                  _initialScale = widget.transform.value.getMaxScaleOnAxis();
+                  _gestureScale = 1;
+                  _gesturePointers = details.pointerCount;
+                  _pinched |= details.pointerCount >= 2;
+                  _anchor = widget.transform.toScene(details.localFocalPoint);
+                };
+                instance.onUpdate = (details) {
+                  if (_suppressed) return;
+                  if (details.pointerCount != _gesturePointers) {
+                    _gesturePointers = details.pointerCount;
+                    _pinched |= details.pointerCount >= 2;
+                    _initialScale = widget.transform.value.getMaxScaleOnAxis();
+                    _gestureScale = details.scale;
+                    _anchor = widget.transform.toScene(details.localFocalPoint);
+                    return;
+                  }
+                  if (_pinched && details.pointerCount < 2) return;
+                  if (widget.canvas.touchDrawingEnabled &&
+                      !widget.canvas.isPanEnabled &&
+                      details.pointerCount < 2)
+                    return;
+                  _zoom(
+                    _initialScale * details.scale / _gestureScale,
+                    details.localFocalPoint,
+                    _anchor,
+                  );
+                };
+              },
+            ),
       },
       child: LayoutBuilder(
         builder: (context, constraints) => ClipRect(
@@ -172,9 +223,11 @@ class _InfiniteCanvasState extends State<InfiniteCanvas> {
     ),
   );
   void _endTouch(PointerEvent event) {
-    if (event.kind == PointerDeviceKind.touch) {
-      _touch.pointers = math.max(0, _touch.pointers - 1);
-    }
+    _touch.stylusPointers.remove(event.pointer);
+    _touch.rejectedPointers.remove(event.pointer);
+    _touchIds.remove(event.pointer);
+    _touch.pointers = _touchIds.length;
+    if (_touchIds.isEmpty && _touch.stylusPointers.isEmpty) _suppressed = false;
   }
 }
 

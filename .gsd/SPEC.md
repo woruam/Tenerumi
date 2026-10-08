@@ -40,3 +40,7 @@ Registrazione Android su azione esplicita, audio portabile negli appunti, tempi 
 ## Eliminazione note dalla home - 2026-10-08
 Status: FINALIZED
 Pressione prolungata apre azioni Cambia tag/Elimina; Elimina richiede conferma con nome. Annulla non modifica file/indice. Conferma cancella file e voce recente, copia recovery associata; aggiorna home. Errori visibili senza rimuovere voce se cancellazione file fallisce. Supporto Android content URI e storage locale/Web.
+
+## Navigazione e continuita workspace - 2026-10-08
+Status: FINALIZED
+Pannello laterale non modale con livelli e miniature pagine lazy/cachate, selezione rapida e inserimento prima/dopo pagina attiva per note e PDF. Icone penna/evidenziatore nel colore scelto, pagine squadrate e pressione Incolla 1100ms. Autogenerazione nelle sole note finite native quando inchiostro raggiunge zona inferiore o gesto verso alto a fine documento; nessuna catena di pagine vuote. Audio 120 minuti/48 MiB per registrazione/128 MiB per appunto. Apri libreria in nuova scheda senza home. Persistenza/ripristino sessione schede, focus, split e viewport in background/riavvio. Rejection palmo/stylo e stabilita pinch senza inerzia o salto al cambio numero dita. Verificare snapshot/PDF/undo/input/lifecycle e prove UI; documentare limiti fisici.

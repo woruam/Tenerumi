@@ -30,6 +30,7 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback onPomodoroTap;
   final bool pomodoroActive;
   final VoidCallback? onOpenFile;
+  final VoidCallback? onNavigationTap;
   final bool openingFile;
 
   const CanvasToolbar({
@@ -47,6 +48,7 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
     required this.onPomodoroTap,
     this.pomodoroActive = false,
     this.onOpenFile,
+    this.onNavigationTap,
     this.openingFile = false,
   }) : super(key: key);
 
@@ -69,7 +71,7 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
           tooltip: 'Livelli',
           icon: const Icon(Icons.layers_outlined),
           onPressed: ctrl.file?.pages?.isNotEmpty == true && !ctrl.savingFile
-              ? () => showLayersPanel(context, ctrl)
+              ? onNavigationTap ?? () => showLayersPanel(context, ctrl)
               : null,
         ),
         IconButton(
@@ -205,7 +207,12 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
               duration: const Duration(milliseconds: 150),
               child: IconButton(
                 key: penKey,
-                icon: Icon(icons.pen),
+                style: IconButton.styleFrom(
+                  backgroundColor: ctrl.penColor.computeLuminance() < .15
+                      ? Colors.white24
+                      : Colors.transparent,
+                ),
+                icon: Icon(icons.pen, color: ctrl.penColor),
                 tooltip: 'Penna',
                 color: stylusTool == EditingTool.STYLUS
                     ? Theme.of(context).colorScheme.primary
@@ -220,7 +227,7 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
               duration: const Duration(milliseconds: 150),
               child: IconButton(
                 key: highlighterKey,
-                icon: Icon(icons.highlighter),
+                icon: Icon(icons.highlighter, color: ctrl.highlighterColor),
                 tooltip: 'Evidenziatore',
                 color: stylusTool == EditingTool.HIGHLIGHT
                     ? Theme.of(context).colorScheme.primary
@@ -285,13 +292,18 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
 
             const SizedBox(height: 30, child: VerticalDivider(width: 20)),
 
-            IconButton(
+            PopupMenuButton<bool>(
               icon: Icon(icons.addPage),
               tooltip: "Aggiungi Pagina",
-              color: Theme.of(context).colorScheme.primary,
-              onPressed: ctrl.file?.pages?.firstOrNull?.infinite == true
-                  ? null
-                  : ctrl.addPage,
+              enabled: ctrl.file?.pages?.firstOrNull?.infinite != true,
+              onSelected: (after) => ctrl.insertPage(after: after),
+              itemBuilder: (_) => const [
+                PopupMenuItem(
+                  value: false,
+                  child: Text("Pagina prima di questa"),
+                ),
+                PopupMenuItem(value: true, child: Text("Pagina dopo questa")),
+              ],
             ),
 
             // --- IL TASTO PDF DIRETTAMENTE QUI, BEN VISIBILE ---
