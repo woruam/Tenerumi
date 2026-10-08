@@ -70,3 +70,10 @@ Reattività e memoria: fasi 1–4 completate. 169 regressioni, benchmark struttu
 3. Regressioni, analisi e documentazione; commit.
 
 Qualità PDF: fasi 1–3 completate e verificate; confronto indipendente PDF/canvas, suite completa e audit docs/pdf-quality.md.
+
+## Analisi provenienza e ottimizzazioni
+1. Identificare upstream e misurare file/righe/token.
+2. Esaminare percorsi critici e semplificazioni senza regressioni.
+3. Rapporto Markdown, dati riproducibili e verifica documentale; commit.
+
+Analisi provenienza: fasi 1–3 completate; dati upstream acquisiti, rapporto e inventario verificati. Nessuna modifica all’app.

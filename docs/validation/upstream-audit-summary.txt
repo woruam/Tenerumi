@@ -1,0 +1,112 @@
+{
+  "local_revision": "1d1baa784182e6f3657b9cb33b244f9708811bed",
+  "local_initial_revision": "ae59dd05c3b4a3f771030d43eeff5ad8c911b467",
+  "upstream_revision": "ce62f95f13717ca636d3cec8c2f4212bdd3ef5b9",
+  "upstream_url": "https://gitlab.com/TheOneWithTheBraid/xournalpp_mobile",
+  "shingle_size": 20,
+  "lib": {
+    "files": 90,
+    "upstream_files": 35,
+    "upstream_tokens": 26853,
+    "states": {
+      "absent_path": 56,
+      "identical": 4,
+      "tokens_identical": 4,
+      "modified": 26
+    },
+    "nonempty_lines": 19059,
+    "tokens": 112817,
+    "same_path_aligned_tokens": 17644,
+    "global_20_token_overlap": 13184,
+    "same_path_aligned_percent": 15.64,
+    "global_20_token_overlap_percent": 11.69
+  },
+  "runtime": {
+    "files": 96,
+    "upstream_files": 36,
+    "upstream_tokens": 26877,
+    "states": {
+      "absent_path": 61,
+      "modified": 27,
+      "identical": 4,
+      "tokens_identical": 4
+    },
+    "nonempty_lines": 19550,
+    "tokens": 116906,
+    "same_path_aligned_tokens": 17668,
+    "global_20_token_overlap": 13184,
+    "same_path_aligned_percent": 15.11,
+    "global_20_token_overlap_percent": 11.28
+  },
+  "app": {
+    "files": 85,
+    "upstream_files": 30,
+    "upstream_tokens": 21676,
+    "states": {
+      "absent_path": 56,
+      "modified": 26,
+      "tokens_identical": 1,
+      "identical": 2
+    },
+    "nonempty_lines": 17798,
+    "tokens": 107640,
+    "same_path_aligned_tokens": 12467,
+    "global_20_token_overlap": 8007,
+    "same_path_aligned_percent": 11.58,
+    "global_20_token_overlap_percent": 7.44
+  },
+  "app_runtime": {
+    "files": 91,
+    "upstream_files": 31,
+    "upstream_tokens": 21700,
+    "states": {
+      "absent_path": 61,
+      "modified": 27,
+      "tokens_identical": 1,
+      "identical": 2
+    },
+    "nonempty_lines": 18289,
+    "tokens": 111729,
+    "same_path_aligned_tokens": 12491,
+    "global_20_token_overlap": 8007,
+    "same_path_aligned_percent": 11.18,
+    "global_20_token_overlap_percent": 7.17
+  },
+  "initial_lib": {
+    "files": 41,
+    "upstream_files": 35,
+    "upstream_tokens": 26853,
+    "states": {
+      "identical": 5,
+      "tokens_identical": 5,
+      "modified": 24,
+      "absent_path": 7
+    },
+    "nonempty_lines": 5620,
+    "tokens": 33286,
+    "same_path_aligned_tokens": 20178,
+    "global_20_token_overlap": 18388,
+    "same_path_aligned_percent": 60.62,
+    "global_20_token_overlap_percent": 55.24
+  },
+  "reachability": {
+    "entrypoints": [
+      "lib/main.dart",
+      "lib/main_desktop.dart"
+    ],
+    "unreachable_import_paths": [
+      "lib/src/conditional/open_file/open_file_generic.dart",
+      "lib/src/conditional/open_file/open_file_io.dart",
+      "lib/src/conditional/open_file/open_file_web.dart",
+      "lib/widgets/ContextualBottomSheet.dart",
+      "lib/widgets/DropFile.dart",
+      "lib/widgets/EditingToolbar.dart",
+      "lib/widgets/MainDrawer.dart",
+      "lib/widgets/QuotaTile.dart",
+      "lib/widgets/ToolSettingsMenu.dart",
+      "lib/widgets/XppPagesListView.dart",
+      "lib/widgets/canvas_app_bar.dart"
+    ],
+    "method": "Static import/export graph including conditional branches; not symbol reachability"
+  }
+}

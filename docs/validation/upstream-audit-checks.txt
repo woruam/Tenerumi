@@ -1,0 +1,1 @@
+PASS: somme file/stati/righe/token coerenti; copertura verificata; tokenizzazione stringhe/commenti; link locali validi; 85 righe inventario.

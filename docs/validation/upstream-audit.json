@@ -1,0 +1,3346 @@
+{
+  "local_revision": "1d1baa784182e6f3657b9cb33b244f9708811bed",
+  "local_initial_revision": "ae59dd05c3b4a3f771030d43eeff5ad8c911b467",
+  "upstream_revision": "ce62f95f13717ca636d3cec8c2f4212bdd3ef5b9",
+  "upstream_url": "https://gitlab.com/TheOneWithTheBraid/xournalpp_mobile",
+  "shingle_size": 20,
+  "lib": {
+    "files": 90,
+    "upstream_files": 35,
+    "upstream_tokens": 26853,
+    "states": {
+      "absent_path": 56,
+      "identical": 4,
+      "tokens_identical": 4,
+      "modified": 26
+    },
+    "nonempty_lines": 19059,
+    "tokens": 112817,
+    "same_path_aligned_tokens": 17644,
+    "global_20_token_overlap": 13184,
+    "same_path_aligned_percent": 15.64,
+    "global_20_token_overlap_percent": 11.69,
+    "per_file": [
+      {
+        "path": "lib/controllers/canvas_controller.dart",
+        "state": "absent_path",
+        "nonempty_lines": 1386,
+        "tokens": 8953,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/controllers/note_audio_controller.dart",
+        "state": "absent_path",
+        "nonempty_lines": 326,
+        "tokens": 2165,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/controllers/theme_controller.dart",
+        "state": "absent_path",
+        "nonempty_lines": 174,
+        "tokens": 967,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/controllers/workspace_controller.dart",
+        "state": "absent_path",
+        "nonempty_lines": 153,
+        "tokens": 796,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/generated/intl/messages_all.dart",
+        "state": "identical",
+        "nonempty_lines": 61,
+        "tokens": 328,
+        "same_path_aligned_tokens": 328,
+        "global_20_token_overlap": 328
+      },
+      {
+        "path": "lib/generated/intl/messages_de.dart",
+        "state": "tokens_identical",
+        "nonempty_lines": 138,
+        "tokens": 789,
+        "same_path_aligned_tokens": 789,
+        "global_20_token_overlap": 789
+      },
+      {
+        "path": "lib/generated/intl/messages_en.dart",
+        "state": "tokens_identical",
+        "nonempty_lines": 135,
+        "tokens": 789,
+        "same_path_aligned_tokens": 789,
+        "global_20_token_overlap": 789
+      },
+      {
+        "path": "lib/generated/intl/messages_pt.dart",
+        "state": "tokens_identical",
+        "nonempty_lines": 141,
+        "tokens": 780,
+        "same_path_aligned_tokens": 780,
+        "global_20_token_overlap": 780
+      },
+      {
+        "path": "lib/generated/l10n.dart",
+        "state": "identical",
+        "nonempty_lines": 786,
+        "tokens": 2491,
+        "same_path_aligned_tokens": 2491,
+        "global_20_token_overlap": 2491
+      },
+      {
+        "path": "lib/layer_contents/XppImage.dart",
+        "state": "modified",
+        "nonempty_lines": 107,
+        "tokens": 699,
+        "same_path_aligned_tokens": 313,
+        "global_20_token_overlap": 192
+      },
+      {
+        "path": "lib/layer_contents/XppStroke.dart",
+        "state": "modified",
+        "nonempty_lines": 652,
+        "tokens": 5031,
+        "same_path_aligned_tokens": 1251,
+        "global_20_token_overlap": 816
+      },
+      {
+        "path": "lib/layer_contents/XppTexImage.dart",
+        "state": "modified",
+        "nonempty_lines": 131,
+        "tokens": 842,
+        "same_path_aligned_tokens": 469,
+        "global_20_token_overlap": 303
+      },
+      {
+        "path": "lib/layer_contents/XppText.dart",
+        "state": "modified",
+        "nonempty_lines": 131,
+        "tokens": 736,
+        "same_path_aligned_tokens": 431,
+        "global_20_token_overlap": 311
+      },
+      {
+        "path": "lib/main.dart",
+        "state": "modified",
+        "nonempty_lines": 77,
+        "tokens": 387,
+        "same_path_aligned_tokens": 161,
+        "global_20_token_overlap": 39
+      },
+      {
+        "path": "lib/main_desktop.dart",
+        "state": "tokens_identical",
+        "nonempty_lines": 5,
+        "tokens": 17,
+        "same_path_aligned_tokens": 17,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/pages/CanvasPage.dart",
+        "state": "modified",
+        "nonempty_lines": 906,
+        "tokens": 4084,
+        "same_path_aligned_tokens": 678,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/pages/OpenPage.dart",
+        "state": "modified",
+        "nonempty_lines": 1032,
+        "tokens": 5156,
+        "same_path_aligned_tokens": 622,
+        "global_20_token_overlap": 26
+      },
+      {
+        "path": "lib/pages/WorkspacePage.dart",
+        "state": "absent_path",
+        "nonempty_lines": 532,
+        "tokens": 3201,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_controller.dart",
+        "state": "absent_path",
+        "nonempty_lines": 616,
+        "tokens": 4565,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_examples.dart",
+        "state": "absent_path",
+        "nonempty_lines": 311,
+        "tokens": 910,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_latex.dart",
+        "state": "absent_path",
+        "nonempty_lines": 90,
+        "tokens": 610,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_manager_page.dart",
+        "state": "absent_path",
+        "nonempty_lines": 577,
+        "tokens": 3268,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_manifest.dart",
+        "state": "absent_path",
+        "nonempty_lines": 210,
+        "tokens": 1456,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_package.dart",
+        "state": "absent_path",
+        "nonempty_lines": 44,
+        "tokens": 315,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_runtime.dart",
+        "state": "absent_path",
+        "nonempty_lines": 264,
+        "tokens": 2281,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_script.dart",
+        "state": "absent_path",
+        "nonempty_lines": 19,
+        "tokens": 101,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_script_native.dart",
+        "state": "absent_path",
+        "nonempty_lines": 96,
+        "tokens": 569,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_script_stub.dart",
+        "state": "absent_path",
+        "nonempty_lines": 13,
+        "tokens": 46,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_services.dart",
+        "state": "absent_path",
+        "nonempty_lines": 289,
+        "tokens": 2174,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_ui.dart",
+        "state": "absent_path",
+        "nonempty_lines": 191,
+        "tokens": 1194,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/HexColor.dart",
+        "state": "modified",
+        "nonempty_lines": 20,
+        "tokens": 123,
+        "same_path_aligned_tokens": 123,
+        "global_20_token_overlap": 123
+      },
+      {
+        "path": "lib/src/PdfImage.dart",
+        "state": "modified",
+        "nonempty_lines": 46,
+        "tokens": 308,
+        "same_path_aligned_tokens": 101,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/ShapeRecognizer.dart",
+        "state": "absent_path",
+        "nonempty_lines": 119,
+        "tokens": 1116,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/XppBackground.dart",
+        "state": "modified",
+        "nonempty_lines": 377,
+        "tokens": 2467,
+        "same_path_aligned_tokens": 1378,
+        "global_20_token_overlap": 1021
+      },
+      {
+        "path": "lib/src/XppFile.dart",
+        "state": "modified",
+        "nonempty_lines": 596,
+        "tokens": 3465,
+        "same_path_aligned_tokens": 1999,
+        "global_20_token_overlap": 1420
+      },
+      {
+        "path": "lib/src/XppLayer.dart",
+        "state": "modified",
+        "nonempty_lines": 49,
+        "tokens": 311,
+        "same_path_aligned_tokens": 191,
+        "global_20_token_overlap": 176
+      },
+      {
+        "path": "lib/src/XppPage.dart",
+        "state": "modified",
+        "nonempty_lines": 49,
+        "tokens": 283,
+        "same_path_aligned_tokens": 140,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/XppPageContentWidget.dart",
+        "state": "identical",
+        "nonempty_lines": 34,
+        "tokens": 146,
+        "same_path_aligned_tokens": 146,
+        "global_20_token_overlap": 146
+      },
+      {
+        "path": "lib/src/XppPageSize.dart",
+        "state": "absent_path",
+        "nonempty_lines": 10,
+        "tokens": 82,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/app_appearance.dart",
+        "state": "absent_path",
+        "nonempty_lines": 160,
+        "tokens": 915,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/autosave_store.dart",
+        "state": "absent_path",
+        "nonempty_lines": 131,
+        "tokens": 987,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/canvas_geometry_cache.dart",
+        "state": "absent_path",
+        "nonempty_lines": 19,
+        "tokens": 117,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/compat/file_picker_cross.dart",
+        "state": "absent_path",
+        "nonempty_lines": 147,
+        "tokens": 898,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/compat/internal_storage_generic.dart",
+        "state": "absent_path",
+        "nonempty_lines": 19,
+        "tokens": 152,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/compat/internal_storage_io.dart",
+        "state": "absent_path",
+        "nonempty_lines": 48,
+        "tokens": 336,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/conditional/open_file/open_file_generic.dart",
+        "state": "modified",
+        "nonempty_lines": 5,
+        "tokens": 22,
+        "same_path_aligned_tokens": 21,
+        "global_20_token_overlap": 20
+      },
+      {
+        "path": "lib/src/conditional/open_file/open_file_io.dart",
+        "state": "modified",
+        "nonempty_lines": 8,
+        "tokens": 54,
+        "same_path_aligned_tokens": 53,
+        "global_20_token_overlap": 46
+      },
+      {
+        "path": "lib/src/conditional/open_file/open_file_web.dart",
+        "state": "modified",
+        "nonempty_lines": 4,
+        "tokens": 22,
+        "same_path_aligned_tokens": 21,
+        "global_20_token_overlap": 20
+      },
+      {
+        "path": "lib/src/content_snapshot.dart",
+        "state": "absent_path",
+        "nonempty_lines": 52,
+        "tokens": 284,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/decoded_image_cache.dart",
+        "state": "absent_path",
+        "nonempty_lines": 144,
+        "tokens": 982,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/document_export.dart",
+        "state": "absent_path",
+        "nonempty_lines": 430,
+        "tokens": 3122,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/document_scene_geometry.dart",
+        "state": "absent_path",
+        "nonempty_lines": 21,
+        "tokens": 131,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/dynamic_color_adapter.dart",
+        "state": "absent_path",
+        "nonempty_lines": 55,
+        "tokens": 317,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/globals.dart",
+        "state": "modified",
+        "nonempty_lines": 7,
+        "tokens": 35,
+        "same_path_aligned_tokens": 24,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/ink_geometry.dart",
+        "state": "absent_path",
+        "nonempty_lines": 57,
+        "tokens": 332,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/library_metadata.dart",
+        "state": "absent_path",
+        "nonempty_lines": 93,
+        "tokens": 673,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/note_audio.dart",
+        "state": "absent_path",
+        "nonempty_lines": 99,
+        "tokens": 709,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/note_tags.dart",
+        "state": "absent_path",
+        "nonempty_lines": 51,
+        "tokens": 368,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/pdf_raster_cache.dart",
+        "state": "absent_path",
+        "nonempty_lines": 39,
+        "tokens": 246,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/recent_documents.dart",
+        "state": "absent_path",
+        "nonempty_lines": 132,
+        "tokens": 993,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/selection_clipboard.dart",
+        "state": "absent_path",
+        "nonempty_lines": 46,
+        "tokens": 321,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/workspace_session.dart",
+        "state": "absent_path",
+        "nonempty_lines": 109,
+        "tokens": 838,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/ContextualBottomSheet.dart",
+        "state": "identical",
+        "nonempty_lines": 22,
+        "tokens": 141,
+        "same_path_aligned_tokens": 141,
+        "global_20_token_overlap": 141
+      },
+      {
+        "path": "lib/widgets/DropFile.dart",
+        "state": "modified",
+        "nonempty_lines": 124,
+        "tokens": 777,
+        "same_path_aligned_tokens": 429,
+        "global_20_token_overlap": 190
+      },
+      {
+        "path": "lib/widgets/EditingToolbar.dart",
+        "state": "modified",
+        "nonempty_lines": 248,
+        "tokens": 1336,
+        "same_path_aligned_tokens": 326,
+        "global_20_token_overlap": 329
+      },
+      {
+        "path": "lib/widgets/MainDrawer.dart",
+        "state": "modified",
+        "nonempty_lines": 94,
+        "tokens": 494,
+        "same_path_aligned_tokens": 397,
+        "global_20_token_overlap": 280
+      },
+      {
+        "path": "lib/widgets/PointerListener.dart",
+        "state": "modified",
+        "nonempty_lines": 1488,
+        "tokens": 9619,
+        "same_path_aligned_tokens": 619,
+        "global_20_token_overlap": 221
+      },
+      {
+        "path": "lib/widgets/PomodoroTimer.dart",
+        "state": "absent_path",
+        "nonempty_lines": 513,
+        "tokens": 2700,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/QuotaTile.dart",
+        "state": "modified",
+        "nonempty_lines": 8,
+        "tokens": 36,
+        "same_path_aligned_tokens": 23,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/ToolBoxBottomSheet.dart",
+        "state": "modified",
+        "nonempty_lines": 229,
+        "tokens": 1022,
+        "same_path_aligned_tokens": 1004,
+        "global_20_token_overlap": 990
+      },
+      {
+        "path": "lib/widgets/ToolSettingsMenu.dart",
+        "state": "absent_path",
+        "nonempty_lines": 138,
+        "tokens": 661,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/XppPageStack.dart",
+        "state": "modified",
+        "nonempty_lines": 163,
+        "tokens": 906,
+        "same_path_aligned_tokens": 465,
+        "global_20_token_overlap": 307
+      },
+      {
+        "path": "lib/widgets/XppPagesListView.dart",
+        "state": "modified",
+        "nonempty_lines": 135,
+        "tokens": 800,
+        "same_path_aligned_tokens": 787,
+        "global_20_token_overlap": 785
+      },
+      {
+        "path": "lib/widgets/ZoomableWidget.dart",
+        "state": "modified",
+        "nonempty_lines": 425,
+        "tokens": 2480,
+        "same_path_aligned_tokens": 137,
+        "global_20_token_overlap": 84
+      },
+      {
+        "path": "lib/widgets/app_info_dialog.dart",
+        "state": "absent_path",
+        "nonempty_lines": 60,
+        "tokens": 319,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/audio_timeline_overlay.dart",
+        "state": "absent_path",
+        "nonempty_lines": 107,
+        "tokens": 749,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/canvas_app_bar.dart",
+        "state": "absent_path",
+        "nonempty_lines": 122,
+        "tokens": 736,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/canvas_toolbar.dart",
+        "state": "absent_path",
+        "nonempty_lines": 328,
+        "tokens": 1860,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 21
+      },
+      {
+        "path": "lib/widgets/document_library_card.dart",
+        "state": "absent_path",
+        "nonempty_lines": 220,
+        "tokens": 1153,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/document_navigator.dart",
+        "state": "absent_path",
+        "nonempty_lines": 178,
+        "tokens": 875,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/infinite_canvas.dart",
+        "state": "absent_path",
+        "nonempty_lines": 313,
+        "tokens": 2132,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/layers_panel.dart",
+        "state": "absent_path",
+        "nonempty_lines": 208,
+        "tokens": 1013,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/note_audio_panel.dart",
+        "state": "absent_path",
+        "nonempty_lines": 200,
+        "tokens": 1095,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/note_tag_picker.dart",
+        "state": "absent_path",
+        "nonempty_lines": 102,
+        "tokens": 500,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/saved_notes_dialog.dart",
+        "state": "absent_path",
+        "nonempty_lines": 66,
+        "tokens": 434,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/split_resize_scope.dart",
+        "state": "absent_path",
+        "nonempty_lines": 10,
+        "tokens": 74,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/split_screen_view.dart",
+        "state": "absent_path",
+        "nonempty_lines": 173,
+        "tokens": 1033,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/unified_toolbar.dart",
+        "state": "absent_path",
+        "nonempty_lines": 433,
+        "tokens": 1889,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/unsaved_document_dialog.dart",
+        "state": "absent_path",
+        "nonempty_lines": 40,
+        "tokens": 231,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/virtual_page_column.dart",
+        "state": "absent_path",
+        "nonempty_lines": 143,
+        "tokens": 897,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      }
+    ]
+  },
+  "runtime": {
+    "files": 96,
+    "upstream_files": 36,
+    "upstream_tokens": 26877,
+    "states": {
+      "absent_path": 61,
+      "modified": 27,
+      "identical": 4,
+      "tokens_identical": 4
+    },
+    "nonempty_lines": 19550,
+    "tokens": 116906,
+    "same_path_aligned_tokens": 17668,
+    "global_20_token_overlap": 13184,
+    "same_path_aligned_percent": 15.11,
+    "global_20_token_overlap_percent": 11.28,
+    "per_file": [
+      {
+        "path": "android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java",
+        "state": "absent_path",
+        "nonempty_lines": 61,
+        "tokens": 454,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "android/app/src/main/kotlin/online/xournal/mobile/DisplayModePolicy.kt",
+        "state": "absent_path",
+        "nonempty_lines": 8,
+        "tokens": 100,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "android/app/src/main/kotlin/online/xournal/mobile/DocumentStorage.kt",
+        "state": "absent_path",
+        "nonempty_lines": 68,
+        "tokens": 465,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "android/app/src/main/kotlin/online/xournal/mobile/MainActivity.kt",
+        "state": "modified",
+        "nonempty_lines": 108,
+        "tokens": 752,
+        "same_path_aligned_tokens": 24,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "android/app/src/main/kotlin/online/xournal/mobile/NoteAudio.kt",
+        "state": "absent_path",
+        "nonempty_lines": 207,
+        "tokens": 1894,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "android/app/src/main/kotlin/online/xournal/mobile/PluginOcr.kt",
+        "state": "absent_path",
+        "nonempty_lines": 39,
+        "tokens": 424,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/controllers/canvas_controller.dart",
+        "state": "absent_path",
+        "nonempty_lines": 1386,
+        "tokens": 8953,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/controllers/note_audio_controller.dart",
+        "state": "absent_path",
+        "nonempty_lines": 326,
+        "tokens": 2165,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/controllers/theme_controller.dart",
+        "state": "absent_path",
+        "nonempty_lines": 174,
+        "tokens": 967,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/controllers/workspace_controller.dart",
+        "state": "absent_path",
+        "nonempty_lines": 153,
+        "tokens": 796,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/generated/intl/messages_all.dart",
+        "state": "identical",
+        "nonempty_lines": 61,
+        "tokens": 328,
+        "same_path_aligned_tokens": 328,
+        "global_20_token_overlap": 328
+      },
+      {
+        "path": "lib/generated/intl/messages_de.dart",
+        "state": "tokens_identical",
+        "nonempty_lines": 138,
+        "tokens": 789,
+        "same_path_aligned_tokens": 789,
+        "global_20_token_overlap": 789
+      },
+      {
+        "path": "lib/generated/intl/messages_en.dart",
+        "state": "tokens_identical",
+        "nonempty_lines": 135,
+        "tokens": 789,
+        "same_path_aligned_tokens": 789,
+        "global_20_token_overlap": 789
+      },
+      {
+        "path": "lib/generated/intl/messages_pt.dart",
+        "state": "tokens_identical",
+        "nonempty_lines": 141,
+        "tokens": 780,
+        "same_path_aligned_tokens": 780,
+        "global_20_token_overlap": 780
+      },
+      {
+        "path": "lib/generated/l10n.dart",
+        "state": "identical",
+        "nonempty_lines": 786,
+        "tokens": 2491,
+        "same_path_aligned_tokens": 2491,
+        "global_20_token_overlap": 2491
+      },
+      {
+        "path": "lib/layer_contents/XppImage.dart",
+        "state": "modified",
+        "nonempty_lines": 107,
+        "tokens": 699,
+        "same_path_aligned_tokens": 313,
+        "global_20_token_overlap": 192
+      },
+      {
+        "path": "lib/layer_contents/XppStroke.dart",
+        "state": "modified",
+        "nonempty_lines": 652,
+        "tokens": 5031,
+        "same_path_aligned_tokens": 1251,
+        "global_20_token_overlap": 816
+      },
+      {
+        "path": "lib/layer_contents/XppTexImage.dart",
+        "state": "modified",
+        "nonempty_lines": 131,
+        "tokens": 842,
+        "same_path_aligned_tokens": 469,
+        "global_20_token_overlap": 303
+      },
+      {
+        "path": "lib/layer_contents/XppText.dart",
+        "state": "modified",
+        "nonempty_lines": 131,
+        "tokens": 736,
+        "same_path_aligned_tokens": 431,
+        "global_20_token_overlap": 311
+      },
+      {
+        "path": "lib/main.dart",
+        "state": "modified",
+        "nonempty_lines": 77,
+        "tokens": 387,
+        "same_path_aligned_tokens": 161,
+        "global_20_token_overlap": 39
+      },
+      {
+        "path": "lib/main_desktop.dart",
+        "state": "tokens_identical",
+        "nonempty_lines": 5,
+        "tokens": 17,
+        "same_path_aligned_tokens": 17,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/pages/CanvasPage.dart",
+        "state": "modified",
+        "nonempty_lines": 906,
+        "tokens": 4084,
+        "same_path_aligned_tokens": 678,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/pages/OpenPage.dart",
+        "state": "modified",
+        "nonempty_lines": 1032,
+        "tokens": 5156,
+        "same_path_aligned_tokens": 622,
+        "global_20_token_overlap": 26
+      },
+      {
+        "path": "lib/pages/WorkspacePage.dart",
+        "state": "absent_path",
+        "nonempty_lines": 532,
+        "tokens": 3201,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_controller.dart",
+        "state": "absent_path",
+        "nonempty_lines": 616,
+        "tokens": 4565,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_examples.dart",
+        "state": "absent_path",
+        "nonempty_lines": 311,
+        "tokens": 910,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_latex.dart",
+        "state": "absent_path",
+        "nonempty_lines": 90,
+        "tokens": 610,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_manager_page.dart",
+        "state": "absent_path",
+        "nonempty_lines": 577,
+        "tokens": 3268,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_manifest.dart",
+        "state": "absent_path",
+        "nonempty_lines": 210,
+        "tokens": 1456,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_package.dart",
+        "state": "absent_path",
+        "nonempty_lines": 44,
+        "tokens": 315,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_runtime.dart",
+        "state": "absent_path",
+        "nonempty_lines": 264,
+        "tokens": 2281,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_script.dart",
+        "state": "absent_path",
+        "nonempty_lines": 19,
+        "tokens": 101,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_script_native.dart",
+        "state": "absent_path",
+        "nonempty_lines": 96,
+        "tokens": 569,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_script_stub.dart",
+        "state": "absent_path",
+        "nonempty_lines": 13,
+        "tokens": 46,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_services.dart",
+        "state": "absent_path",
+        "nonempty_lines": 289,
+        "tokens": 2174,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_ui.dart",
+        "state": "absent_path",
+        "nonempty_lines": 191,
+        "tokens": 1194,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/HexColor.dart",
+        "state": "modified",
+        "nonempty_lines": 20,
+        "tokens": 123,
+        "same_path_aligned_tokens": 123,
+        "global_20_token_overlap": 123
+      },
+      {
+        "path": "lib/src/PdfImage.dart",
+        "state": "modified",
+        "nonempty_lines": 46,
+        "tokens": 308,
+        "same_path_aligned_tokens": 101,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/ShapeRecognizer.dart",
+        "state": "absent_path",
+        "nonempty_lines": 119,
+        "tokens": 1116,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/XppBackground.dart",
+        "state": "modified",
+        "nonempty_lines": 377,
+        "tokens": 2467,
+        "same_path_aligned_tokens": 1378,
+        "global_20_token_overlap": 1021
+      },
+      {
+        "path": "lib/src/XppFile.dart",
+        "state": "modified",
+        "nonempty_lines": 596,
+        "tokens": 3465,
+        "same_path_aligned_tokens": 1999,
+        "global_20_token_overlap": 1420
+      },
+      {
+        "path": "lib/src/XppLayer.dart",
+        "state": "modified",
+        "nonempty_lines": 49,
+        "tokens": 311,
+        "same_path_aligned_tokens": 191,
+        "global_20_token_overlap": 176
+      },
+      {
+        "path": "lib/src/XppPage.dart",
+        "state": "modified",
+        "nonempty_lines": 49,
+        "tokens": 283,
+        "same_path_aligned_tokens": 140,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/XppPageContentWidget.dart",
+        "state": "identical",
+        "nonempty_lines": 34,
+        "tokens": 146,
+        "same_path_aligned_tokens": 146,
+        "global_20_token_overlap": 146
+      },
+      {
+        "path": "lib/src/XppPageSize.dart",
+        "state": "absent_path",
+        "nonempty_lines": 10,
+        "tokens": 82,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/app_appearance.dart",
+        "state": "absent_path",
+        "nonempty_lines": 160,
+        "tokens": 915,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/autosave_store.dart",
+        "state": "absent_path",
+        "nonempty_lines": 131,
+        "tokens": 987,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/canvas_geometry_cache.dart",
+        "state": "absent_path",
+        "nonempty_lines": 19,
+        "tokens": 117,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/compat/file_picker_cross.dart",
+        "state": "absent_path",
+        "nonempty_lines": 147,
+        "tokens": 898,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/compat/internal_storage_generic.dart",
+        "state": "absent_path",
+        "nonempty_lines": 19,
+        "tokens": 152,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/compat/internal_storage_io.dart",
+        "state": "absent_path",
+        "nonempty_lines": 48,
+        "tokens": 336,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/conditional/open_file/open_file_generic.dart",
+        "state": "modified",
+        "nonempty_lines": 5,
+        "tokens": 22,
+        "same_path_aligned_tokens": 21,
+        "global_20_token_overlap": 20
+      },
+      {
+        "path": "lib/src/conditional/open_file/open_file_io.dart",
+        "state": "modified",
+        "nonempty_lines": 8,
+        "tokens": 54,
+        "same_path_aligned_tokens": 53,
+        "global_20_token_overlap": 46
+      },
+      {
+        "path": "lib/src/conditional/open_file/open_file_web.dart",
+        "state": "modified",
+        "nonempty_lines": 4,
+        "tokens": 22,
+        "same_path_aligned_tokens": 21,
+        "global_20_token_overlap": 20
+      },
+      {
+        "path": "lib/src/content_snapshot.dart",
+        "state": "absent_path",
+        "nonempty_lines": 52,
+        "tokens": 284,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/decoded_image_cache.dart",
+        "state": "absent_path",
+        "nonempty_lines": 144,
+        "tokens": 982,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/document_export.dart",
+        "state": "absent_path",
+        "nonempty_lines": 430,
+        "tokens": 3122,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/document_scene_geometry.dart",
+        "state": "absent_path",
+        "nonempty_lines": 21,
+        "tokens": 131,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/dynamic_color_adapter.dart",
+        "state": "absent_path",
+        "nonempty_lines": 55,
+        "tokens": 317,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/globals.dart",
+        "state": "modified",
+        "nonempty_lines": 7,
+        "tokens": 35,
+        "same_path_aligned_tokens": 24,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/ink_geometry.dart",
+        "state": "absent_path",
+        "nonempty_lines": 57,
+        "tokens": 332,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/library_metadata.dart",
+        "state": "absent_path",
+        "nonempty_lines": 93,
+        "tokens": 673,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/note_audio.dart",
+        "state": "absent_path",
+        "nonempty_lines": 99,
+        "tokens": 709,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/note_tags.dart",
+        "state": "absent_path",
+        "nonempty_lines": 51,
+        "tokens": 368,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/pdf_raster_cache.dart",
+        "state": "absent_path",
+        "nonempty_lines": 39,
+        "tokens": 246,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/recent_documents.dart",
+        "state": "absent_path",
+        "nonempty_lines": 132,
+        "tokens": 993,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/selection_clipboard.dart",
+        "state": "absent_path",
+        "nonempty_lines": 46,
+        "tokens": 321,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/workspace_session.dart",
+        "state": "absent_path",
+        "nonempty_lines": 109,
+        "tokens": 838,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/ContextualBottomSheet.dart",
+        "state": "identical",
+        "nonempty_lines": 22,
+        "tokens": 141,
+        "same_path_aligned_tokens": 141,
+        "global_20_token_overlap": 141
+      },
+      {
+        "path": "lib/widgets/DropFile.dart",
+        "state": "modified",
+        "nonempty_lines": 124,
+        "tokens": 777,
+        "same_path_aligned_tokens": 429,
+        "global_20_token_overlap": 190
+      },
+      {
+        "path": "lib/widgets/EditingToolbar.dart",
+        "state": "modified",
+        "nonempty_lines": 248,
+        "tokens": 1336,
+        "same_path_aligned_tokens": 326,
+        "global_20_token_overlap": 329
+      },
+      {
+        "path": "lib/widgets/MainDrawer.dart",
+        "state": "modified",
+        "nonempty_lines": 94,
+        "tokens": 494,
+        "same_path_aligned_tokens": 397,
+        "global_20_token_overlap": 280
+      },
+      {
+        "path": "lib/widgets/PointerListener.dart",
+        "state": "modified",
+        "nonempty_lines": 1488,
+        "tokens": 9619,
+        "same_path_aligned_tokens": 619,
+        "global_20_token_overlap": 221
+      },
+      {
+        "path": "lib/widgets/PomodoroTimer.dart",
+        "state": "absent_path",
+        "nonempty_lines": 513,
+        "tokens": 2700,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/QuotaTile.dart",
+        "state": "modified",
+        "nonempty_lines": 8,
+        "tokens": 36,
+        "same_path_aligned_tokens": 23,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/ToolBoxBottomSheet.dart",
+        "state": "modified",
+        "nonempty_lines": 229,
+        "tokens": 1022,
+        "same_path_aligned_tokens": 1004,
+        "global_20_token_overlap": 990
+      },
+      {
+        "path": "lib/widgets/ToolSettingsMenu.dart",
+        "state": "absent_path",
+        "nonempty_lines": 138,
+        "tokens": 661,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/XppPageStack.dart",
+        "state": "modified",
+        "nonempty_lines": 163,
+        "tokens": 906,
+        "same_path_aligned_tokens": 465,
+        "global_20_token_overlap": 307
+      },
+      {
+        "path": "lib/widgets/XppPagesListView.dart",
+        "state": "modified",
+        "nonempty_lines": 135,
+        "tokens": 800,
+        "same_path_aligned_tokens": 787,
+        "global_20_token_overlap": 785
+      },
+      {
+        "path": "lib/widgets/ZoomableWidget.dart",
+        "state": "modified",
+        "nonempty_lines": 425,
+        "tokens": 2480,
+        "same_path_aligned_tokens": 137,
+        "global_20_token_overlap": 84
+      },
+      {
+        "path": "lib/widgets/app_info_dialog.dart",
+        "state": "absent_path",
+        "nonempty_lines": 60,
+        "tokens": 319,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/audio_timeline_overlay.dart",
+        "state": "absent_path",
+        "nonempty_lines": 107,
+        "tokens": 749,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/canvas_app_bar.dart",
+        "state": "absent_path",
+        "nonempty_lines": 122,
+        "tokens": 736,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/canvas_toolbar.dart",
+        "state": "absent_path",
+        "nonempty_lines": 328,
+        "tokens": 1860,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 21
+      },
+      {
+        "path": "lib/widgets/document_library_card.dart",
+        "state": "absent_path",
+        "nonempty_lines": 220,
+        "tokens": 1153,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/document_navigator.dart",
+        "state": "absent_path",
+        "nonempty_lines": 178,
+        "tokens": 875,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/infinite_canvas.dart",
+        "state": "absent_path",
+        "nonempty_lines": 313,
+        "tokens": 2132,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/layers_panel.dart",
+        "state": "absent_path",
+        "nonempty_lines": 208,
+        "tokens": 1013,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/note_audio_panel.dart",
+        "state": "absent_path",
+        "nonempty_lines": 200,
+        "tokens": 1095,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/note_tag_picker.dart",
+        "state": "absent_path",
+        "nonempty_lines": 102,
+        "tokens": 500,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/saved_notes_dialog.dart",
+        "state": "absent_path",
+        "nonempty_lines": 66,
+        "tokens": 434,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/split_resize_scope.dart",
+        "state": "absent_path",
+        "nonempty_lines": 10,
+        "tokens": 74,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/split_screen_view.dart",
+        "state": "absent_path",
+        "nonempty_lines": 173,
+        "tokens": 1033,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/unified_toolbar.dart",
+        "state": "absent_path",
+        "nonempty_lines": 433,
+        "tokens": 1889,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/unsaved_document_dialog.dart",
+        "state": "absent_path",
+        "nonempty_lines": 40,
+        "tokens": 231,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/virtual_page_column.dart",
+        "state": "absent_path",
+        "nonempty_lines": 143,
+        "tokens": 897,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      }
+    ]
+  },
+  "app": {
+    "files": 85,
+    "upstream_files": 30,
+    "upstream_tokens": 21676,
+    "states": {
+      "absent_path": 56,
+      "modified": 26,
+      "tokens_identical": 1,
+      "identical": 2
+    },
+    "nonempty_lines": 17798,
+    "tokens": 107640,
+    "same_path_aligned_tokens": 12467,
+    "global_20_token_overlap": 8007,
+    "same_path_aligned_percent": 11.58,
+    "global_20_token_overlap_percent": 7.44,
+    "per_file": [
+      {
+        "path": "lib/controllers/canvas_controller.dart",
+        "state": "absent_path",
+        "nonempty_lines": 1386,
+        "tokens": 8953,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/controllers/note_audio_controller.dart",
+        "state": "absent_path",
+        "nonempty_lines": 326,
+        "tokens": 2165,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/controllers/theme_controller.dart",
+        "state": "absent_path",
+        "nonempty_lines": 174,
+        "tokens": 967,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/controllers/workspace_controller.dart",
+        "state": "absent_path",
+        "nonempty_lines": 153,
+        "tokens": 796,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/layer_contents/XppImage.dart",
+        "state": "modified",
+        "nonempty_lines": 107,
+        "tokens": 699,
+        "same_path_aligned_tokens": 313,
+        "global_20_token_overlap": 192
+      },
+      {
+        "path": "lib/layer_contents/XppStroke.dart",
+        "state": "modified",
+        "nonempty_lines": 652,
+        "tokens": 5031,
+        "same_path_aligned_tokens": 1251,
+        "global_20_token_overlap": 816
+      },
+      {
+        "path": "lib/layer_contents/XppTexImage.dart",
+        "state": "modified",
+        "nonempty_lines": 131,
+        "tokens": 842,
+        "same_path_aligned_tokens": 469,
+        "global_20_token_overlap": 303
+      },
+      {
+        "path": "lib/layer_contents/XppText.dart",
+        "state": "modified",
+        "nonempty_lines": 131,
+        "tokens": 736,
+        "same_path_aligned_tokens": 431,
+        "global_20_token_overlap": 311
+      },
+      {
+        "path": "lib/main.dart",
+        "state": "modified",
+        "nonempty_lines": 77,
+        "tokens": 387,
+        "same_path_aligned_tokens": 161,
+        "global_20_token_overlap": 39
+      },
+      {
+        "path": "lib/main_desktop.dart",
+        "state": "tokens_identical",
+        "nonempty_lines": 5,
+        "tokens": 17,
+        "same_path_aligned_tokens": 17,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/pages/CanvasPage.dart",
+        "state": "modified",
+        "nonempty_lines": 906,
+        "tokens": 4084,
+        "same_path_aligned_tokens": 678,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/pages/OpenPage.dart",
+        "state": "modified",
+        "nonempty_lines": 1032,
+        "tokens": 5156,
+        "same_path_aligned_tokens": 622,
+        "global_20_token_overlap": 26
+      },
+      {
+        "path": "lib/pages/WorkspacePage.dart",
+        "state": "absent_path",
+        "nonempty_lines": 532,
+        "tokens": 3201,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_controller.dart",
+        "state": "absent_path",
+        "nonempty_lines": 616,
+        "tokens": 4565,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_examples.dart",
+        "state": "absent_path",
+        "nonempty_lines": 311,
+        "tokens": 910,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_latex.dart",
+        "state": "absent_path",
+        "nonempty_lines": 90,
+        "tokens": 610,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_manager_page.dart",
+        "state": "absent_path",
+        "nonempty_lines": 577,
+        "tokens": 3268,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_manifest.dart",
+        "state": "absent_path",
+        "nonempty_lines": 210,
+        "tokens": 1456,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_package.dart",
+        "state": "absent_path",
+        "nonempty_lines": 44,
+        "tokens": 315,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_runtime.dart",
+        "state": "absent_path",
+        "nonempty_lines": 264,
+        "tokens": 2281,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_script.dart",
+        "state": "absent_path",
+        "nonempty_lines": 19,
+        "tokens": 101,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_script_native.dart",
+        "state": "absent_path",
+        "nonempty_lines": 96,
+        "tokens": 569,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_script_stub.dart",
+        "state": "absent_path",
+        "nonempty_lines": 13,
+        "tokens": 46,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_services.dart",
+        "state": "absent_path",
+        "nonempty_lines": 289,
+        "tokens": 2174,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_ui.dart",
+        "state": "absent_path",
+        "nonempty_lines": 191,
+        "tokens": 1194,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/HexColor.dart",
+        "state": "modified",
+        "nonempty_lines": 20,
+        "tokens": 123,
+        "same_path_aligned_tokens": 123,
+        "global_20_token_overlap": 123
+      },
+      {
+        "path": "lib/src/PdfImage.dart",
+        "state": "modified",
+        "nonempty_lines": 46,
+        "tokens": 308,
+        "same_path_aligned_tokens": 101,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/ShapeRecognizer.dart",
+        "state": "absent_path",
+        "nonempty_lines": 119,
+        "tokens": 1116,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/XppBackground.dart",
+        "state": "modified",
+        "nonempty_lines": 377,
+        "tokens": 2467,
+        "same_path_aligned_tokens": 1378,
+        "global_20_token_overlap": 1021
+      },
+      {
+        "path": "lib/src/XppFile.dart",
+        "state": "modified",
+        "nonempty_lines": 596,
+        "tokens": 3465,
+        "same_path_aligned_tokens": 1999,
+        "global_20_token_overlap": 1420
+      },
+      {
+        "path": "lib/src/XppLayer.dart",
+        "state": "modified",
+        "nonempty_lines": 49,
+        "tokens": 311,
+        "same_path_aligned_tokens": 191,
+        "global_20_token_overlap": 176
+      },
+      {
+        "path": "lib/src/XppPage.dart",
+        "state": "modified",
+        "nonempty_lines": 49,
+        "tokens": 283,
+        "same_path_aligned_tokens": 140,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/XppPageContentWidget.dart",
+        "state": "identical",
+        "nonempty_lines": 34,
+        "tokens": 146,
+        "same_path_aligned_tokens": 146,
+        "global_20_token_overlap": 146
+      },
+      {
+        "path": "lib/src/XppPageSize.dart",
+        "state": "absent_path",
+        "nonempty_lines": 10,
+        "tokens": 82,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/app_appearance.dart",
+        "state": "absent_path",
+        "nonempty_lines": 160,
+        "tokens": 915,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/autosave_store.dart",
+        "state": "absent_path",
+        "nonempty_lines": 131,
+        "tokens": 987,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/canvas_geometry_cache.dart",
+        "state": "absent_path",
+        "nonempty_lines": 19,
+        "tokens": 117,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/compat/file_picker_cross.dart",
+        "state": "absent_path",
+        "nonempty_lines": 147,
+        "tokens": 898,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/compat/internal_storage_generic.dart",
+        "state": "absent_path",
+        "nonempty_lines": 19,
+        "tokens": 152,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/compat/internal_storage_io.dart",
+        "state": "absent_path",
+        "nonempty_lines": 48,
+        "tokens": 336,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/conditional/open_file/open_file_generic.dart",
+        "state": "modified",
+        "nonempty_lines": 5,
+        "tokens": 22,
+        "same_path_aligned_tokens": 21,
+        "global_20_token_overlap": 20
+      },
+      {
+        "path": "lib/src/conditional/open_file/open_file_io.dart",
+        "state": "modified",
+        "nonempty_lines": 8,
+        "tokens": 54,
+        "same_path_aligned_tokens": 53,
+        "global_20_token_overlap": 46
+      },
+      {
+        "path": "lib/src/conditional/open_file/open_file_web.dart",
+        "state": "modified",
+        "nonempty_lines": 4,
+        "tokens": 22,
+        "same_path_aligned_tokens": 21,
+        "global_20_token_overlap": 20
+      },
+      {
+        "path": "lib/src/content_snapshot.dart",
+        "state": "absent_path",
+        "nonempty_lines": 52,
+        "tokens": 284,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/decoded_image_cache.dart",
+        "state": "absent_path",
+        "nonempty_lines": 144,
+        "tokens": 982,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/document_export.dart",
+        "state": "absent_path",
+        "nonempty_lines": 430,
+        "tokens": 3122,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/document_scene_geometry.dart",
+        "state": "absent_path",
+        "nonempty_lines": 21,
+        "tokens": 131,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/dynamic_color_adapter.dart",
+        "state": "absent_path",
+        "nonempty_lines": 55,
+        "tokens": 317,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/globals.dart",
+        "state": "modified",
+        "nonempty_lines": 7,
+        "tokens": 35,
+        "same_path_aligned_tokens": 24,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/ink_geometry.dart",
+        "state": "absent_path",
+        "nonempty_lines": 57,
+        "tokens": 332,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/library_metadata.dart",
+        "state": "absent_path",
+        "nonempty_lines": 93,
+        "tokens": 673,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/note_audio.dart",
+        "state": "absent_path",
+        "nonempty_lines": 99,
+        "tokens": 709,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/note_tags.dart",
+        "state": "absent_path",
+        "nonempty_lines": 51,
+        "tokens": 368,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/pdf_raster_cache.dart",
+        "state": "absent_path",
+        "nonempty_lines": 39,
+        "tokens": 246,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/recent_documents.dart",
+        "state": "absent_path",
+        "nonempty_lines": 132,
+        "tokens": 993,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/selection_clipboard.dart",
+        "state": "absent_path",
+        "nonempty_lines": 46,
+        "tokens": 321,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/workspace_session.dart",
+        "state": "absent_path",
+        "nonempty_lines": 109,
+        "tokens": 838,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/ContextualBottomSheet.dart",
+        "state": "identical",
+        "nonempty_lines": 22,
+        "tokens": 141,
+        "same_path_aligned_tokens": 141,
+        "global_20_token_overlap": 141
+      },
+      {
+        "path": "lib/widgets/DropFile.dart",
+        "state": "modified",
+        "nonempty_lines": 124,
+        "tokens": 777,
+        "same_path_aligned_tokens": 429,
+        "global_20_token_overlap": 190
+      },
+      {
+        "path": "lib/widgets/EditingToolbar.dart",
+        "state": "modified",
+        "nonempty_lines": 248,
+        "tokens": 1336,
+        "same_path_aligned_tokens": 326,
+        "global_20_token_overlap": 329
+      },
+      {
+        "path": "lib/widgets/MainDrawer.dart",
+        "state": "modified",
+        "nonempty_lines": 94,
+        "tokens": 494,
+        "same_path_aligned_tokens": 397,
+        "global_20_token_overlap": 280
+      },
+      {
+        "path": "lib/widgets/PointerListener.dart",
+        "state": "modified",
+        "nonempty_lines": 1488,
+        "tokens": 9619,
+        "same_path_aligned_tokens": 619,
+        "global_20_token_overlap": 221
+      },
+      {
+        "path": "lib/widgets/PomodoroTimer.dart",
+        "state": "absent_path",
+        "nonempty_lines": 513,
+        "tokens": 2700,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/QuotaTile.dart",
+        "state": "modified",
+        "nonempty_lines": 8,
+        "tokens": 36,
+        "same_path_aligned_tokens": 23,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/ToolBoxBottomSheet.dart",
+        "state": "modified",
+        "nonempty_lines": 229,
+        "tokens": 1022,
+        "same_path_aligned_tokens": 1004,
+        "global_20_token_overlap": 990
+      },
+      {
+        "path": "lib/widgets/ToolSettingsMenu.dart",
+        "state": "absent_path",
+        "nonempty_lines": 138,
+        "tokens": 661,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/XppPageStack.dart",
+        "state": "modified",
+        "nonempty_lines": 163,
+        "tokens": 906,
+        "same_path_aligned_tokens": 465,
+        "global_20_token_overlap": 307
+      },
+      {
+        "path": "lib/widgets/XppPagesListView.dart",
+        "state": "modified",
+        "nonempty_lines": 135,
+        "tokens": 800,
+        "same_path_aligned_tokens": 787,
+        "global_20_token_overlap": 785
+      },
+      {
+        "path": "lib/widgets/ZoomableWidget.dart",
+        "state": "modified",
+        "nonempty_lines": 425,
+        "tokens": 2480,
+        "same_path_aligned_tokens": 137,
+        "global_20_token_overlap": 84
+      },
+      {
+        "path": "lib/widgets/app_info_dialog.dart",
+        "state": "absent_path",
+        "nonempty_lines": 60,
+        "tokens": 319,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/audio_timeline_overlay.dart",
+        "state": "absent_path",
+        "nonempty_lines": 107,
+        "tokens": 749,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/canvas_app_bar.dart",
+        "state": "absent_path",
+        "nonempty_lines": 122,
+        "tokens": 736,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/canvas_toolbar.dart",
+        "state": "absent_path",
+        "nonempty_lines": 328,
+        "tokens": 1860,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 21
+      },
+      {
+        "path": "lib/widgets/document_library_card.dart",
+        "state": "absent_path",
+        "nonempty_lines": 220,
+        "tokens": 1153,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/document_navigator.dart",
+        "state": "absent_path",
+        "nonempty_lines": 178,
+        "tokens": 875,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/infinite_canvas.dart",
+        "state": "absent_path",
+        "nonempty_lines": 313,
+        "tokens": 2132,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/layers_panel.dart",
+        "state": "absent_path",
+        "nonempty_lines": 208,
+        "tokens": 1013,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/note_audio_panel.dart",
+        "state": "absent_path",
+        "nonempty_lines": 200,
+        "tokens": 1095,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/note_tag_picker.dart",
+        "state": "absent_path",
+        "nonempty_lines": 102,
+        "tokens": 500,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/saved_notes_dialog.dart",
+        "state": "absent_path",
+        "nonempty_lines": 66,
+        "tokens": 434,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/split_resize_scope.dart",
+        "state": "absent_path",
+        "nonempty_lines": 10,
+        "tokens": 74,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/split_screen_view.dart",
+        "state": "absent_path",
+        "nonempty_lines": 173,
+        "tokens": 1033,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/unified_toolbar.dart",
+        "state": "absent_path",
+        "nonempty_lines": 433,
+        "tokens": 1889,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/unsaved_document_dialog.dart",
+        "state": "absent_path",
+        "nonempty_lines": 40,
+        "tokens": 231,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/virtual_page_column.dart",
+        "state": "absent_path",
+        "nonempty_lines": 143,
+        "tokens": 897,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      }
+    ]
+  },
+  "app_runtime": {
+    "files": 91,
+    "upstream_files": 31,
+    "upstream_tokens": 21700,
+    "states": {
+      "absent_path": 61,
+      "modified": 27,
+      "tokens_identical": 1,
+      "identical": 2
+    },
+    "nonempty_lines": 18289,
+    "tokens": 111729,
+    "same_path_aligned_tokens": 12491,
+    "global_20_token_overlap": 8007,
+    "same_path_aligned_percent": 11.18,
+    "global_20_token_overlap_percent": 7.17,
+    "per_file": [
+      {
+        "path": "android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java",
+        "state": "absent_path",
+        "nonempty_lines": 61,
+        "tokens": 454,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "android/app/src/main/kotlin/online/xournal/mobile/DisplayModePolicy.kt",
+        "state": "absent_path",
+        "nonempty_lines": 8,
+        "tokens": 100,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "android/app/src/main/kotlin/online/xournal/mobile/DocumentStorage.kt",
+        "state": "absent_path",
+        "nonempty_lines": 68,
+        "tokens": 465,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "android/app/src/main/kotlin/online/xournal/mobile/MainActivity.kt",
+        "state": "modified",
+        "nonempty_lines": 108,
+        "tokens": 752,
+        "same_path_aligned_tokens": 24,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "android/app/src/main/kotlin/online/xournal/mobile/NoteAudio.kt",
+        "state": "absent_path",
+        "nonempty_lines": 207,
+        "tokens": 1894,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "android/app/src/main/kotlin/online/xournal/mobile/PluginOcr.kt",
+        "state": "absent_path",
+        "nonempty_lines": 39,
+        "tokens": 424,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/controllers/canvas_controller.dart",
+        "state": "absent_path",
+        "nonempty_lines": 1386,
+        "tokens": 8953,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/controllers/note_audio_controller.dart",
+        "state": "absent_path",
+        "nonempty_lines": 326,
+        "tokens": 2165,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/controllers/theme_controller.dart",
+        "state": "absent_path",
+        "nonempty_lines": 174,
+        "tokens": 967,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/controllers/workspace_controller.dart",
+        "state": "absent_path",
+        "nonempty_lines": 153,
+        "tokens": 796,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/layer_contents/XppImage.dart",
+        "state": "modified",
+        "nonempty_lines": 107,
+        "tokens": 699,
+        "same_path_aligned_tokens": 313,
+        "global_20_token_overlap": 192
+      },
+      {
+        "path": "lib/layer_contents/XppStroke.dart",
+        "state": "modified",
+        "nonempty_lines": 652,
+        "tokens": 5031,
+        "same_path_aligned_tokens": 1251,
+        "global_20_token_overlap": 816
+      },
+      {
+        "path": "lib/layer_contents/XppTexImage.dart",
+        "state": "modified",
+        "nonempty_lines": 131,
+        "tokens": 842,
+        "same_path_aligned_tokens": 469,
+        "global_20_token_overlap": 303
+      },
+      {
+        "path": "lib/layer_contents/XppText.dart",
+        "state": "modified",
+        "nonempty_lines": 131,
+        "tokens": 736,
+        "same_path_aligned_tokens": 431,
+        "global_20_token_overlap": 311
+      },
+      {
+        "path": "lib/main.dart",
+        "state": "modified",
+        "nonempty_lines": 77,
+        "tokens": 387,
+        "same_path_aligned_tokens": 161,
+        "global_20_token_overlap": 39
+      },
+      {
+        "path": "lib/main_desktop.dart",
+        "state": "tokens_identical",
+        "nonempty_lines": 5,
+        "tokens": 17,
+        "same_path_aligned_tokens": 17,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/pages/CanvasPage.dart",
+        "state": "modified",
+        "nonempty_lines": 906,
+        "tokens": 4084,
+        "same_path_aligned_tokens": 678,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/pages/OpenPage.dart",
+        "state": "modified",
+        "nonempty_lines": 1032,
+        "tokens": 5156,
+        "same_path_aligned_tokens": 622,
+        "global_20_token_overlap": 26
+      },
+      {
+        "path": "lib/pages/WorkspacePage.dart",
+        "state": "absent_path",
+        "nonempty_lines": 532,
+        "tokens": 3201,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_controller.dart",
+        "state": "absent_path",
+        "nonempty_lines": 616,
+        "tokens": 4565,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_examples.dart",
+        "state": "absent_path",
+        "nonempty_lines": 311,
+        "tokens": 910,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_latex.dart",
+        "state": "absent_path",
+        "nonempty_lines": 90,
+        "tokens": 610,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_manager_page.dart",
+        "state": "absent_path",
+        "nonempty_lines": 577,
+        "tokens": 3268,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_manifest.dart",
+        "state": "absent_path",
+        "nonempty_lines": 210,
+        "tokens": 1456,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_package.dart",
+        "state": "absent_path",
+        "nonempty_lines": 44,
+        "tokens": 315,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_runtime.dart",
+        "state": "absent_path",
+        "nonempty_lines": 264,
+        "tokens": 2281,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_script.dart",
+        "state": "absent_path",
+        "nonempty_lines": 19,
+        "tokens": 101,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_script_native.dart",
+        "state": "absent_path",
+        "nonempty_lines": 96,
+        "tokens": 569,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_script_stub.dart",
+        "state": "absent_path",
+        "nonempty_lines": 13,
+        "tokens": 46,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_services.dart",
+        "state": "absent_path",
+        "nonempty_lines": 289,
+        "tokens": 2174,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/plugins/plugin_ui.dart",
+        "state": "absent_path",
+        "nonempty_lines": 191,
+        "tokens": 1194,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/HexColor.dart",
+        "state": "modified",
+        "nonempty_lines": 20,
+        "tokens": 123,
+        "same_path_aligned_tokens": 123,
+        "global_20_token_overlap": 123
+      },
+      {
+        "path": "lib/src/PdfImage.dart",
+        "state": "modified",
+        "nonempty_lines": 46,
+        "tokens": 308,
+        "same_path_aligned_tokens": 101,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/ShapeRecognizer.dart",
+        "state": "absent_path",
+        "nonempty_lines": 119,
+        "tokens": 1116,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/XppBackground.dart",
+        "state": "modified",
+        "nonempty_lines": 377,
+        "tokens": 2467,
+        "same_path_aligned_tokens": 1378,
+        "global_20_token_overlap": 1021
+      },
+      {
+        "path": "lib/src/XppFile.dart",
+        "state": "modified",
+        "nonempty_lines": 596,
+        "tokens": 3465,
+        "same_path_aligned_tokens": 1999,
+        "global_20_token_overlap": 1420
+      },
+      {
+        "path": "lib/src/XppLayer.dart",
+        "state": "modified",
+        "nonempty_lines": 49,
+        "tokens": 311,
+        "same_path_aligned_tokens": 191,
+        "global_20_token_overlap": 176
+      },
+      {
+        "path": "lib/src/XppPage.dart",
+        "state": "modified",
+        "nonempty_lines": 49,
+        "tokens": 283,
+        "same_path_aligned_tokens": 140,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/XppPageContentWidget.dart",
+        "state": "identical",
+        "nonempty_lines": 34,
+        "tokens": 146,
+        "same_path_aligned_tokens": 146,
+        "global_20_token_overlap": 146
+      },
+      {
+        "path": "lib/src/XppPageSize.dart",
+        "state": "absent_path",
+        "nonempty_lines": 10,
+        "tokens": 82,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/app_appearance.dart",
+        "state": "absent_path",
+        "nonempty_lines": 160,
+        "tokens": 915,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/autosave_store.dart",
+        "state": "absent_path",
+        "nonempty_lines": 131,
+        "tokens": 987,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/canvas_geometry_cache.dart",
+        "state": "absent_path",
+        "nonempty_lines": 19,
+        "tokens": 117,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/compat/file_picker_cross.dart",
+        "state": "absent_path",
+        "nonempty_lines": 147,
+        "tokens": 898,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/compat/internal_storage_generic.dart",
+        "state": "absent_path",
+        "nonempty_lines": 19,
+        "tokens": 152,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/compat/internal_storage_io.dart",
+        "state": "absent_path",
+        "nonempty_lines": 48,
+        "tokens": 336,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/conditional/open_file/open_file_generic.dart",
+        "state": "modified",
+        "nonempty_lines": 5,
+        "tokens": 22,
+        "same_path_aligned_tokens": 21,
+        "global_20_token_overlap": 20
+      },
+      {
+        "path": "lib/src/conditional/open_file/open_file_io.dart",
+        "state": "modified",
+        "nonempty_lines": 8,
+        "tokens": 54,
+        "same_path_aligned_tokens": 53,
+        "global_20_token_overlap": 46
+      },
+      {
+        "path": "lib/src/conditional/open_file/open_file_web.dart",
+        "state": "modified",
+        "nonempty_lines": 4,
+        "tokens": 22,
+        "same_path_aligned_tokens": 21,
+        "global_20_token_overlap": 20
+      },
+      {
+        "path": "lib/src/content_snapshot.dart",
+        "state": "absent_path",
+        "nonempty_lines": 52,
+        "tokens": 284,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/decoded_image_cache.dart",
+        "state": "absent_path",
+        "nonempty_lines": 144,
+        "tokens": 982,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/document_export.dart",
+        "state": "absent_path",
+        "nonempty_lines": 430,
+        "tokens": 3122,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/document_scene_geometry.dart",
+        "state": "absent_path",
+        "nonempty_lines": 21,
+        "tokens": 131,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/dynamic_color_adapter.dart",
+        "state": "absent_path",
+        "nonempty_lines": 55,
+        "tokens": 317,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/globals.dart",
+        "state": "modified",
+        "nonempty_lines": 7,
+        "tokens": 35,
+        "same_path_aligned_tokens": 24,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/ink_geometry.dart",
+        "state": "absent_path",
+        "nonempty_lines": 57,
+        "tokens": 332,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/library_metadata.dart",
+        "state": "absent_path",
+        "nonempty_lines": 93,
+        "tokens": 673,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/note_audio.dart",
+        "state": "absent_path",
+        "nonempty_lines": 99,
+        "tokens": 709,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/note_tags.dart",
+        "state": "absent_path",
+        "nonempty_lines": 51,
+        "tokens": 368,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/pdf_raster_cache.dart",
+        "state": "absent_path",
+        "nonempty_lines": 39,
+        "tokens": 246,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/recent_documents.dart",
+        "state": "absent_path",
+        "nonempty_lines": 132,
+        "tokens": 993,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/selection_clipboard.dart",
+        "state": "absent_path",
+        "nonempty_lines": 46,
+        "tokens": 321,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/workspace_session.dart",
+        "state": "absent_path",
+        "nonempty_lines": 109,
+        "tokens": 838,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/ContextualBottomSheet.dart",
+        "state": "identical",
+        "nonempty_lines": 22,
+        "tokens": 141,
+        "same_path_aligned_tokens": 141,
+        "global_20_token_overlap": 141
+      },
+      {
+        "path": "lib/widgets/DropFile.dart",
+        "state": "modified",
+        "nonempty_lines": 124,
+        "tokens": 777,
+        "same_path_aligned_tokens": 429,
+        "global_20_token_overlap": 190
+      },
+      {
+        "path": "lib/widgets/EditingToolbar.dart",
+        "state": "modified",
+        "nonempty_lines": 248,
+        "tokens": 1336,
+        "same_path_aligned_tokens": 326,
+        "global_20_token_overlap": 329
+      },
+      {
+        "path": "lib/widgets/MainDrawer.dart",
+        "state": "modified",
+        "nonempty_lines": 94,
+        "tokens": 494,
+        "same_path_aligned_tokens": 397,
+        "global_20_token_overlap": 280
+      },
+      {
+        "path": "lib/widgets/PointerListener.dart",
+        "state": "modified",
+        "nonempty_lines": 1488,
+        "tokens": 9619,
+        "same_path_aligned_tokens": 619,
+        "global_20_token_overlap": 221
+      },
+      {
+        "path": "lib/widgets/PomodoroTimer.dart",
+        "state": "absent_path",
+        "nonempty_lines": 513,
+        "tokens": 2700,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/QuotaTile.dart",
+        "state": "modified",
+        "nonempty_lines": 8,
+        "tokens": 36,
+        "same_path_aligned_tokens": 23,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/ToolBoxBottomSheet.dart",
+        "state": "modified",
+        "nonempty_lines": 229,
+        "tokens": 1022,
+        "same_path_aligned_tokens": 1004,
+        "global_20_token_overlap": 990
+      },
+      {
+        "path": "lib/widgets/ToolSettingsMenu.dart",
+        "state": "absent_path",
+        "nonempty_lines": 138,
+        "tokens": 661,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/XppPageStack.dart",
+        "state": "modified",
+        "nonempty_lines": 163,
+        "tokens": 906,
+        "same_path_aligned_tokens": 465,
+        "global_20_token_overlap": 307
+      },
+      {
+        "path": "lib/widgets/XppPagesListView.dart",
+        "state": "modified",
+        "nonempty_lines": 135,
+        "tokens": 800,
+        "same_path_aligned_tokens": 787,
+        "global_20_token_overlap": 785
+      },
+      {
+        "path": "lib/widgets/ZoomableWidget.dart",
+        "state": "modified",
+        "nonempty_lines": 425,
+        "tokens": 2480,
+        "same_path_aligned_tokens": 137,
+        "global_20_token_overlap": 84
+      },
+      {
+        "path": "lib/widgets/app_info_dialog.dart",
+        "state": "absent_path",
+        "nonempty_lines": 60,
+        "tokens": 319,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/audio_timeline_overlay.dart",
+        "state": "absent_path",
+        "nonempty_lines": 107,
+        "tokens": 749,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/canvas_app_bar.dart",
+        "state": "absent_path",
+        "nonempty_lines": 122,
+        "tokens": 736,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/canvas_toolbar.dart",
+        "state": "absent_path",
+        "nonempty_lines": 328,
+        "tokens": 1860,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 21
+      },
+      {
+        "path": "lib/widgets/document_library_card.dart",
+        "state": "absent_path",
+        "nonempty_lines": 220,
+        "tokens": 1153,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/document_navigator.dart",
+        "state": "absent_path",
+        "nonempty_lines": 178,
+        "tokens": 875,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/infinite_canvas.dart",
+        "state": "absent_path",
+        "nonempty_lines": 313,
+        "tokens": 2132,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/layers_panel.dart",
+        "state": "absent_path",
+        "nonempty_lines": 208,
+        "tokens": 1013,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/note_audio_panel.dart",
+        "state": "absent_path",
+        "nonempty_lines": 200,
+        "tokens": 1095,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/note_tag_picker.dart",
+        "state": "absent_path",
+        "nonempty_lines": 102,
+        "tokens": 500,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/saved_notes_dialog.dart",
+        "state": "absent_path",
+        "nonempty_lines": 66,
+        "tokens": 434,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/split_resize_scope.dart",
+        "state": "absent_path",
+        "nonempty_lines": 10,
+        "tokens": 74,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/split_screen_view.dart",
+        "state": "absent_path",
+        "nonempty_lines": 173,
+        "tokens": 1033,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/unified_toolbar.dart",
+        "state": "absent_path",
+        "nonempty_lines": 433,
+        "tokens": 1889,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/unsaved_document_dialog.dart",
+        "state": "absent_path",
+        "nonempty_lines": 40,
+        "tokens": 231,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/virtual_page_column.dart",
+        "state": "absent_path",
+        "nonempty_lines": 143,
+        "tokens": 897,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      }
+    ]
+  },
+  "initial_lib": {
+    "files": 41,
+    "upstream_files": 35,
+    "upstream_tokens": 26853,
+    "states": {
+      "identical": 5,
+      "tokens_identical": 5,
+      "modified": 24,
+      "absent_path": 7
+    },
+    "nonempty_lines": 5620,
+    "tokens": 33286,
+    "same_path_aligned_tokens": 20178,
+    "global_20_token_overlap": 18388,
+    "same_path_aligned_percent": 60.62,
+    "global_20_token_overlap_percent": 55.24,
+    "per_file": [
+      {
+        "path": "lib/generated/intl/messages_all.dart",
+        "state": "identical",
+        "nonempty_lines": 61,
+        "tokens": 328,
+        "same_path_aligned_tokens": 328,
+        "global_20_token_overlap": 328
+      },
+      {
+        "path": "lib/generated/intl/messages_de.dart",
+        "state": "tokens_identical",
+        "nonempty_lines": 138,
+        "tokens": 789,
+        "same_path_aligned_tokens": 789,
+        "global_20_token_overlap": 789
+      },
+      {
+        "path": "lib/generated/intl/messages_en.dart",
+        "state": "tokens_identical",
+        "nonempty_lines": 135,
+        "tokens": 789,
+        "same_path_aligned_tokens": 789,
+        "global_20_token_overlap": 789
+      },
+      {
+        "path": "lib/generated/intl/messages_pt.dart",
+        "state": "tokens_identical",
+        "nonempty_lines": 141,
+        "tokens": 780,
+        "same_path_aligned_tokens": 780,
+        "global_20_token_overlap": 780
+      },
+      {
+        "path": "lib/generated/l10n.dart",
+        "state": "identical",
+        "nonempty_lines": 786,
+        "tokens": 2491,
+        "same_path_aligned_tokens": 2491,
+        "global_20_token_overlap": 2491
+      },
+      {
+        "path": "lib/layer_contents/XppImage.dart",
+        "state": "modified",
+        "nonempty_lines": 84,
+        "tokens": 596,
+        "same_path_aligned_tokens": 444,
+        "global_20_token_overlap": 357
+      },
+      {
+        "path": "lib/layer_contents/XppStroke.dart",
+        "state": "modified",
+        "nonempty_lines": 309,
+        "tokens": 2212,
+        "same_path_aligned_tokens": 1927,
+        "global_20_token_overlap": 1896
+      },
+      {
+        "path": "lib/layer_contents/XppTexImage.dart",
+        "state": "modified",
+        "nonempty_lines": 104,
+        "tokens": 715,
+        "same_path_aligned_tokens": 494,
+        "global_20_token_overlap": 398
+      },
+      {
+        "path": "lib/layer_contents/XppText.dart",
+        "state": "modified",
+        "nonempty_lines": 110,
+        "tokens": 596,
+        "same_path_aligned_tokens": 443,
+        "global_20_token_overlap": 364
+      },
+      {
+        "path": "lib/main.dart",
+        "state": "modified",
+        "nonempty_lines": 47,
+        "tokens": 238,
+        "same_path_aligned_tokens": 162,
+        "global_20_token_overlap": 65
+      },
+      {
+        "path": "lib/main_desktop.dart",
+        "state": "tokens_identical",
+        "nonempty_lines": 5,
+        "tokens": 17,
+        "same_path_aligned_tokens": 17,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/pages/CanvasPage.dart",
+        "state": "modified",
+        "nonempty_lines": 712,
+        "tokens": 4805,
+        "same_path_aligned_tokens": 1713,
+        "global_20_token_overlap": 1539
+      },
+      {
+        "path": "lib/pages/OpenPage.dart",
+        "state": "modified",
+        "nonempty_lines": 220,
+        "tokens": 1310,
+        "same_path_aligned_tokens": 323,
+        "global_20_token_overlap": 26
+      },
+      {
+        "path": "lib/pages/WorkspacePage.dart",
+        "state": "absent_path",
+        "nonempty_lines": 130,
+        "tokens": 732,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/HexColor.dart",
+        "state": "tokens_identical",
+        "nonempty_lines": 20,
+        "tokens": 124,
+        "same_path_aligned_tokens": 124,
+        "global_20_token_overlap": 124
+      },
+      {
+        "path": "lib/src/PdfImage.dart",
+        "state": "modified",
+        "nonempty_lines": 19,
+        "tokens": 173,
+        "same_path_aligned_tokens": 169,
+        "global_20_token_overlap": 159
+      },
+      {
+        "path": "lib/src/ShapeRecognizer.dart",
+        "state": "absent_path",
+        "nonempty_lines": 119,
+        "tokens": 1116,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/XppBackground.dart",
+        "state": "modified",
+        "nonempty_lines": 225,
+        "tokens": 1761,
+        "same_path_aligned_tokens": 1368,
+        "global_20_token_overlap": 1066
+      },
+      {
+        "path": "lib/src/XppFile.dart",
+        "state": "modified",
+        "nonempty_lines": 389,
+        "tokens": 2402,
+        "same_path_aligned_tokens": 2282,
+        "global_20_token_overlap": 2224
+      },
+      {
+        "path": "lib/src/XppLayer.dart",
+        "state": "modified",
+        "nonempty_lines": 35,
+        "tokens": 227,
+        "same_path_aligned_tokens": 196,
+        "global_20_token_overlap": 188
+      },
+      {
+        "path": "lib/src/XppPage.dart",
+        "state": "modified",
+        "nonempty_lines": 30,
+        "tokens": 224,
+        "same_path_aligned_tokens": 147,
+        "global_20_token_overlap": 25
+      },
+      {
+        "path": "lib/src/XppPageContentWidget.dart",
+        "state": "identical",
+        "nonempty_lines": 34,
+        "tokens": 146,
+        "same_path_aligned_tokens": 146,
+        "global_20_token_overlap": 146
+      },
+      {
+        "path": "lib/src/XppPageSize.dart",
+        "state": "absent_path",
+        "nonempty_lines": 10,
+        "tokens": 82,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/compat/file_picker_cross.dart",
+        "state": "absent_path",
+        "nonempty_lines": 83,
+        "tokens": 569,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/compat/internal_storage_generic.dart",
+        "state": "absent_path",
+        "nonempty_lines": 14,
+        "tokens": 83,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/compat/internal_storage_io.dart",
+        "state": "absent_path",
+        "nonempty_lines": 42,
+        "tokens": 273,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/src/conditional/open_file/open_file_generic.dart",
+        "state": "modified",
+        "nonempty_lines": 5,
+        "tokens": 22,
+        "same_path_aligned_tokens": 21,
+        "global_20_token_overlap": 20
+      },
+      {
+        "path": "lib/src/conditional/open_file/open_file_io.dart",
+        "state": "modified",
+        "nonempty_lines": 8,
+        "tokens": 54,
+        "same_path_aligned_tokens": 53,
+        "global_20_token_overlap": 46
+      },
+      {
+        "path": "lib/src/conditional/open_file/open_file_web.dart",
+        "state": "modified",
+        "nonempty_lines": 4,
+        "tokens": 22,
+        "same_path_aligned_tokens": 21,
+        "global_20_token_overlap": 20
+      },
+      {
+        "path": "lib/src/globals.dart",
+        "state": "modified",
+        "nonempty_lines": 5,
+        "tokens": 21,
+        "same_path_aligned_tokens": 19,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/ContextualBottomSheet.dart",
+        "state": "identical",
+        "nonempty_lines": 22,
+        "tokens": 141,
+        "same_path_aligned_tokens": 141,
+        "global_20_token_overlap": 141
+      },
+      {
+        "path": "lib/widgets/DropFile.dart",
+        "state": "modified",
+        "nonempty_lines": 122,
+        "tokens": 755,
+        "same_path_aligned_tokens": 435,
+        "global_20_token_overlap": 211
+      },
+      {
+        "path": "lib/widgets/EditingToolbar.dart",
+        "state": "modified",
+        "nonempty_lines": 249,
+        "tokens": 1336,
+        "same_path_aligned_tokens": 326,
+        "global_20_token_overlap": 329
+      },
+      {
+        "path": "lib/widgets/MainDrawer.dart",
+        "state": "modified",
+        "nonempty_lines": 120,
+        "tokens": 655,
+        "same_path_aligned_tokens": 548,
+        "global_20_token_overlap": 439
+      },
+      {
+        "path": "lib/widgets/PointerListener.dart",
+        "state": "modified",
+        "nonempty_lines": 466,
+        "tokens": 3435,
+        "same_path_aligned_tokens": 971,
+        "global_20_token_overlap": 988
+      },
+      {
+        "path": "lib/widgets/QuotaTile.dart",
+        "state": "modified",
+        "nonempty_lines": 8,
+        "tokens": 36,
+        "same_path_aligned_tokens": 23,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/ToolBoxBottomSheet.dart",
+        "state": "modified",
+        "nonempty_lines": 222,
+        "tokens": 1009,
+        "same_path_aligned_tokens": 1005,
+        "global_20_token_overlap": 991
+      },
+      {
+        "path": "lib/widgets/ToolSettingsMenu.dart",
+        "state": "absent_path",
+        "nonempty_lines": 129,
+        "tokens": 715,
+        "same_path_aligned_tokens": 0,
+        "global_20_token_overlap": 0
+      },
+      {
+        "path": "lib/widgets/XppPageStack.dart",
+        "state": "modified",
+        "nonempty_lines": 87,
+        "tokens": 547,
+        "same_path_aligned_tokens": 536,
+        "global_20_token_overlap": 504
+      },
+      {
+        "path": "lib/widgets/XppPagesListView.dart",
+        "state": "modified",
+        "nonempty_lines": 135,
+        "tokens": 800,
+        "same_path_aligned_tokens": 787,
+        "global_20_token_overlap": 785
+      },
+      {
+        "path": "lib/widgets/ZoomableWidget.dart",
+        "state": "identical",
+        "nonempty_lines": 36,
+        "tokens": 160,
+        "same_path_aligned_tokens": 160,
+        "global_20_token_overlap": 160
+      }
+    ]
+  },
+  "reachability": {
+    "entrypoints": [
+      "lib/main.dart",
+      "lib/main_desktop.dart"
+    ],
+    "unreachable_import_paths": [
+      "lib/src/conditional/open_file/open_file_generic.dart",
+      "lib/src/conditional/open_file/open_file_io.dart",
+      "lib/src/conditional/open_file/open_file_web.dart",
+      "lib/widgets/ContextualBottomSheet.dart",
+      "lib/widgets/DropFile.dart",
+      "lib/widgets/EditingToolbar.dart",
+      "lib/widgets/MainDrawer.dart",
+      "lib/widgets/QuotaTile.dart",
+      "lib/widgets/ToolSettingsMenu.dart",
+      "lib/widgets/XppPagesListView.dart",
+      "lib/widgets/canvas_app_bar.dart"
+    ],
+    "method": "Static import/export graph including conditional branches; not symbol reachability"
+  }
+}

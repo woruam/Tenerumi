@@ -73,3 +73,6 @@ Virtualizzazione a range stabile/ricerca binaria, paint esplicito su revisione, 
 
 ## Qualità PDF — 2026-10-08
 Export ibrido con tratti a mano libera vettoriali, pressione e gomma locale; fallback trasparenti ritagliati fino a 288 dpi. Renderer PDF utilizza il budget condiviso di quattro milioni di pixel. 170 test completi, otto test risorse/rendering, analyze senza errori/warning e confronto Poppler riusciti. Audit docs/pdf-quality.md; riesportare i vecchi PDF da XOPP. Verifica hardware Android ancora manuale.
+
+## Analisi provenienza e ottimizzazioni — 2026-10-08
+Rapporto docs/analisi-provenienza-e-ottimizzazioni.md completato contro upstream GitLab ce62f95 e OSI 1d1baa7. 85 file Dart non generati: 29 corrispondenti per percorso, 56 assenti; 8.007/107.640 token in blocchi condivisi >=20 (7,44%, somiglianza non paternità). Inventario per file, grafo import condizionali e dieci opportunità con rischi/verifiche. Script e JSON riproducibili; controlli conteggi, tokenizzazione e link riusciti. Nessuna modifica runtime o build.

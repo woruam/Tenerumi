@@ -52,3 +52,7 @@ Ridurre lavoro per frame nello scorrimento senza cambiare input, palm rejection,
 ## Qualità PDF - 2026-10-08
 Status: FINALIZED
 Conservare nitidezza dei tratti esportati usando geometria vettoriale con pressione, trasparenza, tagli gomma e ordine livelli. Preservare contenuti misti e budget memoria del renderer. Regressioni export e audit; nessuna build APK.
+
+## Analisi provenienza e ottimizzazioni — 2026-10-08
+Status: FINALIZED
+Produrre un rapporto Markdown con confronto riproducibile contro Xournal++ Mobile upstream fissato a commit, quantità e limiti dell’attribuzione, opportunità di ottimizzazione con riferimenti al codice, rischio e verifiche. Nessuna modifica al runtime, nessuna build APK.
