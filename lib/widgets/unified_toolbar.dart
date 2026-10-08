@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:xournalpp/controllers/canvas_controller.dart';
 import 'package:xournalpp/controllers/workspace_controller.dart';
 import 'package:xournalpp/widgets/canvas_toolbar.dart';
-import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart'; // EditingTool
+import 'package:xournalpp/src/editing_tool.dart'; // EditingTool
 
 /// Toolbar UNICA e globale (split-screen).
 ///

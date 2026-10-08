@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:xournalpp/src/XppLayer.dart';
 import 'package:xournalpp/widgets/PointerListener.dart';
-import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
+import 'package:xournalpp/src/editing_tool.dart';
 import 'package:xournalpp/widgets/ZoomableWidget.dart';
 
 void main() {

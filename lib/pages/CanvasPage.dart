@@ -26,7 +26,7 @@ import 'package:xournalpp/controllers/canvas_controller.dart';
 import 'package:xournalpp/widgets/canvas_toolbar.dart';
 import 'package:xournalpp/widgets/unsaved_document_dialog.dart';
 
-import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
+import 'package:xournalpp/src/editing_tool.dart';
 
 class StylusGestureRecognizer extends OneSequenceGestureRecognizer {
   bool blockStylusPan;

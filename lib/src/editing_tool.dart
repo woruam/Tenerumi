@@ -1,0 +1,20 @@
+/// Stable tool identities shared by models, controllers and UI.
+enum EditingTool {
+  STYLUS,
+  HIGHLIGHT,
+  TEXT,
+  LATEX,
+  IMAGE,
+  MOVE,
+  SELECT,
+  ERASER,
+  WHITEOUT,
+  SHAPE_LINE,
+  SHAPE_RECT,
+  SHAPE_CIRCLE,
+  SHAPE_SQUARE,
+  SHAPE_DASHED_LINE,
+  SHAPE_CUBE,
+  SHAPE_CYLINDER,
+  SHAPE_SPHERE,
+}

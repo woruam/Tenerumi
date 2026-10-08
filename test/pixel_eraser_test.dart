@@ -10,7 +10,7 @@ import 'package:xournalpp/src/XppFile.dart';
 import 'package:xournalpp/src/compat/file_picker_cross.dart';
 import 'package:xournalpp/src/content_snapshot.dart';
 import 'package:xournalpp/widgets/PointerListener.dart';
-import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
+import 'package:xournalpp/src/editing_tool.dart';
 
 XppStroke line({double y = 50}) => XppStrokePen(
   color: Colors.black,

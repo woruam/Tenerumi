@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:xournalpp/src/HexColor.dart';
 import 'package:xournalpp/src/XppLayer.dart';
-import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
+import 'package:xournalpp/src/editing_tool.dart';
 import 'package:xournalpp/src/ink_geometry.dart';
 
 abstract class XppStroke extends XppContent {
@@ -395,18 +395,8 @@ abstract class XppStroke extends XppContent {
 }
 
 class XppStrokePen extends XppStroke {
-  XppStrokeTool tool = XppStrokeTool.PEN;
-  List<XppStrokePoint>? points;
-  Color? color;
-
-  EditingTool? editingTool;
-  XppStrokePen({this.points, this.color})
-    : super(
-        points: points,
-        color: color,
-        tool: XppStrokeTool.PEN,
-        editingTool: EditingTool.STYLUS,
-      );
+  XppStrokePen({List<XppStrokePoint>? points, Color? color})
+    : super(points: points, color: color, tool: XppStrokeTool.PEN);
 
   @override
   XppStroke newStroke({Color? color, List<XppStrokePoint>? points}) {
@@ -415,18 +405,8 @@ class XppStrokePen extends XppStroke {
 }
 
 class XppStrokeWhiteout extends XppStroke {
-  XppStrokeTool tool = XppStrokeTool.ERASER;
-  List<XppStrokePoint>? points;
-  Color? color;
-
-  EditingTool? editingTool;
-  XppStrokeWhiteout({this.points, this.color})
-    : super(
-        points: points,
-        color: color,
-        tool: XppStrokeTool.ERASER,
-        editingTool: EditingTool.WHITEOUT,
-      );
+  XppStrokeWhiteout({List<XppStrokePoint>? points, Color? color})
+    : super(points: points, color: color, tool: XppStrokeTool.ERASER);
 
   @override
   XppStroke newStroke({Color? color, List<XppStrokePoint>? points}) {
@@ -435,18 +415,8 @@ class XppStrokeWhiteout extends XppStroke {
 }
 
 class XppStrokeHighlight extends XppStroke {
-  XppStrokeTool tool = XppStrokeTool.HIGHLIGHTER;
-  List<XppStrokePoint>? points;
-  Color? color;
-
-  EditingTool? editingTool;
-  XppStrokeHighlight({this.points, this.color})
-    : super(
-        points: points,
-        color: color,
-        tool: XppStrokeTool.HIGHLIGHTER,
-        editingTool: EditingTool.HIGHLIGHT,
-      );
+  XppStrokeHighlight({List<XppStrokePoint>? points, Color? color})
+    : super(points: points, color: color, tool: XppStrokeTool.HIGHLIGHTER);
 
   @override
   XppStroke newStroke({Color? color, List<XppStrokePoint>? points}) {

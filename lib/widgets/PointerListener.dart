@@ -16,7 +16,7 @@ import 'package:xournalpp/src/ShapeRecognizer.dart';
 import 'package:xournalpp/src/ink_geometry.dart';
 import 'package:xournalpp/src/selection_clipboard.dart';
 import 'package:xournalpp/src/XppLayer.dart';
-import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
+import 'package:xournalpp/src/editing_tool.dart';
 import 'package:xournalpp/widgets/ZoomableWidget.dart';
 
 class PointerListener extends StatefulWidget {

@@ -1,0 +1,20 @@
+EditingTool: stessi nomi/ordine, modulo di dominio senza Flutter. Import migrati:
+lib\controllers\canvas_controller.dart
+lib\layer_contents\XppImage.dart
+lib\layer_contents\XppStroke.dart
+lib\layer_contents\XppTexImage.dart
+lib\layer_contents\XppText.dart
+lib\pages\CanvasPage.dart
+lib\plugins\plugin_controller.dart
+lib\src\XppLayer.dart
+lib\widgets\canvas_toolbar.dart
+lib\widgets\PointerListener.dart
+lib\widgets\unified_toolbar.dart
+test\canvas_workspace_test.dart
+test\eraser_zoom_repaint_test.dart
+test\ink_round_continuity_test.dart
+test\note_audio_test.dart
+test\pixel_eraser_test.dart
+test\pointer_input_test.dart
+test\selection_tools_test.dart
+test\workspace_safety_test.dart

@@ -19,6 +19,7 @@ lib/
 ├── src/                  # Modelli dati principali e core logic (parser .xopp)
 │   ├── compat/           # Codice per compatibilità multipiattaforma (es. file picker per web/desktop)
 │   ├── ShapeRecognizer.dart
+│   ├── editing_tool.dart  # Identità strumenti condivise senza dipendenze UI
 │   ├── XppBackground.dart
 │   ├── XppFile.dart      # Struttura del documento Xournal++
 │   ├── XppLayer.dart
@@ -28,7 +29,6 @@ lib/
 │   ├── canvas_toolbar.dart
 │   ├── PointerListener.dart
 │   ├── PomodoroTimer.dart
-│   ├── ToolBoxBottomSheet.dart
 │   ├── XppPageStack.dart
 │   ├── ZoomableWidget.dart
 │   ├── split_screen_view.dart    # (Nuovo) Gestore della vista affiancata e del divisore

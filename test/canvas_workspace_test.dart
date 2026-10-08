@@ -19,7 +19,7 @@ import 'package:xournalpp/src/document_export.dart';
 import 'package:xournalpp/widgets/infinite_canvas.dart';
 import 'package:xournalpp/widgets/PointerListener.dart';
 import 'package:xournalpp/widgets/layers_panel.dart';
-import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
+import 'package:xournalpp/src/editing_tool.dart';
 import 'package:xournalpp/plugins/plugin_controller.dart';
 
 import 'plugin_system_test.dart' as plugin_tests show source;

@@ -79,3 +79,6 @@ Rapporto docs/analisi-provenienza-e-ottimizzazioni.md completato contro upstream
 
 ## Interventi G/H/A — fase G
 Rimossi 12 file legacy senza utilizzatori attivi, RichTextField e contratto render placeholder dei contenuti. Renderer canvas corrente conservato. 13 test input/export riusciti; nessun riferimento runtime/test ai simboli rimossi. H e A da completare.
+
+## Interventi G/H/A — fase H
+EditingTool spostato in src/editing_tool.dart senza cambiare ordine/nomi; import runtime/test migrati e vecchia bottom sheet rimossa. Proprietà dei tratti conservate solo nella base; firme, mutabilità e default editingTool osservabile null preservati. Test clone/XML/mutazioni e regressioni selezione/gomma/audio riusciti. A da completare.

@@ -33,7 +33,7 @@ import 'package:xournalpp/src/selection_clipboard.dart';
 import 'package:xournalpp/src/XppPage.dart';
 import 'package:xournalpp/src/XppPageSize.dart';
 import 'package:xournalpp/src/globals.dart';
-import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
+import 'package:xournalpp/src/editing_tool.dart';
 import 'package:xournalpp/widgets/XppPageStack.dart';
 
 import 'package:xournalpp/layer_contents/XppStroke.dart';

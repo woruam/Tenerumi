@@ -8,7 +8,7 @@ import 'package:xournalpp/src/compat/file_picker_cross.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:xournalpp/src/XppLayer.dart';
-import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
+import 'package:xournalpp/src/editing_tool.dart';
 
 class XppImage extends XppContent {
   Offset? topLeft = const Offset(0, 0);

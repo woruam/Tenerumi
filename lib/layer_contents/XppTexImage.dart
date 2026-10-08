@@ -3,7 +3,7 @@ import 'package:xml/xml.dart';
 import 'package:xournalpp/layer_contents/XppText.dart';
 import 'package:xournalpp/src/HexColor.dart';
 import 'package:xournalpp/src/XppLayer.dart';
-import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
+import 'package:xournalpp/src/editing_tool.dart';
 
 class XppTexImage extends XppContent {
   Offset? topLeft = const Offset(0, 0);

@@ -22,7 +22,7 @@ import 'package:xournalpp/src/selection_clipboard.dart';
 import 'package:xournalpp/widgets/PointerListener.dart';
 import 'package:xournalpp/widgets/note_audio_panel.dart';
 import 'package:xournalpp/widgets/audio_timeline_overlay.dart';
-import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
+import 'package:xournalpp/src/editing_tool.dart';
 
 import 'pomodoro_appearance_test.dart' show capture;
 

@@ -11,7 +11,7 @@ import 'package:xournalpp/src/XppBackground.dart';
 import 'package:xournalpp/src/XppFile.dart';
 import 'package:xournalpp/src/XppPageSize.dart';
 import 'package:xournalpp/widgets/PointerListener.dart';
-import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
+import 'package:xournalpp/src/editing_tool.dart';
 import 'package:xournalpp/widgets/XppPageStack.dart';
 
 void main() {

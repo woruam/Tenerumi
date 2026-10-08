@@ -8,7 +8,7 @@ import 'dart:ui';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
+import 'package:xournalpp/src/editing_tool.dart';
 import 'package:xournalpp/controllers/canvas_controller.dart';
 import 'package:xournalpp/controllers/theme_controller.dart';
 import 'package:xournalpp/plugins/plugin_controller.dart';
