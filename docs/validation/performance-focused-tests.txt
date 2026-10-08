@@ -1,0 +1,13 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart
+00:00 +0: 10000 pages: pixel pans reuse page widgets and coalesce range notifications
+00:00 +1: XOPP fast gzip is lossless and benchmarks compression separately from XML
+00:00 +2: decoded image resources are released with owners and late decode cannot resurrect them
+00:00 +3: image completion repaints a stationary page and unmount releases its native cache
+00:00 +4: manual save reuses current checkpoint and reserializes after edits
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-checkpoint-89dfc47a\xournalpp\recovery-1791487565903944-2533408781-1791487565950015.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-checkpoint-89dfc47a\xournalpp\Reuse.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-checkpoint-89dfc47a\xournalpp\Reuse.xopp
+00:00 +5: checkpoint reader rejects mismatched timestamps
+00:00 +6: PDF export snapshots are complete and retain page order through background worker
+00:01 +7: PDF viewing/export open the source once and close every native resource
+00:01 +8: All tests passed!

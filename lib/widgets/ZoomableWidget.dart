@@ -106,7 +106,6 @@ class ZoomableWidgetState extends State<ZoomableWidget>
   double _upwardDrag = 0;
   DateTime? _lastStylusHover;
   Size _viewport = Size.zero;
-  PanAxis _axis = PanAxis.vertical;
 
   late final AnimationController _zoomAnimController;
   Animation<Matrix4>? _zoomAnimation;
@@ -128,46 +127,14 @@ class ZoomableWidgetState extends State<ZoomableWidget>
       final anim = _zoomAnimation;
       if (anim != null) _controller.value = anim.value;
     });
-    _controller.addListener(_onTransformChanged);
-    _recomputeAxis();
-  }
-
-  @override
-  void didUpdateWidget(covariant ZoomableWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.controller != widget.controller) {
-      (oldWidget.controller ?? _internalController)?.removeListener(
-        _onTransformChanged,
-      );
-      _controller.addListener(_onTransformChanged);
-    }
   }
 
   @override
   void dispose() {
     _badgeTimer?.cancel();
     _zoomAnimController.dispose();
-    (widget.controller ?? _internalController)?.removeListener(
-      _onTransformChanged,
-    );
     _internalController?.dispose();
     super.dispose();
-  }
-
-  void _onTransformChanged() {
-    _recomputeAxis();
-    if (_badgeVisible && mounted) setState(() {});
-  }
-
-  void _recomputeAxis() {
-    final PanAxis next = (_touchPointers >= 2 || _scale > _kFreePanThreshold)
-        ? PanAxis.free
-        : PanAxis.vertical;
-    if (next != _axis && mounted) {
-      setState(() => _axis = next);
-    } else {
-      _axis = next;
-    }
   }
 
   bool _isPen(PointerEvent event) =>
@@ -212,7 +179,6 @@ class ZoomableWidgetState extends State<ZoomableWidget>
     _touchSession.pointers = _touchPointers;
     if (_touchPointers == 2) _touchSession.cancellationEpoch++;
     if (widget.touchDrawingEnabled) setState(() {});
-    _recomputeAxis();
   }
 
   void _onPointerEnd(PointerEvent event) {
@@ -224,7 +190,6 @@ class ZoomableWidgetState extends State<ZoomableWidget>
     if (_touchIds.isEmpty && _touchSession.stylusPointers.isEmpty)
       _suppressPan = false;
     if (widget.touchDrawingEnabled && mounted) setState(() {});
-    _recomputeAxis();
   }
 
   void _rebase(Offset focal, double gestureScale) {
@@ -412,13 +377,14 @@ class ZoomableWidgetState extends State<ZoomableWidget>
                       maxHeight: double.infinity,
                       child: AnimatedBuilder(
                         animation: _controller,
-                        builder: (context, _) => Transform(
+                        child: CanvasTouchScope(
+                          session: _touchSession,
+                          child: widget.child!,
+                        ),
+                        builder: (context, child) => Transform(
                           alignment: Alignment.topLeft,
                           transform: _controller.value,
-                          child: CanvasTouchScope(
-                            session: _touchSession,
-                            child: widget.child!,
-                          ),
+                          child: child,
                         ),
                       ),
                     ),
@@ -462,12 +428,15 @@ class ZoomableWidgetState extends State<ZoomableWidget>
                             ),
                           ),
                           const SizedBox(width: 8),
-                          Text(
-                            '${(_scale * 100).round()}%',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              letterSpacing: 1,
+                          ValueListenableBuilder<Matrix4>(
+                            valueListenable: _controller,
+                            builder: (context, matrix, _) => Text(
+                              '${(matrix.getMaxScaleOnAxis() * 100).round()}%',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                letterSpacing: 1,
+                              ),
                             ),
                           ),
                         ],

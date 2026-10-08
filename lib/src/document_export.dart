@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:xournalpp/layer_contents/XppImage.dart';
@@ -72,7 +73,8 @@ Future<Uint8List> buildNotesPdf(
   if (pages == null || pages.isEmpty) {
     throw StateError('Il documento non contiene pagine');
   }
-  final pdf = pw.Document(title: document.title, creator: 'OSI');
+  final title = document.title;
+  final rasters = <Map<String, Object>>[];
   for (var index = 0; index < pages.length; index++) {
     final page = pages[index];
     final size = (page.pageSize ?? XppPageSize.a4).toSize();
@@ -87,20 +89,27 @@ Future<Uint8List> buildNotesPdf(
       }
     }
     final png = await rasterizeExportPage(page, backgroundBytes: background);
-    final image = pw.MemoryImage(png);
-    pdf.addPage(
-      pw.Page(
-        pageFormat: PdfPageFormat(size.width, size.height, marginAll: 0),
-        build: (_) => pw.Image(
-          image,
-          width: size.width,
-          height: size.height,
-          fit: pw.BoxFit.fill,
-        ),
-      ),
-    );
+    rasters.add({'png': png, 'width': size.width, 'height': size.height});
     // Release this page's GPU resources before starting the next page.
     await Future<void>.delayed(Duration.zero);
+  }
+  return compute(_assemblePdf, {'title': title, 'pages': rasters});
+}
+
+/// PNG decoding, PDF image compression and final document encoding are CPU
+/// work and must not block gesture/input frames. Only portable data crosses.
+Future<Uint8List> _assemblePdf(Map<String, Object?> input) async {
+  final pdf = pw.Document(title: input['title'] as String?, creator: 'OSI');
+  for (final item in input['pages'] as List<Map<String, Object>>) {
+    final width = item['width'] as double, height = item['height'] as double;
+    final image = pw.MemoryImage(item['png'] as Uint8List);
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat(width, height, marginAll: 0),
+        build: (_) =>
+            pw.Image(image, width: width, height: height, fit: pw.BoxFit.fill),
+      ),
+    );
   }
   return pdf.save();
 }
@@ -142,14 +151,12 @@ Future<Uint8List> rasterizeExportPage(
       1,
       math.min(maxDimension, (destination.height * scale).ceil()),
     );
-    final codec = maxDimension <= 320
-        ? await ui.instantiateImageCodec(
-            bytes,
-            targetWidth: targetWidth,
-            targetHeight: targetHeight,
-            allowUpscaling: false,
-          )
-        : await ui.instantiateImageCodec(bytes);
+    final codec = await ui.instantiateImageCodec(
+      bytes,
+      targetWidth: targetWidth,
+      targetHeight: targetHeight,
+      allowUpscaling: false,
+    );
     try {
       final image = (await codec.getNextFrame()).image;
       images.add(image);
@@ -174,10 +181,12 @@ Future<Uint8List> rasterizeExportPage(
         Offset.zero & size,
       );
     }
+    int batch = 0;
     for (final layer in page.layers ?? <XppLayer>[]) {
       if (!layer.visible) continue;
       for (final content in layer.content ?? <XppContent?>[]) {
         if (content == null) continue;
+        if (++batch % 64 == 0) await Future<void>.delayed(Duration.zero);
         if (content is XppImage) {
           if (content.data == null ||
               content.topLeft == null ||

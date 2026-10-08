@@ -1,4 +1,5 @@
-import 'dart:async';
+import 'package:xournalpp/src/decoded_image_cache.dart';
+
 import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -18,25 +19,31 @@ class XppImage extends XppContent {
   final Uint8List? data;
 
   // --- VARIABILI INTERNE PER IL CANVAS ---
-  ui.Image? _decodedImage;
-  bool _isDecoding = false;
 
   XppImage({this.data, this.topLeft, this.bottomRight});
 
   static Future<XppImage> open({required Offset topLeft}) async {
-    FilePickerCross image =
-        await FilePickerCross.importFromStorage(type: FileTypeCross.image);
+    FilePickerCross image = await FilePickerCross.importFromStorage(
+      type: FileTypeCross.image,
+    );
 
-    MemoryImage memoryImage = MemoryImage(image.toUint8List());
-    final completer = Completer<ui.Image>();
-    memoryImage.resolve(const ImageConfiguration()).addListener(
-        ImageStreamListener(
-            (ImageInfo info, bool _) => completer.complete(info.image)));
-    final ui.Image renderedImage = await completer.future;
-    Offset bottomRight = Offset(topLeft.dx + renderedImage.width.toDouble(),
-        topLeft.dy + renderedImage.height.toDouble());
+    final buffer = await ui.ImmutableBuffer.fromUint8List(image.toUint8List());
+    ui.ImageDescriptor? descriptor;
+    late final Offset bottomRight;
+    try {
+      descriptor = await ui.ImageDescriptor.encoded(buffer);
+      bottomRight =
+          topLeft +
+          Offset(descriptor.width.toDouble(), descriptor.height.toDouble());
+    } finally {
+      descriptor?.dispose();
+      buffer.dispose();
+    }
     return XppImage(
-        data: image.toUint8List(), topLeft: topLeft, bottomRight: bottomRight);
+      data: image.toUint8List(),
+      topLeft: topLeft,
+      bottomRight: bottomRight,
+    );
   }
 
   // --- NUOVO METODO AD ALTE PRESTAZIONI ---
@@ -50,24 +57,19 @@ class XppImage extends XppContent {
     final double height = bottomRight!.dy - topLeft!.dy;
     final Rect destRect = Rect.fromLTWH(0, 0, width, height);
 
-    if (_decodedImage != null) {
+    final decodedImage = DecodedImageCache.shared.lookup(data!);
+    if (decodedImage != null) {
       // L'immagine è decodificata e pronta in RAM: la "stampiamo" alla massima velocità GPU
-      final Rect srcRect = Rect.fromLTWH(0, 0, _decodedImage!.width.toDouble(),
-          _decodedImage!.height.toDouble());
-      canvas.drawImageRect(_decodedImage!, srcRect, destRect, Paint());
+      final Rect srcRect = Rect.fromLTWH(
+        0,
+        0,
+        decodedImage.width.toDouble(),
+        decodedImage.height.toDouble(),
+      );
+      canvas.drawImageRect(decodedImage, srcRect, destRect, Paint());
     } else {
       // Disegna un placeholder grigio per far capire che sta caricando
       canvas.drawRect(destRect, Paint()..color = Colors.grey.withOpacity(0.2));
-
-      // Avvia la decodifica in background se non è già partita
-      if (!_isDecoding) {
-        _isDecoding = true;
-        ui.decodeImageFromList(data!, (result) {
-          _decodedImage = result;
-          // Nota: il Canvas verrà aggiornato automaticamente al prossimo movimento
-          // della pagina, dello zoom o al prossimo tratto di penna.
-        });
-      }
     }
   }
 
@@ -84,14 +86,16 @@ class XppImage extends XppContent {
   Offset? getOffset() => topLeft;
 
   @override
-  XmlElement toXmlElement() => XmlElement(XmlName('image'), [
-        XmlAttribute(XmlName('left'), topLeft!.dx.toString()),
-        XmlAttribute(XmlName('right'), bottomRight!.dx.toString()),
-        XmlAttribute(XmlName('top'), topLeft!.dy.toString()),
-        XmlAttribute(XmlName('bottom'), bottomRight!.dy.toString()),
-      ], [
-        XmlText(base64Encode(data!))
-      ]);
+  XmlElement toXmlElement() => XmlElement(
+    XmlName('image'),
+    [
+      XmlAttribute(XmlName('left'), topLeft!.dx.toString()),
+      XmlAttribute(XmlName('right'), bottomRight!.dx.toString()),
+      XmlAttribute(XmlName('top'), topLeft!.dy.toString()),
+      XmlAttribute(XmlName('bottom'), bottomRight!.dy.toString()),
+    ],
+    [XmlText(base64Encode(data!))],
+  );
 
   @override
   Rect? bounds() => Rect.fromPoints(topLeft!, bottomRight!);

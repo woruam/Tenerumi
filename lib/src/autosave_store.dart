@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -13,10 +14,19 @@ import 'compat/internal_storage_generic.dart'
 /// write, so an interrupted save cannot replace the last usable checkpoint.
 class AutosaveStore {
   static const indexKey = 'osipp.autosave.v1';
-  static Future<void> _queue = Future.value();
+  static Future<void>? _queue;
   static Future<T> _serial<T>(Future<T> Function() operation) {
-    final result = _queue.then((_) => operation());
-    _queue = result.then<void>((_) {}, onError: (Object _, StackTrace _) {});
+    final result = (_queue ?? Future.value()).then((_) => operation());
+    final completed = result.then<void>(
+      (_) {},
+      onError: (Object _, StackTrace __) {},
+    );
+    _queue = completed;
+    unawaited(
+      completed.then((_) {
+        if (identical(_queue, completed)) _queue = null;
+      }),
+    );
     return result;
   }
 
@@ -67,6 +77,29 @@ class AutosaveStore {
       }
     }
   });
+
+  static Future<Uint8List?> checkpointBytes(String id, DateTime? modifiedAt) =>
+      _serial(() async {
+        final entry = (await list())
+            .where(
+              (e) =>
+                  e['id'] == id &&
+                  e['modifiedAt'] == modifiedAt?.toUtc().toIso8601String(),
+            )
+            .firstOrNull;
+        if (entry == null) return null;
+        try {
+          return kIsWeb
+              ? base64Decode(
+                  (await SharedPreferences.getInstance()).getString(
+                    entry['path'] as String,
+                  )!,
+                )
+              : await storage.readFile(entry['path'] as String);
+        } catch (_) {
+          return null;
+        }
+      });
 
   static Future<XppFile> restore(Map<String, dynamic> entry) async {
     final path = entry['path'] as String;

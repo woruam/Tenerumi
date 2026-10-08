@@ -1,3 +1,6 @@
+import 'package:xournalpp/layer_contents/XppImage.dart';
+import 'package:xournalpp/src/decoded_image_cache.dart';
+
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -39,6 +42,13 @@ class XppPageStackState extends State<XppPageStack>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    DecodedImageCache.shared.retain(this, [
+      for (final layer in page!.layers ?? <XppLayer>[])
+        if (layer.visible) ...[
+          for (final image in (layer.content ?? []).whereType<XppImage>())
+            if (image.data != null) image.data!,
+        ],
+    ]);
     List<Widget> children = [];
 
     if (page!.background != null && _lastKnownBackground != page!.background) {
@@ -112,6 +122,7 @@ class XppPageStackState extends State<XppPageStack>
 
   @override
   void dispose() {
+    DecodedImageCache.shared.release(this);
     _inkRevision.dispose();
     super.dispose();
   }
@@ -153,7 +164,7 @@ class XppMasterPainter extends CustomPainter {
   final List<XppContent?> layerContents;
 
   XppMasterPainter({required this.layerContents, Listenable? repaint})
-    : super(repaint: repaint);
+    : super(repaint: Listenable.merge([repaint, DecodedImageCache.shared]));
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -177,6 +188,6 @@ class XppMasterPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant XppMasterPainter oldDelegate) {
     // Ora si aggiornerà sempre non appena la gomma "mangia" un pezzo di inchiostro!
-    return true;
+    return !identical(layerContents, oldDelegate.layerContents);
   }
 }

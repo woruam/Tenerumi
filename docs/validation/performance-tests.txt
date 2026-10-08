@@ -1,0 +1,232 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart
+00:00 +0: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: script modules and handlers validated; traversal rejected
+00:00 +1: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: zip package loads multiple modules and refuses unexpected files
+00:00 +2: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: Anki export escapes newlines, tabs, HTML and header injection
+00:00 +3: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: file exports stay staged and disappear on error
+00:00 +4: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: new host actions enforce permissions at dynamic invocation
+00:00 +5: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: async OCR and forms compose and late completions cannot edit canvas
+00:00 +6: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: network calls reject undeclared hosts before contacting server
+00:00 +7: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: untrusted document IDs cannot turn checkpoint names into paths
+00:00 +8: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: page render includes staged content and produces an image for OCR providers
+00:00 +9: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: plugins commit to the active layer and reject locked layers without persisting state
+00:00 +10: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: LaTeX renderer produces actual fraction PNG and rejects invalid syntax
+00:00 +11: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: LaTeX renderer produces actual fraction PNG and rejects invalid syntax
+00:00 +12: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: LaTeX renderer produces actual fraction PNG and rejects invalid syntax
+00:00 +13: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: LaTeX renderer produces actual fraction PNG and rejects invalid syntax
+00:00 +14: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: LaTeX renderer produces actual fraction PNG and rejects invalid syntax
+00:00 +14: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: saved files reopen at the same path and overwrite existing bytes
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-storage-a96d3f72\note.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-storage-a96d3f72\note.xopp
+00:00 +15: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: LaTeX renderer produces actual fraction PNG and rejects invalid syntax
+00:00 +16: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: LaTeX renderer produces actual fraction PNG and rejects invalid syntax
+00:00 +16: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: failed replacement does not truncate the original file
+❌ ERRORE DI SALVATAGGIO IMPREVISTO: PathAccessException: Cannot rename file to 'C:\Users\aless\AppData\Local\Temp\osipp-failure-79f575f2\folder', path = 'C:\Users\aless\AppData\Local\Temp\osipp-failure-79f575f2\folder.1791487924035157.tmp' (OS Error: Accesso negato, errno = 5)
+00:00 +17: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: LaTeX renderer produces actual fraction PNG and rejects invalid syntax
+00:01 +18: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +19: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +20: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +21: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +22: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +22: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: failed save keeps dirty state and resets saving state
+❌ ERRORE DI SALVATAGGIO IMPREVISTO: PathAccessException: Cannot rename file to 'C:\Users\aless\AppData\Local\Temp\osipp-save-error-90679f26', path = 'C:\Users\aless\AppData\Local\Temp\osipp-save-error-90679f26.1791487924722723.tmp' (OS Error: Accesso negato, errno = 5)
+00:01 +23: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +24: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +25: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +25: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: changes made during save remain dirty and are not in saved snapshot
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-save-race-209390\notes.xopp
+00:01 +26: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +27: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +27: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: new notes with duplicate titles get distinct files
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-duplicate-c4dc9d37\xournalpp\notes.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-duplicate-c4dc9d37\xournalpp\notes (2).xopp
+00:01 +28: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:02 +29: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:02 +30: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:02 +31: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:02 +32: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:02 +33: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-debounce-79f61837\xournalpp\recovery-1791487923497450-3905970386-1791487925588990.xopp
+00:02 +34: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:02 +35: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:02 +36: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:02 +37: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:02 +38: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:02 +39: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:02 +40: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:02 +40: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: checkpoint survives controller disposal and restores latest revision
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-recovery-475e1ef9\xournalpp\recovery-1791487925938914-1739469014-1791487925945376.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-recovery-475e1ef9\xournalpp\recovery-1791487925938914-1739469014-1791487925964581.xopp
+00:02 +41: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:02 +41: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: named document autosaves original; failure keeps the recovery and dirty state
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-auto-original-b50f7d29\xournalpp\recovery-1791487926009518-2771140043-1791487926017955.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-auto-original-b50f7d29/notes.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-auto-original-b50f7d29\xournalpp\recovery-1791487926009518-2771140043-1791487926072953.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-auto-original-b50f7d29/notes.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-auto-original-b50f7d29\xournalpp\recovery-1791487926009518-2771140043-1791487926113507.xopp
+❌ ERRORE DI SALVATAGGIO IMPREVISTO: PathAccessException: Cannot rename file to 'C:\Users\aless\AppData\Local\Temp\osipp-auto-original-b50f7d29', path = 'C:\Users\aless\AppData\Local\Temp\osipp-auto-original-b50f7d29.1791487926121030.tmp' (OS Error: Accesso negato, errno = 5)
+00:02 +42: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:03 +43: C:/Users/aless/Documents/GitHub/OSIpp/test/eraser_zoom_repaint_test.dart: eraser repaints at fixed 1.0x before any pan or zoom
+00:03 +44: C:/Users/aless/Documents/GitHub/OSIpp/test/eraser_zoom_repaint_test.dart: eraser repaints at fixed 1.0x before any pan or zoom
+00:03 +45: C:/Users/aless/Documents/GitHub/OSIpp/test/eraser_zoom_repaint_test.dart: eraser repaints at fixed 1.0x before any pan or zoom
+00:03 +46: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: infinite viewport writes at negative and far-away coordinates at different zooms
+00:03 +47: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: infinite viewport writes at negative and far-away coordinates at different zooms
+00:03 +47: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: save is disabled while document is being saved
+
+Warning: A call to tap() with finder "Found 1 widget with text "Salva": [
+  Text("Salva", dependencies: [DefaultSelectionStyle, DefaultTextStyle, MediaQuery]),
+]" derived an Offset (Offset(672.0, 44.0)) that would not hit test on the specified widget.
+Maybe the widget is actually off-screen, or another widget is obscuring it, or the widget cannot receive pointer events.
+The finder corresponds to this RenderBox: RenderParagraph#72d72 relayoutBoundary=up39 NEEDS-PAINT
+The hit test result at that offset is: HitTestResult(RenderMouseRegion#4ade6@Offset(672.0, 44.0), RenderSemanticsAnnotations#8a6e2@Offset(672.0, 44.0), RenderPointerListener#30adc@Offset(672.0, 44.0), RenderSemanticsGestureHandler#e3904@Offset(672.0, 44.0), RenderExcludeSemantics#62489@Offset(672.0, 44.0), RenderBlockSemantics#6c251@Offset(672.0, 44.0), RenderIgnorePointer#e970d@Offset(672.0, 44.0), RenderSemanticsAnnotations#b7f2c@Offset(672.0, 44.0), _RenderTheater#94db2@Offset(672.0, 44.0), RenderAbsorbPointer#9fbf8@Offset(672.0, 44.0), RenderPointerListener#885c8@Offset(672.0, 44.0), RenderSemanticsAnnotations#4f55f@Offset(672.0, 44.0), RenderCustomPaint#88794@Offset(672.0, 44.0), RenderSemanticsAnnotations#f63a5@Offset(672.0, 44.0), RenderSemanticsAnnotations#991c9@Offset(672.0, 44.0), RenderSemanticsAnnotations#be96a@Offset(672.0, 44.0), RenderTapRegionSurface#0e13c@Offset(672.0, 44.0), RenderSemanticsAnnotations#fef51@Offset(672.0, 44.0), RenderSemanticsAnnotations#c8005@Offset(672.0, 44.0), HitTestEntry<HitTestTarget>#ffd22(_ReusableRenderView#be777), HitTestEntry<HitTestTarget>#e400f(<AutomatedTestWidgetsFlutterBinding>))
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2165:25)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1947:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1080:7)
+#3      main.<anonymous closure> (file:///C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart:150:18)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+#6      StackZoneSpecification._registerCallback.<anonymous closure> (package:stack_trace/src/stack_zone_specification.dart:114:42)
+<asynchronous suspension>
+To silence this warning, pass "warnIfMissed: false" to "tap()".
+To make this warning fatal, set WidgetController.hitTestWarningShouldBeFatal to true.
+
+00:03 +48: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: infinite viewport writes at negative and far-away coordinates at different zooms
+00:03 +49: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: infinite viewport writes at negative and far-away coordinates at different zooms
+00:03 +50: C:/Users/aless/Documents/GitHub/OSIpp/test/ink_preview_test.dart: ink burst paints without rebuilding listener or losing samples
+00:03 +51: C:/Users/aless/Documents/GitHub/OSIpp/test/ink_preview_test.dart: ink burst paints without rebuilding listener or losing samples
+00:04 +52: C:/Users/aless/Documents/GitHub/OSIpp/test/ink_preview_test.dart: ink burst paints without rebuilding listener or losing samples
+00:04 +53: C:/Users/aless/Documents/GitHub/OSIpp/test/ink_preview_test.dart: ink burst paints without rebuilding listener or losing samples
+00:04 +54: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:04 +55: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:04 +56: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:05 +57: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:05 +58: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:05 +59: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:05 +60: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:05 +61: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:05 +62: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:05 +63: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:06 +64: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:06 +65: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:06 +65: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: named autosave updates the home thumbnail, date and existing user metadata
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-home-auto-c5e27f1e\xournalpp\recovery-1791487929296470-3632846798-1791487929315461.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-home-auto-c5e27f1e/notes.xopp
+00:06 +66: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:06 +67: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:06 +68: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:06 +69: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:06 +70: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:06 +71: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+dynamic_color: Dynamic color not detected on this device.
+00:06 +72: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: home cards show an image and readable last-modified date on a phone
+00:07 +73: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: home cards show an image and readable last-modified date on a phone
+00:07 +74: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: home cards show an image and readable last-modified date on a phone
+00:07 +75: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: home cards show an image and readable last-modified date on a phone
+00:07 +76: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: home cards show an image and readable last-modified date on a phone
+00:07 +77: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: home cards show an image and readable last-modified date on a phone
+00:07 +78: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: home cards show an image and readable last-modified date on a phone
+00:07 +79: C:/Users/aless/Documents/GitHub/OSIpp/test/library_responsive_test.dart: library fits a 380dp phone and preserves readable cards
+00:07 +80: C:/Users/aless/Documents/GitHub/OSIpp/test/library_responsive_test.dart: library fits a 380dp phone and preserves readable cards
+00:07 +81: C:/Users/aless/Documents/GitHub/OSIpp/test/library_responsive_test.dart: library fits a 380dp phone and preserves readable cards
+00:07 +82: C:/Users/aless/Documents/GitHub/OSIpp/test/library_responsive_test.dart: library fits a 380dp phone and preserves readable cards
+00:07 +83: C:/Users/aless/Documents/GitHub/OSIpp/test/library_responsive_test.dart: library fits a 380dp phone and preserves readable cards
+00:07 +84: C:/Users/aless/Documents/GitHub/OSIpp/test/library_responsive_test.dart: library fits a 380dp phone and preserves readable cards
+00:08 +85: C:/Users/aless/Documents/GitHub/OSIpp/test/library_responsive_test.dart: library fits a 380dp phone and preserves readable cards
+00:08 +86: C:/Users/aless/Documents/GitHub/OSIpp/test/library_responsive_test.dart: library fits a 380dp phone and preserves readable cards
+00:08 +87: C:/Users/aless/Documents/GitHub/OSIpp/test/library_responsive_test.dart: library fits a 380dp phone and preserves readable cards
+00:08 +88: C:/Users/aless/Documents/GitHub/OSIpp/test/library_responsive_test.dart: library fits a 380dp phone and preserves readable cards
+00:08 +89: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:08 +90: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:08 +91: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:08 +92: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:08 +93: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:08 +94: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:09 +95: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:09 +96: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:09 +97: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:09 +98: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:09 +99: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:09 +100: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:09 +101: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:09 +102: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:09 +103: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:09 +104: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:09 +105: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:09 +106: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:09 +107: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:09 +108: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:09 +109: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:09 +110: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:09 +110: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: manual save reuses current checkpoint and reserializes after edits
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-checkpoint-8c72aa82\xournalpp\recovery-1791487932980694-208195162-1791487933106795.xopp
+00:09 +111: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:09 +112: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:09 +112: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: manual save reuses current checkpoint and reserializes after edits
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-checkpoint-8c72aa82\xournalpp\Reuse.xopp
+00:09 +113: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:09 +114: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:09 +115: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:09 +116: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:09 +116: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: manual save reuses current checkpoint and reserializes after edits
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-checkpoint-8c72aa82\xournalpp\Reuse.xopp
+00:10 +117: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:10 +118: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:10 +119: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:10 +120: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:10 +121: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:10 +122: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:11 +123: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:11 +124: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:11 +125: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:11 +126: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:11 +127: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:11 +128: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:11 +129: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:11 +130: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:11 +131: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:12 +132: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:12 +133: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:12 +134: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+00:12 +135: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+00:13 +136: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+00:13 +137: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+00:13 +138: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+00:14 +139: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+00:14 +140: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+00:14 +141: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+00:14 +141: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+dynamic_color: Dynamic color not detected on this device.
+00:14 +142: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+00:14 +143: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+00:15 +144: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+00:15 +145: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+00:15 +146: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+00:15 +147: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+00:15 +148: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+dynamic_color: Dynamic color not detected on this device.
+00:15 +149: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+00:16 +150: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+00:16 +151: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+00:16 +152: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:16 +153: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:16 +154: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:17 +155: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:17 +156: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:17 +157: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:18 +158: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:18 +159: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:18 +160: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:18 +161: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:18 +162: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:18 +163: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:18 +164: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:18 +165: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-home-reopen-916b0579\xournalpp\Appunto appena salvato.xopp
+dynamic_color: Dynamic color not detected on this device.
+dynamic_color: Dynamic color not detected on this device.
+00:20 +166: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: sidebar stays open for layer switching, page insertion and thumbnails; workspace survives background
+00:21 +167: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: workspace recreates both tabs, split focus, template and zoom after process loss
+00:21 +168: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: stylus coordinates and undo stay aligned in the real finite canvas at zoom
+00:21 +169: All tests passed!

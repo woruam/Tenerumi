@@ -30,10 +30,7 @@ class XppText extends XppContent {
     );
 
     // Creiamo uno span di testo
-    final textSpan = TextSpan(
-      text: text,
-      style: textStyle,
-    );
+    final textSpan = TextSpan(text: text, style: textStyle);
 
     // Usiamo il pittore di testo di Flutter
     final textPainter = TextPainter(
@@ -42,13 +39,14 @@ class XppText extends XppContent {
     );
 
     // Calcola l'ingombro del testo (gli diamo lo spazio della pagina intera come limite)
-    textPainter.layout(
-      minWidth: 0,
-      maxWidth: size.width,
-    );
+    try {
+      textPainter.layout(minWidth: 0, maxWidth: size.width);
 
-    // Il MasterPainter ha già spostato l'origine (0,0) esattamente dove deve iniziare la scritta!
-    textPainter.paint(canvas, const Offset(0, 0));
+      // Il MasterPainter ha già spostato l'origine (0,0) esattamente dove deve iniziare la scritta!
+      textPainter.paint(canvas, const Offset(0, 0));
+    } finally {
+      textPainter.dispose();
+    }
   }
 
   // --- VECCHIO METODO (Inattivo) ---
@@ -56,21 +54,22 @@ class XppText extends XppContent {
   XppPageContentWidget render() {
     return XppPageContentWidget(
       tool: EditingTool.TEXT,
-      child: const SizedBox
-          .shrink(), // Niente più TextField pesanti in background!
+      child: const SizedBox.shrink(), // Niente più TextField pesanti in background!
     );
   }
 
   @override
-  XmlElement toXmlElement() => XmlElement(XmlName('text'), [
-        XmlAttribute(XmlName('font'), fontFamily ?? 'Sans'),
-        XmlAttribute(XmlName('size'), this.size.toString()),
-        XmlAttribute(XmlName('x'), offset!.dx.toString()),
-        XmlAttribute(XmlName('y'), offset!.dy.toString()),
-        XmlAttribute(XmlName('color'), color!.toHexTriplet()),
-      ], [
-        XmlText(encodeText(text ?? ''))
-      ]);
+  XmlElement toXmlElement() => XmlElement(
+    XmlName('text'),
+    [
+      XmlAttribute(XmlName('font'), fontFamily ?? 'Sans'),
+      XmlAttribute(XmlName('size'), this.size.toString()),
+      XmlAttribute(XmlName('x'), offset!.dx.toString()),
+      XmlAttribute(XmlName('y'), offset!.dy.toString()),
+      XmlAttribute(XmlName('color'), color!.toHexTriplet()),
+    ],
+    [XmlText(encodeText(text ?? ''))],
+  );
 
   static String encodeText(String text) {
     return text
@@ -122,9 +121,13 @@ class RichTextField extends StatefulWidget {
   final double? size;
   final Color? color;
 
-  const RichTextField(
-      {Key? key, this.onChange, this.text, this.size, this.color})
-      : super(key: key);
+  const RichTextField({
+    Key? key,
+    this.onChange,
+    this.text,
+    this.size,
+    this.color,
+  }) : super(key: key);
 
   @override
   _RichTextFieldState createState() => _RichTextFieldState();
@@ -145,10 +148,7 @@ class _RichTextFieldState extends State<RichTextField> {
   @override
   Widget build(BuildContext context) {
     return XppPageContentWidget(
-      child: TextField(
-        controller: _controller,
-        focusNode: _focusNode,
-      ),
+      child: TextField(controller: _controller, focusNode: _focusNode),
     );
   }
 }

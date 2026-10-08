@@ -522,9 +522,7 @@ class XppFile {
   }
 
   Uint8List? toUint8List() {
-    return Uint8List.fromList(
-      GZipEncoder().encode(Uint8List.fromList(utf8.encode(toXmlString()))),
-    );
+    return GZipEncoder().encodeBytes(utf8.encode(toXmlString()), level: 1);
   }
 
   FilePickerCross toFilePickerCross({String? filePath}) {

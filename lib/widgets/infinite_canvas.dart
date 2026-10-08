@@ -1,3 +1,6 @@
+import 'package:xournalpp/layer_contents/XppImage.dart';
+import 'package:xournalpp/src/decoded_image_cache.dart';
+
 import 'audio_timeline_overlay.dart';
 
 import 'dart:math' as math;
@@ -28,6 +31,17 @@ class InfiniteCanvas extends StatefulWidget {
 class _InfiniteCanvasState extends State<InfiniteCanvas> {
   final _touch = CanvasTouchSession();
   CanvasGeometryCache _geometry = CanvasGeometryCache();
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    DecodedImageCache.shared.release(this);
+    super.dispose();
+  }
+
   @override
   void didUpdateWidget(InfiniteCanvas oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -144,6 +158,17 @@ class _InfiniteCanvasState extends State<InfiniteCanvas> {
               final scale = widget.transform.value.getMaxScaleOnAxis();
               final origin = widget.transform.toScene(Offset.zero);
               final size = constraints.biggest / scale;
+              final viewport = (origin & size).inflate(64);
+              DecodedImageCache.shared.retain(this, [
+                for (final layer in ctrl.file!.pages!.first.layers!)
+                  if (layer.visible) ...[
+                    for (final image
+                        in (layer.content ?? []).whereType<XppImage>())
+                      if (image.data != null &&
+                          image.bounds()?.overlaps(viewport) == true)
+                        image.data!,
+                  ],
+              ]);
               return OverflowBox(
                 alignment: Alignment.topLeft,
                 minWidth: size.width,
@@ -236,7 +261,7 @@ class _InfinitePainter extends CustomPainter {
   final Offset origin;
   final CanvasGeometryCache geometry;
   _InfinitePainter(this.controller, this.origin, this.geometry)
-    : super(repaint: controller);
+    : super(repaint: Listenable.merge([controller, DecodedImageCache.shared]));
   @override
   void paint(Canvas canvas, Size size) {
     geometry.updateRevision(controller.pluginRevision);

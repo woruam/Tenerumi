@@ -141,6 +141,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   Timer? _autosaveDeadline;
   Future<void>? _autosaveQueue;
   int _checkpointRevision = -1;
+  Uint8List? _checkpointPreview;
   bool _discardRecovery = false;
   DateTime? lastAutosave;
   String? autosaveError;
@@ -196,6 +197,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
         }
         if (!savingFile || document.sourcePath == null) {
           _checkpointRevision = revision;
+          _checkpointPreview = snapshot.previewImage;
         }
         autosaveError = null;
       } catch (error) {
@@ -318,7 +320,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   bool _disposed = false;
   Set<int> _visiblePdfPages = {};
   final Map<int, String> pdfErrors = {};
-  Future<void> _renderQueue = Future.value();
+  Future<void>? _renderQueue;
   int _pdfEpoch = 0;
   final Map<String, Uint8List> _pdfSources = {};
   String? linkedPdfPath;
@@ -393,6 +395,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
       );
     }
     _disposed = true;
+    _releaseViewPdf();
     pageNavigation.dispose();
     _pdfEpoch++;
     _pdfSources.clear();
@@ -432,7 +435,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     if (setEquals(indices, _visiblePdfPages)) return;
     _visiblePdfPages = Set.of(indices);
     final epoch = _pdfEpoch;
-    _renderQueue = _renderQueue.then((_) async {
+    final result = (_renderQueue ?? Future.value()).then((_) async {
       for (final i in indices) {
         if (_disposed || epoch != _pdfEpoch) return;
         if (!_visiblePdfPages.contains(i) ||
@@ -456,9 +459,20 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
         }
       }
     });
+    final completed = result.then<void>(
+      (_) {},
+      onError: (Object _, StackTrace __) {},
+    );
+    _renderQueue = completed;
+    unawaited(
+      completed.then((_) {
+        if (identical(_renderQueue, completed)) _renderQueue = null;
+      }),
+    );
   }
 
   void suspendPdfRendering() {
+    _releaseViewPdf();
     _pdfEpoch++;
     _visiblePdfPages = {};
     pdfBackgrounds.clear();
@@ -493,18 +507,55 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     }
   }
 
+  Future<pdfx.PdfDocument>? _viewPdf;
+  String? _viewPdfName;
+  void _releaseViewPdf() {
+    final document = _viewPdf, pending = _renderQueue;
+    _viewPdf = null;
+    _viewPdfName = null;
+    if (document != null)
+      unawaited(() async {
+        try {
+          await pending;
+          await (await document).close();
+        } catch (_) {}
+      }());
+  }
+
   Future<Uint8List?> rasterPdfPage(int index) async {
     if (_disposed || index >= (file?.pages?.length ?? 0)) return null;
+    final epoch = _pdfEpoch;
     final background = file!.pages![index].background;
     if (background is! XppBackgroundPdf || background.filename == null)
       return null;
-    return _rasterPdfBackground(
-      background,
-      pixelBudget: math.min(
-        1000000.0,
-        4000000.0 / math.max(1, _visiblePdfPages.length),
-      ),
-    );
+    if (_viewPdfName != background.filename) {
+      // The visible render queue is serial: the previous page is already closed.
+      final previous = _viewPdf;
+      _viewPdf = null;
+      _viewPdfName = background.filename;
+      if (previous != null) {
+        try {
+          await (await previous).close();
+        } catch (_) {}
+      }
+    }
+    if (_disposed || epoch != _pdfEpoch) return null;
+    final opening = _viewPdf ??= _openPdf(background.filename!);
+    try {
+      final document = await opening;
+      if (_disposed || epoch != _pdfEpoch) return null;
+      return await _renderPdfPage(
+        document,
+        background,
+        pixelBudget: math.min(
+          1000000.0,
+          4000000.0 / math.max(1, _visiblePdfPages.length),
+        ),
+      );
+    } catch (_) {
+      if (identical(_viewPdf, opening)) _releaseViewPdf();
+      rethrow;
+    }
   }
 
   Future<Uint8List?> _rasterPdfBackground(
@@ -514,27 +565,38 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     if (background.filename == null) return null;
     final document = await _openPdf(background.filename!);
     try {
-      final page = await document.getPage((background.page ?? 0) + 1);
-      try {
-        // Bound decoded GPU memory even for huge source pages.
-        final scale = math.min(
-          2.0,
-          math.min(
-            4096 / math.max(page.width, page.height),
-            math.sqrt(pixelBudget / (page.width * page.height)),
-          ),
-        );
-        final image = await page.render(
-          width: page.width * scale,
-          height: page.height * scale,
-          format: pdfx.PdfPageImageFormat.png,
-        );
-        return image?.bytes;
-      } finally {
-        await page.close();
-      }
+      return await _renderPdfPage(
+        document,
+        background,
+        pixelBudget: pixelBudget,
+      );
     } finally {
       await document.close();
+    }
+  }
+
+  Future<Uint8List?> _renderPdfPage(
+    pdfx.PdfDocument document,
+    XppBackgroundPdf background, {
+    required double pixelBudget,
+  }) async {
+    final page = await document.getPage((background.page ?? 0) + 1);
+    try {
+      final scale = math.min(
+        2.0,
+        math.min(
+          4096 / math.max(page.width, page.height),
+          math.sqrt(pixelBudget / (page.width * page.height)),
+        ),
+      );
+      final image = await page.render(
+        width: page.width * scale,
+        height: page.height * scale,
+        format: pdfx.PdfPageImageFormat.png,
+      );
+      return image?.bytes;
+    } finally {
+      await page.close();
     }
   }
 
@@ -798,9 +860,10 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     try {
       if (audio.recording || audio.busy) await audio.stop();
       if (!context.mounted || _disposed) return false;
+      if (_autosaveQueue != null) await _autosaveQueue;
       final savedRevision = _revision;
       final document = file!;
-      if (_autosaveQueue != null) await _autosaveQueue;
+      bool addedAttachment = false;
       // Make existing native PDF references portable on the next save.
       for (final background
           in document.pages
@@ -810,13 +873,26 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
         final name = background.filename;
         if (name != null && !document.pdfAttachments.containsKey(name)) {
           document.pdfAttachments[name] = await _readPdfBytes(name);
+          addedAttachment = true;
         }
       }
       final snapshot = document.snapshot();
       snapshot.modifiedAt ??= DateTime.now().toUtc();
-      await _preparePreview(snapshot);
+      Uint8List? prepared;
+      if (_checkpointRevision == savedRevision && !addedAttachment) {
+        prepared = await AutosaveStore.checkpointBytes(
+          document.documentId,
+          snapshot.modifiedAt,
+        );
+        if (prepared != null)
+          snapshot.previewImage = _checkpointPreview ?? snapshot.previewImage;
+      }
+      if (prepared == null) {
+        await _preparePreview(snapshot);
+        prepared = await snapshot.serializeSnapshotAsync();
+      }
       final data = FilePickerCross(
-        await snapshot.serializeSnapshotAsync(),
+        prepared,
         type: FileTypeCross.custom,
         fileExtension: 'xopp',
         path: document.suggestedFileName,
@@ -960,22 +1036,39 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     );
   }
 
-  Future<Uint8List> buildPdfBytes() {
+  Future<Uint8List> buildPdfBytes() async {
     final document = file;
     if (document == null) throw StateError('Nessun documento aperto');
-    return buildNotesPdf(
-      document,
-      loadBackground: (index, background) async {
-        if (background is XppBackgroundPdf) {
-          return await (pdfRasterizer?.call(index) ??
-              _rasterPdfBackground(background, pixelBudget: 4000000));
-        }
-        if (background is XppBackgroundImage && background.filename != null) {
-          return _readPdfBytes(background.filename!);
-        }
-        return null;
-      },
-    );
+    // One source handle at a time across adjacent exported PDF pages. An export
+    // owns its handles independently of the visible canvas and thumbnail queue.
+    pdfx.PdfDocument? source;
+    String? sourceName;
+    try {
+      return await buildNotesPdf(
+        document,
+        loadBackground: (index, background) async {
+          if (background is XppBackgroundPdf) {
+            if (pdfRasterizer != null) return pdfRasterizer!(index);
+            final name = background.filename;
+            if (name == null) return null;
+            if (sourceName != name) {
+              final previous = source;
+              source = null;
+              sourceName = null;
+              if (previous != null) await previous.close();
+              source = await _openPdf(name);
+              sourceName = name;
+            }
+            return _renderPdfPage(source!, background, pixelBudget: 4000000);
+          }
+          if (background is XppBackgroundImage && background.filename != null)
+            return _readPdfBytes(background.filename!);
+          return null;
+        },
+      );
+    } finally {
+      await source?.close();
+    }
   }
 
   Future<Uint8List?> pluginPageBackground(int index) async {

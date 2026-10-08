@@ -18,35 +18,43 @@ class XppTexImage extends XppContent {
 
   XppTexImage({this.text, this.topLeft, this.bottomRight, this.color});
 
-  static Future<XppTexImage> edit(
-      {required BuildContext context,
-      String text = 'x^2',
-      Offset? topLeft,
-      Color? color}) async {
+  static Future<XppTexImage> edit({
+    required BuildContext context,
+    String text = 'x^2',
+    Offset? topLeft,
+    Color? color,
+  }) async {
     var laTeXController = TextEditingController(text: text);
     bool? result = await showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Enter LaTeX code'),
         content: TextField(
-            controller: laTeXController,
-            decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'LaTeX code',
-                helperText: 'No delimiter required')),
+          controller: laTeXController,
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            labelText: 'LaTeX code',
+            helperText: 'No delimiter required',
+          ),
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancel')),
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
           TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Okay'))
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Okay'),
+          ),
         ],
       ),
     );
+    final editedText = laTeXController.text;
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => laTeXController.dispose(),
+    );
     if (result != true) throw (UnsupportedError('Aborted.'));
-    return (XppTexImage(
-        text: laTeXController.text, topLeft: topLeft, color: color));
+    return (XppTexImage(text: editedText, topLeft: topLeft, color: color));
   }
 
   // --- NUOVO METODO AD ALTE PRESTAZIONI ---
@@ -62,10 +70,7 @@ class XppTexImage extends XppContent {
       fontFamily: 'serif',
     );
 
-    final textSpan = TextSpan(
-      text: text,
-      style: textStyle,
-    );
+    final textSpan = TextSpan(text: text, style: textStyle);
 
     final textPainter = TextPainter(
       text: textSpan,
@@ -73,10 +78,14 @@ class XppTexImage extends XppContent {
     );
 
     // Diciamo al testo di calcolare il suo ingombro senza limiti di larghezza
-    textPainter.layout();
+    try {
+      textPainter.layout();
 
-    // Disegniamo sul canvas all'origine (il MasterPainter ha già spostato le coordinate corrette)
-    textPainter.paint(canvas, const Offset(0, 0));
+      // Disegniamo sul canvas all'origine (il MasterPainter ha già spostato le coordinate corrette)
+      textPainter.paint(canvas, const Offset(0, 0));
+    } finally {
+      textPainter.dispose();
+    }
   }
 
   // --- VECCHIO METODO (Inattivo) ---
@@ -96,8 +105,9 @@ class XppTexImage extends XppContent {
     final width = (bottomRight!.dx > topLeft!.dx)
         ? bottomRight!.dx - topLeft!.dx
         : (text ?? '').length * 10.0;
-    final height =
-        (bottomRight!.dy > topLeft!.dy) ? bottomRight!.dy - topLeft!.dy : 24.0;
+    final height = (bottomRight!.dy > topLeft!.dy)
+        ? bottomRight!.dy - topLeft!.dy
+        : 24.0;
     return Rect.fromLTWH(topLeft!.dx, topLeft!.dy, width, height);
   }
 
@@ -114,16 +124,18 @@ class XppTexImage extends XppContent {
   }
 
   @override
-  XmlElement toXmlElement() => XmlElement(XmlName('teximage'), [
-        XmlAttribute(XmlName('text'), text!),
-        XmlAttribute(XmlName('color'), color!.toHexTriplet()),
-        XmlAttribute(XmlName('left'), topLeft!.dx.toString()),
-        XmlAttribute(XmlName('right'), bottomRight?.dx.toString() ?? '0'),
-        XmlAttribute(XmlName('top'), topLeft!.dy.toString()),
-        XmlAttribute(XmlName('bottom'), bottomRight?.dy.toString() ?? '0'),
-      ], [
-        XmlText(XppText.encodeText(text!))
-      ]);
+  XmlElement toXmlElement() => XmlElement(
+    XmlName('teximage'),
+    [
+      XmlAttribute(XmlName('text'), text!),
+      XmlAttribute(XmlName('color'), color!.toHexTriplet()),
+      XmlAttribute(XmlName('left'), topLeft!.dx.toString()),
+      XmlAttribute(XmlName('right'), bottomRight?.dx.toString() ?? '0'),
+      XmlAttribute(XmlName('top'), topLeft!.dy.toString()),
+      XmlAttribute(XmlName('bottom'), bottomRight?.dy.toString() ?? '0'),
+    ],
+    [XmlText(XppText.encodeText(text!))],
+  );
 
   @override
   bool inRegion({Offset? topLeft, Offset? bottomRight}) {

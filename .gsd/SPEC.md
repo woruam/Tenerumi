@@ -44,3 +44,7 @@ Pressione prolungata apre azioni Cambia tag/Elimina; Elimina richiede conferma c
 ## Navigazione e continuita workspace - 2026-10-08
 Status: FINALIZED
 Pannello laterale non modale con livelli e miniature pagine lazy/cachate, selezione rapida e inserimento prima/dopo pagina attiva per note e PDF. Icone penna/evidenziatore nel colore scelto, pagine squadrate e pressione Incolla 1100ms. Autogenerazione nelle sole note finite native quando inchiostro raggiunge zona inferiore o gesto verso alto a fine documento; nessuna catena di pagine vuote. Audio 120 minuti/48 MiB per registrazione/128 MiB per appunto. Apri libreria in nuova scheda senza home. Persistenza/ripristino sessione schede, focus, split e viewport in background/riavvio. Rejection palmo/stylo e stabilita pinch senza inerzia o salto al cambio numero dita. Verificare snapshot/PDF/undo/input/lifecycle e prove UI; documentare limiti fisici.
+
+## Reattività e memoria - 2026-10-08
+Status: FINALIZED
+Ridurre lavoro per frame nello scorrimento senza cambiare input, palm rejection, zoom, livelli, audio o paginazione. Ridurre lavoro UI e duplicazioni nei salvataggi XOPP/PDF mantenendo contenuto, qualità e compatibilità. Cache native limitate con rilascio esplicito e callback tardivi innocui. Regressioni complete, misure riproducibili su dati sintetici e audit; non presentare misure desktop come prestazioni Android.

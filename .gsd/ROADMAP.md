@@ -55,3 +55,11 @@ Eliminazione home: fasi 1–3 completate e verificate con 150 test, analyze, com
 4. Test, compile, screenshot e audit regressioni; commit.
 
 Navigazione workspace: fasi 1–4 completate. 161 test Flutter, compilazione Kotlin Android, analisi senza errori/warning e screenshot desktop/telefono; audit docs/workspace-navigation.md. Profilazione hardware e registrazione lunga rimangono prove manuali.
+
+## Reattività e memoria
+1. Stabilizzare widget/painter delle pagine durante pan/zoom.
+2. Compressione e assemblaggio export fuori UI; riuso checkpoint valido.
+3. Immagini native limitate e rilascio listener/codec/callback.
+4. Regressioni, benchmark, analisi e audit; commit.
+
+Reattività e memoria: fasi 1–4 completate. 169 regressioni, benchmark strutturale/compressione, analyze senza errori/warning, Kotlin riuscito. Audit docs/performance-and-memory.md; misure Android hardware restano manuali.
