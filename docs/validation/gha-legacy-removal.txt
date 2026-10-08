@@ -1,0 +1,14 @@
+Riferimenti runtime/test controllati prima della rimozione. Rimossi solo componenti senza utilizzatori attivi.
+lib/src/conditional/open_file/open_file_generic.dart
+lib/src/conditional/open_file/open_file_io.dart
+lib/src/conditional/open_file/open_file_web.dart
+lib/widgets/ContextualBottomSheet.dart
+lib/widgets/DropFile.dart
+lib/widgets/EditingToolbar.dart
+lib/widgets/MainDrawer.dart
+lib/widgets/QuotaTile.dart
+lib/widgets/ToolSettingsMenu.dart
+lib/widgets/XppPagesListView.dart
+lib/widgets/canvas_app_bar.dart
+lib/src/XppPageContentWidget.dart
+Rimossi render placeholder di XppContent e RichTextField inattivo.

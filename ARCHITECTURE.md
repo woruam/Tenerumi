@@ -18,7 +18,6 @@ lib/
 │   └── WorkspacePage.dart
 ├── src/                  # Modelli dati principali e core logic (parser .xopp)
 │   ├── compat/           # Codice per compatibilità multipiattaforma (es. file picker per web/desktop)
-│   ├── conditional/      # Import condizionali a seconda della piattaforma
 │   ├── ShapeRecognizer.dart
 │   ├── XppBackground.dart
 │   ├── XppFile.dart      # Struttura del documento Xournal++
@@ -27,11 +26,9 @@ lib/
 │   └── globals.dart
 ├── widgets/              # Componenti UI riutilizzabili
 │   ├── canvas_toolbar.dart
-│   ├── ContextualBottomSheet.dart
 │   ├── PointerListener.dart
 │   ├── PomodoroTimer.dart
 │   ├── ToolBoxBottomSheet.dart
-│   ├── ToolSettingsMenu.dart
 │   ├── XppPageStack.dart
 │   ├── ZoomableWidget.dart
 │   ├── split_screen_view.dart    # (Nuovo) Gestore della vista affiancata e del divisore

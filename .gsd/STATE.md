@@ -76,3 +76,6 @@ Export ibrido con tratti a mano libera vettoriali, pressione e gomma locale; fal
 
 ## Analisi provenienza e ottimizzazioni — 2026-10-08
 Rapporto docs/analisi-provenienza-e-ottimizzazioni.md completato contro upstream GitLab ce62f95 e OSI 1d1baa7. 85 file Dart non generati: 29 corrispondenti per percorso, 56 assenti; 8.007/107.640 token in blocchi condivisi >=20 (7,44%, somiglianza non paternità). Inventario per file, grafo import condizionali e dieci opportunità con rischi/verifiche. Script e JSON riproducibili; controlli conteggi, tokenizzazione e link riusciti. Nessuna modifica runtime o build.
+
+## Interventi G/H/A — fase G
+Rimossi 12 file legacy senza utilizzatori attivi, RichTextField e contratto render placeholder dei contenuti. Renderer canvas corrente conservato. 13 test input/export riusciti; nessun riferimento runtime/test ai simboli rimossi. H e A da completare.

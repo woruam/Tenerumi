@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:xournalpp/src/HexColor.dart';
 import 'package:xournalpp/src/XppLayer.dart';
-import 'package:xournalpp/src/XppPageContentWidget.dart';
 import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
 
 class XppText extends XppContent {
@@ -47,15 +46,6 @@ class XppText extends XppContent {
     } finally {
       textPainter.dispose();
     }
-  }
-
-  // --- VECCHIO METODO (Inattivo) ---
-  @override
-  XppPageContentWidget render() {
-    return XppPageContentWidget(
-      tool: EditingTool.TEXT,
-      child: const SizedBox.shrink(), // Niente più TextField pesanti in background!
-    );
   }
 
   @override
@@ -108,47 +98,5 @@ class XppText extends XppContent {
   bool shouldSelectAt({Offset? coordinates, EditingTool? tool}) {
     if (coordinates == null) return false;
     return bounds()!.inflate(8).contains(coordinates);
-  }
-}
-
-// -----------------------------------------------------------------------------
-// Ho mantenuto la vecchia classe RichTextField qui in fondo nel caso servisse
-// ancora ad altri file dell'app, ma ora non viene più usata per il rendering!
-// -----------------------------------------------------------------------------
-class RichTextField extends StatefulWidget {
-  final Function(String text)? onChange;
-  final String? text;
-  final double? size;
-  final Color? color;
-
-  const RichTextField({
-    Key? key,
-    this.onChange,
-    this.text,
-    this.size,
-    this.color,
-  }) : super(key: key);
-
-  @override
-  _RichTextFieldState createState() => _RichTextFieldState();
-}
-
-class _RichTextFieldState extends State<RichTextField> {
-  TextEditingController? _controller;
-  FocusNode? _focusNode;
-  bool active = false;
-
-  @override
-  void initState() {
-    _controller = TextEditingController(text: widget.text);
-    _focusNode = FocusNode();
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return XppPageContentWidget(
-      child: TextField(controller: _controller, focusNode: _focusNode),
-    );
   }
 }

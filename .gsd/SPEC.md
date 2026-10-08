@@ -56,3 +56,7 @@ Conservare nitidezza dei tratti esportati usando geometria vettoriale con pressi
 ## Analisi provenienza e ottimizzazioni — 2026-10-08
 Status: FINALIZED
 Produrre un rapporto Markdown con confronto riproducibile contro Xournal++ Mobile upstream fissato a commit, quantità e limiti dell’attribuzione, opportunità di ottimizzazione con riferimenti al codice, rischio e verifiche. Nessuna modifica al runtime, nessuna build APK.
+
+## Interventi G, H, A — 2026-10-08
+Status: FINALIZED
+Applicare nell’ordine G (legacy inutilizzato), H (enum nel dominio e proprietà tratti unificate), A (geometria in singolo passaggio). Conservare strumenti, mutabilità, clone/XML, pressione, gomma, undo, input e export. Escludere B/C/D/E/F/I/J. Verificare regressioni e riduzione delle visite ai punti; documentare e commit per fase.

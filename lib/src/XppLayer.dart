@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
 
-import 'XppPageContentWidget.dart';
-
 class XppLayer {
   XppLayer({
     this.content,
@@ -30,12 +28,6 @@ class XppLayer {
 abstract class XppContent {
   Offset? getOffset();
 
-  // VECCHIO METODO: Lo teniamo temporaneamente per non far esplodere tutto subito,
-  // ma lo elimineremo alla fine.
-  XppPageContentWidget render();
-
-  // NUOVO METODO: Il futuro dell'app.
-  // Ogni elemento (testo, immagine, tratto) dovrà saper disegnare se stesso su questa tela.
   void paintToCanvas(Canvas canvas, Size size);
 
   XmlElement toXmlElement();

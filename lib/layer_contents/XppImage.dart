@@ -8,7 +8,6 @@ import 'package:xournalpp/src/compat/file_picker_cross.dart';
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:xournalpp/src/XppLayer.dart';
-import 'package:xournalpp/src/XppPageContentWidget.dart';
 import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
 
 class XppImage extends XppContent {
@@ -71,15 +70,6 @@ class XppImage extends XppContent {
       // Disegna un placeholder grigio per far capire che sta caricando
       canvas.drawRect(destRect, Paint()..color = Colors.grey.withOpacity(0.2));
     }
-  }
-
-  // --- VECCHIO METODO (Inattivo) ---
-  @override
-  XppPageContentWidget render() {
-    return XppPageContentWidget(
-      tool: EditingTool.IMAGE,
-      child: const SizedBox.shrink(),
-    );
   }
 
   @override

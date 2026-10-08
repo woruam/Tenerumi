@@ -3,7 +3,6 @@ import 'package:xml/xml.dart';
 import 'package:xournalpp/layer_contents/XppText.dart';
 import 'package:xournalpp/src/HexColor.dart';
 import 'package:xournalpp/src/XppLayer.dart';
-import 'package:xournalpp/src/XppPageContentWidget.dart';
 import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
 
 class XppTexImage extends XppContent {
@@ -86,15 +85,6 @@ class XppTexImage extends XppContent {
     } finally {
       textPainter.dispose();
     }
-  }
-
-  // --- VECCHIO METODO (Inattivo) ---
-  @override
-  XppPageContentWidget render() {
-    return XppPageContentWidget(
-      tool: EditingTool.LATEX,
-      child: const SizedBox.shrink(),
-    );
   }
 
   @override

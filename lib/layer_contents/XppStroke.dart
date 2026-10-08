@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 import 'package:xournalpp/src/HexColor.dart';
 import 'package:xournalpp/src/XppLayer.dart';
-import 'package:xournalpp/src/XppPageContentWidget.dart';
 import 'package:xournalpp/widgets/ToolBoxBottomSheet.dart';
 import 'package:xournalpp/src/ink_geometry.dart';
 
@@ -230,15 +229,6 @@ abstract class XppStroke extends XppContent {
       }
       canvas.restore();
     }
-  }
-
-  // --- VECCHIO METODO (Mantenuto inattivo per evitare crash del resto dell'app) ---
-  @override
-  XppPageContentWidget render() {
-    return XppPageContentWidget(
-      tool: EditingTool.STYLUS,
-      child: const SizedBox.shrink(), // Rendering handled by the page painter.
-    );
   }
 
   @override

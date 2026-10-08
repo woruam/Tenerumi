@@ -77,3 +77,9 @@ Qualità PDF: fasi 1–3 completate e verificate; confronto indipendente PDF/can
 3. Rapporto Markdown, dati riproducibili e verifica documentale; commit.
 
 Analisi provenienza: fasi 1–3 completate; dati upstream acquisiti, rapporto e inventario verificati. Nessuna modifica all’app.
+
+## Interventi G, H, A
+1. G: controllare riferimenti e rimuovere componenti/adattatori legacy, placeholder render e RichTextField inattivo.
+2. H: spostare EditingTool nel dominio, migrare import e unificare proprietà preservando semantica osservabile.
+3. A: minimi/massimi/raggio con singolo passaggio; nessuna nuova cache.
+4. Regressioni, misura strutturale, analisi e documentazione.
