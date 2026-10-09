@@ -85,3 +85,7 @@ EditingTool spostato in src/editing_tool.dart senza cambiare ordine/nomi; import
 
 ## Interventi G/H/A — completati il 9 ottobre 2026
 A: estremi/raggio in un passaggio, curve invariate, nessuna cache aggiuntiva. 10.000 campioni: 50.002 accessi oracle vs 10.001 nuovo bounds. 174 test completi riusciti; analyze senza errori/warning (180 info), confronto PDF/Poppler riuscito. Audit docs/ottimizzazioni-gha.md. B/C/D/E/F/I/J esclusi; nessuna build APK/push.
+
+
+## Nitidezza PDF e README OSI — 2026-10-09
+Forme/whiteout, carta nativa e font supportati esportati vettoriali; immagini originali conservate. Sans Android incorpora Roboto di sistema se leggibile, altrimenti fallback fedele. Dettaglio PDF per regione visibile con texture native, debounce 180 ms e limite circa 2 MP/2048 per lato; niente bitmap completo proporzionale allo zoom. Identità include pagina/sorgente per inserimento/undo. Chiusura pagina prima update, risultati tardivi scartati, timer/listener/texture sostituite/documenti liberati anche in background o errore. README riscritto per OSI 0.5.0+31. 179 test completi, analyze senza errori/warning (180 info preesistenti), confronti Poppler/pypdf e immagini verificati. Limiti: sfondi PDF importati ancora raster, puntinato classico/formule/font non disponibili in fallback; dispositivo Android reale non profilato. Audit docs/pdf-detail-quality.md. Nessuna APK né push.

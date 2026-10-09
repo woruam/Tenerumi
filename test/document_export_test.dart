@@ -110,6 +110,74 @@ void main() {
   });
 
   testWidgets(
+    'PDF exports paper, shapes and bundled text as vectors and retains original image resolution',
+    (tester) async {
+      final file = XppFile.empty(title: 'Vector shapes');
+      final page = file.pages!.first;
+      page.pageSize = XppPageSize(width: 160, height: 180);
+      page.background = XppBackgroundSolidLined(color: Colors.white);
+      page.layers!.first.content!.addAll([
+        XppStrokePen(
+          color: Colors.red,
+          points: [
+            XppStrokePoint(x: 20, y: 20, width: 3),
+            XppStrokePoint(x: 140, y: 20, width: 3),
+            XppStrokePoint(x: 140, y: 60, width: 3),
+            XppStrokePoint(x: 20, y: 60, width: 3),
+            XppStrokePoint(x: 20, y: 20, width: 3),
+          ],
+        )..isShape = true,
+        XppStrokeHighlight(
+            color: Colors.yellow,
+            points: [
+              XppStrokePoint(x: 80, y: 70, width: 5),
+              XppStrokePoint(x: 140, y: 100, width: 5),
+              XppStrokePoint(x: 80, y: 130, width: 5),
+              XppStrokePoint(x: 20, y: 100, width: 5),
+              XppStrokePoint(x: 80, y: 70, width: 5),
+            ],
+          )
+          ..isShape = true
+          ..smooth = true,
+        XppText(
+          text: 'OSI àèìòù\nTesto nitido',
+          fontFamily: 'Inter',
+          offset: const Offset(20, 135),
+          size: 14,
+          color: Colors.blue,
+        ),
+      ]);
+      await tester.runAsync(() async {
+        await (FontLoader(
+          'Inter',
+        )..addFont(rootBundle.load('fonts/Inter/Inter-Variable.ttf'))).load();
+        final pdf = await buildNotesPdf(
+          file,
+          loadBackground: (_, _) async => null,
+        );
+        expect(latin1.decode(pdf), isNot(contains('/Subtype /Image')));
+        await File('docs/validation/pdf-vector-shapes.pdf').writeAsBytes(pdf);
+        await File('docs/validation/pdf-vector-shapes-reference.png')
+            .writeAsBytes(await rasterizeExportPage(page, maxScale: 4));
+        page.layers!.first.content = [
+          XppImage(
+            data: await solidPng(Colors.green),
+            topLeft: const Offset(0, 0),
+            bottomRight: const Offset(160, 180),
+          ),
+        ];
+        final imagePdf = await buildNotesPdf(
+          file,
+          loadBackground: (_, _) async => null,
+        );
+        final encoded = latin1.decode(imagePdf);
+        expect(encoded, contains('/Width 8'));
+        expect(encoded, contains('/Height 8'));
+      });
+    },
+  );
+
+  testWidgets(
     'Android document URI can be saved again and reopened from the library',
     (tester) async {
       const channel = MethodChannel('online.xournal.mobile/documents');

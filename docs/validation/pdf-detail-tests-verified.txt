@@ -1,0 +1,6 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/pdf_zoom_detail_test.dart
+00:00 +0: visible crops stay bounded even at extreme zoom and pixel density
+00:00 +1: detail identity changes when a source page is remapped
+00:00 +2: zoom is debounced; detail uses a crop and releases on background
+00:00 +3: closing during render disposes stale texture and closes document even on release failure
+00:00 +4: All tests passed!

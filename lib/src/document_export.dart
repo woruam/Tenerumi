@@ -2,8 +2,13 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'compat/internal_storage_generic.dart'
+    if (dart.library.io) 'compat/internal_storage_io.dart'
+    as font_storage;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:xournalpp/layer_contents/XppImage.dart';
@@ -79,6 +84,8 @@ Future<Uint8List> buildNotesPdf(
   }
   final title = document.title;
   final exportPages = <Map<String, Object>>[];
+  final fonts = <String, Uint8List>{};
+  final unavailableFonts = <String>{};
   for (var index = 0; index < pages.length; index++) {
     final page = pages[index];
     final size = (page.pageSize ?? XppPageSize.a4).toSize();
@@ -93,14 +100,35 @@ Future<Uint8List> buildNotesPdf(
       }
     }
     final parts = <Map<String, Object>>[];
-    final paper = XppPage(
-      pageSize: page.pageSize,
-      background: page.background,
-      layers: [],
-    );
-    parts.add({
-      'png': await rasterizeExportPage(paper, backgroundBytes: background),
-    });
+    if (page.background is XppBackgroundSolidDot) {
+      // This legacy template has ~160000 dots/A4. Keep its bounded raster;
+      // emitting every dot would inflate CPU/memory while ink stays vector.
+      parts.add({
+        'png': await rasterizeExportPage(
+          XppPage(
+            pageSize: page.pageSize,
+            background: page.background,
+            layers: [],
+          ),
+          maxScale: 4,
+        ),
+      });
+    } else if (background != null) {
+      parts.add({'png': background});
+    } else {
+      final source = page.background;
+      parts.add({
+        'paper': switch (source) {
+          XppBackgroundNothingDark() => 'nothingDark',
+          XppBackgroundNothingLight() => 'nothingLight',
+          XppBackgroundSolidDot() => 'dot',
+          XppBackgroundSolidGraph() => 'graph',
+          XppBackgroundSolidLined() || XppBackgroundSolidRuled() => 'lines',
+          _ => 'plain',
+        },
+        'color': (source?.color ?? Colors.white).toARGB32(),
+      });
+    }
     final pending = <XppContent?>[];
     Future<void> flush() async {
       if (pending.isEmpty) return;
@@ -142,9 +170,45 @@ Future<Uint8List> buildNotesPdf(
       if (!layer.visible) continue;
       for (final content in layer.content ?? <XppContent?>[]) {
         if (++batch % 64 == 0) await Future<void>.delayed(Duration.zero);
-        if (content is XppStroke &&
-            !content.isShape &&
-            content.tool != XppStrokeTool.ERASER) {
+        if (content is XppImage &&
+            content.data != null &&
+            content.bounds() != null) {
+          await flush();
+          final rect = content.bounds()!;
+          parts.add({
+            'png': content.data!,
+            'left': rect.left,
+            'top': rect.top,
+            'width': rect.width,
+            'height': rect.height,
+          });
+        } else if (content is XppText &&
+            _vectorFontAsset(content) != null &&
+            !RegExp(r'[^\u000a\u000d\u0020-\u024f]')
+                .hasMatch(content.text ?? '')) {
+          await flush();
+          final asset = _vectorFontAsset(content)!;
+          if (!fonts.containsKey(asset) && !unavailableFonts.contains(asset)) {
+            try {
+              if (asset.startsWith('/system/fonts/')) {
+                fonts[asset] = await font_storage.readFile(asset);
+              } else {
+                final data = await rootBundle.load(asset);
+                fonts[asset] = data.buffer.asUint8List(
+                  data.offsetInBytes,
+                  data.lengthInBytes,
+                );
+              }
+            } catch (_) {
+              unavailableFonts.add(asset);
+            }
+          }
+          if (fonts.containsKey(asset)) {
+            parts.add(_vectorText(content, size, asset));
+          } else {
+            pending.add(content);
+          }
+        } else if (content is XppStroke) {
           await flush();
           parts.add({
             'ink': [
@@ -158,9 +222,21 @@ Future<Uint8List> buildNotesPdf(
                   ),
                 ],
             ],
-            'color': (content.color ?? Colors.black).toARGB32(),
+            'shape': content.isShape,
+            'smooth': content.smooth,
+            'lineWidth': (content.points?.firstOrNull?.width ?? 2.5).clamp(
+              1.0,
+              double.infinity,
+            ),
+            'color':
+                (content.tool == XppStrokeTool.ERASER
+                        ? Colors.white
+                        : content.color ?? Colors.black)
+                    .toARGB32(),
             'opacity': content.tool == XppStrokeTool.HIGHLIGHTER
                 ? .5
+                : content.tool == XppStrokeTool.ERASER
+                ? 1.0
                 : (content.color ?? Colors.black).a,
             'cuts': [
               for (final cut in content.erasures.where((cut) => cut.isValid))
@@ -187,19 +263,27 @@ Future<Uint8List> buildNotesPdf(
     // Release this page's GPU resources before starting the next page.
     await Future<void>.delayed(Duration.zero);
   }
-  return compute(_assemblePdf, {'title': title, 'pages': exportPages});
+  return compute(_assemblePdf, {
+    'title': title,
+    'pages': exportPages,
+    'fonts': fonts,
+  });
 }
 
 /// PNG decoding, PDF image compression and final document encoding are CPU
 /// work and must not block gesture/input frames. Only portable data crosses.
 Future<Uint8List> _assemblePdf(Map<String, Object?> input) async {
   final pdf = pw.Document(title: input['title'] as String?, creator: 'OSI');
+  final fonts = {
+    for (final entry in (input['fonts'] as Map<String, Uint8List>).entries)
+      entry.key: pw.Font.ttf(ByteData.sublistView(entry.value)),
+  };
   for (final item in input['pages'] as List<Map<String, Object>>) {
     final width = item['width'] as double, height = item['height'] as double;
     pdf.addPage(
       pw.Page(
         pageFormat: PdfPageFormat(width, height, marginAll: 0),
-        build: (_) => pw.Stack(
+        build: (context) => pw.Stack(
           children: [
             for (final part in item['parts'] as List<Map<String, Object>>)
               if (part['png'] != null)
@@ -213,6 +297,22 @@ Future<Uint8List> _assemblePdf(Map<String, Object?> input) async {
                     fit: pw.BoxFit.fill,
                   ),
                 )
+              else if (part['textLines'] != null)
+                pw.CustomPaint(
+                  size: PdfPoint(width, height),
+                  painter: (canvas, _) => _paintPdfText(
+                    canvas,
+                    part,
+                    height,
+                    fonts[part['font']]!.getFont(context),
+                  ),
+                )
+              else if (part['paper'] != null)
+                pw.CustomPaint(
+                  size: PdfPoint(width, height),
+                  painter: (canvas, _) =>
+                      _paintPdfPaper(canvas, part, width, height),
+                )
               else
                 pw.CustomPaint(
                   size: PdfPoint(width, height),
@@ -225,6 +325,144 @@ Future<Uint8List> _assemblePdf(Map<String, Object?> input) async {
     );
   }
   return pdf.save();
+}
+
+String? _vectorFontAsset(XppText text) => switch (text.fontFamily ?? 'Sans') {
+  'Sans' || 'sans-serif' || 'Roboto'
+      when !kIsWeb && defaultTargetPlatform == TargetPlatform.android =>
+    '/system/fonts/Roboto-Regular.ttf',
+  'Open Sans' => 'fonts/Open Sans/OpenSans-Regular.ttf',
+  'Inter' => 'fonts/Inter/Inter-Variable.ttf',
+  'VT323' => 'fonts/VT323/VT323-Regular.ttf',
+  _ => null,
+};
+
+Map<String, Object> _vectorText(XppText text, Size size, String asset) {
+  final painter = TextPainter(
+    text: TextSpan(
+      text: text.text,
+      style: TextStyle(
+        fontFamily: text.fontFamily ?? 'Sans',
+        fontSize: text.size ?? 12,
+      ),
+    ),
+    textDirection: TextDirection.ltr,
+  );
+  try {
+    painter.layout(maxWidth: size.width);
+    final lines = <Map<String, Object>>[];
+    for (final line in painter.computeLineMetrics()) {
+      final position = painter.getPositionForOffset(
+        Offset(line.left, line.baseline - line.ascent / 2),
+      );
+      final range = painter.getLineBoundary(position);
+      lines.add({
+        'text': (text.text ?? '')
+            .substring(range.start, range.end)
+            .replaceAll('\n', '')
+            .replaceAll('\r', ''),
+        'x': (text.offset?.dx ?? 0) + line.left,
+        'y': (text.offset?.dy ?? 0) + line.baseline,
+      });
+    }
+    return {
+      'textLines': lines,
+      'font': asset,
+      'size': text.size ?? 12,
+      'color': (text.color ?? Colors.black).toARGB32(),
+      'opacity': (text.color ?? Colors.black).a,
+    };
+  } finally {
+    painter.dispose();
+  }
+}
+
+void _paintPdfText(
+  PdfGraphics canvas,
+  Map<String, Object> part,
+  double height,
+  PdfFont font,
+) {
+  canvas.saveContext();
+  canvas.setFillColor(PdfColor.fromInt(part['color'] as int));
+  canvas.setGraphicState(PdfGraphicState(opacity: part['opacity'] as double));
+  for (final line in part['textLines'] as List<Map<String, Object>>) {
+    canvas.drawString(
+      font,
+      part['size'] as double,
+      line['text'] as String,
+      line['x'] as double,
+      height - (line['y'] as double),
+    );
+  }
+  canvas.restoreContext();
+}
+
+void _paintPdfPaper(
+  PdfGraphics canvas,
+  Map<String, Object> part,
+  double width,
+  double height,
+) {
+  canvas.saveContext();
+  final paperColor = Color(part['color'] as int);
+  canvas.setFillColor(PdfColor.fromInt(paperColor.toARGB32()));
+  canvas.setGraphicState(PdfGraphicState(opacity: paperColor.a));
+  canvas.drawRect(0, 0, width, height);
+  canvas.fillPath();
+  canvas.setGraphicState(const PdfGraphicState(opacity: 1));
+  final kind = part['paper'] as String;
+  void circle(double x, double y, double r) {
+    canvas.drawEllipse(x, height - y, r, r);
+    canvas.fillPath();
+  }
+
+  if (kind.startsWith('nothing')) {
+    canvas.setFillColor(
+      kind == 'nothingDark' ? PdfColors.white : PdfColors.black,
+    );
+    final alpha = kind == 'nothingDark' ? .18 : .22;
+    for (double y = 16; y < height - 2; y += 16) {
+      final margin = (y - 40).abs() < 8;
+      canvas.setGraphicState(
+        PdfGraphicState(opacity: margin ? alpha * 1.8 : alpha),
+      );
+      for (double x = 16; x < width - 2; x += 16) {
+        circle(x, y, margin ? 1.1 : .8);
+      }
+    }
+    canvas.setGraphicState(const PdfGraphicState(opacity: 1));
+    canvas.setFillColor(PdfColor.fromInt(0xffd71921));
+    circle(width - 24, 24, 3);
+    canvas.setGraphicState(const PdfGraphicState(opacity: .55));
+    canvas.setStrokeColor(PdfColor.fromInt(0xffd71921));
+    canvas.setLineWidth(1);
+    canvas.drawEllipse(width - 24, height - 24, 6, 6);
+    canvas.strokePath();
+  } else if (kind != 'plain') {
+    canvas.setGraphicState(const PdfGraphicState(opacity: .3));
+    canvas.setStrokeColor(PdfColor.fromInt(0xff9e9e9e));
+    canvas.setFillColor(PdfColor.fromInt(0xff9e9e9e));
+    canvas.setLineWidth(1);
+    final spacing = kind == 'lines' ? 24.0 : XppPageSize.pt2mm(5);
+    for (double y = spacing; y < height; y += spacing) {
+      if (kind == 'dot') {
+        for (double x = spacing; x < width; x += spacing) {
+          circle(x, y, XppPageSize.pt2mm(.5));
+        }
+      } else {
+        canvas.drawLine(0, height - y, width, height - y);
+        canvas.strokePath();
+      }
+    }
+    if (kind == 'graph') {
+      for (double x = spacing; x < width; x += spacing) {
+        canvas.drawLine(x, 0, x, height);
+        canvas.strokePath();
+      }
+    }
+  }
+  canvas.restoreContext();
 }
 
 // Selection bounds are approximate for text. Export crops must measure actual
@@ -312,6 +550,50 @@ void _paintPdfInk(
   }
   canvas.setFillColor(PdfColor.fromInt(part['color'] as int));
   canvas.setGraphicState(PdfGraphicState(opacity: part['opacity'] as double));
+  if (part['shape'] == true) {
+    final closed =
+        (samples.first[0] - samples.last[0]).abs() +
+            (samples.first[1] - samples.last[1]).abs() <
+        1;
+    final points =
+        closed &&
+            samples.length > 1 &&
+            math.sqrt(
+                  math.pow(samples.first[0] - samples.last[0], 2) +
+                      math.pow(samples.first[1] - samples.last[1], 2),
+                ) <
+                1
+        ? samples.sublist(0, samples.length - 1)
+        : samples;
+    canvas.setStrokeColor(PdfColor.fromInt(part['color'] as int));
+    canvas.setLineWidth(part['lineWidth'] as double);
+    canvas.setLineCap(PdfLineCap.round);
+    canvas.setLineJoin(PdfLineJoin.round);
+    canvas.moveTo(points.first[0], height - points.first[1]);
+    if (part['smooth'] == true && samples.length >= 4) {
+      List<double> at(int i) =>
+          points[closed ? i % points.length : i.clamp(0, points.length - 1)];
+      for (var i = 0; i < (closed ? points.length : points.length - 1); i++) {
+        final p0 = at(i - 1), p1 = at(i), p2 = at(i + 1), p3 = at(i + 2);
+        canvas.curveTo(
+          p1[0] + (p2[0] - p0[0]) / 6,
+          height - (p1[1] + (p2[1] - p0[1]) / 6),
+          p2[0] - (p3[0] - p1[0]) / 6,
+          height - (p2[1] - (p3[1] - p1[1]) / 6),
+          p2[0],
+          height - p2[1],
+        );
+      }
+    } else {
+      for (final p in samples.skip(1)) {
+        canvas.lineTo(p[0], height - p[1]);
+      }
+    }
+    if (closed) canvas.closePath();
+    canvas.strokePath();
+    canvas.restoreContext();
+    return;
+  }
   List<double>? previous;
   for (final p in samples) {
     if (previous != null && (p[0] != previous[0] || p[1] != previous[1])) {

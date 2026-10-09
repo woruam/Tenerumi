@@ -522,6 +522,21 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
       }());
   }
 
+  Object pdfDetailIdentity(int index) {
+    final source = file!.pages![index].background as XppBackgroundPdf;
+    return (_pdfEpoch, source.filename, source.page);
+  }
+
+  int pdfSourcePage(int index) =>
+      ((file!.pages![index].background as XppBackgroundPdf).page ?? 0) + 1;
+
+  /// Dedicated detail handle: never opens pages concurrently with the base queue.
+  Future<pdfx.PdfDocument> openPdfDetail(int index) {
+    if (_disposed) throw StateError('Documento chiuso');
+    final source = file!.pages![index].background as XppBackgroundPdf;
+    return _openPdf(source.filename!);
+  }
+
   Future<Uint8List?> rasterPdfPage(int index) async {
     if (_disposed || index >= (file?.pages?.length ?? 0)) return null;
     final epoch = _pdfEpoch;

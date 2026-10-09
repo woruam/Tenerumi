@@ -85,3 +85,11 @@ Analisi provenienza: fasi 1–3 completate; dati upstream acquisiti, rapporto e 
 4. Regressioni, misura strutturale, analisi e documentazione.
 
 G/H/A: fasi 1–4 completate nell’ordine richiesto. Regressioni complete, misura strutturale e audit verificati.
+
+## Nitidezza PDF e README OSI
+1. Rendere vettoriali carta/forme/testi supportati e conservare immagini originali.
+2. Vista PDF con dettaglio adattato al viewport, debounced e limitato.
+3. README OSI e documentazione risultati.
+4. Regressioni, analisi, compilazione native se necessaria e confronto Poppler; commit.
+
+Nitidezza PDF/README: fasi 1–4 completate; export e viewport verificati, risorse native testate e limitazioni documentate.
