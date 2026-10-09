@@ -1,145 +1,70 @@
-# <img src="assets/xournalpp-adaptive.png" width="64" style="height: auto;"/> Xournal++ Mobile
+# OSI
 
-***Warning:*** *Xournal++ Mobile is currently in early development and **not** yet stable. Use with caution!*
+**OSI** è un’app per appunti scritti a mano, disegno e annotazioni PDF, sviluppata in Flutter con particolare attenzione all’uso della penna su Android.
 
-[![Current version](https://img.shields.io/badge/dynamic/yaml?label=Current%20version&query=version&url=https%3A%2F%2Fgitlab.com%2FTheOneWithTheBraid%2Fxournalpp_mobile%2Fraw%2Fmaster%2Fpubspec.yaml%3Finline%3Dfalse&style=for-the-badge&logo=flutter&logoColor=white)](https://gitlab.com/TheOneWithTheBraid/xournalpp_mobile/-/tags) [![Bitrise build](https://img.shields.io/bitrise/dd58f8fe5b4bf6c0?style=for-the-badge&token=Ihrbr8U0mqFlVBOocwtnQA&logo=bitrise&logoColor=white)](https://app.bitrise.io/app/dd58f8fe5b4bf6c0) [![Gitlab pipeline status](https://img.shields.io/gitlab/pipeline/TheOneWithTheBraid/xournalpp_mobile/master?style=for-the-badge&logo=gitlab&logoColor=white)](https://gitlab.com/TheOneWithTheBraid/xournalpp_mobile/-/pipelines) [![Google Play](https://img.shields.io/endpoint?color=689f38&url=https%3A%2F%2Fplayshields.herokuapp.com%2Fplay%3Fi%3Donline.xournal.mobile%26l%3DGoogle-Play%26m%3D%24version&style=for-the-badge&logo=google-play&logoColor=white)](https://play.google.com/store/apps/details?id=online.xournal.mobile) [![Snap Store](https://img.shields.io/badge/Get%20it%20from%20the-Snap%20Store-%230e8620?style=for-the-badge&logo=snapcraft&logoColor=white)](https://snapcraft.io/xournalpp-mobile)
+Versione attuale: **0.5.0**, build **31**. Il progetto è in sviluppo.
 
-A port of the main features of Xournal++ to various Flutter platforms like Android, iOS and the Web.
+## Funzioni
 
-![Feature banner](https://gitlab.com/TheOneWithTheBraid/xournalpp_mobile/-/raw/master/assets/feature-banner.svg)
+- Penna con pressione, evidenziatore, gomma, forme, testo e immagini.
+- Appunti su più pagine, modelli di foglio e pagine infinite.
+- Pannello laterale per cambiare layer e navigare tra le anteprime delle pagine.
+- Inserimento di pagine prima o dopo quella corrente e generazione della pagina successiva negli appunti nativi.
+- Libreria con tag personalizzati, ricerca e cancellazione con conferma.
+- Più appunti aperti in schede e ripristino della sessione.
+- Registrazione vocale associata ai tratti: durante l’ascolto viene evidenziata la scrittura corrispondente al momento della registrazione.
+- Timer Pomodoro integrato.
+- Apertura e salvataggio di `.xopp`, importazione di PDF ed esportazione in PDF.
 
-## Try it out
+La registrazione audio nativa è implementata su Android. I limiti sono **120 minuti e 48 MiB per registrazione**, con **128 MiB complessivi per appunto**. La compatibilità `.xopp` deriva da Xournal++; le estensioni specifiche di OSI possono non essere interpretate da altre applicazioni.
 
-***Mission completed:** We can now render strokes, images and text and LaTeX!. We thereby support the full `.xopp` file format.* :tada:
+## Qualità dei PDF
 
-- Web
-  - [Open web app](https://xournal.online/)
-  - [Access via TOR](http://xournaltdtf7ygqxg3qik4tdg476smkukogil74t6oxqiwdnumy53hqd.onion/)
-- Android
-  - [Download in Google Play](https://play.google.com/store/apps/details?id=online.xournal.mobile)
-  - [Download APK](https://gitlab.com/TheOneWithTheBraid/xournalpp_mobile/-/jobs/artifacts/master/browse?job=build%3Aapk)
-- Windows
-  - [Build for Windows](#desktop-support)
-- Linux
-  - [Download for Debian](https://gitlab.com/TheOneWithTheBraid/xournalpp_mobile/-/jobs/artifacts/master/browse?job=build%3Adebian)
-  - [Download for generic Linux](https://gitlab.com/TheOneWithTheBraid/xournalpp_mobile/-/jobs/artifacts/master/download?job=build%3Alinux)
-  - [Download from the Snap Store](https://snapcraft.io/xournalpp-mobile)
+L’esportazione mantiene vettoriali i tratti e le forme, oltre ai testi con font incorporati supportati. Le immagini inserite conservano i dati originali. Le pagine PDF importate, le formule, i font non supportati e il modello puntinato classico utilizzano ancora una rappresentazione raster: la loro nitidezza rimane limitata dalla risoluzione.
 
-```shell
-sudo snap install xournalpp-mobile
-```
+Nella vista Android il dettaglio delle pagine PDF viene aggiornato dopo lo zoom, renderizzando soltanto la zona visibile con un limite di memoria. Per beneficiare delle migliorie all’esportazione è necessario esportare nuovamente l’appunto originale `.xopp`.
 
-### Visible parts already working
+## Avvio e compilazione
 
-- [x] Read the document title
-- [x] Read and display the number of pages
-- [x] Create thumbnails of the pages for the navigation bar
-- [x] Smooth fade in after thumbnail rendering
-- [x] Render images on the canvas
-- [x] Render text on the canvas
-- [x] Strokes
-- [x] Highlighter
-- [x] LaTeX
-- [x] Recent files list
-- [ ] Whiteout eraser
-- [x] Saving
-- [x] Basic editing
-- [x] Basic PDF rendering
+Requisiti del progetto:
 
-## Known issues
+- Flutter **3.47 o successivo**, con Dart **3.13 o successivo** compatibile con Flutter.
+- Per Android: JDK **17**, Android SDK con piattaforma **36** e NDK **28.2.13676358**.
+- Dispositivo Android **7.0 / API 24** o successivo per l’app Android.
 
-- **Immense memory consumption**: *If you open immense files, you get immense memory consumption. That's logic. Usually, Xournal++ Mobile takes twice the file size plus around 50MB for itself.*
-- But **why** does it take twice the memory?: *No idea. ¯\\\_(ツ)_/¯*
-- **The snap does not start on Linux when using wayland**: *Please set the environment variable `DISABLE_WAYLAND=1` before you start Xournal++ Mobile.*
+Dalla cartella del repository:
 
-## Getting started
-
-### Prepare
-
-> You would like to contribute? Please check out issues to solve [here](https://gitlab.com/TheOneWithTheBraid/xournalpp_mobile/-/issues) or get our `// TODO:`s [here](https://gitlab.com/search?search=TODO&project_id=20056916)!
-
-*The **GitHub** repository is only a mirrored repository. Please only contribute to the [original repository on **GitLab**](https://gitlab.com/TheOneWithTheBraid/xournalpp_mobile).*
-
-Get your information about the `.xopp` file format at http://www-math.mit.edu/~auroux/software/xournal/manual.html#file-format .
-
-Install Flutter first. See [flutter.dev](https://flutter.dev/docs/get-started/install) for more details.
-
-```shell
-# Run Flutter doctor to check whether the installation was successful
+```sh
 flutter doctor
+flutter pub get
+flutter run
 ```
 
-### Get the sources and run
+Per verificare il codice:
 
-Connect any Android or iOS device.
-
-```shell
-git clone https://gitlab.com/TheOneWithTheBraid/xournalpp_mobile.git
-cd xournalpp_mobile
-flutter run --no-sound-null-safety
+```sh
+flutter test
+flutter analyze
 ```
 
-### Test for the web
+Per creare l’APK:
 
-If you want to test for the web, please run:
-
-```shell
-flutter channel beta
-flutter upgrade
-flutter config --enable-web
-flutter run -d web --release --no-sound-null-safety # unfortunately, the debug flavour will result an empty screen
+```sh
+flutter build apk --release
 ```
 
-### Desktop support
+Il file risultante è `build/app/outputs/flutter-apk/app-release.apk`. Le cartelle per altre piattaforme sono presenti nel repository; Android è la piattaforma di riferimento per penna e audio e le funzioni native possono differire sulle altre piattaforme.
 
-Linux is perfectly supported by Xournal++ Mobile and you can get prebuilt binaries [above](#try-it-out) or install from [Snap Store](https://snapcraft.io/xournalpp-mobile).
+## Documentazione e contributi
 
-Windows is supported and tested too, but there are unfortunately no prebuilt binaries available. Execute the following commands to build them yourself.
+- [Analisi della provenienza del codice e delle ottimizzazioni](docs/analisi-provenienza-e-ottimizzazioni.md)
+- [Ottimizzazioni G, H e A](docs/ottimizzazioni-gha.md)
+- [Nitidezza PDF e gestione delle risorse](docs/pdf-detail-quality.md)
 
-If you want to test for Linux, Windows or macOS, please run:
+Per segnalare un problema, indicare dispositivo, versione Android, versione OSI e passaggi per riprodurlo. Per problemi di esportazione è utile specificare se l’appunto è nativo oppure contiene un PDF importato e confrontare il PDF con l’originale `.xopp`.
 
-```shell
-flutter channel master
-flutter upgrade
-flutter config --enable-linux-desktop # or --enable-macos-desktop or --enable-windows-desktop
-flutter run -d linux --no-sound-null-safety # or macos or windows
-```
+## Origine e licenza
 
-## Colors and Typography
+OSI deriva da [Xournal++ Mobile](https://gitlab.com/TheOneWithTheBraid/xournalpp_mobile) e conserva la compatibilità con il formato di appunti di Xournal++. Questo repository contiene l’evoluzione di OSI; i collegamenti agli store e ai download del progetto originale non rappresentano distribuzioni di OSI.
 
-### Colors
-
-Our primary color is the Material DeepPurple. I simply prefer a colorful application over an old-fashioned gray GTK+ application.
-
-`#673ab7` / `rgb(103, 58, 183)` / `CMYK(44%, 68%, 0%, 28%)` / `hsl(261°, 51%, 48%)`
-
-The accent color is Material Pink.
-
-`#e91e63` / `rgb(233, 30, 99)` / `CMYK(0%, 87%, 58%, 9%)`/ `hsl(340°, 81%, 51%)`
-
-The light color is White.
-
-`#ffffff` / `rgb(255, 255, 255)` / `CMYK(0%, 0%, 0%, 0%)`/ `hsl(0°, 0%, 100%)`
-
-The dark color is Material Blue Grey 900.
-
-`#263238` / `rgb(38, 50, 56)` / `CMYK(32%, 11%, 0%, 78%)`/ `hsl(200°, 19%, 18%)`
-
-### Fonts
-
-- Display Text: Open Sans Extra Bold *(800)* `Apache 2.0`, *accent color* or *light color*
-- Title and Heading: Open Sans Regular *(400)* `Apache 2.0`, *light color*
-- Emphasis: Glacial Indifference Regular *(400)* `SIL Open Font License`, *light color*, *UPPERCASE*
-- Body: Open Sans Light *(300)* `Apache 2.0`, *light color*
-
-## Misc
-
-*Like this project? [Buy me a Coffee](https://buymeacoff.ee/braid).*
-
-This software is powered by the education software [TestApp](https://testapp.schule) — **Learning. Easily.**
-
-[![TestApp banner](https://gitlab.com/testapp-system/testapp-flutter/-/raw/mobile/assets/Google%20Play%20EN.png)](https://testapp.schule)
-
-## Legal notes
-
-This project is licensed under the terms and conditions of the EUPL-1.2 found in [LICENSE](LICENSE).
+Il codice è distribuito secondo la licenza **EUPL-1.2**, disponibile in [LICENSE](LICENSE). Gli avvisi di copyright e le licenze dei componenti e delle risorse di terze parti restano applicabili.
