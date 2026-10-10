@@ -13,6 +13,7 @@ import 'package:xournalpp/src/compat/file_picker_cross.dart';
 import 'package:xournalpp/src/recent_documents.dart';
 import 'package:xournalpp/src/globals.dart';
 import 'package:xournalpp/src/autosave_store.dart';
+import 'package:xournalpp/src/XppFile.dart';
 
 import 'pomodoro_appearance_test.dart' show capture;
 
@@ -33,6 +34,8 @@ void main() {
         'name': 'Stesso titolo',
         'path': a.path,
         'id': 'note-a',
+        'localId': 'local-a',
+        'key': XppFile.recoveryKeyFor(a.path, 'local-a'),
       };
       SharedPreferences.setMockInitialValues({
         PreferencesKeys.kRecentFiles: jsonEncode([
@@ -40,7 +43,16 @@ void main() {
           {'name': 'Stesso titolo', 'path': b.path},
         ]),
         AutosaveStore.indexKey: jsonEncode([
-          {'id': 'note-a', 'path': recovery.path, 'time': 1},
+          {
+            'id': 'note-a',
+            'title': 'A',
+            'source': a.path,
+            'localId': 'local-a',
+            'key': XppFile.recoveryKeyFor(a.path, 'local-a'),
+            'path': recovery.path,
+            'time': 1,
+            'token': 'legacy-a',
+          },
         ]),
       });
       await expectLater(
@@ -55,7 +67,10 @@ void main() {
       await RecentDocuments.delete(selected);
       expect(await a.exists(), false);
       expect(await b.exists(), true);
-      expect(await recovery.exists(), false);
+      expect(
+        await recovery.exists(),
+        true,
+      ); // Deferred cleanup preserves historical evidence.
       expect((await RecentDocuments.list()).single['path'], b.path);
       expect(await AutosaveStore.list(), isEmpty);
     },

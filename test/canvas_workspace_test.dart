@@ -98,7 +98,9 @@ void main() {
       await completed.future.timeout(const Duration(seconds: 8));
       expect(ctrl.autosaveError, isNull);
       final restored = await AutosaveStore.restore(
-        (await AutosaveStore.list()).single,
+        (await AutosaveStore.list()).firstWhere(
+          (e) => e['source'] == ctrl.file!.sourcePath,
+        ),
       );
       expect(restored.pages!.first.layers!.first.content, hasLength(1));
       await ctrl.discardRecovery();
@@ -299,10 +301,20 @@ void main() {
         expect(restored.title, 'Bozza');
         expect(restored.pages!.first.layers, hasLength(2));
         expect(restored.pages!.first.layers!.last.content, hasLength(1));
-        final files = Directory('${directory.path}/xournalpp').listSync();
-        expect(files.whereType<File>(), hasLength(1));
-        await AutosaveStore.remove(restored.documentId);
-        expect(await AutosaveStore.list(), isEmpty);
+        final durableBytes = await AutosaveStore.readBytes(entries.single);
+        final roundTrip = await XppFile.fromFilePickerCross(
+          FilePickerCross(durableBytes),
+          null,
+          unavailable,
+        );
+        expect(roundTrip.pages!.first.layers!.last.content, hasLength(1));
+        await AutosaveStore.remove(restored.recoveryKey);
+        expect(
+          (await AutosaveStore.list()).where(
+            (e) => e['source'] == ctrl.file!.sourcePath,
+          ),
+          isEmpty,
+        );
       } finally {
         PathProviderPlatform.instance = previous;
         await directory.delete(recursive: true);
@@ -343,11 +355,18 @@ void main() {
       expect(ctrl.hasUnsavedChanges, isTrue);
       expect(ctrl.autosaveError, isNotNull);
       final restored = await AutosaveStore.restore(
-        (await AutosaveStore.list()).single,
+        (await AutosaveStore.list()).firstWhere(
+          (e) => e['source'] == ctrl.file!.sourcePath,
+        ),
       );
       expect(restored.pages!.first.layers!.first.content, hasLength(3));
       await ctrl.discardRecovery();
-      expect(await AutosaveStore.list(), isEmpty);
+      expect(
+        (await AutosaveStore.list()).where(
+          (e) => e['source'] == ctrl.file!.sourcePath,
+        ),
+        isEmpty,
+      );
     } finally {
       ctrl.dispose();
       PathProviderPlatform.instance = previous;

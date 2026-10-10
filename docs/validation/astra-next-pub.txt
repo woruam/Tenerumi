@@ -1,0 +1,14 @@
+
+┌─────────────────────────────────────────────────────────┐
+│ A new version of Flutter is available!                  │
+│                                                         │
+│ To update to the latest version, run "flutter upgrade". │
+└─────────────────────────────────────────────────────────┘
+Resolving dependencies...
+Downloading packages...
+  crypto 3.0.7 (from transitive dependency to direct dependency)
+  web 1.1.1 (from transitive dependency to direct dependency)
+  xml 7.0.1 (7.1.0 available)
+Changed 2 dependencies!
+1 package has newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.

@@ -87,7 +87,7 @@ class MainActivity: FlutterActivity() {
         super.configureFlutterEngine(flutterEngine)
         methodChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)
         noteAudio = NoteAudio(this, flutterEngine.dartExecutor.binaryMessenger)
-        DocumentStorage.register(flutterEngine.dartExecutor.binaryMessenger, contentResolver)
+        DocumentStorage.register(flutterEngine.dartExecutor.binaryMessenger, contentResolver, this)
         PluginOcr.register(flutterEngine.dartExecutor.binaryMessenger)
     }
 

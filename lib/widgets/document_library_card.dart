@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:xournalpp/src/library_metadata.dart';
 
+import 'bounded_image.dart';
+
 String documentModifiedLabel(Object? value) {
   final date = value is String ? DateTime.tryParse(value)?.toLocal() : null;
   if (date == null) return 'Data non disponibile';
@@ -34,6 +36,8 @@ class _DocumentPreviewImageState extends State<DocumentPreviewImage> {
   Uint8List? _bytes;
   void _decode() {
     try {
+      if ((widget.encoded?.length ?? 0) > 512 * 1024)
+        throw const FormatException('Anteprima troppo grande');
       final bytes = base64Decode(widget.encoded ?? '');
       _bytes = bytes.isEmpty || listEquals(bytes, kTransparentImage)
           ? null
@@ -63,14 +67,7 @@ class _DocumentPreviewImageState extends State<DocumentPreviewImage> {
   @override
   Widget build(BuildContext context) => _bytes == null
       ? _fallback()
-      : Image.memory(
-          _bytes!,
-          fit: BoxFit.contain,
-          cacheWidth: 320,
-          gaplessPlayback: true,
-          errorBuilder: (_, _, _) => _fallback(),
-          excludeFromSemantics: true,
-        );
+      : BoundedImage(_bytes!, fit: BoxFit.contain, fallback: _fallback());
 }
 
 class DocumentLibraryCard extends StatefulWidget {

@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:xournalpp/src/compat/file_picker_cross.dart';
 import 'package:xournalpp/src/note_backup.dart';
 
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
+
 Future<void> showNoteBackupDialog(
   BuildContext context, {
   required bool restore,
@@ -23,6 +27,15 @@ class _NoteBackupDialogState extends State<_NoteBackupDialog> {
   String progress = '', message = '';
   PreparedBackup? prepared;
   BackupContents? selected;
+  BackupCancellation? cancellation;
+  @override
+  void dispose() {
+    cancellation?.cancel();
+    if (prepared != null) unawaited(prepared!.dispose());
+    if (selected != null) unawaited(selected!.dispose());
+    super.dispose();
+  }
+
   String _problem(Object error) {
     if (error is FormatException) return error.message;
     if (error is StateError) return error.message;
@@ -40,19 +53,46 @@ class _NoteBackupDialogState extends State<_NoteBackupDialog> {
       message = '';
     });
     try {
+      cancellation = BackupCancellation();
       if (widget.restore) {
-        final file = await FilePickerCross.importFromStorage(
-          type: FileTypeCross.custom,
-          fileExtension: 'zip',
-        );
-        final backup = await NoteBackup.inspect(
-          file.toUint8List(),
-          onProgress: _progress,
-        );
-        if (mounted) setState(() => selected = backup);
+        BackupContents backup;
+        if (!kIsWeb) {
+          final path = await FilePickerCross.importBackupToStaging();
+          if (path == null) return;
+          try {
+            backup = await NoteBackup.inspectStaged(
+              path,
+              onProgress: _progress,
+              cancellation: cancellation,
+            );
+          } finally {
+            await FilePickerCross.discardStagedBackup(path);
+          }
+        } else {
+          final file = await FilePickerCross.importFromStorage(
+            type: FileTypeCross.custom,
+            fileExtension: 'zip',
+            maxBytes: NoteBackup.inMemoryBytes,
+          );
+          backup = await NoteBackup.inspect(
+            file.toUint8List(),
+            onProgress: _progress,
+          );
+        }
+        if (mounted)
+          setState(() => selected = backup);
+        else
+          await backup.dispose();
       } else {
-        final backup = await NoteBackup.create(onProgress: _progress);
-        if (mounted) setState(() => prepared = backup);
+        final backup = await NoteBackup.create(
+          onProgress: _progress,
+          staged: !kIsWeb,
+          cancellation: cancellation,
+        );
+        if (mounted)
+          setState(() => prepared = backup);
+        else
+          await backup.dispose();
       }
     } catch (error) {
       if (mounted && error != 'No file selected.') {
@@ -69,11 +109,14 @@ class _NoteBackupDialogState extends State<_NoteBackupDialog> {
       message = '';
     });
     try {
+      cancellation = BackupCancellation();
       if (widget.restore) {
         final count = await NoteBackup.restore(
           selected!,
           onProgress: _progress,
+          cancellation: cancellation,
         );
+        await selected!.dispose();
         if (mounted) {
           setState(() {
             selected = null;
@@ -84,10 +127,16 @@ class _NoteBackupDialogState extends State<_NoteBackupDialog> {
         final date = DateTime.now();
         final day =
             '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-        final path = await FilePickerCross(
-          prepared!.bytes,
-          path: 'OSI-backup-$day.zip',
-        ).exportToStorage();
+        final path = prepared!.stagedPath != null
+            ? await FilePickerCross.exportStagedBackup(
+                prepared!.stagedPath!,
+                'OSI-backup-$day.zip',
+              )
+            : await FilePickerCross(
+                prepared!.bytes,
+                path: 'OSI-backup-$day.zip',
+              ).exportToStorage();
+        if (path != null) await prepared!.dispose();
         if (mounted && path != null) {
           setState(() {
             message =
@@ -153,7 +202,7 @@ class _NoteBackupDialogState extends State<_NoteBackupDialog> {
                   ),
                 const SizedBox(height: 8),
                 for (final note in selected!.notes.take(8))
-                  Text('• ${note.file.title}'),
+                  Text('• ${note.title}'),
                 if (selected!.notes.length > 8)
                   Text('… e altri ${selected!.notes.length - 8} appunti'),
               ],
@@ -167,6 +216,11 @@ class _NoteBackupDialogState extends State<_NoteBackupDialog> {
         ),
       ),
       actions: [
+        if (busy)
+          TextButton(
+            onPressed: () => cancellation?.cancel(),
+            child: const Text('Annulla operazione'),
+          ),
         TextButton(
           onPressed: busy ? null : () => Navigator.pop(context),
           child: const Text('Chiudi'),

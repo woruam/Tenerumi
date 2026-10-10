@@ -3,6 +3,9 @@ import 'dart:typed_data';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+
+import 'bounded_image.dart';
+
 import 'package:provider/provider.dart';
 import 'package:xournalpp/controllers/canvas_controller.dart';
 import 'package:xournalpp/layer_contents/XppText.dart';
@@ -168,7 +171,7 @@ class _FlashcardEditorState extends State<_FlashcardEditor> {
       ),
       if (side.image != null) ...[
         const SizedBox(height: 8),
-        Image.memory(side.image!, height: 110, fit: BoxFit.contain),
+        BoundedImage(side.image!, height: 110, fit: BoxFit.contain),
         CheckboxListTile(
           contentPadding: EdgeInsets.zero,
           title: const Text('Conserva immagine'),

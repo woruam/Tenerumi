@@ -1,0 +1,78 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart
+00:00 +0: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A01 interpolation rejects doubling before replacing the variable
+00:00 +1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A01 implicit recursive text conversions and explosive operators reject
+00:00 +2: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A01 shared lists count at every occurrence in intermediate results
+00:00 +3: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A01 environment budget also applies across variables and API results
+00:00 +4: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: invalid form defaults and duplicate choices rejected before UI builds
+00:00 +5: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: invalid form defaults and duplicate choices rejected before UI builds
+00:00 +6: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: invalid form defaults and duplicate choices rejected before UI builds
+00:00 +7: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 stream reader stops and cancels when actual bytes exceed the quota
+00:00 +8: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: validated manifests and registered permissions cannot be mutated
+00:00 +9: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 forged ZIP sizes and compressed symlinks reject before extraction
+00:00 +10: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: package CRC corruption and directory entries are rejected
+00:00 +11: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 expanded XML, nesting, nodes, pages, layers and points have quotas
+00:00 +12: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 expanded XML, nesting, nodes, pages, layers and points have quotas
+00:00 +13: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 expanded XML, nesting, nodes, pages, layers and points have quotas
+00:00 +14: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 expanded XML, nesting, nodes, pages, layers and points have quotas
+00:00 +15: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 expanded XML, nesting, nodes, pages, layers and points have quotas
+00:00 +16: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: text.update applies its own text limit and leaves original unchanged
+00:00 +17: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 media quota includes duplicate attachments, audio and cards
+00:00 +18: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 media quota includes duplicate attachments, audio and cards
+00:00 +19: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: no HTTP access to local literals, reserved hosts or overridden routing
+00:00 +20: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 DOCTYPE rejects and one valid page is required at the root
+00:00 +21: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 DOCTYPE rejects and one valid page is required at the root
+00:00 +22: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: invalid plugin form is rejected without a Flutter build failure
+00:00 +23: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: invalid plugin form is rejected without a Flutter build failure
+00:00 +24: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: invalid plugin form is rejected without a Flutter build failure
+00:00 +25: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: invalid plugin form is rejected without a Flutter build failure
+00:00 +26: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: invalid plugin form is rejected without a Flutter build failure
+00:00 +27: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: invalid plugin form is rejected without a Flutter build failure
+00:00 +28: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: invalid plugin form is rejected without a Flutter build failure
+00:00 +29: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: invalid plugin form is rejected without a Flutter build failure
+00:00 +30: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: invalid plugin form is rejected without a Flutter build failure
+00:00 +31: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: invalid plugin form is rejected without a Flutter build failure
+00:00 +32: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: invalid plugin form is rejected without a Flutter build failure
+00:00 +33: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: invalid plugin form is rejected without a Flutter build failure
+00:00 +34: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: invalid plugin form is rejected without a Flutter build failure
+00:00 +35: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: complete backup transfers portable notes, latest recovery and metadata to another device
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-source-a6759c45\xournalpp\recovery-1791633516792292-3123217911-1791633516834288.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-source-a6759c45\xournalpp\recovery-1791633516858285-3853183352-1791633516859285.xopp
+00:00 +36: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: complete backup transfers portable notes, latest recovery and metadata to another device
+00:00 +37: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: complete backup transfers portable notes, latest recovery and metadata to another device
+00:00 +38: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: complete backup transfers portable notes, latest recovery and metadata to another device
+00:00 +38: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: saved files reopen at the same path and overwrite existing bytes
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-storage-3c353e7\note.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-storage-3c353e7\note.xopp
+00:00 +39: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: complete backup transfers portable notes, latest recovery and metadata to another device
+00:00 +40: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: complete backup transfers portable notes, latest recovery and metadata to another device
+00:00 +40: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: failed replacement does not truncate the original file
+❌ ERRORE DI SALVATAGGIO IMPREVISTO: PathAccessException: Cannot rename file to 'C:\Users\aless\AppData\Local\Temp\osipp-failure-302ca86a\folder', path = 'C:\Users\aless\AppData\Local\Temp\osipp-failure-302ca86a\folder.1791633516978215.tmp' (OS Error: Accesso negato, errno = 5)
+00:00 +41: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: complete backup transfers portable notes, latest recovery and metadata to another device
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-438eaddb\xournalpp\backup-1791633516983214-4257745959.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-438eaddb\xournalpp\backup-1791633516989728-887506090.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-438eaddb\xournalpp\backup-1791633516994728-560168324.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-438eaddb\xournalpp\backup-1791633517018723-2924039949.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-438eaddb\xournalpp\backup-1791633517024725-2103226551.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-438eaddb\xournalpp\backup-1791633517030738-4013110634.xopp
+00:00 +42: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: plugin host closes only its own form on cancellation
+00:00 +43: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: plugin host closes only its own form on cancellation
+00:00 +44: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: plugin host closes only its own form on cancellation
+00:00 +45: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: plugin host closes only its own form on cancellation
+00:00 +46: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: plugin host closes only its own form on cancellation
+00:00 +47: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: failed save keeps dirty state and resets saving state
+00:00 +47: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: failure during restoration removes staged files and preserves existing library
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-rollback-ce6bb2cc\xournalpp\backup-1791633517110886-2569728068.xopp
+00:01 +48: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: failed save keeps dirty state and resets saving state
+00:01 +49: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: failed save keeps dirty state and resets saving state
+❌ ERRORE DI SALVATAGGIO IMPREVISTO: PathAccessException: Cannot rename file to 'C:\Users\aless\AppData\Local\Temp\osipp-save-error-6c061178', path = 'C:\Users\aless\AppData\Local\Temp\osipp-save-error-6c061178.1791633517356062.tmp' (OS Error: Accesso negato, errno = 5)
+00:01 +50: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: JavaScript remains visibly disabled with no UI activation route
+00:01 +50: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: changes made during save remain dirty and are not in saved snapshot
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-save-race-30eb2692\notes.xopp
+00:01 +51: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: JavaScript remains visibly disabled with no UI activation route
+00:01 +51: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: new notes with duplicate titles get distinct files
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-duplicate-bfe49ead\xournalpp\notes.xopp
+00:01 +52: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: app settings expose Ripristina Backup and Crea Backup on a phone
+00:01 +52: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: new notes with duplicate titles get distinct files
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-duplicate-bfe49ead\xournalpp\notes (2).xopp
+00:01 +53: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: app settings expose Ripristina Backup and Crea Backup on a phone
+00:02 +54: All tests passed!

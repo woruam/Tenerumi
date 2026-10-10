@@ -9,10 +9,12 @@
 </head>
 <body>
   <script type="module">
-    import * as pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.min.mjs';
+    try {
+    const pdfjsLib = await import('./vendor/pdfjs/pdf.min.mjs');
     globalThis.pdfjsLib = pdfjsLib;
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/build/pdf.worker.mjs';
-    globalThis.pdfRenderOptions = {cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/cmaps/', cMapPacked: true};
+    pdfjsLib.GlobalWorkerOptions.workerSrc = './vendor/pdfjs/pdf.worker.min.mjs';
+    globalThis.pdfRenderOptions = {cMapUrl: './vendor/pdfjs/cmaps/', cMapPacked: true};
+    } catch (error) { console.error('PDF non disponibile', error); }
     const bootstrap = document.createElement('script');
     bootstrap.src = 'flutter_bootstrap.js';
     document.body.appendChild(bootstrap);

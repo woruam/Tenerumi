@@ -1,0 +1,12 @@
+warning: in the working copy of '.gitignore', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'android/app/build.gradle', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'lib/pages/WorkspacePage.dart', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'lib/plugins/plugin_limits.dart', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'lib/plugins/plugin_package.dart', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'lib/plugins/plugin_runtime.dart', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'lib/src/XppBackground.dart', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'lib/src/compat/internal_storage_io.dart', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'lib/widgets/note_backup_dialog.dart', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'lib/widgets/note_flashcards_panel.dart', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'pubspec.lock', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'web/index.html', LF will be replaced by CRLF the next time Git touches it

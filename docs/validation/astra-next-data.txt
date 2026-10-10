@@ -1,0 +1,52 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart
+00:00 +0: A06 duplicate portable IDs keep separate checkpoints and specific deletion
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d49a119e\xournalpp\state-v2/00000000000000000001-2329336311.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d49a119e\xournalpp\state-v2/474d7a478627ae9fa2592c51f48e551b5a5972be389e217efc3a3a2d8291c512.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d49a119e\xournalpp\state-v2/1791655779233118-1819382957.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d49a119e\xournalpp\state-v2/00000000000000000002-3323853047.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d49a119e\xournalpp\state-v2/d7ab3b6057a10aa9f46840e13a70db11cb24c834d14236d76370d2ba7f9cfbca.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d49a119e\xournalpp\state-v2/1791655779282933-1685036143.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d49a119e\xournalpp\state-v2/00000000000000000003-2140230430.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d49a119e\xournalpp\state-v2/00000000000000000004-1163231083.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d49a119e\xournalpp\state-v2/00000000000000000005-1177599787.commit
+00:00 +1: A07 complete orphan checkpoint reconstructs its missing index
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-4f5f3b8b\xournalpp\state-v2/00000000000000000001-2818744914.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-4f5f3b8b\xournalpp\state-v2/33ab80b60e5b045a732c74ed634515e0f828e854b9da421ad0e6292872e00eb0.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-4f5f3b8b\xournalpp\state-v2/1791655779403846-2917449800.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-4f5f3b8b\xournalpp\state-v2/00000000000000000002-2624862783.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-4f5f3b8b\xournalpp\state-v2/00000000000000000003-2545063496.commit
+00:00 +2: A07 corrupted latest commit falls back and preserves evidence
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-2da06c4d\xournalpp\state-v2/00000000000000000001-1640384006.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-2da06c4d\xournalpp\state-v2/00000000000000000002-2018178055.commit
+00:00 +3: A15 a damaged record does not hide good records and is quarantined
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-20e22999\xournalpp\state-v2/1791655779553177-3476558276.quarantine
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-20e22999\xournalpp\state-v2/00000000000000000001-2731811972.commit
+00:00 +4: A15 truncated JSON stays intact in quarantine
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-11f7f41c\xournalpp\state-v2/1791655779585781-733862629.quarantine
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-11f7f41c\xournalpp\state-v2/00000000000000000001-2506467660.commit
+00:00 +5: A10 unknown tool and future version require save as copy
+00:00 +6: A11 exact serialized byte boundary and edits are enforced
+00:00 +7: A11 optional corruption reports partial recovery
+00:00 +8: A12 changed original and old recovery both survive workspace restore
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-8caa70f\xournalpp\state-v2/00000000000000000001-3454277848.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-8caa70f\xournalpp\state-v2/db83480aca77c96f338300da5c9e6d52ecd29aab24158bd7e2b5cdd637130ba5.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-8caa70f\xournalpp\state-v2/1791655779638994-2728214521.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-8caa70f\xournalpp\state-v2/00000000000000000002-31949981.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-8caa70f\xournalpp\state-v2/00000000000000000003-3577537305.commit
+00:00 +9: A12 malformed tab does not abandon valid tabs
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-815b3045\xournalpp\state-v2/00000000000000000001-2683321013.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-815b3045\xournalpp\state-v2/00000000000000000002-2213305737.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-815b3045\xournalpp\state-v2/1791655779782150-3495574503.quarantine
+00:00 +10: A10 protected import autosaves privately without rewriting origin
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-a2d2b269\xournalpp\state-v2/00000000000000000001-468735826.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-a2d2b269\xournalpp\state-v2/42fe0e9f61862b306ef7adf4787821a4596fdff0eb0009896437e0c4fd5ef4ae.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-a2d2b269\xournalpp\state-v2/1791655779819819-1932757367.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-a2d2b269\xournalpp\state-v2/00000000000000000002-1377292596.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-a2d2b269\xournalpp\state-v2/00000000000000000003-4095732533.commit
+00:00 +11: A05 manual save failure first secures a complete checkpoint even without autosave
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-a3891a2c\xournalpp\state-v2/00000000000000000001-551071162.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-a3891a2c\xournalpp\state-v2/61afed6be67bede0236bb38f8267cbe0358e47a1d29bbad9a0fccf6a3861fa22.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-a3891a2c\xournalpp\state-v2/1791655780185123-1066440791.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-a3891a2c\xournalpp\state-v2/00000000000000000002-3160298698.commit
+❌ ERRORE DI SALVATAGGIO IMPREVISTO: PathAccessException: Cannot rename file to 'C:\Users\aless\AppData\Local\Temp\osipp-test-a3891a2c\xournalpp\blocked', path = 'C:\Users\aless\AppData\Local\Temp\osipp-test-a3891a2c\xournalpp\blocked.1791655780219553.tmp' (OS Error: Accesso negato, errno = 5)
+00:01 +12: All tests passed!

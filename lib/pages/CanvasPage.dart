@@ -260,6 +260,33 @@ class CanvasPageState extends State<CanvasPage> {
                   )
                 : null,
 
+            bottomNavigationBar: ctrl.file?.requiresSaveCopy == true
+                ? MaterialBanner(
+                    content: const Text(
+                      'Apertura protetta: alcuni contenuti o il recupero richiedono verifica. Il salvataggio crea una copia.',
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => showDialog<void>(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Compatibilità e recupero'),
+                            content: SingleChildScrollView(
+                              child: Text(ctrl.file!.importWarnings.join('\n')),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text('Chiudi'),
+                              ),
+                            ],
+                          ),
+                        ),
+                        child: const Text('Dettagli'),
+                      ),
+                    ],
+                  )
+                : null,
             body: Listener(
               behavior: HitTestBehavior.translucent,
               onPointerDown: (_) => widget.onFocus?.call(),
@@ -283,9 +310,26 @@ class CanvasPageState extends State<CanvasPage> {
                         if (ctrl.file?.pages?.firstOrNull?.infinite == true) {
                           return IgnorePointer(
                             ignoring: resizing,
-                            child: InfiniteCanvas(
-                              canvas: ctrl,
-                              transform: _zoomController,
+                            child: Stack(
+                              children: [
+                                InfiniteCanvas(
+                                  canvas: ctrl,
+                                  transform: _zoomController,
+                                ),
+                                if (ctrl.hasMissingBackground(0))
+                                  Positioned(
+                                    top: 16,
+                                    right: 16,
+                                    child: FilledButton.icon(
+                                      onPressed: () =>
+                                          ctrl.associateBackground(context, 0),
+                                      icon: const Icon(Icons.attach_file),
+                                      label: const Text(
+                                        'Seleziona allegato di sfondo',
+                                      ),
+                                    ),
+                                  ),
+                              ],
                             ),
                           );
                         }
@@ -536,6 +580,25 @@ class CanvasPageState extends State<CanvasPage> {
                                                         audio: ctrl.audio,
                                                       ),
                                                     ),
+                                                    if (ctrl
+                                                        .hasMissingBackground(
+                                                          pageIndex,
+                                                        ))
+                                                      Center(
+                                                        child: FilledButton.icon(
+                                                          onPressed: () => ctrl
+                                                              .associateBackground(
+                                                                context,
+                                                                pageIndex,
+                                                              ),
+                                                          icon: const Icon(
+                                                            Icons.attach_file,
+                                                          ),
+                                                          label: const Text(
+                                                            'Seleziona allegato di sfondo',
+                                                          ),
+                                                        ),
+                                                      ),
                                                   ],
                                                 ),
                                               ),

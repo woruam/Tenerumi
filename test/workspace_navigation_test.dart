@@ -151,16 +151,26 @@ void main() {
             'title': file.title,
             'path': path,
             'source': null,
+            'key': file.recoveryKey,
+            'localId': file.localId,
             'time': 1,
           },
         ]),
       });
       await WorkspaceSession.save({
         'tabs': [
-          {'id': file.documentId},
+          {
+            'id': file.documentId,
+            'key': file.recoveryKey,
+            'localId': file.localId,
+          },
         ],
         'primary': 0,
       });
+      final checkpoint = (await AutosaveStore.list()).single;
+      expect(checkpoint['key'], file.recoveryKey);
+      final parsedRecovery = await AutosaveStore.restore(checkpoint);
+      expect(parsedRecovery.recordings, contains('rec'));
       final restored = (await WorkspaceSession.restore())!.files.single;
       expect(restored.recovered, isTrue);
       expect(restored.recordings['rec']!.durationMs, 3600000);

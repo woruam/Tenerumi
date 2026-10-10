@@ -89,7 +89,58 @@ class PluginRuntime {
     this.api,
     Map<String, dynamic> context, {
     this.cancelled,
-  }) : variables = Map.of(context);
+  }) : variables = Map.of(context) {
+    validatePluginValue(variables, maxBytes: 24 * 1024 * 1024);
+  }
+
+  Object? _checked(Object? value) {
+    validatePluginValue(value, maxBytes: 24 * 1024 * 1024);
+    return value;
+  }
+
+  void _set(String name, Object? value) {
+    validatePluginValue({
+      ...variables,
+      name: value,
+    }, maxBytes: 24 * 1024 * 1024);
+    variables[name] = value;
+  }
+
+  String _text(Object? value) {
+    if (value is Map || value is List) {
+      throw StateError(
+        'Liste e oggetti non possono essere convertiti in testo',
+      );
+    }
+    if (value is String && value.length > 65536) {
+      throw StateError('Testo troppo lungo');
+    }
+    _checked(value);
+    final text = value == null ? '' : value.toString();
+    if (text.length > 65536) throw StateError('Testo troppo lungo');
+    return text;
+  }
+
+  String _interpolate(String value) {
+    if (value.length > 65536) throw StateError('Testo troppo lungo');
+    final pieces = <String>[];
+    var at = 0, length = 0;
+    void add(String part) {
+      length += part.length;
+      if (length > 65536) throw StateError('Testo troppo lungo');
+      pieces.add(part);
+    }
+
+    for (final match in RegExp(r'\$\{([a-zA-Z0-9_.]+)\}').allMatches(value)) {
+      _budget();
+      add(value.substring(at, match.start));
+      add(_text(_lookup(match[1]!)));
+      at = match.end;
+    }
+    add(value.substring(at));
+    return pieces.join();
+  }
+
   void _budget() {
     if (cancelled?.call() == true ||
         ++_expressions > 100000 ||
@@ -99,6 +150,7 @@ class PluginRuntime {
   }
 
   Object? _lookup(String path) {
+    if (path.length > 65536) throw StateError('Percorso troppo lungo');
     Object? result = variables;
     for (final key in path.split('.')) {
       if (result is Map) {
@@ -117,18 +169,35 @@ class PluginRuntime {
     _budget();
     if (depth > 32) throw StateError('Espressione troppo profonda');
     if (value is String) {
-      return value.replaceAllMapped(
-        RegExp(r'\$\{([a-zA-Z0-9_.]+)\}'),
-        (match) => '${_lookup(match[1]!) ?? ''}',
-      );
+      return _interpolate(value);
     }
-    if (value is List) return value.map((v) => evaluate(v, depth + 1)).toList();
-    if (value is! Map) return value;
-    if (value.containsKey('var')) return _lookup(value['var'] as String);
+    if (value is List) {
+      if (value.length > 10000) throw StateError('Lista troppo lunga');
+      final result = <Object?>[];
+      final budget = PluginValueBudget(24 * 1024 * 1024)..add(null);
+      for (final child in value) {
+        final evaluated = evaluate(child, depth + 1);
+        budget.add(evaluated, depth: 1);
+        result.add(evaluated);
+      }
+      return result;
+    }
+    if (value is! Map) return _checked(value);
+    if (value.containsKey('var')) {
+      return _checked(_lookup(value['var'] as String));
+    }
     if (!value.containsKey('op')) {
-      return value.map(
-        (k, v) => MapEntry(k.toString(), evaluate(v, depth + 1)),
-      );
+      if (value.length > 10000) throw StateError('Oggetto troppo grande');
+      final result = <String, Object?>{};
+      final budget = PluginValueBudget(24 * 1024 * 1024)..add(null);
+      for (final entry in value.entries) {
+        if (entry.key is! String) throw StateError('Chiave JSON non valida');
+        budget.add(entry.key, depth: 1);
+        final evaluated = evaluate(entry.value, depth + 1);
+        budget.add(evaluated, depth: 1);
+        result[entry.key as String] = evaluated;
+      }
+      return result;
     }
     final args = (evaluate(value['args'] ?? [], depth + 1) as List);
     num n(int i) {
@@ -137,14 +206,27 @@ class PluginRuntime {
       return v;
     }
 
-    String s(int i) => '${args[i] ?? ''}';
+    String s(int i) => _text(args[i]);
     String join(List values, String separator) {
-      final strings = values.map((v) => '$v').toList();
-      final length =
-          strings.fold<int>(0, (n, v) => n + v.length) +
-          math.max(0, strings.length - 1) * separator.length;
-      if (length > 65536) throw StateError('Testo troppo lungo');
+      if (values.length > 10000) throw StateError('Lista troppo lunga');
+      final strings = <String>[];
+      var length = math.max(0, values.length - 1) * separator.length;
+      for (final value in values) {
+        final text = _text(value);
+        length += text.length;
+        if (length > 65536) throw StateError('Testo troppo lungo');
+        strings.add(text);
+      }
       return strings.join(separator);
+    }
+
+    List<String> split() {
+      final original = s(0), separator = s(1);
+      final count = separator.isEmpty
+          ? original.length
+          : separator.allMatches(original).length + 1;
+      if (count > 10000) throw StateError('Lista troppo lunga');
+      return original.split(separator);
     }
 
     String replace() {
@@ -195,7 +277,7 @@ class PluginRuntime {
       'lower' => s(0).toLowerCase(),
       'trim' => s(0).trim(),
       'replace' => replace(),
-      'split' => s(0).split(s(1)),
+      'split' => split(),
       'join' => join(args[0] as List, s(1)),
       'length' => args[0] is List ? (args[0] as List).length : s(0).length,
       'at' => (args[0] as List)[n(1).toInt()],
@@ -209,7 +291,7 @@ class PluginRuntime {
     if (result is String && result.length > 65536) {
       throw StateError('Testo troppo lungo');
     }
-    return result;
+    return _checked(result);
   }
 
   Future<void> run(List steps) async {
@@ -242,13 +324,13 @@ class PluginRuntime {
           if (['input', 'page', 'document', 'today'].contains(variable)) {
             throw StateError('Variabile riservata: $variable');
           }
-          variables[variable] = result;
+          _set(variable, result);
         }
       } else if (step['set'] case final String name) {
         if (['input', 'page', 'document', 'today'].contains(name)) {
           throw StateError('Variabile di contesto riservata: $name');
         }
-        variables[name] = evaluate(step['value']);
+        _set(name, evaluate(step['value']));
       } else if (step.containsKey('if')) {
         await run(
           (evaluate(step['if']) == true ? step['then'] : step['else'] ?? [])
@@ -280,7 +362,7 @@ class PluginRuntime {
         final hadValue = variables.containsKey(name);
         final previous = variables[name];
         for (final item in items) {
-          variables[name] = item;
+          _set(name, item);
           await run(step['steps'] as List);
         }
         if (hadValue) {

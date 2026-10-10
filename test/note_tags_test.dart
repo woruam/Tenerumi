@@ -10,6 +10,7 @@ import 'package:xournalpp/src/XppFile.dart';
 import 'package:xournalpp/src/compat/file_picker_cross.dart';
 import 'package:xournalpp/src/globals.dart';
 import 'package:xournalpp/src/note_tags.dart';
+import 'package:xournalpp/src/critical_data.dart';
 import 'package:xournalpp/src/recent_documents.dart';
 import 'package:xournalpp/widgets/note_tag_picker.dart';
 
@@ -35,9 +36,7 @@ void main() {
         hasLength(1),
       );
       expect(
-        (await SharedPreferences.getInstance()).getStringList(
-          PreferencesKeys.kNoteTags,
-        ),
+        await CriticalData.read(PreferencesKeys.kNoteTags),
         contains('Esami 2026'),
       );
       for (final invalid in ['', ' ', 'Tutti', 'tutti', 'x' * 41]) {

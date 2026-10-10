@@ -1,0 +1,134 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart
+00:00 +0: C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: PDF keeps pressure ink, overlapping erasures and layer order
+00:00 +1: C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: PDF keeps pressure ink, overlapping erasures and layer order
+00:00 +2: C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: PDF keeps pressure ink, overlapping erasures and layer order
+00:00 +3: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:00 +4: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:00 +4: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A06 duplicate portable IDs keep separate checkpoints and specific deletion
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-37b2ca86\xournalpp\state-v2/644d161a02274a0692709b677a8e450ca956ce69da3ac7d9e52bbeac132f8bfa.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-37b2ca86\xournalpp\state-v2/00000000000000000001-2001351641.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-37b2ca86\xournalpp\state-v2/1791657566322882-1559074982.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-37b2ca86\xournalpp\state-v2/00000000000000000002-3614793439.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-37b2ca86\xournalpp\state-v2/350338a0cc37fbb4add8b392f2ee547f7908bf5dc0af845993c698f9b5544a27.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-37b2ca86\xournalpp\state-v2/1791657566383312-3949288953.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-37b2ca86\xournalpp\state-v2/00000000000000000003-1875914486.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-37b2ca86\xournalpp\state-v2/00000000000000000004-1618065299.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-37b2ca86\xournalpp\state-v2/00000000000000000005-1819297955.commit
+00:00 +5: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:00 +6: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:00 +6: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A07 complete orphan checkpoint reconstructs its missing index
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-386f339c\xournalpp\state-v2/5d610d0d930b4f12e01f35e9257e719ed0d83cfb3acb654d24531a148996a696.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-386f339c\xournalpp\state-v2/00000000000000000001-3889460037.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-386f339c\xournalpp\state-v2/1791657566555812-75285525.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-386f339c\xournalpp\state-v2/00000000000000000002-1986867080.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-386f339c\xournalpp\state-v2/00000000000000000003-243261511.commit
+00:01 +7: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +8: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +9: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +10: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +10: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A07 corrupted latest commit falls back and preserves evidence
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-bcfc14a2\xournalpp\state-v2/00000000000000000001-513025475.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-bcfc14a2\xournalpp\state-v2/00000000000000000002-864456049.commit
+00:01 +11: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +11: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A15 a damaged record does not hide good records and is quarantined
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-a58bcd71\xournalpp\state-v2/1791657566764927-3540155355.quarantine
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-a58bcd71\xournalpp\state-v2/00000000000000000001-1095737576.commit
+00:01 +12: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +13: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +13: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A15 truncated JSON stays intact in quarantine
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-1a0a5553\xournalpp\state-v2/1791657566803966-2444669176.quarantine
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-1a0a5553\xournalpp\state-v2/00000000000000000001-2977827862.commit
+00:01 +14: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +15: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +16: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +17: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +18: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +18: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A12 changed original and old recovery both survive workspace restore
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-12f525fb\xournalpp\state-v2/c63fb007dc013af8e8af90c193b8088f6ca7c67282dd7fae1c15fa23629b4e5d.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-12f525fb\xournalpp\state-v2/00000000000000000001-3397615012.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-12f525fb\xournalpp\state-v2/1791657566884051-3604419327.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-12f525fb\xournalpp\state-v2/00000000000000000002-339694809.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-12f525fb\xournalpp\state-v2/00000000000000000003-97847888.commit
+00:01 +18: C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: save as XOPP round trips portable notes and updates destination only on success
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: 'content://notes/saved.xopp'
+  Actual: 'original.xopp'
+   Which: is different.
+          Expected: content:// ...
+            Actual: original.x ...
+                    ^
+           Differ at offset 0
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart:490:7)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart line 490
+The test description was:
+  save as XOPP round trips portable notes and updates destination only on success
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:01 +18 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +18 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: save as XOPP round trips portable notes and updates destination only on success [E]
+  Test failed. See exception logs above.
+  The test description was: save as XOPP round trips portable notes and updates destination only on success
+  
+00:01 +19 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +19 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A12 malformed tab does not abandon valid tabs
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-f3baaf5\xournalpp\state-v2/00000000000000000001-3040658376.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-f3baaf5\xournalpp\state-v2/00000000000000000002-4188672760.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-f3baaf5\xournalpp\state-v2/1791657567014909-381734948.quarantine
+00:01 +20 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +21 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +21 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A10 protected import autosaves privately without rewriting origin
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-1cb481c4\xournalpp\state-v2/8e6734dfad2cfb0b1b6efbc1fe9b898dbb1d89d13b426dfd87d71e9f26ff9849.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-1cb481c4\xournalpp\state-v2/00000000000000000001-858239481.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-1cb481c4\xournalpp\state-v2/1791657567064296-1418565382.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-1cb481c4\xournalpp\state-v2/00000000000000000002-984311303.commit
+00:01 +22 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +22 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A10 protected import autosaves privately without rewriting origin
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-1cb481c4\xournalpp\state-v2/00000000000000000003-3546556169.commit
+00:01 +23 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +24 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +25 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +25 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: manual save reuses current checkpoint and reserializes after edits
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-checkpoint-8f96bb23\xournalpp\Reuse.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-checkpoint-8f96bb23\xournalpp\Reuse.xopp
+00:01 +26 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +27 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +27 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A05 manual save failure first secures a complete checkpoint even without autosave
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-fcb9b73b\xournalpp\state-v2/faa67d4be82712fb7f94676c90c43e6d07c72f84e4c249e5b5031ee324c8b3d5.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-fcb9b73b\xournalpp\state-v2/00000000000000000001-396732178.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-fcb9b73b\xournalpp\state-v2/1791657567474471-3039653749.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-fcb9b73b\xournalpp\state-v2/00000000000000000002-1164704850.commit
+00:01 +28 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:01 +28 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A05 manual save failure first secures a complete checkpoint even without autosave
+❌ ERRORE DI SALVATAGGIO IMPREVISTO: PathAccessException: Cannot rename file to 'C:\Users\aless\AppData\Local\Temp\osipp-test-fcb9b73b\xournalpp\blocked', path = 'C:\Users\aless\AppData\Local\Temp\osipp-test-fcb9b73b\xournalpp\blocked.1791657567499474.tmp' (OS Error: Accesso negato, errno = 5)
+00:01 +29 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:02 +30 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:02 +31 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: plugins render infinite notes using the visible crop dimensions
+00:02 +32 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: XOPP preserves infinite mode, negative coordinates, layers and document identity
+00:02 +33 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: active layer isolates drawing, erasing and undo across layers
+00:02 +34 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: locked and hidden layers reject writing, deleting, erasing and paste
+00:02 +35 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: layer rename, order, visibility and delete are undoable and keep active object
+00:02 +36 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: infinite PDF crop includes negative content without modifying the original
+00:02 +37 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: checkpoint survives controller disposal and restores latest revision
+00:02 +38 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: named document autosaves original; failure keeps the recovery and dirty state
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-auto-original-6c1bcf0f/notes.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-auto-original-6c1bcf0f/notes.xopp
+❌ ERRORE DI SALVATAGGIO IMPREVISTO: PathAccessException: Cannot rename file to 'C:\Users\aless\AppData\Local\Temp\osipp-auto-original-6c1bcf0f', path = 'C:\Users\aless\AppData\Local\Temp\osipp-auto-original-6c1bcf0f.1791657568249173.tmp' (OS Error: Accesso negato, errno = 5)
+00:02 +39 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: infinite viewport writes at negative and far-away coordinates at different zooms
+00:02 +40 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: infinite viewport pans horizontally and vertically at 100 percent without adding ink
+00:02 +41 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: locking a selected layer removes edit controls and rejects stylus ink
+00:03 +42 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: layer controls add, select, hide and lock on a narrow phone
+00:03 +43 -1: Some tests failed.
+
+Failing tests:
+  C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: save as XOPP round trips portable notes and updates destination only on success

@@ -1,0 +1,1 @@
+Built app starts, renders a PDF and restores IndexedDB state/binary data after reload without external resources

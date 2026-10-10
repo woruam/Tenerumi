@@ -357,9 +357,9 @@ void main() {
       try {
         ctrl.addNewContent(0, stroke());
         await tester.runAsync(() => ctrl.flushAutosave());
-        final entry = (await AutosaveStore.list()).single;
+        final entry = (await tester.runAsync(AutosaveStore.list))!.single;
         final secured = (await tester.runAsync(
-          () => File(entry['path'] as String).readAsBytes(),
+          () => AutosaveStore.readBytes(entry),
         ))!;
         expect(await tester.runAsync(() => ctrl.saveFile(context!)), isTrue);
         final saved = (await tester.runAsync(

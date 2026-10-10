@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pdfx/pdfx.dart' as pdfx;
 import 'package:xournalpp/controllers/canvas_controller.dart';
+import 'package:xournalpp/src/PdfImage.dart';
 
 /// A bounded crop at screen resolution, rather than a huge full-page bitmap.
 class PdfDetailPlan {
@@ -152,8 +153,10 @@ class _PdfZoomDetailState extends State<PdfZoomDetail>
         widget.pageIndex,
       );
       if (!mounted || generation != _generation) return;
+      validatePdfPage(document, sourcePage - 1);
       final source = await document.getPage(sourcePage);
       try {
+        validatePdfSize(source);
         next = await source.createTexture();
       } finally {
         await source.close();

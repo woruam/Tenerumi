@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:xournalpp/widgets/bounded_image.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
@@ -31,10 +32,14 @@ XppStroke redLine() => XppStrokePen(
   ],
 );
 
-Future<void> waitFor(WidgetTester tester, Finder finder) async {
+Future<void> waitFor(
+  WidgetTester tester,
+  Finder finder, {
+  int count = 1,
+}) async {
   for (var attempt = 0; attempt < 150; attempt++) {
     await tester.pump();
-    if (finder.evaluate().isNotEmpty) {
+    if (finder.evaluate().length >= count) {
       await tester.pumpAndSettle();
       return;
     }
@@ -116,7 +121,7 @@ void main() {
       );
       final previews = find.descendant(
         of: find.byType(DocumentLibraryCard),
-        matching: find.byType(Image),
+        matching: find.byType(BoundedImage),
       );
       await waitFor(tester, previews);
       expect(tester.takeException(), isNull);
@@ -149,7 +154,7 @@ void main() {
       await tester.tap(find.byKey(const ValueKey('document-settings')));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Salva'));
-      await waitFor(tester, find.text('Documento salvato'));
+      await waitFor(tester, find.text('Documento salvato e verificato'));
       final savedPath = workspace(tester).active.file!.sourcePath!;
       expect(workspace(tester).active.hasUnsavedChanges, isFalse);
       await tester.tap(find.byIcon(Icons.arrow_back_outlined));
@@ -165,12 +170,14 @@ void main() {
       expect(tester.takeException(), isNull);
       // Wait for the image providers' normal asynchronous decode, then check
       // displayed pixels, rather than just the existence of Image widgets.
-      await tester.runAsync(() async {
-        for (final element in previews.evaluate()) {
-          await precacheImage((element.widget as Image).image, element);
-        }
-      });
-      await tester.pumpAndSettle();
+      await waitFor(
+        tester,
+        find.descendant(
+          of: find.byType(DocumentLibraryCard),
+          matching: find.byType(RawImage),
+        ),
+        count: previews.evaluate().length,
+      );
       final renderedPreviews = find.descendant(
         of: find.byType(DocumentLibraryCard),
         matching: find.byType(RawImage),
@@ -235,12 +242,14 @@ void main() {
       await tester.tap(find.widgetWithText(FilterChip, 'Scuola'));
       await tester.pumpAndSettle();
       expect(find.byType(DocumentLibraryCard), findsOneWidget);
-      await tester.runAsync(() async {
-        for (final element in previews.evaluate()) {
-          await precacheImage((element.widget as Image).image, element);
-        }
-      });
-      await tester.pumpAndSettle();
+      await waitFor(
+        tester,
+        find.descendant(
+          of: find.byType(DocumentLibraryCard),
+          matching: find.byType(RawImage),
+        ),
+        count: previews.evaluate().length,
+      );
       await capture(tester, key, 'osi-edited-note-tag');
       await tester.tap(find.text('Appunto appena salvato'));
       await waitFor(tester, find.byType(CanvasPage));

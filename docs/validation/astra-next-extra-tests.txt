@@ -1,0 +1,194 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart
+00:00 +0: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A06 simultaneous instances of the same origin remain independent
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-74d91f78\xournalpp\state-v2/e59652ec0d20e2d5abc89dc1027c715fae7c411258a83b11f412be0c1946276f.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-74d91f78\xournalpp\state-v2/00000000000000000001-2367707376.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-74d91f78\xournalpp\state-v2/1791658986268172-4068851386.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-74d91f78\xournalpp\state-v2/00000000000000000002-2276505692.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-74d91f78\xournalpp\state-v2/1791658986305328-1220280847.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-74d91f78\xournalpp\state-v2/00000000000000000003-4119660028.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-74d91f78\xournalpp\state-v2/00000000000000000004-1388785784.commit
+00:00 +1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: incremental journal round trip retains ink, masks, media, audio and cards
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-2c138988\xournalpp\state-v2/6198db1e278a5867f71b24d3baccf8ba1fc7a86e3d8de05ffb60370038f903c4.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-2c138988\xournalpp\state-v2/039058c6f2c0cb492c533b0a4d14ef77cc0f78abccced5287d84a1a2011cfb81.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-2c138988\xournalpp\state-v2/2e24fb147e880c54602d2c7a566d118b79bc7bef8fb07c6d21c922e2aa542f03.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-2c138988\xournalpp\state-v2/ef4a4b013d3ee1002b8ae63b499da6dd857d1611d380a77320c7c59afc9aaf74.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-2c138988\xournalpp\state-v2/00000000000000000001-1340557028.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-2c138988\xournalpp\state-v2/1791658986453700-1911348767.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-2c138988\xournalpp\state-v2/00000000000000000002-1019127267.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-2c138988\xournalpp\state-v2/1791658986588284-3139073559.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-2c138988\xournalpp\state-v2/00000000000000000003-3766161219.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-2c138988\xournalpp\state-v2/fe9e3841664de21bd450ff51e25509eda9903ba41484caad2fd090a524ef79c0.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-2c138988\xournalpp\state-v2/bfe41f4eda5c859e02f7dc7da3b5b39fb7f52af75ad42e0ff43d7f84db674b3d.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-2c138988\xournalpp\state-v2/1791658986649572-3766164085.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-2c138988\xournalpp\state-v2/00000000000000000004-1779180480.commit
+00:00 +2: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-43d1685a\xournalpp\state-v2/7c15aaad784764c52bd643d2405aaaf3766854f5fc54728b0ad7def929d5ce7b.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-43d1685a\xournalpp\state-v2/e6a081ef77a16b29f1e6ea9aafc99ed7ddaa7ffe94c40d05f4f6c31f8c5b6e83.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-43d1685a\xournalpp\state-v2/00000000000000000001-3353125878.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-43d1685a\xournalpp\state-v2/1791658986698541-1428378939.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-43d1685a\xournalpp\state-v2/00000000000000000002-989347245.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-43d1685a\xournalpp\state-v2/83ae9d4108e3ff8c707c670f6ecd7495c8135a1cec98e58f71d14a55d8bce903.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-43d1685a\xournalpp\state-v2/7eaab79f4e45d7a3154afb929bca293228cee2a3f6990803dbd34f8c3257bcd6.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-43d1685a\xournalpp\state-v2/1791658986765656-171556472.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-43d1685a\xournalpp\state-v2/00000000000000000003-622234465.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-43d1685a\xournalpp\state-v2/2f07a756b0cb622c2cb1fe2ab4c7755d7f32063d39bba4c6e5dba24f29d25da6.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-43d1685a\xournalpp\state-v2/687fea1caf0602a5401081b91c0cde66a4fdaa1793d09f1c1c4390ecadd08144.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-43d1685a\xournalpp\state-v2/1791658986813645-1538275600.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-43d1685a\xournalpp\state-v2/00000000000000000004-2534842578.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-43d1685a\xournalpp\state-v2/22fee15fb66bac19244c2a09f333e4f8818940e5e27983980175a7db635a33b2.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-43d1685a\xournalpp\state-v2/37c7b8768542dc1e8bd97d6590136291220d4e313310408d1c5d0bbec6d6f69f.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-43d1685a\xournalpp\state-v2/1791658986855115-2889030643.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-43d1685a\xournalpp\state-v2/00000000000000000005-3685297920.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-43d1685a\xournalpp\state-v2/749a94ffa93cd76c70aa98ec885e5b7fce9e3050eb6678155e845e5783c61d07.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-43d1685a\xournalpp\state-v2/9b67b2e3ae6c30555d51066b6da6361a7fe414d0b727ef275d32cdff3cc6e656.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-43d1685a\xournalpp\state-v2/1791658986897638-1266873068.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-43d1685a\xournalpp\state-v2/00000000000000000006-857297917.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-43d1685a\xournalpp\state-v2/2e7d2c03a9507ae265ecf5b5356885a53393a2029d241394997265a1a25aefc6.blob
+00:00 +2 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies [E]
+  Expected: Color:<Color(alpha: 1.0000, red: 0.0000, green: 0.0000, blue: 0.0118, colorSpace: ColorSpace.sRGB)>
+    Actual: HexColor:<Color(alpha: 1.0000, red: 0.0000, green: 0.0000, blue: 0.0118, colorSpace: ColorSpace.sRGB)>
+  
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 473:18  expect
+  test\astra_recovery_performance_test.dart 99:5      main.<fn>
+  
+00:00 +2 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 library sidecar reconstructs an index after all metadata commits are lost
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-55507fea\xournalpp\owned.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-55507fea\xournalpp\state-v2/00000000000000000001-2784812167.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-55507fea\xournalpp\state-v2/00000000000000000002-4216567360.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-55507fea\xournalpp\state-v2/897b7ccc12a46f12947f6e1ae74018c010003bccee1356508d1e226cef63f683.library
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-55507fea\xournalpp\state-v2/00000000000000000003-2842902352.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-55507fea\xournalpp\state-v2/00000000000000000001-191035101.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-55507fea\xournalpp\state-v2/00000000000000000002-2918993334.commit
+00:00 +3 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A08 pinned images obey byte and entry limits across owners
+00:00 +4 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A09 segments survive rotation and acknowledgement happens explicitly
+00:01 +5 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A18 staged backup preserves conflicting originals, validates lazily and cleans on cancel
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-f32aa471\xournalpp\source.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-f32aa471\xournalpp\state-v2/00000000000000000001-2432700323.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-f32aa471\xournalpp\state-v2/00000000000000000002-3646890563.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-f32aa471\xournalpp\state-v2/cec59c77ac9b924e549857648d4bf4b7a50ce4dc0712dbaffd6363ed1345c9af.library
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-f32aa471\xournalpp\state-v2/00000000000000000003-1080053176.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-f32aa471\xournalpp\state-v2/cd20a6f54fc012436c29eb8683fac5ab51a294bdc89c6a118d3b5bb4e7aa86ad.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-f32aa471\xournalpp\state-v2/00000000000000000004-590318564.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-f32aa471\xournalpp\state-v2/1791658987312636-1340040998.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-f32aa471\xournalpp\state-v2/00000000000000000005-2216098981.commit
+00:01 +6 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: dense undo shares immutable geometry and transformed snapshots stay independent
+00:01 +7 -1: loading C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart
+00:01 +7 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: custom tags persist, include legacy categories and avoid duplicates
+00:01 +8 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: chosen tags cross snapshots, isolates and subsequent saves
+00:01 +9 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: 'Università'
+  Actual: 'Appunti'
+   Which: is different.
+          Expected: Università ...
+            Actual: Appunti
+                    ^
+           Differ at offset 0
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart:113:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart line 113
+The test description was:
+  phone creates and selects custom tags and opens OSI app info
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:03 +9 -2: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info [E]
+  Test failed. See exception logs above.
+  The test description was: phone creates and selects custom tags and opens OSI app info
+  
+00:03 +9 -2: loading C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart
+00:03 +9 -2: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: delete removes only selected file/index/recovery; failure retains entry
+00:03 +10 -2: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: Android content URI deletion uses document provider and propagates denial
+00:03 +11 -2: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown running a test:
+The finder "Found 0 widgets with text "Nota da eliminare": []" (used in a call to "longPress()")
+could not find any matching widgets.
+
+When the exception was thrown, this was the stack:
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2095:7)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1947:12)
+#2      WidgetController.longPress (package:flutter_test/src/controller.dart:1212:7)
+#3      main.<anonymous closure> (file:///C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart:151:20)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  home long press shows actions; cancel preserves note; confirmation deletes it
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:04 +11 -3: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it [E]
+  Test failed. See exception logs above.
+  The test description was: home long press shows actions; cancel preserves note; confirmation deletes it
+  
+00:04 +11 -3: loading C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart
+00:05 +11 -3: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: insertion remaps layers and ink undo without changing PDF ordinals
+00:05 +12 -3: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: native notes grow near bottom and prevent automatic blank chains; PDFs stay finite
+00:05 +13 -3: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: session restores saved files and focus, skipping missing tabs; explicit clear persists
+00:05 +14 -3: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: restoration prefers checkpoint over original and preserves audio synchronization
+00:05 +14 -4: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: restoration prefers checkpoint over original and preserves audio synchronization [E]
+  Null check operator used on a null value
+  test\workspace_navigation_test.dart 166:58  main.<fn>
+  
+00:05 +14 -4: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: pinch pointer drop remains stable and palm is rejected, infinite=false
+00:05 +15 -4: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: pinch pointer drop remains stable and palm is rejected, infinite=true
+00:05 +16 -4: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: upward swipe on last native page grows once without inertia
+00:05 +17 -4: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: saved app notes open without leaving workspace
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown running a test:
+The finder "Found 0 widgets with text "Nota in libreria": []" (used in a call to "tap()") could not
+find any matching widgets.
+
+When the exception was thrown, this was the stack:
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2095:7)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1947:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1080:7)
+#3      main.<anonymous closure> (file:///C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart:337:18)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  saved app notes open without leaving workspace
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:05 +17 -5: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: saved app notes open without leaving workspace [E]
+  Test failed. See exception logs above.
+  The test description was: saved app notes open without leaving workspace
+  
+00:05 +17 -5: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: sidebar stays open for layer switching, page insertion and thumbnails; workspace survives background
+00:07 +18 -5: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: workspace recreates both tabs, split focus, template and zoom after process loss
+10:07 +18 -6: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: workspace recreates both tabs, split focus, template and zoom after process loss [E]
+  TimeoutException after 0:10:00.000000: Test timed out after 10 minutes.
+  dart:isolate  _RawReceivePort._handleMessage
+  
+10:07 +18 -6: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: stylus coordinates and undo stay aligned in the real finite canvas at zoom
+20:07 +18 -7: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: stylus coordinates and undo stay aligned in the real finite canvas at zoom [E]
+  TimeoutException after 0:10:00.000000: Test timed out after 10 minutes.
+  dart:isolate  _RawReceivePort._handleMessage
+  
+20:07 +18 -7: Some tests failed.
+
+Failing tests:
+  C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+  C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+  C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+  C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: restoration prefers checkpoint over original and preserves audio synchronization
+  ... and 3 more

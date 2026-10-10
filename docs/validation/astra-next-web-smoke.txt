@@ -1,0 +1,1 @@
+Built app starts and renders a PDF without external resources

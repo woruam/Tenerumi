@@ -14,6 +14,26 @@ if (localPropertiesFile.exists()) {
 
 def flutterVersionCode = localProperties.getProperty("flutter.versionCode") ?: "30"
 def flutterVersionName = localProperties.getProperty("flutter.versionName") ?: "2.0.0"
+def releaseKeys = new Properties()
+def releaseKeysFile = rootProject.file('key.properties')
+if (releaseKeysFile.exists()) releaseKeysFile.withInputStream { releaseKeys.load(it) }
+def signingValue = { name -> System.getenv('OSIPP_RELEASE_' + name.toUpperCase()) ?: releaseKeys.getProperty(name) }
+def releaseStore = signingValue('storeFile')
+def releaseConfigured = ['storeFile', 'storePassword', 'keyAlias', 'keyPassword', 'certSha256'].every { signingValue(it) }
+gradle.taskGraph.whenReady { graph ->
+    if (graph.allTasks.any { it.name.toLowerCase().contains('release') } && !releaseConfigured) {
+        throw new GradleException('Firma release non configurata: serve una chiave di produzione e il certificato SHA-256 atteso. Nessun fallback debug.')
+    }
+    if (graph.allTasks.any { it.name.toLowerCase().contains('release') } && releaseConfigured) {
+        def keyStore = java.security.KeyStore.getInstance(file(releaseStore), signingValue('storePassword').toCharArray())
+        def certificate = keyStore.getCertificate(signingValue('keyAlias'))
+        def actual = java.security.MessageDigest.getInstance('SHA-256').digest(certificate.encoded).encodeHex().toString()
+        def expected = signingValue('certSha256').replaceAll('[^a-fA-F0-9]', '').toLowerCase()
+        if (actual != expected || certificate.subjectX500Principal.name.contains('Android Debug')) {
+            throw new GradleException('Certificato release inatteso o di debug: build bloccata.')
+        }
+    }
+}
 
 android {
 	ndkVersion = "28.2.13676358"
@@ -37,12 +57,19 @@ android {
         versionName flutterVersionName
     }
 
+    signingConfigs {
+        if (releaseConfigured) {
+            production {
+                storeFile file(releaseStore)
+                storePassword signingValue('storePassword')
+                keyAlias signingValue('keyAlias')
+                keyPassword signingValue('keyPassword')
+            }
+        }
+    }
     buildTypes {
         release {
-            // Signed with the debug key so `flutter build apk` produces an
-            // installable APK out of the box. Replace with a proper release
-            // signing config before publishing to a store.
-            signingConfig signingConfigs.debug
+            if (releaseConfigured) signingConfig signingConfigs.production
         }
     }
 }

@@ -1,22 +1,28 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xournalpp/src/XppFile.dart';
-import 'package:xournalpp/src/compat/file_picker_cross.dart';
 
+import 'XppFile.dart';
+import 'critical_data.dart';
+import 'recovery_journal.dart';
+import 'compat/file_picker_cross.dart';
 import 'compat/internal_storage_generic.dart'
     if (dart.library.io) 'compat/internal_storage_io.dart'
     as storage;
 
-/// Each checkpoint gets a new filename. The index changes only after a complete
-/// write, so an interrupted save cannot replace the last usable checkpoint.
 class AutosaveStore {
   static const indexKey = 'osipp.autosave.v1';
   static Future<void>? _queue;
-  static Future<T> _serial<T>(Future<T> Function() operation) {
-    final result = (_queue ?? Future.value()).then((_) => operation());
+  @visibleForTesting
+  static void resetTestQueue() {
+    _queue = null;
+  }
+
+  static Future<T> _serial<T>(Future<T> Function() fn) {
+    final result = (_queue ?? Future.value()).then((_) => fn());
     final completed = result.then<void>(
       (_) {},
       onError: (Object _, StackTrace __) {},
@@ -30,111 +36,198 @@ class AutosaveStore {
     return result;
   }
 
+  static bool _valid(Map<String, dynamic> e) =>
+      e['id'] is String &&
+      e['title'] is String &&
+      e['path'] is String &&
+      e['time'] is int &&
+      (e['source'] == null || e['source'] is String) &&
+      (e['key'] == null || e['key'] is String) &&
+      (e['generation'] == null || e['generation'] is int) &&
+      (e['hash'] == null ||
+          e['hash'] is String &&
+              RegExp(r'^[a-f0-9]{64}$').hasMatch(e['hash'] as String)) &&
+      (e['baseHash'] == null || e['baseHash'] is String) &&
+      (e['localId'] == null || e['localId'] is String) &&
+      (e['modifiedAt'] == null || e['modifiedAt'] is String);
   static Future<List<Map<String, dynamic>>> list() async {
-    final prefs = await SharedPreferences.getInstance();
-    return (jsonDecode(prefs.getString(indexKey) ?? '[]') as List)
-        .map((entry) => Map<String, dynamic>.from(entry as Map))
-        .toList()
-      ..sort((a, b) => (b['time'] as int).compareTo(a['time'] as int));
+    final records = await CriticalData.records(indexKey, _valid);
+    final dismissed = await CriticalData.stringList('dismissedRecoveries');
+    for (final entry in await CriticalData.stagedRecoveries()) {
+      if (_valid(entry) &&
+          !dismissed.contains(entry['token']) &&
+          !records.any((e) => e['token'] == entry['token']))
+        records.add(entry);
+    }
+    records.removeWhere((e) => dismissed.contains(e['token']));
+    for (final e in records) {
+      e['localId'] ??=
+          'legacy-${sha256.convert(utf8.encode((e['source'] ?? e['path']) as String))}';
+      e['key'] ??= XppFile.recoveryKeyFor(
+        e['source'] as String?,
+        e['localId'] as String,
+      );
+    }
+    records.sort(
+      (a, b) => ((b['generation'] as int?) ?? b['time'] as int).compareTo(
+        (a['generation'] as int?) ?? a['time'] as int,
+      ),
+    );
+    // Return the newest generation of each local origin; history stays durable.
+    final seen = <String>{};
+    return records.where((e) => seen.add(e['key'] as String)).toList();
   }
 
-  static Future<void> save(XppFile file, Uint8List bytes) => _serial(() async {
-    final prefs = await SharedPreferences.getInstance();
-    final entries = await list();
-    final previous = entries
-        .where((e) => e['id'] == file.documentId)
-        .firstOrNull;
-    final key =
-        'recovery-${file.documentId}-${DateTime.now().microsecondsSinceEpoch}.xopp';
-    final path = kIsWeb ? key : await storage.resolve(key);
-    if (kIsWeb) {
-      if (!await prefs.setString(key, base64Encode(bytes))) {
-        throw StateError('Spazio per il recupero esaurito');
-      }
-    } else {
-      await storage.writeFile(path, bytes);
-    }
-    entries.removeWhere((e) => e['id'] == file.documentId);
-    entries.add({
+  static Future<void> save(XppFile file, Uint8List bytes) => _serial(
+    () => CriticalData.blobTransaction(() async {
+      final blob = await CriticalData.putBlob(bytes);
+      await _commit(file, blob, 'xopp');
+    }).then((_) => CriticalData.collectGarbage()),
+  );
+  static Future<void> saveIncremental(XppFile file) => _serial(
+    () => CriticalData.blobTransaction(() async {
+      final blob = await RecoveryJournal.write(file);
+      await _commit(file, blob, 'journal');
+    }).then((_) => CriticalData.collectGarbage()),
+  );
+  static Future<void> _commit(XppFile file, String blob, String format) async {
+    final previous = await list();
+    final generation =
+        previous.fold<int>(
+          0,
+          (g, e) => ((e['generation'] as int?) ?? e['time'] as int) > g
+              ? ((e['generation'] as int?) ?? e['time'] as int)
+              : g,
+        ) +
+        1;
+    final entry = <String, dynamic>{
       'id': file.documentId,
+      'key': file.recoveryKey,
+      'localId': file.localId,
       'title': file.title ?? 'Documento',
       'source': file.sourcePath,
-      'path': path,
+      'path': 'blob:$blob',
+      'hash': blob,
+      'baseHash': file.originHash,
+      'token':
+          '${file.recoveryKey}-$blob-${DateTime.now().microsecondsSinceEpoch}',
       'time': DateTime.now().millisecondsSinceEpoch,
+      'generation': generation,
+      'format': format,
       if (file.modifiedAt != null)
         'modifiedAt': file.modifiedAt!.toUtc().toIso8601String(),
       if (file.previewImage != null)
         'preview': base64Encode(file.previewImage!),
-    });
-    if (!await prefs.setString(indexKey, jsonEncode(entries))) {
-      throw StateError('Impossibile aggiornare il recupero');
-    }
-    if (previous != null) {
-      try {
-        await _delete(previous['path'] as String);
-      } catch (_) {
-        /* Keep the new checkpoint. */
-      }
-    }
-  });
+    };
+    // Sidecar survives process death between the blob and the metadata commit.
+    await CriticalData.stageRecovery(entry);
+    final entries = await list();
+    entries.removeWhere((e) => e['key'] == file.recoveryKey);
+    entries.add(entry);
+    await CriticalData.write(indexKey, entries);
+  }
 
-  static Future<Uint8List?> checkpointBytes(String id, DateTime? modifiedAt) =>
+  static Future<Uint8List> readBytes(Map<String, dynamic> entry) async {
+    final path = entry['path'] as String;
+    if (entry['format'] == 'journal')
+      return (await RecoveryJournal.read(entry['hash'] as String))
+          .serializeSnapshotAsync();
+    if (path.startsWith('blob:'))
+      return CriticalData.getBlob(path.substring(5));
+    // Legacy generations remain readable until explicitly reconciled.
+    return kIsWeb
+        ? base64Decode((await SharedPreferences.getInstance()).getString(path)!)
+        : storage.readFile(path);
+  }
+
+  static Future<Uint8List?> checkpointBytes(String key, DateTime? modifiedAt) =>
       _serial(() async {
         final entry = (await list())
             .where(
               (e) =>
-                  e['id'] == id &&
+                  e['key'] == key &&
                   e['modifiedAt'] == modifiedAt?.toUtc().toIso8601String(),
             )
             .firstOrNull;
         if (entry == null) return null;
         try {
-          return kIsWeb
-              ? base64Decode(
-                  (await SharedPreferences.getInstance()).getString(
-                    entry['path'] as String,
-                  )!,
-                )
-              : await storage.readFile(entry['path'] as String);
+          return await readBytes(entry);
         } catch (_) {
           return null;
         }
       });
-
   static Future<XppFile> restore(Map<String, dynamic> entry) async {
-    final path = entry['path'] as String;
-    final bytes = kIsWeb
-        ? base64Decode((await SharedPreferences.getInstance()).getString(path)!)
-        : await storage.readFile(path);
-    final file = await XppFile.fromFilePickerCross(
-      FilePickerCross(bytes, path: '${entry['title']}.xopp'),
-      null,
-      (_) async => throw StateError('Sfondo mancante'),
-    );
+    try {
+      return await _restore(entry);
+    } catch (error) {
+      final dismissed = await CriticalData.stringList('dismissedRecoveries');
+      final older =
+          (await CriticalData.stagedRecoveries())
+              .where(
+                (e) =>
+                    e['key'] == entry['key'] &&
+                    !dismissed.contains(e['token']) &&
+                    e['token'] != entry['token'] &&
+                    ((e['generation'] as int?) ?? 0) <
+                        ((entry['generation'] as int?) ?? 0),
+              )
+              .toList()
+            ..sort(
+              (a, b) => ((b['generation'] as int?) ?? 0).compareTo(
+                (a['generation'] as int?) ?? 0,
+              ),
+            );
+      for (final previous in older) {
+        try {
+          final file = await _restore(previous);
+          file.importWarnings.add(
+            'Generazione più recente danneggiata: aperto il recupero precedente',
+          );
+          return file;
+        } catch (_) {}
+      }
+      rethrow;
+    }
+  }
+
+  static Future<XppFile> _restore(Map<String, dynamic> entry) async {
+    final file = entry['format'] == 'journal'
+        ? await RecoveryJournal.read(entry['hash'] as String)
+        : await XppFile.fromFilePickerCross(
+            FilePickerCross(
+              await readBytes(entry),
+              path: '${entry['title']}.xopp',
+            ),
+            null,
+            (_) async => throw StateError('Sfondo mancante'),
+          );
     file.title = entry['title'] as String;
     file.sourcePath = entry['source'] as String?;
+    if (entry['localId'] is String) file.localId = entry['localId'] as String;
+    file.originHash = entry['baseHash'] as String?;
     file.recovered = true;
+    file.importWarnings.add(
+      'Recupero locale: verificare il contenuto e salvare una copia',
+    );
     return file;
   }
 
-  static Future<void> _delete(String path) async {
-    if (kIsWeb) {
-      await (await SharedPreferences.getInstance()).remove(path);
-    } else {
-      await storage.deleteFile(path);
-    }
-  }
-
-  static Future<void> remove(String id) => _serial(() async {
+  static Future<void> remove(String key) => _serial(() async {
     final entries = await list();
-    final removed = entries.where((e) => e['id'] == id).toList();
-    entries.removeWhere((e) => e['id'] == id);
-    final prefs = await SharedPreferences.getInstance();
-    if (!await prefs.setString(indexKey, jsonEncode(entries))) {
-      throw StateError('Impossibile eliminare il recupero');
-    }
-    for (final entry in removed) {
-      await _delete(entry['path'] as String);
-    }
+    final staged = await CriticalData.stagedRecoveries();
+    final removed = [...entries, ...staged]
+        .where((e) => e['key'] == key)
+        .map((e) => e['token'])
+        .whereType<String>()
+        .toSet();
+    entries.removeWhere((e) => e['key'] == key);
+    await CriticalData.transaction((state) async {
+      state[indexKey] = entries;
+      state['dismissedRecoveries'] = {
+        ...?(state['dismissedRecoveries'] as List?),
+        ...removed,
+      }.toList();
+    });
+    // Never delete payloads in the commit path. Prior generations remain intact.
   });
 }

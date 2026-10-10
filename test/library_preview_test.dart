@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:xournalpp/widgets/bounded_image.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -334,11 +335,11 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Appunti'), findsOneWidget);
       expect(find.text(documentModifiedLabel(modified)), findsOneWidget);
-      expect(find.byType(Image), findsOneWidget);
+      expect(find.byType(BoundedImage), findsOneWidget);
       expect(loaded, 0);
       expect(
-        tester.widget<Image>(find.byType(Image)).image,
-        isA<ResizeImage>(),
+        tester.widget<BoundedImage>(find.byType(BoundedImage)).bytes,
+        isNotEmpty,
       );
       await tester.tap(find.byType(DocumentLibraryCard));
       expect(opened, 1);

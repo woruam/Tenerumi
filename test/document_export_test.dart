@@ -487,7 +487,10 @@ void main() {
       destination = 'content://notes/saved.xopp';
       final saved = await tester.runAsync(() => ctrl.exportToXopp(context!));
       expect(saved, isTrue);
-      expect(file.sourcePath, destination);
+      expect(
+        file.sourcePath,
+        'original.xopp',
+      ); // Export is not a verified reopenable origin.
       expect(ctrl.hasUnsavedChanges, isFalse);
       final parsed = await tester.runAsync(
         () => XppFile.fromFilePickerCross(captured!, null, unavailable),

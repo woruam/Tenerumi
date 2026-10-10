@@ -1,4 +1,11 @@
 import 'dart:math' as math;
+
+import 'package:crypto/crypto.dart';
+
+import 'compat/pdf_staging_stub.dart'
+    if (dart.library.io) 'compat/pdf_staging_io.dart'
+    as stage;
+
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -72,9 +79,33 @@ typedef ExportBackgroundLoader = Future<Uint8List?> Function(
   XppBackground background,
 );
 
+class PreparedPdf {
+  final Uint8List? bytes;
+  final String? path, root;
+  PreparedPdf({this.bytes, this.path, this.root});
+  Future<void> dispose() async {
+    if (root != null) await stage.disposePdfStaging(root!);
+  }
+}
+
+Future<Uint8List> buildNotesPdf(
+  XppFile document, {
+  required ExportBackgroundLoader loadBackground,
+}) async {
+  final result = await prepareNotesPdf(
+    document,
+    loadBackground: loadBackground,
+  );
+  try {
+    return result.bytes ?? await stage.readPdfResult(result.path!);
+  } finally {
+    await result.dispose();
+  }
+}
+
 /// Export model pages, including pages that have never been mounted or cached.
 /// Mutable content is frozen before the first asynchronous operation.
-Future<Uint8List> buildNotesPdf(
+Future<PreparedPdf> prepareNotesPdf(
   XppFile document, {
   required ExportBackgroundLoader loadBackground,
 }) async {
@@ -84,190 +115,249 @@ Future<Uint8List> buildNotesPdf(
   }
   final title = document.title;
   final exportPages = <Map<String, Object>>[];
-  final fonts = <String, Uint8List>{};
-  final unavailableFonts = <String>{};
-  for (var index = 0; index < pages.length; index++) {
-    final page = pages[index];
-    final size = (page.pageSize ?? XppPageSize.a4).toSize();
-    Uint8List? background;
-    if (page.background case final XppBackground source
-        when source is XppBackgroundPdf || source is XppBackgroundImage) {
-      background = await loadBackground(index, source);
-      if (background == null) {
-        throw StateError(
-          'Impossibile caricare lo sfondo della pagina ${index + 1}',
-        );
-      }
+  final root = stage.diskPdfStaging ? await stage.createPdfStaging() : null;
+  var workingBytes = 0;
+  final imageHashes = <String>{};
+  final preparedImages = <Uint8List, Future<Uint8List>>{};
+  final sourceImages = <Uint8List>{};
+  var backgroundCount = 0;
+  for (final page in pages) {
+    if (page.background is XppBackgroundPdf ||
+        page.background is XppBackgroundImage ||
+        page.background is XppBackgroundSolidDot)
+      backgroundCount++;
+    for (final item
+        in page.layers?.expand((l) => l.content ?? <XppContent?>[]) ??
+            <XppContent?>[]) {
+      if (item is XppImage && item.data != null) sourceImages.add(item.data!);
     }
-    final parts = <Map<String, Object>>[];
-    if (page.background is XppBackgroundSolidDot) {
-      // This legacy template has ~160000 dots/A4. Keep its bounded raster;
-      // emitting every dot would inflate CPU/memory while ink stays vector.
-      parts.add({
-        'png': await rasterizeExportPage(
-          XppPage(
-            pageSize: page.pageSize,
-            background: page.background,
-            layers: [],
-          ),
-          maxScale: 4,
-        ),
-      });
-    } else if (background != null) {
-      parts.add({'png': background});
-    } else {
-      final source = page.background;
-      parts.add({
-        'paper': switch (source) {
-          XppBackgroundNothingDark() => 'nothingDark',
-          XppBackgroundNothingLight() => 'nothingLight',
-          XppBackgroundSolidDot() => 'dot',
-          XppBackgroundSolidGraph() => 'graph',
-          XppBackgroundSolidLined() || XppBackgroundSolidRuled() => 'lines',
-          _ => 'plain',
-        },
-        'color': (source?.color ?? Colors.white).toARGB32(),
-      });
-    }
-    final pending = <XppContent?>[];
-    Future<void> flush() async {
-      if (pending.isEmpty) return;
-      final overlay = XppPage(
-        pageSize: page.pageSize,
-        layers: [XppLayer(content: List.of(pending))],
-      );
-      Rect? bounds;
-      for (final content in pending) {
-        final rect = content == null
-            ? null
-            : _exportContentBounds(content, size);
-        if (rect != null && rect.isFinite) {
-          bounds = bounds == null ? rect : bounds.expandToInclude(rect);
+  }
+  final pixelBudget = math.min(
+    4000000,
+    16 * 1024 * 1024 ~/ math.max(1, sourceImages.length + backgroundCount),
+  );
+  Future<Uint8List> image(Uint8List data) => preparedImages.putIfAbsent(
+    data,
+    () => _boundedPdfImage(data, pixelBudget),
+  );
+  try {
+    final fonts = <String, Uint8List>{};
+    final unavailableFonts = <String>{};
+    for (var index = 0; index < pages.length; index++) {
+      final page = pages[index];
+      final size = (page.pageSize ?? XppPageSize.a4).toSize();
+      Uint8List? background;
+      if (page.background case final XppBackground source
+          when source is XppBackgroundPdf || source is XppBackgroundImage) {
+        background = await loadBackground(index, source);
+        if (background == null) {
+          throw StateError(
+            'Impossibile caricare lo sfondo della pagina ${index + 1}',
+          );
         }
       }
-      final crop = (bounds?.inflate(4) ?? (Offset.zero & size)).intersect(
-        Offset.zero & size,
-      );
-      if (!crop.isEmpty) {
+      final parts = <Map<String, Object>>[];
+      if (page.background is XppBackgroundSolidDot) {
+        // This legacy template has ~160000 dots/A4. Keep its bounded raster;
+        // emitting every dot would inflate CPU/memory while ink stays vector.
         parts.add({
           'png': await rasterizeExportPage(
-            overlay,
-            paintBackground: false,
-            region: crop,
+            XppPage(
+              pageSize: page.pageSize,
+              background: page.background,
+              layers: [],
+            ),
             maxScale: 4,
           ),
-          'left': crop.left,
-          'top': crop.top,
-          'width': crop.width,
-          'height': crop.height,
+        });
+      } else if (background != null) {
+        parts.add({'png': await image(background)});
+      } else {
+        final source = page.background;
+        parts.add({
+          'paper': switch (source) {
+            XppBackgroundNothingDark() => 'nothingDark',
+            XppBackgroundNothingLight() => 'nothingLight',
+            XppBackgroundSolidDot() => 'dot',
+            XppBackgroundSolidGraph() => 'graph',
+            XppBackgroundSolidLined() || XppBackgroundSolidRuled() => 'lines',
+            _ => 'plain',
+          },
+          'color': (source?.color ?? Colors.white).toARGB32(),
         });
       }
-      pending.clear();
-    }
-
-    int batch = 0;
-    for (final layer in page.layers ?? <XppLayer>[]) {
-      if (!layer.visible) continue;
-      for (final content in layer.content ?? <XppContent?>[]) {
-        if (++batch % 64 == 0) await Future<void>.delayed(Duration.zero);
-        if (content is XppImage &&
-            content.data != null &&
-            content.bounds() != null) {
-          await flush();
-          final rect = content.bounds()!;
-          parts.add({
-            'png': content.data!,
-            'left': rect.left,
-            'top': rect.top,
-            'width': rect.width,
-            'height': rect.height,
-          });
-        } else if (content is XppText &&
-            _vectorFontAsset(content) != null &&
-            !RegExp(r'[^\u000a\u000d\u0020-\u024f]')
-                .hasMatch(content.text ?? '')) {
-          await flush();
-          final asset = _vectorFontAsset(content)!;
-          if (!fonts.containsKey(asset) && !unavailableFonts.contains(asset)) {
-            try {
-              if (asset.startsWith('/system/fonts/')) {
-                fonts[asset] = await font_storage.readFile(asset);
-              } else {
-                final data = await rootBundle.load(asset);
-                fonts[asset] = data.buffer.asUint8List(
-                  data.offsetInBytes,
-                  data.lengthInBytes,
-                );
-              }
-            } catch (_) {
-              unavailableFonts.add(asset);
-            }
+      final pending = <XppContent?>[];
+      Future<void> flush() async {
+        if (pending.isEmpty) return;
+        final overlay = XppPage(
+          pageSize: page.pageSize,
+          layers: [XppLayer(content: List.of(pending))],
+        );
+        Rect? bounds;
+        for (final content in pending) {
+          final rect = content == null
+              ? null
+              : _exportContentBounds(content, size);
+          if (rect != null && rect.isFinite) {
+            bounds = bounds == null ? rect : bounds.expandToInclude(rect);
           }
-          if (fonts.containsKey(asset)) {
-            parts.add(_vectorText(content, size, asset));
-          } else {
+        }
+        final crop = (bounds?.inflate(4) ?? (Offset.zero & size)).intersect(
+          Offset.zero & size,
+        );
+        if (!crop.isEmpty) {
+          parts.add({
+            'png': await rasterizeExportPage(
+              overlay,
+              paintBackground: false,
+              region: crop,
+              maxScale: 4,
+            ),
+            'left': crop.left,
+            'top': crop.top,
+            'width': crop.width,
+            'height': crop.height,
+          });
+        }
+        pending.clear();
+      }
+
+      int batch = 0;
+      for (final layer in page.layers ?? <XppLayer>[]) {
+        if (!layer.visible) continue;
+        for (final content in layer.content ?? <XppContent?>[]) {
+          if (++batch % 64 == 0) await Future<void>.delayed(Duration.zero);
+          if (content is XppImage &&
+              content.data != null &&
+              content.bounds() != null) {
+            await flush();
+            final rect = content.bounds()!;
+            parts.add({
+              'png': await image(content.data!),
+              'left': rect.left,
+              'top': rect.top,
+              'width': rect.width,
+              'height': rect.height,
+            });
+          } else if (content is XppText &&
+              _vectorFontAsset(content) != null &&
+              !RegExp(r'[^\u000a\u000d\u0020-\u024f]')
+                  .hasMatch(content.text ?? '')) {
+            await flush();
+            final asset = _vectorFontAsset(content)!;
+            if (!fonts.containsKey(asset) &&
+                !unavailableFonts.contains(asset)) {
+              try {
+                if (asset.startsWith('/system/fonts/')) {
+                  fonts[asset] = await font_storage.readFile(asset);
+                } else {
+                  final data = await rootBundle.load(asset);
+                  fonts[asset] = data.buffer.asUint8List(
+                    data.offsetInBytes,
+                    data.lengthInBytes,
+                  );
+                }
+              } catch (_) {
+                unavailableFonts.add(asset);
+              }
+            }
+            if (fonts.containsKey(asset)) {
+              parts.add(_vectorText(content, size, asset));
+            } else {
+              pending.add(content);
+            }
+          } else if (content is XppStroke) {
+            await flush();
+            parts.add({
+              'ink': [
+                for (final p in content.points ?? <XppStrokePoint>[])
+                  [
+                    p.x!,
+                    p.y!,
+                    inkRadius(
+                      p.width,
+                      pressureSensitive: content.tool == XppStrokeTool.PEN,
+                    ),
+                  ],
+              ],
+              'shape': content.isShape,
+              'smooth': content.smooth,
+              'lineWidth': (content.points?.firstOrNull?.width ?? 2.5).clamp(
+                1.0,
+                double.infinity,
+              ),
+              'color':
+                  (content.tool == XppStrokeTool.ERASER
+                          ? Colors.white
+                          : content.color ?? Colors.black)
+                      .toARGB32(),
+              'opacity': content.tool == XppStrokeTool.HIGHLIGHTER
+                  ? .5
+                  : content.tool == XppStrokeTool.ERASER
+                  ? 1.0
+                  : (content.color ?? Colors.black).a,
+              'cuts': [
+                for (final cut in content.erasures.where((cut) => cut.isValid))
+                  [
+                    cut.start.dx,
+                    cut.start.dy,
+                    cut.end.dx,
+                    cut.end.dy,
+                    cut.radius,
+                  ],
+              ],
+            });
+          } else if (content != null) {
             pending.add(content);
           }
-        } else if (content is XppStroke) {
-          await flush();
-          parts.add({
-            'ink': [
-              for (final p in content.points ?? <XppStrokePoint>[])
-                [
-                  p.x!,
-                  p.y!,
-                  inkRadius(
-                    p.width,
-                    pressureSensitive: content.tool == XppStrokeTool.PEN,
-                  ),
-                ],
-            ],
-            'shape': content.isShape,
-            'smooth': content.smooth,
-            'lineWidth': (content.points?.firstOrNull?.width ?? 2.5).clamp(
-              1.0,
-              double.infinity,
-            ),
-            'color':
-                (content.tool == XppStrokeTool.ERASER
-                        ? Colors.white
-                        : content.color ?? Colors.black)
-                    .toARGB32(),
-            'opacity': content.tool == XppStrokeTool.HIGHLIGHTER
-                ? .5
-                : content.tool == XppStrokeTool.ERASER
-                ? 1.0
-                : (content.color ?? Colors.black).a,
-            'cuts': [
-              for (final cut in content.erasures.where((cut) => cut.isValid))
-                [
-                  cut.start.dx,
-                  cut.start.dy,
-                  cut.end.dx,
-                  cut.end.dy,
-                  cut.radius,
-                ],
-            ],
-          });
-        } else if (content != null) {
-          pending.add(content);
         }
       }
+      await flush();
+      var pageBytes = 0;
+      for (final part in parts) {
+        if (part['png'] is Uint8List) {
+          final bytes = part['png'] as Uint8List;
+          final hash = sha256.convert(bytes).toString();
+          if (imageHashes.add(hash)) workingBytes += bytes.length;
+        }
+        if (part['ink'] is List) pageBytes += (part['ink'] as List).length * 48;
+        if (part['textLines'] is List) pageBytes += part.toString().length * 2;
+      }
+      workingBytes += pageBytes;
+      if (workingBytes > 32 * 1024 * 1024)
+        throw StateError('Export PDF oltre il budget di lavoro di 32 MiB');
+      final record = <String, Object>{
+        'parts': parts,
+        'width': size.width,
+        'height': size.height,
+      };
+      exportPages.add(
+        root == null ? record : await stage.stagePdfPage(root, index, record),
+      );
+      // Release this page's GPU resources before starting the next page.
+      await Future<void>.delayed(Duration.zero);
     }
-    await flush();
-    exportPages.add({
-      'parts': parts,
-      'width': size.width,
-      'height': size.height,
+    if (root != null) {
+      final path = '$root/export.pdf';
+      await compute(_assemblePdf, {
+        'title': title,
+        'pages': exportPages,
+        'fonts': fonts,
+        'output': path,
+      });
+      return PreparedPdf(path: path, root: root);
+    }
+    final bytes = await compute(_assemblePdf, {
+      'title': title,
+      'pages': exportPages,
+      'fonts': fonts,
     });
-    // Release this page's GPU resources before starting the next page.
-    await Future<void>.delayed(Duration.zero);
+    if (bytes.length > 128 * 1024 * 1024) throw StateError('PDF oltre 128 MiB');
+    return PreparedPdf(bytes: bytes);
+  } catch (_) {
+    if (root != null) await stage.disposePdfStaging(root);
+    rethrow;
   }
-  return compute(_assemblePdf, {
-    'title': title,
-    'pages': exportPages,
-    'fonts': fonts,
-  });
 }
 
 /// PNG decoding, PDF image compression and final document encoding are CPU
@@ -278,53 +368,115 @@ Future<Uint8List> _assemblePdf(Map<String, Object?> input) async {
     for (final entry in (input['fonts'] as Map<String, Uint8List>).entries)
       entry.key: pw.Font.ttf(ByteData.sublistView(entry.value)),
   };
-  for (final item in input['pages'] as List<Map<String, Object>>) {
-    final width = item['width'] as double, height = item['height'] as double;
+  final images = <String, pw.MemoryImage>{};
+  for (final entry in input['pages'] as List<Map<String, Object>>) {
+    final width = (entry['width'] as num).toDouble(),
+        height = (entry['height'] as num).toDouble();
     pdf.addPage(
       pw.Page(
         pageFormat: PdfPageFormat(width, height, marginAll: 0),
-        build: (context) => pw.Stack(
-          children: [
-            for (final part in item['parts'] as List<Map<String, Object>>)
-              if (part['png'] != null)
-                pw.Positioned(
-                  left: (part['left'] as double?) ?? 0,
-                  top: (part['top'] as double?) ?? 0,
-                  child: pw.Image(
-                    pw.MemoryImage(part['png'] as Uint8List),
-                    width: (part['width'] as double?) ?? width,
-                    height: (part['height'] as double?) ?? height,
-                    fit: pw.BoxFit.fill,
+        build: (context) {
+          final item = stage.readPdfPage(entry);
+          pw.MemoryImage image(Map<String, Object> part) {
+            final bytes = part['png'] as Uint8List?;
+            final key =
+                part['imageKey'] as String? ??
+                sha256.convert(bytes!).toString();
+            return images.putIfAbsent(
+              key,
+              () => pw.MemoryImage(
+                bytes ?? stage.readPdfImage(part['pngPath'] as String),
+              ),
+            );
+          }
+
+          return pw.Stack(
+            children: [
+              for (final part in item['parts'] as List<Map<String, Object>>)
+                if (part['png'] != null || part['pngPath'] != null)
+                  pw.Positioned(
+                    left: (part['left'] as double?) ?? 0,
+                    top: (part['top'] as double?) ?? 0,
+                    child: pw.Image(
+                      image(part),
+                      width: (part['width'] as double?) ?? width,
+                      height: (part['height'] as double?) ?? height,
+                      fit: pw.BoxFit.fill,
+                    ),
+                  )
+                else if (part['textLines'] != null)
+                  pw.CustomPaint(
+                    size: PdfPoint(width, height),
+                    painter: (canvas, _) => _paintPdfText(
+                      canvas,
+                      part,
+                      height,
+                      fonts[part['font']]!.getFont(context),
+                    ),
+                  )
+                else if (part['paper'] != null)
+                  pw.CustomPaint(
+                    size: PdfPoint(width, height),
+                    painter: (canvas, _) =>
+                        _paintPdfPaper(canvas, part, width, height),
+                  )
+                else
+                  pw.CustomPaint(
+                    size: PdfPoint(width, height),
+                    painter: (canvas, _) =>
+                        _paintPdfInk(canvas, part, width, height),
                   ),
-                )
-              else if (part['textLines'] != null)
-                pw.CustomPaint(
-                  size: PdfPoint(width, height),
-                  painter: (canvas, _) => _paintPdfText(
-                    canvas,
-                    part,
-                    height,
-                    fonts[part['font']]!.getFont(context),
-                  ),
-                )
-              else if (part['paper'] != null)
-                pw.CustomPaint(
-                  size: PdfPoint(width, height),
-                  painter: (canvas, _) =>
-                      _paintPdfPaper(canvas, part, width, height),
-                )
-              else
-                pw.CustomPaint(
-                  size: PdfPoint(width, height),
-                  painter: (canvas, _) =>
-                      _paintPdfInk(canvas, part, width, height),
-                ),
-          ],
-        ),
+            ],
+          );
+        },
       ),
     );
   }
-  return pdf.save();
+  if (input['output'] is String) {
+    final output = stage.DiskPdfStream(input['output'] as String);
+    try {
+      await pdf.write(output, enableEventLoopBalancing: true);
+    } finally {
+      output.close();
+    }
+    return Uint8List(0);
+  }
+  return pdf.save(enableEventLoopBalancing: true);
+}
+
+Future<Uint8List> _boundedPdfImage(Uint8List bytes, int pixels) async {
+  final buffer = await ui.ImmutableBuffer.fromUint8List(bytes);
+  ui.ImageDescriptor? descriptor;
+  ui.Codec? codec;
+  ui.Image? image;
+  try {
+    descriptor = await ui.ImageDescriptor.encoded(buffer);
+    final w = descriptor.width, h = descriptor.height;
+    if (w <= 0 || h <= 0 || w > 16384 || h > 16384 || w * h > 16 * 1024 * 1024)
+      throw const FormatException('Immagine PDF oltre il limite');
+    final scale = math.min(1.0, math.sqrt(pixels / (w * h)));
+    var width = math.max(1, (w * scale).floor()),
+        height = math.max(1, (h * scale).floor());
+    if (width * height > pixels) {
+      if (width >= height)
+        width = math.max(1, pixels ~/ height);
+      else
+        height = math.max(1, pixels ~/ width);
+    }
+    codec = await descriptor.instantiateCodec(
+      targetWidth: width,
+      targetHeight: height,
+    );
+    image = (await codec.getNextFrame()).image;
+    final png = await image.toByteData(format: ui.ImageByteFormat.png);
+    if (png == null) throw StateError('Immagine PDF non disponibile');
+    return png.buffer.asUint8List(png.offsetInBytes, png.lengthInBytes);
+  } finally {
+    image?.dispose();
+    codec?.dispose();
+    descriptor?.dispose();
+    buffer.dispose();
+  }
 }
 
 String? _vectorFontAsset(XppText text) => switch (text.fontFamily ?? 'Sans') {
@@ -652,18 +804,47 @@ Future<Uint8List> rasterizeExportPage(
       1,
       math.min(maxDimension, (destination.height * scale).ceil()),
     );
-    final codec = await ui.instantiateImageCodec(
-      bytes,
-      targetWidth: targetWidth,
-      targetHeight: targetHeight,
-      allowUpscaling: false,
-    );
+    final buffer = await ui.ImmutableBuffer.fromUint8List(bytes);
+    ui.ImageDescriptor? descriptor;
+    ui.Codec? codec;
     try {
+      descriptor = await ui.ImageDescriptor.encoded(buffer);
+      if (descriptor.width > 16384 ||
+          descriptor.height > 16384 ||
+          descriptor.width * descriptor.height > 16 * 1024 * 1024)
+        throw const FormatException('Dimensioni immagine oltre il limite');
+      final imageCount =
+          (backgroundBytes == null ? 0 : 1) +
+          (page.layers
+                  ?.where((l) => l.visible)
+                  .expand((l) => l.content ?? <XppContent?>[])
+                  .whereType<XppImage>()
+                  .length ??
+              0);
+      final budget = math.max(1, pixelBudget ~/ math.max(1, imageCount));
+      final shrink = math.min(
+        1.0,
+        math.sqrt(budget / (targetWidth * targetHeight)),
+      );
+      var width = math.max(1, (targetWidth * shrink).floor()),
+          height = math.max(1, (targetHeight * shrink).floor());
+      if (width * height > budget) {
+        if (width >= height)
+          width = math.max(1, budget ~/ height);
+        else
+          height = math.max(1, budget ~/ width);
+      }
+      codec = await descriptor.instantiateCodec(
+        targetWidth: width,
+        targetHeight: height,
+      );
       final image = (await codec.getNextFrame()).image;
       images.add(image);
       return image;
     } finally {
-      codec.dispose();
+      codec?.dispose();
+      descriptor?.dispose();
+      buffer.dispose();
     }
   }
 

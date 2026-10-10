@@ -1,7 +1,11 @@
 import 'dart:convert';
 
+import 'package:crypto/crypto.dart';
+
 import 'note_audio.dart';
 import 'note_flashcards.dart';
+import 'document_limits.dart';
+import 'bounded_archive.dart';
 
 import 'dart:math' as math;
 import 'dart:typed_data';
@@ -43,6 +47,9 @@ class XppFile {
     this.tag,
     this.autoGeneratePages = false,
     String? documentId,
+    String? localId,
+    this.originHash,
+    List<String>? importWarnings,
     Map<String, Uint8List>? pdfAttachments,
     Map<String, NoteRecording>? recordings,
     Map<String, NoteFlashcard>? flashcards,
@@ -52,14 +59,40 @@ class XppFile {
                ? documentId
                : null) ??
            '${DateTime.now().microsecondsSinceEpoch}-${math.Random.secure().nextInt(1 << 32)}',
+       localId =
+           localId ??
+           '${DateTime.now().microsecondsSinceEpoch}-${math.Random.secure().nextInt(1 << 32)}',
+       importWarnings = importWarnings ?? [],
        pdfAttachments = pdfAttachments ?? {},
        recordings = recordings ?? {},
        flashcards = flashcards ?? {};
   final String documentId;
+  String localId;
+  String? originHash;
+  final List<String> importWarnings;
+  bool get requiresSaveCopy => importWarnings.isNotEmpty;
+
+  /// This identity is never read from XML and never grants access to a path.
+  String get recoveryKey => recoveryKeyFor(sourcePath, localId);
+  static String recoveryKeyFor(String? path, String localId) {
+    if (path == null || path.isEmpty) return 'local-$localId';
+    var normalized = path.replaceAll('\\', '/');
+    if (RegExp(r'^[a-zA-Z]:/').hasMatch(normalized) ||
+        normalized.startsWith('//'))
+      normalized = normalized.toLowerCase();
+    return 'origin-${sha256.convert(utf8.encode(normalized))}-local-$localId';
+  }
+
   bool recovered = false;
   DateTime? modifiedAt;
   String? tag;
   bool autoGeneratePages;
+  int importedXmlBytes = 0,
+      importedMediaBytes = 0,
+      importedNodes = 0,
+      importedPoints = 0,
+      importedPages = 0,
+      importedLayers = 0;
 
   static XppFile empty({
     String? title,
@@ -172,13 +205,17 @@ class XppFile {
   static Future<XppFile> fromFilePickerCross(
     FilePickerCross rawFile,
     Function(double)? percentageCallback,
-    FileNotAvailableCallback onUnavailable,
-  ) async {
+    FileNotAvailableCallback onUnavailable, {
+    DocumentLimits limits = DocumentLimits.standard,
+  }) async {
     if (percentageCallback != null) percentageCallback(0.0);
 
     // 1. Estraiamo il titolo e i byte puri SUL MAIN THREAD prima di inviarli
     final title = titleFromPath(rawFile.path);
     Uint8List fileBytes = rawFile.toUint8List();
+    if (fileBytes.length > limits.compressedBytes) {
+      throw const FormatException('Appunto troppo grande');
+    }
 
     // 2. LANCIO DELL'ISOLATE: Tutto il codice qui dentro non blocca l'interfaccia
     // e pulirà la memoria RAM immediatamente appena finito!
@@ -186,15 +223,28 @@ class XppFile {
       'title': title,
       'path': rawFile.path,
       'bytes': fileBytes,
+      'limits': limits,
     });
 
     for (final page in parsedFile.pages ?? <XppPage>[]) {
       final background = page.background;
       if (background is XppBackgroundPdf) {
         page.background = XppBackgroundPdf(
-          onUnavailable: onUnavailable,
+          // Document names are opaque attachment keys, never local grants.
+          onUnavailable: (name) async {
+            final bytes = parsedFile.pdfAttachments[name];
+            if (bytes == null) {
+              throw StateError('Seleziona l’allegato di sfondo');
+            }
+            return FilePickerCross(bytes);
+          },
           filename: background.filename,
           page: background.page,
+        );
+      } else if (background is XppBackgroundImage) {
+        page.background = XppBackgroundImage(
+          filename: background.filename,
+          data: parsedFile.pdfAttachments[background.filename],
         );
       }
     }
@@ -203,49 +253,131 @@ class XppFile {
   }
 
   static XppFile _parseFile(Map<String, Object?> input) {
-    List<int> bytes = GZipDecoder().decodeBytes(input['bytes'] as Uint8List);
+    final limits = input['limits'] as DocumentLimits;
+    final budget = DocumentImportBudget(limits);
+    List<int> bytes = decodeBoundedGzip(
+      input['bytes'] as Uint8List,
+      maxInput: limits.compressedBytes,
+      maxOutput: limits.xmlBytes,
+    );
     String fileText = utf8.decode(bytes);
-
-    final documentTree = XmlDocument.parse(fileText)
-        .findElements('xournal')
-        .firstOrNull;
-    if (documentTree == null) {
+    final elements = budget.elements(fileText).iterator;
+    if (!elements.moveNext()) {
       throw const FormatException('Missing xournal root element');
     }
-
-    Uint8List previewImage;
-    try {
-      final preview = documentTree.findElements('preview').firstOrNull;
-      previewImage = preview == null
-          ? kTransparentImage
-          : base64Decode(preview.innerText);
-    } catch (e) {
-      previewImage = kTransparentImage;
+    final documentTree = elements.current;
+    final warnings = <String>[];
+    void warn(String value) {
+      if (warnings.contains(value)) return;
+      if (warnings.length < 64)
+        warnings.add(value);
+      else if (!warnings.contains('Altri contenuti non supportati'))
+        warnings.add('Altri contenuti non supportati');
     }
 
+    void attributes(XmlElement element, Set<String> supported) {
+      if (element.attributes.any((a) => !supported.contains(a.name.qualified)))
+        warn('Attributi non supportati in ${element.name.local}');
+    }
+
+    attributes(documentTree, {
+      'creator',
+      'fileversion',
+      'osipp-id',
+      'osipp-tag',
+      'osipp-auto-pages',
+      'osipp-modified-at',
+    });
+    final version = documentTree.getAttribute('fileversion');
+    if (version != null && version != '4')
+      warn('Versione Xournal non supportata: $version');
+    Uint8List previewImage = kTransparentImage;
     final attachments = <String, Uint8List>{};
-    for (final attachment in documentTree.findElements('pdf-attachment')) {
-      final name = attachment.getAttribute('name');
-      if (name != null)
-        attachments[name] = base64Decode(attachment.innerText.trim());
-    }
+    final audioElements = <XmlElement>[], cardElements = <XmlElement>[];
     String? previousPdfFilename;
     List<XppPage> pages = [];
-    Iterable<XmlElement> pageElements = documentTree.findElements('page');
-
-    for (XmlElement pageElement in pageElements) {
+    while (elements.moveNext()) {
+      final pageElement = elements.current;
+      switch (pageElement.name.local) {
+        case 'preview':
+          previewImage = budget.media(
+            pageElement.innerText.trim(),
+            invalidFallback: kTransparentImage,
+          );
+          continue;
+        case 'pdf-attachment':
+          final name = pageElement.getAttribute('name');
+          if (name == null ||
+              name.isEmpty ||
+              name.length > 4096 ||
+              attachments.containsKey(name)) {
+            throw const FormatException('Allegato duplicato o senza nome');
+          }
+          attachments[name] = budget.media(pageElement.innerText.trim());
+          continue;
+        case 'osipp-audio':
+          // Count before optional decoder allocates the media a second time.
+          budget.reserveOptionalMedia(pageElement.innerText.trim());
+          audioElements.add(pageElement);
+          continue;
+        case 'osipp-flashcard':
+          validateDocumentJsonText(pageElement.innerText);
+          Object? json;
+          try {
+            json = jsonDecode(pageElement.innerText);
+          } on FormatException {
+            /* Optional corruption remains recoverable. */
+          }
+          if (json is Map) {
+            for (final side in ['front', 'back']) {
+              final value = json[side];
+              if (value is Map && value['image'] is String) {
+                budget.reserveOptionalMedia(value['image'] as String);
+              }
+            }
+          }
+          cardElements.add(pageElement);
+          continue;
+        case 'page':
+          break;
+        default:
+          if (pageElement.name.local != 'title')
+            warn('Elemento non supportato: ${pageElement.name.local}');
+          continue;
+      }
       XppPageSize pageSize = XppPageSize(
-        width: double.parse(pageElement.getAttribute('width')!),
-        height: double.parse(pageElement.getAttribute('height')!),
+        width: documentNumber(
+          pageElement.getAttribute('width'),
+          min: 0.01,
+          max: DocumentLimits.maxPageDimension,
+        ),
+        height: documentNumber(
+          pageElement.getAttribute('height'),
+          min: 0.01,
+          max: DocumentLimits.maxPageDimension,
+        ),
       );
+      attributes(pageElement, {'width', 'height', 'osipp-infinite'});
 
       XppBackground? background;
       final backgroundElement = pageElement
           .findElements('background')
           .firstOrNull;
       if (backgroundElement != null) {
+        attributes(backgroundElement, {
+          'type',
+          'domain',
+          'filename',
+          'pageno',
+          'style',
+          'color',
+        });
         switch (backgroundElement.getAttribute('type')) {
           case "pixmap":
+            if (backgroundElement.getAttribute('filename')?.isNotEmpty !=
+                true) {
+              throw const FormatException('Sfondo senza riferimento');
+            }
             background = XppBackgroundImage(
               filename: backgroundElement.getAttribute('filename'),
             );
@@ -254,12 +386,22 @@ class XppFile {
             previousPdfFilename =
                 backgroundElement.getAttribute('filename') ??
                 previousPdfFilename;
+            final pdfPage = int.tryParse(
+              backgroundElement.getAttribute('pageno') ?? '',
+            );
+            if (pdfPage == null ||
+                pdfPage < 1 ||
+                pdfPage > limits.pages ||
+                previousPdfFilename == null) {
+              throw const FormatException(
+                'Riferimento alla pagina PDF non valido',
+              );
+            }
             background = XppBackgroundPdf(
               onUnavailable:
                   _dummyOnUnavailable, // <--- Funzione fittizia per sicurezza
               filename: previousPdfFilename,
-              page: (int.parse(backgroundElement.getAttribute('pageno')!) - 1)
-                  .clamp(0, 2147483647),
+              page: pdfPage - 1,
             );
             break;
           case "solid":
@@ -295,38 +437,71 @@ class XppFile {
                 );
                 break;
               default:
+                warn('Stile di sfondo non supportato');
                 background = XppBackground.none;
             }
             break;
           default:
+            warn('Tipo di sfondo non supportato');
             background = XppBackground.none;
             break;
         }
       }
 
       List<XppLayer> layers = [];
+      for (final child in pageElement.childElements) {
+        if (!['background', 'layer'].contains(child.name.local))
+          warn('Elemento della pagina non supportato: ${child.name.local}');
+      }
       Iterable<XmlElement> layerElements = pageElement.findElements('layer');
 
       for (XmlElement layer in layerElements) {
+        attributes(layer, {'name', 'osipp-visible', 'osipp-locked'});
         Map<int, XppContent?> content = {};
         int index = 0;
         layer.children.forEach((XmlNode node) {
           if (node.nodeType == XmlNodeType.TEXT) return;
           if (node.nodeType != XmlNodeType.ELEMENT) return;
+          attributes(node as XmlElement, switch (node.name.local) {
+            'stroke' => {
+              'tool',
+              'color',
+              'width',
+              'osipp-shape',
+              'osipp-smooth',
+              'osipp-erasures',
+              'osipp-audio-id',
+              'osipp-audio-start',
+              'osipp-audio-end',
+              'osipp-audio-times',
+            },
+            'text' => {'color', 'size', 'font', 'x', 'y'},
+            'image' => {'left', 'top', 'right', 'bottom'},
+            'teximage' => {'text', 'color', 'left', 'top', 'right', 'bottom'},
+            _ => <String>{},
+          });
+          if (![
+            'stroke',
+            'text',
+            'image',
+            'teximage',
+          ].contains(node.name.local))
+            warn('Contenuto del livello non supportato: ${node.name.local}');
           node.setAttribute('counter', index.toString());
           index++;
         });
 
         layer.findElements('image').forEach((imageElement) {
+          _validateImageRectangle(imageElement);
           content[int.parse(imageElement.getAttribute('counter')!)] = XppImage(
-            data: base64Decode(imageElement.innerText.trim()),
+            data: budget.media(imageElement.innerText.trim()),
             topLeft: Offset(
-              double.parse(imageElement.getAttribute('left')!),
-              double.parse(imageElement.getAttribute('top')!),
+              documentNumber(imageElement.getAttribute('left')),
+              documentNumber(imageElement.getAttribute('top')),
             ),
             bottomRight: Offset(
-              double.parse(imageElement.getAttribute('right')!),
-              double.parse(imageElement.getAttribute('bottom')!),
+              documentNumber(imageElement.getAttribute('right')),
+              documentNumber(imageElement.getAttribute('bottom')),
             ),
           );
         });
@@ -337,28 +512,39 @@ class XppFile {
             color: color,
             text: textElement.innerText,
             size: XppPageSize.pt2mm(
-              double.parse(textElement.getAttribute('size')!),
+              documentNumber(
+                textElement.getAttribute('size'),
+                min: 0.01,
+                max: 1000,
+              ),
             ),
             fontFamily: textElement.getAttribute('font'),
             offset: Offset(
-              double.parse(textElement.getAttribute('x')!),
-              double.parse(textElement.getAttribute('y')!),
+              documentNumber(textElement.getAttribute('x')),
+              documentNumber(textElement.getAttribute('y')),
             ),
           );
         });
 
         layer.findElements('teximage').forEach((texElement) {
+          // Older OSI formulas use right=bottom=0 for automatic text bounds.
+          final left = documentNumber(texElement.getAttribute('left'));
+          final top = documentNumber(texElement.getAttribute('top'));
+          var right = documentNumber(texElement.getAttribute('right'));
+          var bottom = documentNumber(texElement.getAttribute('bottom'));
+          if (right == 0 && bottom == 0) {
+            final length = (texElement.getAttribute('text') ?? '').length;
+            right = documentNumber('${left + math.max(1, length) * 10}');
+            bottom = documentNumber('${top + 24}');
+          }
+          if (right <= left || bottom <= top) {
+            throw const FormatException('Rettangolo della formula non valido');
+          }
           content[int.parse(texElement.getAttribute('counter')!)] = XppTexImage(
             text: texElement.getAttribute('text')!.trim(),
             color: parseColor(texElement.getAttribute('color')!.trim()),
-            topLeft: Offset(
-              double.parse(texElement.getAttribute('left')!),
-              double.parse(texElement.getAttribute('top')!),
-            ),
-            bottomRight: Offset(
-              double.parse(texElement.getAttribute('right')!),
-              double.parse(texElement.getAttribute('bottom')!),
-            ),
+            topLeft: Offset(left, top),
+            bottomRight: Offset(right, bottom),
           );
         });
 
@@ -369,30 +555,56 @@ class XppFile {
               tool = XppStrokeTool.PEN;
               break;
             case "eraser":
-              return; // TODO: implement whiteout eraser
+              warn('Cancellatura whiteout non supportata');
+              return;
             case "highlighter":
               tool = XppStrokeTool.HIGHLIGHTER;
               break;
             default:
+              warn('Strumento del tratto non supportato');
               return;
           }
           Color color = parseColor(strokeElement.getAttribute('color'));
           List<XppStrokePoint> points = [];
+          final coordinateText = strokeElement.innerText.trim();
+          var count = 0;
+          for (final _ in RegExp(r'\S+').allMatches(coordinateText)) {
+            if (++count > (limits.points - budget.pointCount) * 2) {
+              throw const FormatException('Troppi punti nel documento');
+            }
+          }
+          if (count < 2 || count.isOdd) {
+            throw const FormatException('Coordinate incomplete');
+          }
+          budget.points(count ~/ 2);
           List<String> rawWidth = strokeElement
               .getAttribute('width')!
               .trim()
               .split(RegExp(r'\s+'));
+          if (rawWidth.length > count ~/ 2 + 1) {
+            throw const FormatException('Troppi spessori nel tratto');
+          }
+          for (final width in rawWidth) {
+            documentNumber(width, min: 0, max: DocumentLimits.maxWidth);
+          }
           List<String> rawPoints = strokeElement.innerText.trim().split(
             RegExp(r'\s+'),
           );
+          if (rawPoints.length.isOdd ||
+              rawPoints.length < 2 ||
+              rawWidth.isEmpty) {
+            throw const FormatException('Coordinate del tratto incomplete');
+          }
           for (int i = 0; i < rawPoints.length / 2; i++) {
             points.add(
               XppStrokePoint(
-                width: double.parse(
+                width: documentNumber(
                   (rawWidth.length > i) ? rawWidth[i] : rawWidth[0],
+                  min: 0,
+                  max: DocumentLimits.maxWidth,
                 ),
-                x: double.parse(rawPoints[i * 2]),
-                y: double.parse(rawPoints[i * 2 + 1]),
+                x: documentNumber(rawPoints[i * 2]),
+                y: documentNumber(rawPoints[i * 2 + 1]),
               ),
             );
           }
@@ -412,6 +624,21 @@ class XppFile {
                 ..erasures = StrokeErasure.decode(
                   strokeElement.getAttribute('osipp-erasures'),
                 );
+          final stroke =
+              content[int.parse(strokeElement.getAttribute('counter')!)]
+                  as XppStroke;
+          budget.points(stroke.erasures.length);
+          for (final erasure in stroke.erasures) {
+            documentNumber('${erasure.start.dx}');
+            documentNumber('${erasure.start.dy}');
+            documentNumber('${erasure.end.dx}');
+            documentNumber('${erasure.end.dy}');
+            documentNumber(
+              '${erasure.radius}',
+              min: 0.001,
+              max: DocumentLimits.maxWidth,
+            );
+          }
         });
 
         final ordered = content.keys.toList()..sort();
@@ -434,28 +661,47 @@ class XppFile {
       );
     }
 
+    if (pages.isEmpty) throw const FormatException('Documento senza pagine');
+    final cards = NoteFlashcard.decode(cardElements, warnings: warnings);
+    final recordings = NoteRecording.decode(audioElements);
+    if (recordings.length != audioElements.length)
+      warn('Audio recuperato solo parzialmente');
     return XppFile(
-      documentId: documentTree.getAttribute('osipp-id'),
-      tag: documentTree.getAttribute('osipp-tag'),
-      autoGeneratePages:
-          documentTree.getAttribute('osipp-auto-pages') == 'true' ||
-          (documentTree.getAttribute('osipp-auto-pages') == null &&
-              !pages.any((p) => p.background is XppBackgroundPdf)),
-      modifiedAt: DateTime.tryParse(
-        documentTree.getAttribute('osipp-modified-at') ?? '',
-      ),
-      title: input['title'] as String,
-      previewImage: previewImage,
-      pages: pages,
-      sourcePath: input['path'] as String?,
-      pdfAttachments: attachments,
-      flashcards: NoteFlashcard.decode(
-        documentTree.findElements('osipp-flashcard'),
-      ),
-      recordings: NoteRecording.decode(
-        documentTree.findElements('osipp-audio'),
-      ),
-    );
+        documentId: documentTree.getAttribute('osipp-id'),
+        tag: documentTree.getAttribute('osipp-tag'),
+        autoGeneratePages:
+            documentTree.getAttribute('osipp-auto-pages') == 'true' ||
+            (documentTree.getAttribute('osipp-auto-pages') == null &&
+                !pages.any((p) => p.background is XppBackgroundPdf)),
+        modifiedAt: DateTime.tryParse(
+          documentTree.getAttribute('osipp-modified-at') ?? '',
+        ),
+        title: input['title'] as String,
+        previewImage: previewImage,
+        pages: pages,
+        sourcePath: input['path'] as String?,
+        pdfAttachments: attachments,
+        flashcards: cards,
+        recordings: recordings,
+        importWarnings: warnings.toSet().toList(),
+        originHash: sha256.convert(input['bytes'] as Uint8List).toString(),
+      )
+      ..importedXmlBytes = bytes.length
+      ..importedMediaBytes = budget.mediaBytes
+      ..importedNodes = budget.nodeCount
+      ..importedPoints = budget.pointCount
+      ..importedPages = budget.pageCount
+      ..importedLayers = budget.layerCount;
+  }
+
+  static void _validateImageRectangle(XmlElement e) {
+    final left = documentNumber(e.getAttribute('left'));
+    final top = documentNumber(e.getAttribute('top'));
+    final right = documentNumber(e.getAttribute('right'));
+    final bottom = documentNumber(e.getAttribute('bottom'));
+    if (right <= left || bottom <= top) {
+      throw const FormatException('Rettangolo non valido');
+    }
   }
 
   Uint8List? previewImage;
@@ -466,6 +712,24 @@ class XppFile {
   final Map<String, Uint8List> pdfAttachments;
   final Map<String, NoteRecording> recordings;
   final Map<String, NoteFlashcard> flashcards;
+
+  /// Only call with bytes returned by an explicit picker. No path is followed.
+  void attachSelectedBackground(String reference, FilePickerCross selected) {
+    final data = selected.toUint8List();
+    final total = pdfAttachments.entries
+        .where((e) => e.key != reference)
+        .fold<int>(data.length, (sum, e) => sum + e.value.length);
+    if (total > DocumentLimits.standard.mediaBytes) {
+      throw StateError('Allegati troppo grandi');
+    }
+    pdfAttachments[reference] = data;
+    for (final page in pages ?? <XppPage>[]) {
+      if (page.background case XppBackgroundImage image
+          when image.filename == reference) {
+        page.background = XppBackgroundImage(filename: reference, data: data);
+      }
+    }
+  }
 
   static String titleFromPath(String? path) {
     final normalized = (path ?? '').replaceAll('\\', '/');
@@ -483,6 +747,8 @@ class XppFile {
   }
 
   XmlDocument toXmlDocument() {
+    validateSaveLimits();
+    FlashcardLimits.validate(flashcards.values);
     return XmlDocument([
       XmlElement(
         XmlName('xournal'),
@@ -524,6 +790,48 @@ class XppFile {
     ]);
   }
 
+  void validateSaveLimits() {
+    if (pages == null ||
+        pages!.isEmpty ||
+        pages!.length > DocumentLimits.standard.pages)
+      throw const FormatException('Numero di pagine non valido');
+    var points = 0,
+        layers = 0,
+        nodes = pages!.length + 1,
+        media = previewImage?.length ?? 0;
+    for (final bytes in pdfAttachments.values) {
+      media += bytes.length;
+    }
+    for (final recording in recordings.values) {
+      media += recording.bytes.length;
+    }
+    for (final card in flashcards.values) {
+      media += (card.front.image?.length ?? 0) + (card.back.image?.length ?? 0);
+    }
+    for (final page in pages!) {
+      layers += page.layers?.length ?? 0;
+      nodes += 1 + (page.layers?.length ?? 0);
+      for (final content
+          in page.layers?.expand((l) => l.content ?? <XppContent?>[]) ??
+              <XppContent?>[]) {
+        nodes += 1;
+        if (content is XppStroke)
+          nodes +=
+              content.erasures.length + (content.audioLink == null ? 0 : 1);
+        if (content is XppStroke)
+          points += (content.points?.length ?? 0) + content.erasures.length;
+        if (content is XppImage) media += content.data?.length ?? 0;
+      }
+    }
+    if (nodes > DocumentLimits.standard.nodes ||
+        points > DocumentLimits.standard.points ||
+        layers > DocumentLimits.standard.layers ||
+        media > DocumentLimits.standard.mediaBytes)
+      throw const FormatException(
+        'Il documento supera i limiti di salvataggio e riapertura',
+      );
+  }
+
   String toXmlString() {
     return '<?xml version="1.0" standalone="no"?>\n' +
         toXmlDocument().toXmlString();
@@ -547,6 +855,9 @@ class XppFile {
   XppFile snapshot() {
     return XppFile(
       documentId: documentId,
+      localId: localId,
+      originHash: originHash,
+      importWarnings: List.of(importWarnings),
       modifiedAt: modifiedAt,
       tag: tag,
       autoGeneratePages: autoGeneratePages,

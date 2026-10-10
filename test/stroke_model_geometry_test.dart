@@ -1,6 +1,4 @@
 import 'dart:collection';
-import 'dart:convert';
-import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -87,8 +85,8 @@ void main() {
         snapshot.toXmlElement().toXmlString(),
         stroke.toXmlElement().toXmlString(),
       );
-      expect(snapshot.points, isNot(same(stroke.points)));
-      expect(snapshot.points!.first, isNot(same(stroke.points!.first)));
+      expect(snapshot.points, same(stroke.points));
+      expect(snapshot.points!.first, same(stroke.points!.first));
       stroke.translate(const Offset(12, 3));
       stroke.color = Colors.green;
       expect(snapshot.points!.first.x, -20);
@@ -142,14 +140,19 @@ void main() {
             check();
             stroke.scaleBy(2.5, const Offset(-40, 80));
             check();
-            // In-place edits must be observed even when list identity is unchanged.
-            stroke.points![0] = XppStrokePoint(
+            // Geometry edits replace the immutable buffer.
+            final updated = List<XppStrokePoint>.of(stroke.points!);
+            updated[0] = XppStrokePoint(
               x: -9000,
               y: stroke.points!.first.y,
               width: 22,
             );
+            stroke.points = updated;
             check();
-            stroke.points!.add(XppStrokePoint(x: 15000, y: -20000, width: .1));
+            stroke.points = [
+              ...stroke.points!,
+              XppStrokePoint(x: 15000, y: -20000, width: .1),
+            ];
             check();
           }
         }
@@ -185,39 +188,21 @@ void main() {
     expect(translated.bottom, closeTo(before.bottom - 19, 0.0001));
   });
 
-  test('10000 samples use one bounds scan instead of five', () {
+  test('geometry owns its immutable buffer and visits each sample once', () {
     final points = _CountedPoints(
       List.generate(
         10000,
-        (i) => XppStrokePoint(
-          x: i.toDouble(),
-          y: -i.toDouble(),
-          width: i % 10 / 2,
-        ),
+        (i) => XppStrokePoint(x: i.toDouble(), y: -i.toDouble(), width: 2),
       ),
     );
     final stroke = XppStrokePen(points: points);
-    final expected = _previousBounds(stroke);
-    final previousReads = points.reads;
-    points.reads = 0;
-    expect(stroke.bounds(), expected);
-    final optimizedReads = points.reads;
-    expect(optimizedReads, lessThanOrEqualTo(points.length + 1));
-    expect(previousReads, greaterThanOrEqualTo(points.length * 5));
-    points.reads = 0;
-    stroke.getOffset();
-    expect(points.reads, lessThanOrEqualTo(points.length + 2));
-    points.reads = 0;
-    stroke.bottomRight;
-    expect(points.reads, lessThanOrEqualTo(points.length + 2));
-    File('docs/validation/gha-point-visits.json').writeAsStringSync(
-      jsonEncode({
-        'samples': points.length,
-        'legacy_bounds_reads': previousReads,
-        'single_pass_bounds_reads': optimizedReads,
-        'same_bounds': true,
-        'measurement': 'Point-list visits, not FPS or Android timings',
-      }),
+    expect(points.reads, lessThanOrEqualTo(10001));
+    expect(stroke.bounds(), _previousBounds(stroke));
+    expect(
+      () => stroke.points!.add(XppStrokePoint(x: 0, y: 0, width: 2)),
+      throwsUnsupportedError,
     );
+    points[0] = XppStrokePoint(x: 9000, y: 9000, width: 2);
+    expect(stroke.points!.first.x, 0);
   });
 }

@@ -22,6 +22,7 @@ import 'package:xournalpp/src/note_audio.dart';
 import 'package:xournalpp/src/note_backup.dart';
 import 'package:xournalpp/src/note_flashcards.dart';
 import 'package:xournalpp/src/note_tags.dart';
+import 'package:xournalpp/src/critical_data.dart';
 import 'package:xournalpp/src/recent_documents.dart';
 
 import 'document_storage_test.dart' show TestDocumentsProvider;
@@ -82,6 +83,7 @@ void main() {
     );
     final pdf = Uint8List.fromList([37, 80, 68, 70, 45, 49]);
     await File('${deviceA.path}/paper.pdf').writeAsBytes(pdf);
+    a.attachSelectedBackground('paper.pdf', FilePickerCross(pdf));
     a.recordings['audio-1'] = NoteRecording(
       'audio-1',
       1000,
@@ -108,13 +110,13 @@ void main() {
     await AutosaveStore.save(a, await a.toUint8ListAsync());
     final unsaved = note('Non ancora salvato');
     await AutosaveStore.save(unsaved, await unsaved.toUint8ListAsync());
-    final prefs = await SharedPreferences.getInstance();
+
     final entries = await RecentDocuments.list();
     entries.first['favorite'] = true;
-    await prefs.setString(PreferencesKeys.kRecentFiles, jsonEncode(entries));
+    await CriticalData.write(PreferencesKeys.kRecentFiles, entries);
     await NoteTags.create('Esami');
     final prepared = await NoteBackup.create();
-    expect(prepared.count, 3);
+    expect(prepared.count, 4);
     expect(prepared.unavailable, isEmpty);
     await deviceA.delete(recursive: true);
 
@@ -124,11 +126,11 @@ void main() {
     await saveNote(existing, '${deviceB.path}/existing.xopp');
     final existingBytes = await File(existing.sourcePath!).readAsBytes();
     final backup = await NoteBackup.inspect(prepared.bytes);
-    expect(backup.notes, hasLength(3));
+    expect(backup.notes, hasLength(4));
     expect(backup.tags, contains('Esami'));
-    expect(await NoteBackup.restore(backup), 3);
+    expect(await NoteBackup.restore(backup), 4);
     final restoredEntries = await RecentDocuments.list();
-    expect(restoredEntries, hasLength(4));
+    expect(restoredEntries, hasLength(5));
     final restoredA = restoredEntries
         .where((e) => e['favorite'] == true)
         .single;
@@ -159,6 +161,20 @@ void main() {
     );
     expect(
       (reopened.pages!.first.layers!.first.content!.single as XppText).text,
+      'Lezione',
+    );
+    final recoveryEntry = restoredEntries
+        .where((e) => e['name'] == 'Lezione (recupero)')
+        .single;
+    final recoveryFile = await XppFile.fromFilePickerCross(
+      await FilePickerCross.fromInternalPath(
+        path: recoveryEntry['path'] as String,
+      ),
+      null,
+      (_) async => throw StateError('Missing'),
+    );
+    expect(
+      (recoveryFile.pages!.first.layers!.first.content!.single as XppText).text,
       'Ultima modifica',
     );
     expect(await File(existing.sourcePath!).readAsBytes(), existingBytes);
@@ -166,9 +182,9 @@ void main() {
     // Repeated restoration creates independent copies rather than overwriting.
     await NoteBackup.restore(backup);
     final all = await RecentDocuments.list();
-    expect(all, hasLength(7));
-    expect(all.map((e) => e['path']).toSet(), hasLength(7));
-    expect(all.map((e) => e['id']).toSet(), hasLength(7));
+    expect(all, hasLength(9));
+    expect(all.map((e) => e['path']).toSet(), hasLength(9));
+    expect(all.map((e) => e['id']).toSet(), hasLength(9));
   });
 
   test(
@@ -274,6 +290,7 @@ void main() {
     );
     PathProviderPlatform.instance = _FailingProvider(dir.path);
     await expectLater(NoteBackup.restore(backup), throwsA(anything));
+    PathProviderPlatform.instance = TestDocumentsProvider(dir.path);
     expect(await RecentDocuments.list(), before);
     expect(await File(existing.sourcePath!).exists(), isTrue);
     final staged = await Directory('${dir.path}/xournalpp').list().toList();
@@ -288,10 +305,8 @@ void main() {
       await web_storage.writeFile(path, bytes);
       expect(await web_storage.exists(path), isTrue);
       expect(
-        (await SharedPreferences.getInstance()).getString(
-          'osipp.web-restored.$path',
-        ),
-        base64Encode(bytes),
+        await CriticalData.read('osipp.web-restored.$path'),
+        isA<String>(),
       );
       expect(await web_storage.readFile(path), bytes);
       await web_storage.deleteFile(path);

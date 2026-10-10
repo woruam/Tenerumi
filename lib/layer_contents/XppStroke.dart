@@ -13,13 +13,26 @@ import 'package:xournalpp/src/ink_geometry.dart';
 abstract class XppStroke extends XppContent {
   XppStroke({
     this.tool = XppStrokeTool.PEN,
-    this.points,
+    List<XppStrokePoint>? points,
     this.color,
     this.editingTool,
-  });
+  }) : _points = points == null ? null : List.unmodifiable(points);
 
   XppStrokeTool tool;
-  List<XppStrokePoint>? points;
+  List<XppStrokePoint>? _points;
+  List<XppStrokePoint>? get points => _points;
+  set points(List<XppStrokePoint>? value) =>
+      _points = value == null ? null : List.unmodifiable(value);
+
+  /// Points are immutable; translations/scales replace the complete list.
+  /// History and background saves share this buffer without copying each point.
+  XppStroke copyWithSharedPoints() => newStroke(color: color)
+    .._points = _points
+    ..audioLink = audioLink
+    ..editingTool = editingTool
+    ..isShape = isShape
+    ..smooth = smooth
+    ..erasures = List.of(erasures);
   Color? color;
   EditingTool? editingTool;
   StrokeAudioLink? audioLink;
@@ -292,7 +305,8 @@ abstract class XppStroke extends XppContent {
     } else {
       cuts.add(cut);
     }
-    final replacement = newStroke(color: color, points: points)
+    final replacement = newStroke(color: color)
+      .._points = _points
       ..audioLink = audioLink
       ..isShape = isShape
       ..smooth = smooth

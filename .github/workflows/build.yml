@@ -1,83 +1,146 @@
-name: Build APK, Web and Desktop
-
+name: Validate and build OSI
 on:
+  pull_request:
   push:
     branches: [main, master]
   workflow_dispatch:
-
+    inputs:
+      release:
+        description: Build signed production APK
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  FLUTTER_VERSION: '3.47.6'
 jobs:
-  android:
-    name: Android APK
+  quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e # v2.21.0
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - run: flutter pub get --enforce-lockfile
+      - run: flutter analyze --no-fatal-infos
+      - run: flutter test --reporter expanded
+      - run: python3 scripts/check_distribution.py
+      - run: python3 scripts/check_web_vendor.py
+  android:
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
         with:
           distribution: temurin
           java-version: '17'
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e
         with:
-          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
-      - run: flutter pub get
+      - run: flutter pub get --enforce-lockfile
+      - run: flutter build apk --debug
+      - run: python3 scripts/check_distribution.py --apk build/app/outputs/flutter-apk/app-debug.apk
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: osi-android-development
+          path: build/app/outputs/flutter-apk/app-debug.apk
+  android-release:
+    if: github.event_name == 'workflow_dispatch' && inputs.release
+    needs: [quality, android]
+    environment: production
+    runs-on: ubuntu-latest
+    env:
+      OSIPP_RELEASE_STOREFILE: ${{ github.workspace }}/.dart_tool/release.jks
+      OSIPP_RELEASE_STOREPASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+      OSIPP_RELEASE_KEYALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      OSIPP_RELEASE_KEYPASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+      OSIPP_RELEASE_CERTSHA256: ${{ secrets.ANDROID_CERT_SHA256 }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+      - name: Prepare production signing
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          test -n "$KEYSTORE_BASE64" && test -n "$OSIPP_RELEASE_CERTSHA256"
+          mkdir -p .dart_tool
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$OSIPP_RELEASE_STOREFILE"
+          chmod 600 "$OSIPP_RELEASE_STOREFILE"
+      - run: flutter pub get --enforce-lockfile
       - run: flutter build apk --release
-      - uses: actions/upload-artifact@v4
+      - name: Verify production signer
+        run: |
+          signer=$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -1)
+          python3 scripts/check_distribution.py --apk build/app/outputs/flutter-apk/app-release.apk --apksigner "$signer"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: xournalpp-mobile-android-apk
+          name: osi-android-release
           path: build/app/outputs/flutter-apk/app-release.apk
-
   web:
-    name: Web build
+    needs: quality
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          channel: stable
+          persist-credentials: false
+      - uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
-      # the legacy web folder predates Flutter 2; regenerate it
-      - run: rm -rf web && flutter create --platforms=web .
-      - run: flutter pub get
-      - run: flutter build web --release
-      - uses: actions/upload-artifact@v4
+      - run: flutter pub get --enforce-lockfile
+      - run: flutter build web --release --no-web-resources-cdn
+      - run: npm install --global pnpm@11.25.0 --ignore-scripts
+      - run: pnpm install --dir tool/web_smoke --frozen-lockfile --ignore-scripts
+      - run: pnpm --dir tool/web_smoke exec playwright install --with-deps chromium
+      - run: node tool/web_smoke/smoke.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: xournalpp-mobile-web
+          name: osi-web
           path: build/web
-
-  windows:
-    name: Windows desktop
-    runs-on: windows-latest
+  desktop:
+    needs: quality
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            platform: windows
+            output: build/windows/x64/runner/Release
+          - os: ubuntu-latest
+            platform: linux
+            output: build/linux/x64/release/bundle
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          channel: stable
+          persist-credentials: false
+      - if: matrix.platform == 'linux'
+        run: sudo apt-get update && sudo apt-get install -y ninja-build libgtk-3-dev libsecret-1-dev
+      - uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
-      # the legacy windows folder came from another toolchain; regenerate it
-      - run: Remove-Item -Recurse -Force windows -ErrorAction SilentlyContinue
-        shell: pwsh
-      - run: flutter create --platforms=windows .
-      - run: flutter pub get
-      - run: flutter build windows --release
-      - uses: actions/upload-artifact@v4
+      - run: flutter pub get --enforce-lockfile
+      - run: flutter build ${{ matrix.platform }} --release
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: xournalpp-mobile-windows
-          path: build/windows/x64/runner/Release
-
-  linux:
-    name: Linux desktop
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: sudo apt-get update && sudo apt-get install -y ninja-build libgtk-3-dev
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-      - run: rm -rf linux && flutter create --platforms=linux .
-      - run: flutter pub get
-      - run: flutter build linux --release
-      - uses: actions/upload-artifact@v4
-        with:
-          name: xournalpp-mobile-linux
-          path: build/linux/x64/release/bundle
+          name: osi-${{ matrix.platform }}
+          path: ${{ matrix.output }}

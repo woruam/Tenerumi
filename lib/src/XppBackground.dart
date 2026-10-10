@@ -1,4 +1,6 @@
 import 'dart:typed_data';
+import 'package:xournalpp/widgets/bounded_image.dart';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
@@ -44,16 +46,14 @@ class _PDfBackgroundWidgetState extends State<PDfBackgroundWidget>
   Widget build(BuildContext context) {
     super.build(context);
     return FutureBuilder<Uint8List>(
-      future: FilePickerCross.fromInternalPath(path: widget.provider.filename!)
-          .then((value) => pdfImage(value, widget.provider.page))
-          .catchError(
-            (e) => widget.provider
-                .onUnavailable(widget.provider.filename)
-                .then((value) => pdfImage(value, widget.provider.page)),
-          ),
+      future: widget.provider
+          .onUnavailable(widget.provider.filename)
+          .then((value) => pdfImage(value, widget.provider.page)),
       builder: (context, snapshot) => (snapshot.hasData)
           ? Image.memory(snapshot.data!)
-          : Center(child: CircularProgressIndicator()),
+          : snapshot.hasError
+          ? const Center(child: Text('Seleziona l’allegato di sfondo'))
+          : const Center(child: CircularProgressIndicator()),
     );
   }
 
@@ -63,16 +63,20 @@ class _PDfBackgroundWidgetState extends State<PDfBackgroundWidget>
 
 class XppBackgroundImage extends XppBackground {
   final String? filename;
+  final Uint8List? data;
   final XppBackgroundImageDomain domain;
   XppBackgroundType? type = XppBackgroundType.PIXMAP;
 
   XppBackgroundImage({
     this.filename,
+    this.data,
     this.domain = XppBackgroundImageDomain.ABSOLUTE,
   });
 
   @override
-  Widget render() => Container();
+  Widget render() => data == null
+      ? const SizedBox.shrink()
+      : BoundedImage(data!, fit: BoxFit.fill);
 
   @override
   XmlElement toXmlElement() {
@@ -278,7 +282,12 @@ class _LinePainter extends CustomPainter {
       ..color = Colors.grey[500]!.withOpacity(.3)
       ..strokeWidth = 1;
     // 1 because no line at the top
-    for (int i = 1; i < size.height / 24; i++) {
+    final clip = _paperClip(canvas, size);
+    for (
+      int i = math.max(1, (clip.top / 24).floor());
+      i < clip.bottom / 24;
+      i++
+    ) {
       canvas.drawLine(
         Offset(0, i * 24.toDouble()),
         Offset(size.width, i * 24.toDouble()),
@@ -301,7 +310,12 @@ class _RuledPainter extends CustomPainter {
       ..color = Colors.grey[500]!.withOpacity(.3)
       ..strokeWidth = 1;
     // 1 because no line at the top
-    for (int i = 1; i < size.height / 24; i++) {
+    final clip = _paperClip(canvas, size);
+    for (
+      int i = math.max(1, (clip.top / 24).floor());
+      i < clip.bottom / 24;
+      i++
+    ) {
       canvas.drawLine(
         Offset(0, i * 24.toDouble()),
         Offset(size.width, i * 24.toDouble()),
@@ -324,7 +338,12 @@ class _GraphPainter extends CustomPainter {
       ..color = Colors.grey[500]!.withOpacity(.3)
       ..strokeWidth = 1;
     // 1 because no line at the top
-    for (int i = 1; i < size.height / XppPageSize.pt2mm(5); i++) {
+    final clip = _paperClip(canvas, size);
+    for (
+      int i = math.max(1, (clip.top / XppPageSize.pt2mm(5)).floor());
+      i < clip.bottom / XppPageSize.pt2mm(5);
+      i++
+    ) {
       canvas.drawLine(
         Offset(0, i * XppPageSize.pt2mm(5).toDouble()),
         Offset(size.width, i * XppPageSize.pt2mm(5).toDouble()),
@@ -332,7 +351,11 @@ class _GraphPainter extends CustomPainter {
       );
     }
     // 1 because no line at the beginning
-    for (int i = 1; i < size.width / XppPageSize.pt2mm(5); i++) {
+    for (
+      int i = math.max(1, (clip.left / XppPageSize.pt2mm(5)).floor());
+      i < clip.right / XppPageSize.pt2mm(5);
+      i++
+    ) {
       canvas.drawLine(
         Offset(i * XppPageSize.pt2mm(5).toDouble(), 0),
         Offset(i * XppPageSize.pt2mm(5).toDouble(), size.height),
@@ -355,14 +378,21 @@ class _DotPainter extends CustomPainter {
       ..color = Colors.grey[500]!.withOpacity(.3)
       ..strokeWidth = 1;
     // 1 because no line at the top
-    for (int i = 1; i < size.height / XppPageSize.pt2mm(5); i++) {
+    final clip = _paperClip(canvas, size);
+    final spacing = _paperSpacing(clip, XppPageSize.pt2mm(5));
+    for (
+      int i = math.max(1, (clip.top / spacing).floor());
+      i < clip.bottom / spacing;
+      i++
+    ) {
       // 1 because no line at the beginning
-      for (int j = 1; j < size.width / XppPageSize.pt2mm(5); j++) {
+      for (
+        int j = math.max(1, (clip.left / spacing).floor());
+        j < clip.right / spacing;
+        j++
+      ) {
         canvas.drawCircle(
-          Offset(
-            j * XppPageSize.pt2mm(5).toDouble(),
-            i * XppPageSize.pt2mm(5).toDouble(),
-          ),
+          Offset(j * spacing, i * spacing),
           XppPageSize.pt2mm(.5).toDouble(),
           paint,
         );
@@ -390,16 +420,25 @@ class _NothingMatrixPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     if (size.isEmpty) return;
-    const double spacing = 16.0;
+    final clip = _paperClip(canvas, size);
+    final spacing = _paperSpacing(clip, 16);
     const double marginY = 40.0; // riga di margine "di intestazione"
 
     final Paint dot = Paint()..color = dotColor;
     final Paint marginDot = Paint()
       ..color = dotColor.withOpacity((dotColor.opacity * 1.8).clamp(0.0, 1.0));
 
-    for (double y = spacing; y < size.height - 2; y += spacing) {
+    for (
+      double y = math.max(spacing, (clip.top / spacing).floor() * spacing);
+      y < math.min(size.height - 2, clip.bottom);
+      y += spacing
+    ) {
       final bool isMarginRow = (y - marginY).abs() < spacing / 2;
-      for (double x = spacing; x < size.width - 2; x += spacing) {
+      for (
+        double x = math.max(spacing, (clip.left / spacing).floor() * spacing);
+        x < math.min(size.width - 2, clip.right);
+        x += spacing
+      ) {
         canvas.drawCircle(
           Offset(x, y),
           isMarginRow ? 1.1 : 0.8,
@@ -425,3 +464,16 @@ class _NothingMatrixPainter extends CustomPainter {
   bool shouldRepaint(covariant _NothingMatrixPainter oldDelegate) =>
       oldDelegate.dotColor != dotColor || oldDelegate.accent != accent;
 }
+
+Rect _paperClip(Canvas canvas, Size size) {
+  if (!size.width.isFinite || !size.height.isFinite || size.isEmpty) {
+    return Rect.zero;
+  }
+  final clip = canvas.getLocalClipBounds().intersect(Offset.zero & size);
+  return clip.isEmpty || !clip.isFinite ? Rect.zero : clip;
+}
+
+double _paperSpacing(Rect clip, double spacing) => math.max(
+  spacing,
+  math.sqrt(math.max(0, clip.width * clip.height) / 180000),
+);

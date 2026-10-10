@@ -1,0 +1,5 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart
+00:00 +0: manual save reuses current checkpoint and reserializes after edits
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-checkpoint-ebbfe468\xournalpp\Reuse.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-checkpoint-ebbfe468\xournalpp\Reuse.xopp
+00:00 +1: All tests passed!

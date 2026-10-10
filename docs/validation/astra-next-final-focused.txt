@@ -1,0 +1,144 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart
+00:00 +0: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: numeric modified dates work without initialized locale symbols
+00:00 +1: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+dynamic_color: Dynamic color not detected on this device.
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-home-reopen-5b634092\xournalpp\Appunto appena salvato.xopp
+dynamic_color: Dynamic color not detected on this device.
+dynamic_color: Dynamic color not detected on this device.
+00:03 +2: loading C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart
+00:04 +2: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A06 duplicate portable IDs keep separate checkpoints and specific deletion
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e09f5eec\xournalpp\state-v2/50cac53fadaf142b500865cf03355c4eafdd013ddb24d858b5268884d10cf9a5.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e09f5eec\xournalpp\state-v2/00000000000000000001-1105523303.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e09f5eec\xournalpp\state-v2/1791659648041888-4101222078.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e09f5eec\xournalpp\state-v2/00000000000000000002-3414422489.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e09f5eec\xournalpp\state-v2/fb9181d9ebf78e085385910239698bee80a538e04fcf4324604f9f58b9580a43.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e09f5eec\xournalpp\state-v2/1791659648108401-312952055.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e09f5eec\xournalpp\state-v2/00000000000000000003-3330285851.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e09f5eec\xournalpp\state-v2/00000000000000000004-1255407507.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e09f5eec\xournalpp\state-v2/00000000000000000005-1899201476.commit
+00:04 +3: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A07 complete orphan checkpoint reconstructs its missing index
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-296e4623\xournalpp\state-v2/cc7387273ad383b2fc483ea6e4ee4ed4f6dcbf29d20fa4260f02c25e4cf068d5.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-296e4623\xournalpp\state-v2/00000000000000000001-46177237.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-296e4623\xournalpp\state-v2/1791659648260437-4186864446.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-296e4623\xournalpp\state-v2/00000000000000000002-1126553643.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-296e4623\xournalpp\state-v2/00000000000000000003-860898440.commit
+00:04 +4: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A07 corrupted latest commit falls back and preserves evidence
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-75871552\xournalpp\state-v2/00000000000000000001-2625606056.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-75871552\xournalpp\state-v2/00000000000000000002-1211507953.commit
+00:04 +5: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A15 a damaged record does not hide good records and is quarantined
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-678a2c60\xournalpp\state-v2/1791659648385976-3656546719.quarantine
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-678a2c60\xournalpp\state-v2/00000000000000000001-1179776561.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-678a2c60\xournalpp\state-v2/00000000000000000002-185950507.commit
+00:04 +6: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A15 truncated JSON stays intact in quarantine
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d5610d3d\xournalpp\state-v2/1791659648408976-1511114074.quarantine
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d5610d3d\xournalpp\state-v2/00000000000000000001-3417610634.commit
+00:04 +7: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A10 unknown tool and future version require save as copy
+00:04 +8: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A11 exact serialized byte boundary and edits are enforced
+00:04 +9: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A11 optional corruption reports partial recovery
+00:04 +10: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A12 changed original and old recovery both survive workspace restore
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-378f2bee\xournalpp\state-v2/cfd6c15def57f861af7f6d4bd6ed43c62c316882a3f02148c078638c3bd228c7.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-378f2bee\xournalpp\state-v2/00000000000000000001-2167834377.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-378f2bee\xournalpp\state-v2/1791659648465548-4060961163.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-378f2bee\xournalpp\state-v2/00000000000000000002-3359269013.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-378f2bee\xournalpp\state-v2/00000000000000000003-492030633.commit
+00:04 +11: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A12 malformed tab does not abandon valid tabs
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-a33c157a\xournalpp\state-v2/00000000000000000001-716615392.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-a33c157a\xournalpp\state-v2/00000000000000000002-3996152746.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-a33c157a\xournalpp\state-v2/1791659648580084-3275544181.quarantine
+00:04 +12: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A10 protected import autosaves privately without rewriting origin
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-bb91b61\xournalpp\state-v2/01f443e8f8541d762232b0e22dc81fd48af09443913a812f7c7e2148a435c707.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-bb91b61\xournalpp\state-v2/00000000000000000001-3309575947.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-bb91b61\xournalpp\state-v2/1791659648620797-1240137591.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-bb91b61\xournalpp\state-v2/00000000000000000002-724162865.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-bb91b61\xournalpp\state-v2/00000000000000000003-2712071452.commit
+00:04 +13: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A05 manual save failure first secures a complete checkpoint even without autosave
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-ad0ea7b9\xournalpp\state-v2/1248164454a032c3058124d42b2c365a7544504f4f64f9399535e69055e8ae97.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-ad0ea7b9\xournalpp\state-v2/00000000000000000001-2356781482.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-ad0ea7b9\xournalpp\state-v2/1791659648968168-985743436.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-ad0ea7b9\xournalpp\state-v2/00000000000000000002-1764520691.commit
+❌ ERRORE DI SALVATAGGIO IMPREVISTO: PathAccessException: Cannot rename file to 'C:\Users\aless\AppData\Local\Temp\osipp-test-ad0ea7b9\xournalpp\blocked', path = 'C:\Users\aless\AppData\Local\Temp\osipp-test-ad0ea7b9\xournalpp\blocked.1791659649030015.tmp' (OS Error: Accesso negato, errno = 5)
+00:05 +14: loading C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart
+00:05 +14: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A06 simultaneous instances of the same origin remain independent
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-7f886f84\xournalpp\state-v2/874fe06448994a6aa373de3675e2d4b2484426c00f4b86e1a02fcd827628d679.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-7f886f84\xournalpp\state-v2/00000000000000000001-3117393821.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-7f886f84\xournalpp\state-v2/1791659649668517-1526299269.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-7f886f84\xournalpp\state-v2/00000000000000000002-1174570304.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-7f886f84\xournalpp\state-v2/1791659649717519-426563429.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-7f886f84\xournalpp\state-v2/00000000000000000003-1694710582.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-7f886f84\xournalpp\state-v2/00000000000000000004-2373491555.commit
+00:06 +15: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: incremental journal round trip retains ink, masks, media, audio and cards
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-da7f13d2\xournalpp\state-v2/6198db1e278a5867f71b24d3baccf8ba1fc7a86e3d8de05ffb60370038f903c4.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-da7f13d2\xournalpp\state-v2/039058c6f2c0cb492c533b0a4d14ef77cc0f78abccced5287d84a1a2011cfb81.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-da7f13d2\xournalpp\state-v2/2e24fb147e880c54602d2c7a566d118b79bc7bef8fb07c6d21c922e2aa542f03.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-da7f13d2\xournalpp\state-v2/e5bb60fc693c4b5c0536abd43bd53fa4b0cc7c19870754cadfa4b3476462fcd9.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-da7f13d2\xournalpp\state-v2/00000000000000000001-2647966252.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-da7f13d2\xournalpp\state-v2/1791659649841798-2007764240.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-da7f13d2\xournalpp\state-v2/00000000000000000002-435243720.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-da7f13d2\xournalpp\state-v2/1791659649972365-3361551328.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-da7f13d2\xournalpp\state-v2/00000000000000000003-3598436021.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-da7f13d2\xournalpp\state-v2/fe9e3841664de21bd450ff51e25509eda9903ba41484caad2fd090a524ef79c0.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-da7f13d2\xournalpp\state-v2/dc99be70523dd8dbabe0a5c077c7e28e519e73e3ea131ef41abde0f790859b68.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-da7f13d2\xournalpp\state-v2/1791659650044677-2681809730.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-da7f13d2\xournalpp\state-v2/00000000000000000004-1816720624.commit
+00:06 +16: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-40aacacd\xournalpp\state-v2/7c15aaad784764c52bd643d2405aaaf3766854f5fc54728b0ad7def929d5ce7b.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-40aacacd\xournalpp\state-v2/3a18e2e9f99ac8a8b408df4cf54b1193f254ef52e9af30d19816c1c8fcf0a23e.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-40aacacd\xournalpp\state-v2/00000000000000000001-1855790799.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-40aacacd\xournalpp\state-v2/1791659650108229-3214177872.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-40aacacd\xournalpp\state-v2/00000000000000000002-2389500119.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-40aacacd\xournalpp\state-v2/83ae9d4108e3ff8c707c670f6ecd7495c8135a1cec98e58f71d14a55d8bce903.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-40aacacd\xournalpp\state-v2/296b6b6135957dde05b04586a62534f5cb7a64ed6900efed0bbb5964fdddc59d.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-40aacacd\xournalpp\state-v2/1791659650159486-1927751221.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-40aacacd\xournalpp\state-v2/00000000000000000003-2269837502.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-40aacacd\xournalpp\state-v2/2f07a756b0cb622c2cb1fe2ab4c7755d7f32063d39bba4c6e5dba24f29d25da6.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-40aacacd\xournalpp\state-v2/78ea8e7b5c1ee23e3fe9fd072f03d4fdbff162040c787806a80b877a36948755.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-40aacacd\xournalpp\state-v2/1791659650198494-4064267144.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-40aacacd\xournalpp\state-v2/00000000000000000004-1128275377.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-40aacacd\xournalpp\state-v2/22fee15fb66bac19244c2a09f333e4f8818940e5e27983980175a7db635a33b2.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-40aacacd\xournalpp\state-v2/77d2e738a1ff7fb17f63e16ccc35409c6a045d8783769ac7384aed9c9cfb89ab.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-40aacacd\xournalpp\state-v2/1791659650236548-2175010626.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-40aacacd\xournalpp\state-v2/00000000000000000005-2265811520.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-40aacacd\xournalpp\state-v2/749a94ffa93cd76c70aa98ec885e5b7fce9e3050eb6678155e845e5783c61d07.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-40aacacd\xournalpp\state-v2/dccf72994427c97c34ce668927ec165ca3a144754323cb52eaf42eeacdf67ae4.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-40aacacd\xournalpp\state-v2/1791659650280338-2147928135.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-40aacacd\xournalpp\state-v2/00000000000000000006-1643922591.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-40aacacd\xournalpp\state-v2/2e7d2c03a9507ae265ecf5b5356885a53393a2029d241394997265a1a25aefc6.blob
+00:06 +17: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 library sidecar reconstructs an index after all metadata commits are lost
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-b2e025a6\xournalpp\owned.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-b2e025a6\xournalpp\state-v2/00000000000000000001-3778637388.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-b2e025a6\xournalpp\state-v2/00000000000000000002-1726103964.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-b2e025a6\xournalpp\state-v2/26d7b66e9f00d5129b1c89adc42a98bf8dd8f6e915e64b52659b73f4686cc637.library
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-b2e025a6\xournalpp\state-v2/00000000000000000003-36601685.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-b2e025a6\xournalpp\state-v2/00000000000000000001-1951821344.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-b2e025a6\xournalpp\state-v2/00000000000000000002-1737930194.commit
+00:06 +18: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A08 pinned images obey byte and entry limits across owners
+00:06 +19: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A09 segments survive rotation and acknowledgement happens explicitly
+00:06 +20: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A18 staged backup preserves conflicting originals, validates lazily and cleans on cancel
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e70eece\xournalpp\source.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e70eece\xournalpp\state-v2/00000000000000000001-1356889322.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e70eece\xournalpp\state-v2/00000000000000000002-627951410.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e70eece\xournalpp\state-v2/6d7fbebf538ff60175ebedf4ae43c2d63bdaef5643e99ae500f2d7b9ac981ccf.library
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e70eece\xournalpp\state-v2/00000000000000000003-1640275154.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e70eece\xournalpp\state-v2/bc9b448faf89aa4b868bca42071f69d4464209c1792f4d431f41b666fd4ae015.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e70eece\xournalpp\state-v2/00000000000000000004-2879120636.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e70eece\xournalpp\state-v2/1791659650641813-585949038.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e70eece\xournalpp\state-v2/00000000000000000005-2954433138.commit
+00:06 +21: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: dense undo shares immutable geometry and transformed snapshots stay independent
+00:07 +22: loading C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart
+00:07 +22: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: complete backup transfers portable notes, latest recovery and metadata to another device
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-583c8e4a\xournalpp\backup-1791659651523091-2606690113.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-583c8e4a\xournalpp\backup-1791659651550486-876033827.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-583c8e4a\xournalpp\backup-1791659651555805-1905265278.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-583c8e4a\xournalpp\backup-1791659651560762-1233813340.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-583c8e4a\xournalpp\backup-1791659651580782-4159489590.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-583c8e4a\xournalpp\backup-1791659651585783-1029532479.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-583c8e4a\xournalpp\backup-1791659651589773-3858351487.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-583c8e4a\xournalpp\backup-1791659651595756-2526544748.xopp
+00:07 +23: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: missing documents and missing backgrounds are explicitly reported
+00:07 +24: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: invalid archives and path traversal are rejected before any import
+00:07 +25: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: CRC verification rejects a damaged payload without importing anything
+00:07 +26: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: a malformed note makes the entire archive fail validation
+00:07 +27: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: failure during restoration removes staged files and preserves existing library
+00:07 +28: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: browser storage persists restored notes and deletion removes them
+00:07 +29: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: app settings expose Ripristina Backup and Crea Backup on a phone
+00:08 +30: All tests passed!

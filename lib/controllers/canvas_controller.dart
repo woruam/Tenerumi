@@ -27,8 +27,10 @@ import 'package:xournalpp/src/compat/file_picker_cross.dart';
 
 import 'package:xournalpp/src/XppBackground.dart';
 import 'package:xournalpp/src/XppFile.dart';
+import 'package:xournalpp/src/PdfImage.dart';
 import 'package:xournalpp/src/XppLayer.dart';
 import 'package:xournalpp/src/content_snapshot.dart';
+import 'package:xournalpp/src/document_limits.dart';
 import 'package:xournalpp/src/document_export.dart';
 import 'package:xournalpp/src/selection_clipboard.dart';
 import 'package:xournalpp/src/XppPage.dart';
@@ -142,10 +144,10 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     if (savingFile || file == null) {
       throw StateError('Attendere il salvataggio');
     }
-    if (!file!.flashcards.containsKey(card.id) &&
-        file!.flashcards.length >= 10000) {
-      throw StateError('Massimo 10000 flashcard per appunto');
-    }
+    FlashcardLimits.validate([
+      ...file!.flashcards.values.where((e) => e.id != card.id),
+      card,
+    ]);
     file!.flashcards[card.id] = card;
     hasUnsavedChanges = true;
     notifyListeners();
@@ -200,7 +202,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     _autosaveTimer?.cancel();
     _autosaveTimer = Timer(
       const Duration(seconds: 2),
-      () => unawaited(flushAutosave()),
+      () => unawaited(flushAutosave(compact: false)),
     );
     _autosaveDeadline ??= Timer(
       const Duration(seconds: 10),
@@ -208,10 +210,19 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     );
   }
 
-  Future<void> flushAutosave() {
+  Future<bool> _originChanged(XppFile document) async {
+    final path = document.sourcePath;
+    if (path == null || !await FilePickerCross.exists(path)) return false;
+    if (document.originHash == null) return true;
+    return await FilePickerCross.hashAt(path) != document.originHash;
+  }
+
+  Future<void> flushAutosave({bool compact = true}) {
     _autosaveTimer?.cancel();
-    _autosaveDeadline?.cancel();
-    _autosaveDeadline = null;
+    if (compact) {
+      _autosaveDeadline?.cancel();
+      _autosaveDeadline = null;
+    }
     final document = file;
     if (!autosaveEnabled ||
         _discardRecovery ||
@@ -227,18 +238,38 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
       notifyListeners();
       try {
         final snapshot = document.snapshot();
+        if (!compact) {
+          await AutosaveStore.saveIncremental(snapshot);
+          await audio.acknowledge(snapshot.recordings.keys);
+          lastAutosave = DateTime.now();
+          autosaveError = null;
+          return;
+        }
         await _preparePreview(snapshot);
         final bytes = await snapshot.serializeSnapshotAsync();
         if (_discardRecovery) return;
         await AutosaveStore.save(snapshot, bytes);
+        await audio.acknowledge(snapshot.recordings.keys);
         lastAutosave = DateTime.now();
         // A recovery copy is always secured before touching the original file.
         // Browser documents stay recoverable locally until explicitly exported.
         if (!kIsWeb &&
             document.sourcePath != null &&
+            !document.requiresSaveCopy &&
             !savingFile &&
             !_discardRecovery) {
+          if (await _originChanged(document)) {
+            document.importWarnings.add(
+              'L’originale è cambiato: recupero conservato, salvare una copia',
+            );
+            throw StateError('Conflitto con l’originale: salvare una copia');
+          }
           await FilePickerCross(bytes).saveToPath(path: document.sourcePath!);
+          if (!await FilePickerCross(bytes).verifyAt(document.sourcePath!))
+            throw StateError(
+              'Scrittura non verificata: recupero locale conservato',
+            );
+          document.originHash = FilePickerCross(bytes).contentHash;
           await RecentDocuments.save(snapshot, document.sourcePath!);
           if (identical(file, document) && _revision == revision) {
             _hasUnsavedChanges = false;
@@ -265,8 +296,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     _autosaveTimer?.cancel();
     _autosaveDeadline?.cancel();
     if (_autosaveQueue != null) await _autosaveQueue;
-    if (!autosaveEnabled) return;
-    if (file != null) await AutosaveStore.remove(file!.documentId);
+    if (file != null) await AutosaveStore.remove(file!.recoveryKey);
   }
 
   @override
@@ -372,7 +402,6 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   final Map<int, String> pdfErrors = {};
   Future<void>? _renderQueue;
   int _pdfEpoch = 0;
-  final Map<String, Uint8List> _pdfSources = {};
   String? linkedPdfPath;
 
   bool get isPanEnabled =>
@@ -393,8 +422,10 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   void init(XppFile? initialFile) {
     if (file != null) return;
     file = initialFile;
+    if (file != null && audio.supported) unawaited(audio.recoverStaged());
     WidgetsBinding.instance.addObserver(this);
-    if (initialFile?.recovered == true) hasUnsavedChanges = true;
+    // A restored checkpoint does not authorize overwriting its origin.
+    if (initialFile?.recovered == true) _hasUnsavedChanges = true;
     toolData[PointerDeviceKind.stylus] = EditingTool.STYLUS;
     toolData[PointerDeviceKind.touch] = EditingTool.MOVE;
     // Coda-gomma delle penne per tavoletta grafica (Wacom & co.): sempre gomma.
@@ -417,14 +448,6 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
           if (bDown != null) buttonDownAction = bDown;
           if (bUp != null) buttonUpAction = bUp;
 
-          // IL FIX DELLA MEMORIA: Cerchiamo il PDF usando il Titolo del file!
-          if (file?.title != null) {
-            final savedPdf = prefs.getString('pdf_link_${file!.title}');
-            if (savedPdf != null) {
-              _restorePdfBackground(savedPdf);
-            }
-          }
-
           notifyListeners();
         })
         .catchError((e) {});
@@ -437,6 +460,8 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    _autosaveTimer?.cancel();
+    _autosaveDeadline?.cancel();
     _eraserBounds.clear();
     WidgetsBinding.instance.removeObserver(this);
     if (file != null) {
@@ -448,36 +473,12 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     _releaseViewPdf();
     pageNavigation.dispose();
     _pdfEpoch++;
-    _pdfSources.clear();
     _visiblePdfPages.clear();
     pdfBackgrounds.clear();
     pageStackKeys.clear();
     undoStack.clear();
     redoStack.clear();
     super.dispose();
-  }
-
-  Future<void> _restorePdfBackground(String pdfPath) async {
-    if (_disposed || file == null) return;
-    if (file!.pages?.any((p) => p.background is XppBackgroundPdf) == true)
-      return;
-    // Migrate legacy title-based links only where no page association exists.
-    linkedPdfPath = pdfPath;
-    for (var i = 0; i < (file!.pages?.length ?? 0); i++) {
-      final p = file!.pages![i];
-      if (p.background is! XppBackgroundPdf) {
-        p.background = XppBackgroundPdf(
-          filename: pdfPath,
-          page: i,
-          onUnavailable: (path) =>
-              FilePickerCross.fromInternalPath(path: path ?? pdfPath),
-        );
-      }
-    }
-    notifyListeners();
-    final visible = Set<int>.of(_visiblePdfPages);
-    _visiblePdfPages = {};
-    setVisiblePdfPages(visible);
   }
 
   void setVisiblePdfPages(Set<int> indices) {
@@ -536,24 +537,72 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   Future<Uint8List> _readPdfBytes(String name) async {
     final embedded = file?.pdfAttachments[name];
     if (embedded != null) return embedded;
-    String path = name;
-    final source = file?.sourcePath?.replaceAll('\\', '/');
-    if (!name.startsWith('/') &&
-        !name.contains(':') &&
-        source != null &&
-        source.contains('/')) {
-      path = '${source.substring(0, source.lastIndexOf('/') + 1)}$name';
-    }
+    throw StateError(
+      'Sfondo non associato: seleziona esplicitamente l’allegato',
+    );
+  }
+
+  bool hasMissingBackground(int index) {
+    final name = switch (file?.pages?[index].background) {
+      XppBackgroundPdf bg => bg.filename,
+      XppBackgroundImage bg => bg.filename,
+      _ => null,
+    };
+    return name != null && !file!.pdfAttachments.containsKey(name);
+  }
+
+  Future<void> associateBackground(BuildContext context, int index) async {
+    if (_disposed || savingFile || file == null) return;
+    final document = file!, page = file!.pages![index];
+    final background = page.background;
+    final name = switch (background) {
+      XppBackgroundPdf bg => bg.filename,
+      XppBackgroundImage bg => bg.filename,
+      _ => null,
+    };
+    if (name == null) return;
     try {
-      return (await FilePickerCross.fromInternalPath(path: path)).toUint8List();
-    } catch (_) {
-      final background = file?.pages
-          ?.map((p) => p.background)
-          .whereType<XppBackgroundPdf>()
-          .where((b) => b.filename == name)
-          .firstOrNull;
-      if (background == null) rethrow;
-      return (await background.onUnavailable(path)).toUint8List();
+      final selected = await FilePickerCross.importFromStorage(
+        type: background is XppBackgroundPdf
+            ? FileTypeCross.custom
+            : FileTypeCross.image,
+        fileExtension: background is XppBackgroundPdf ? 'pdf' : null,
+      );
+      if (background is XppBackgroundPdf) {
+        final pdf = await pdfx.PdfDocument.openData(selected.toUint8List());
+        try {
+          for (final p in document.pages!) {
+            final b = p.background;
+            if (b is XppBackgroundPdf &&
+                b.filename == name &&
+                (b.page ?? 0) >= pdf.pagesCount) {
+              throw StateError(
+                'Il PDF scelto non contiene tutte le pagine richieste',
+              );
+            }
+          }
+        } finally {
+          await pdf.close();
+        }
+      }
+      if (_disposed ||
+          !context.mounted ||
+          !identical(file, document) ||
+          !document.pages!.contains(page) ||
+          !identical(page.background, background)) {
+        return;
+      }
+      document.attachSelectedBackground(name, selected);
+      suspendPdfRendering();
+      pdfErrors.clear();
+      hasUnsavedChanges = true;
+      notifyListeners();
+    } catch (error) {
+      if (context.mounted && error != 'No file selected.') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Impossibile associare lo sfondo: $error')),
+        );
+      }
     }
   }
 
@@ -645,8 +694,10 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     XppBackgroundPdf background, {
     required double pixelBudget,
   }) async {
+    validatePdfPage(document, background.page ?? 0);
     final page = await document.getPage((background.page ?? 0) + 1);
     try {
+      validatePdfSize(page);
       final scale = math.min(
         4.0,
         math.min(
@@ -679,7 +730,6 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
           fileData.path ??
           fileData.fileName ??
           'import_${DateTime.now().microsecondsSinceEpoch}.pdf';
-      _pdfSources[filePath] = fileData.toUint8List();
       final String pdfTitle =
           fileData.fileName?.replaceAll('.pdf', '') ?? 'Documento_PDF';
       if (!context.mounted || _disposed) return;
@@ -725,7 +775,11 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
       }
 
       linkedPdfPath = filePath;
-      await _insertPdfAt(filePath, insertAt);
+      await _insertPdfAt(
+        filePath,
+        insertAt,
+        pickedBytes: fileData.toUint8List(),
+      );
     } catch (e) {
       print("Selezione annullata o errore PDF: $e");
     } finally {
@@ -735,17 +789,26 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   // Inserisce le pagine del PDF a [insertAt] SENZA toccare pagine/tratti esistenti.
-  Future<void> _insertPdfAt(String pdfPath, int insertAt) async {
+  Future<void> _insertPdfAt(
+    String pdfPath,
+    int insertAt, {
+    Uint8List? pickedBytes,
+  }) async {
     savingFile = true;
     notifyListeners();
 
-    final source = _pdfSources.containsKey(pdfPath)
-        ? FilePickerCross(_pdfSources[pdfPath]!, path: pdfPath)
+    final source = pickedBytes != null
+        ? FilePickerCross(pickedBytes, path: pdfPath)
         : await FilePickerCross.fromInternalPath(path: pdfPath);
     final document = await pdfx.PdfDocument.openData(source.toUint8List());
     final attachmentName =
         'embedded_pdf_${file?.pdfAttachments.length ?? 0}.pdf';
     final int count = document.pagesCount;
+    if (count < 1 ||
+        count + (file?.pages?.length ?? 0) > DocumentLimits.standard.pages) {
+      await document.close();
+      throw const FormatException('Troppe pagine PDF');
+    }
 
     file ??= XppFile(title: 'Documento')..pages = [];
     file!.pages ??= [];
@@ -764,8 +827,16 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
         try {
           final xppPage = XppPage.empty();
           xppPage.pageSize = XppPageSize(
-            width: page.width,
-            height: page.height,
+            width: documentNumber(
+              '${page.width}',
+              min: 0.01,
+              max: DocumentLimits.maxPageDimension,
+            ),
+            height: documentNumber(
+              '${page.height}',
+              min: 0.01,
+              max: DocumentLimits.maxPageDimension,
+            ),
           );
           xppPage.background = XppBackgroundPdf(
             filename: attachmentName,
@@ -928,6 +999,13 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
       if (_autosaveQueue != null) await _autosaveQueue;
       final savedRevision = _revision;
       final document = file!;
+      final oldRecoveryKey = document.recoveryKey;
+      final snapshot = document.snapshot();
+      if (!saveAs && !kIsWeb && await _originChanged(document))
+        document.importWarnings.add(
+          'L’originale è cambiato: salvare una copia',
+        );
+      saveAs |= document.requiresSaveCopy;
       bool addedAttachment = false;
       // Make existing native PDF references portable on the next save.
       for (final background
@@ -941,12 +1019,11 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
           addedAttachment = true;
         }
       }
-      final snapshot = document.snapshot();
       snapshot.modifiedAt ??= DateTime.now().toUtc();
       Uint8List? prepared;
       if (_checkpointRevision == savedRevision && !addedAttachment) {
         prepared = await AutosaveStore.checkpointBytes(
-          document.documentId,
+          document.recoveryKey,
           snapshot.modifiedAt,
         );
         if (prepared != null)
@@ -956,6 +1033,9 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
         await _preparePreview(snapshot);
         prepared = await snapshot.serializeSnapshotAsync();
       }
+      // Manual saves have the same crash protection even when autosave is off.
+      await AutosaveStore.save(snapshot, prepared);
+      await audio.acknowledge(snapshot.recordings.keys);
       final data = FilePickerCross(
         prepared,
         type: FileTypeCross.custom,
@@ -979,26 +1059,43 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
         }
         absolutePath = await data.saveToPath(path: destination);
       }
-      document.sourcePath = absolutePath;
-
-      await RecentDocuments.save(snapshot, absolutePath);
+      final verified =
+          !kIsWeb && data.reopenableGrant && await data.verifyAt(absolutePath);
+      if (verified) {
+        document.sourcePath = absolutePath;
+        document.originHash = data.contentHash;
+        document.importWarnings.clear();
+        snapshot.sourcePath = absolutePath;
+        await RecentDocuments.save(snapshot, absolutePath);
+      } else {
+        document.importWarnings.add(
+          'Copia esportata senza verifica o accesso persistente: il recupero locale è conservato, salvare una nuova copia',
+        );
+      }
       if (_revision == savedRevision) {
         document.previewImage = snapshot.previewImage;
         document.modifiedAt = snapshot.modifiedAt;
       }
       if (context.mounted)
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text("Documento salvato")));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              verified
+                  ? 'Documento salvato e verificato'
+                  : 'Copia esportata; recupero locale conservato',
+            ),
+          ),
+        );
       if (_revision == savedRevision) {
         hasUnsavedChanges = false;
         _autosaveTimer?.cancel();
         _autosaveDeadline?.cancel();
         _autosaveDeadline = null;
         if (_autosaveQueue != null) await _autosaveQueue;
-        if (_revision == savedRevision && autosaveEnabled) {
+        if (_revision == savedRevision && verified) {
           autosaveError = null;
           try {
-            await AutosaveStore.remove(document.documentId);
+            await AutosaveStore.remove(oldRecoveryKey);
           } catch (error) {
             autosaveError = error.toString();
           }
@@ -1102,6 +1199,17 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   Future<Uint8List> buildPdfBytes() async {
+    final prepared = await buildPreparedPdf();
+    try {
+      return prepared.bytes ??
+          (await FilePickerCross.fromInternalPath(path: prepared.path!))
+              .toUint8List();
+    } finally {
+      await prepared.dispose();
+    }
+  }
+
+  Future<PreparedPdf> buildPreparedPdf() async {
     final document = file;
     if (document == null) throw StateError('Nessun documento aperto');
     // One source handle at a time across adjacent exported PDF pages. An export
@@ -1109,7 +1217,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     pdfx.PdfDocument? source;
     String? sourceName;
     try {
-      return await buildNotesPdf(
+      return await prepareNotesPdf(
         document,
         loadBackground: (index, background) async {
           if (background is XppBackgroundPdf) {
@@ -1153,7 +1261,20 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
         '${file!.suggestedFileName.substring(0, file!.suggestedFileName.length - 5)}.pdf';
     savingFile = true;
     notifyListeners();
+    PreparedPdf? prepared;
     try {
+      if (!kIsWeb && documentExporter == null) {
+        prepared = await buildPreparedPdf();
+        if (prepared.path == null) throw StateError('PDF non disponibile');
+        final destination = await FilePickerCross.exportStagedBackup(
+          prepared.path!,
+          fileName,
+        );
+        if (destination != null && context.mounted)
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text('PDF esportato')));
+        return;
+      }
       final bytes = await buildPdfBytes();
       final data = FilePickerCross(
         bytes,
@@ -1173,6 +1294,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
         ).showSnackBar(SnackBar(content: Text('Errore esportazione PDF: $e')));
       }
     } finally {
+      await prepared?.dispose();
       savingFile = false;
       notifyListeners();
     }

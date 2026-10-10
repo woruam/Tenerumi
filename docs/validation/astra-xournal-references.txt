@@ -1,0 +1,610 @@
+.github/workflows/build.yml:26:          name: xournalpp-mobile-android-apk
+.github/workflows/build.yml:44:          name: xournalpp-mobile-web
+.github/workflows/build.yml:64:          name: xournalpp-mobile-windows
+.github/workflows/build.yml:82:          name: xournalpp-mobile-linux
+.gitignore:63:debian/xournalpp-mobile
+.gsd/SPEC.md:58:Produrre un rapporto Markdown con confronto riproducibile contro Xournal++ Mobile upstream fissato a commit, quantità e limiti dell’attribuzione, opportunità di ottimizzazione con riferimenti al codice, rischio e verifiche. Nessuna modifica al runtime, nessuna build APK.
+.gsd/STATE.md:28:Consultare docs/TESTING.md per interoperabilità degli allegati con Xournal++ desktop, worker Web, fedeltà dell'esportazione PDF e prove su hardware. Non è presente .git, quindi non sono stati prodotti commit. Non considerare i test di culling una misura del picco memoria Android.
+ARCHITECTURE.md:24:│   ├── XppFile.dart      # Struttura del documento Xournal++
+ARCHITECTURE.md:64:  - `archive`: per decomprimere/comprimere i file gzip generati da Xournal++.
+COME-COMPILARE.md:1:# Xournal++ Mobile 2026 — Come ottenere APK, versione PC e Web
+COME-COMPILARE.md:3:Progetto modernizzato a partire da [xournalpp_mobile](https://github.com/xournalpp/xournalpp_mobile)
+COME-COMPILARE.md:27:   git commit -m "Xournal++ Mobile 2026"
+COME-COMPILARE.md:36:   - `xournalpp-mobile-android-apk` → **app-release.apk** da installare sul telefono
+COME-COMPILARE.md:37:   - `xournalpp-mobile-windows` → cartella con **xournalpp.exe** per PC
+COME-COMPILARE.md:38:   - `xournalpp-mobile-web` → versione web (servila con un qualsiasi server statico)
+COME-COMPILARE.md:39:   - `xournalpp-mobile-linux` → bundle per Linux
+README.md:21:La registrazione audio nativa è implementata su Android. I limiti sono **120 minuti e 48 MiB per registrazione**, con **128 MiB complessivi per appunto**. La compatibilità `.xopp` deriva da Xournal++; le estensioni specifiche di OSI possono non essere interpretate da altre applicazioni.
+README.md:90:OSI deriva da [Xournal++ Mobile](https://gitlab.com/TheOneWithTheBraid/xournalpp_mobile) e conserva la compatibilità con il formato di appunti di Xournal++. Questo repository contiene l’evoluzione di OSI; i collegamenti agli store e ai download del progetto originale non rappresentano distribuzioni di OSI.
+SPEC.md:6:Il progetto è un porting modernizzato delle funzionalità principali di **Xournal++** per dispositivi mobili (Android), Windows, Linux e Web. Si tratta di un'applicazione di note-taking pensata per il disegno a mano libera, l'annotazione di PDF e la gestione di quaderni digitali.
+SPEC.md:67:- Il salvataggio/caricamento avviene serializzando o deserializzando il file interno in un formato compatibile con l'XML compresso standard di Xournal++.
+android/app/build.gradle:20:    namespace "online.xournal.mobile"
+android/app/build.gradle:33:        applicationId "online.xournal.mobile"
+android/app/src/main/kotlin/online/xournal/mobile/DisplayModePolicy.kt:1:package online.xournal.mobile
+android/app/src/main/kotlin/online/xournal/mobile/DocumentStorage.kt:1:package online.xournal.mobile
+android/app/src/main/kotlin/online/xournal/mobile/DocumentStorage.kt:14:        MethodChannel(messenger, "online.xournal.mobile/documents",
+android/app/src/main/kotlin/online/xournal/mobile/MainActivity.kt:1:package online.xournal.mobile
+android/app/src/main/kotlin/online/xournal/mobile/MainActivity.kt:16:    private val CHANNEL = "online.xournal.mobile/pen"
+android/app/src/main/kotlin/online/xournal/mobile/NoteAudio.kt:1:package online.xournal.mobile
+android/app/src/main/kotlin/online/xournal/mobile/NoteAudio.kt:20:    private val channel = MethodChannel(messenger, "online.xournal.mobile/audio")
+android/app/src/main/kotlin/online/xournal/mobile/PluginOcr.kt:1:package online.xournal.mobile
+android/app/src/main/kotlin/online/xournal/mobile/PluginOcr.kt:14:        MethodChannel(messenger, "online.xournal.mobile/ocr",
+android/app/src/test/kotlin/online/xournal/mobile/DisplayModePolicyTest.kt:1:package online.xournal.mobile
+assets/feature-banner.svg:150:             aria-label="Xournal++"><path
+assets/feature-banner.svg:243:             aria-label="www.xournal.online"><path
+docs/DOCUMENT_EXPORT.md:13:**XOPP** conserva pagine, livelli, tratti, testo, immagini, formule e cancellature, per continuare a modificare gli appunti. Il formato è quello già letto dall'app; non è stato introdotto un formato incompatibile. I PDF originali vengono incorporati per poter riaprire gli appunti in questa app senza i vecchi percorsi. Gli allegati PDF incorporati e le maschere di cancellazione sono estensioni OSIpp: non si deve presumere che Xournal++ desktop interpreti queste estensioni.
+docs/PIXEL_ERASER.md:36:in questa app conserva le cancellazioni. Xournal++ desktop e altri editor che
+docs/TESTING.md:84:L'app salva i PDF compressi originali dentro elementi XML `pdf-attachment`, con riferimenti per singola pagina: rinominare o trasferire il documento conserva gli sfondi in questa app senza SharedPreferences. È un'estensione del formato: Xournal++ desktop non interpreta questi allegati; per quel programma servono ancora i PDF esterni indicati negli sfondi. La numerazione `pageno` resta conforme allo standard, a partire da 1.
+docs/analisi-provenienza-e-ottimizzazioni.md:9:OSI deriva chiaramente dalla base di **Xournal++ Mobile**, ma oggi contiene una notevole estensione e riscrittura. Escludendo i file generati delle traduzioni, **29 degli 85 file Dart hanno lo stesso percorso di un file upstream**: 2 sono testualmente identici, 1 conserva esattamente gli stessi token, 26 sono modificati. Gli altri 56 file non hanno un corrispondente nello stesso percorso upstream.
+docs/analisi-provenienza-e-ottimizzazioni.md:19:- Upstream effettivamente scaricato e confrontato: [Xournal++ Mobile su GitLab, commit ce62f95](https://gitlab.com/TheOneWithTheBraid/xournalpp_mobile/-/tree/ce62f95f13717ca636d3cec8c2f4212bdd3ef5b9), del 30 gennaio 2022, messaggio “Updated dependencies”.
+docs/analisi-provenienza-e-ottimizzazioni.md:20:- Il [mirror GitHub indicato nel README](https://github.com/xournalpp/xournalpp_mobile/) ha restituito 404 sia nella consultazione web sia nel tentativo di clone. Il confronto numerico usa il repository GitLab, non risultati memorizzati dal motore di ricerca.
+docs/analisi-provenienza-e-ottimizzazioni.md:65:Modello XOPP (`XppFile`, pagine, livelli e contenuti), serializzazione XML, adattatori di apertura, parte dei menu strumenti e traduzioni conservano elementi della base Mobile. L’organizzazione `layer_contents/`, i nomi `Xpp*` e il namespace `package:xournalpp` sono coerenti con questa origine, ma da soli non misurano la quantità di codice copiato.
+docs/audio-notes.md:14:- I metadati audio sono estensioni OSI (`osipp-audio`, attributi dei tratti). Non viene promessa riproduzione in Xournal++ desktop. L’ispirazione funzionale è la registrazione mentre si scrive e il suo strumento Play Object: [manuale Xournal++](https://github.com/xournalpp/xournalpp/wiki/User-Manual/d682c9284055575d14b18a31b6076b73d965939a).
+lib/controllers/canvas_controller.dart:5:import 'package:xournalpp/src/note_audio.dart';
+lib/controllers/canvas_controller.dart:6:import 'package:xournalpp/src/note_flashcards.dart';
+lib/controllers/canvas_controller.dart:8:import 'package:xournalpp/src/autosave_store.dart';
+lib/controllers/canvas_controller.dart:9:import 'package:xournalpp/src/recent_documents.dart';
+lib/controllers/canvas_controller.dart:15:import 'package:xournalpp/src/pdf_raster_cache.dart';
+lib/controllers/canvas_controller.dart:26:import 'package:xournalpp/src/compat/file_picker_cross.dart';
+lib/controllers/canvas_controller.dart:28:import 'package:xournalpp/src/XppBackground.dart';
+lib/controllers/canvas_controller.dart:29:import 'package:xournalpp/src/XppFile.dart';
+lib/controllers/canvas_controller.dart:30:import 'package:xournalpp/src/XppLayer.dart';
+lib/controllers/canvas_controller.dart:31:import 'package:xournalpp/src/content_snapshot.dart';
+lib/controllers/canvas_controller.dart:32:import 'package:xournalpp/src/document_export.dart';
+lib/controllers/canvas_controller.dart:33:import 'package:xournalpp/src/selection_clipboard.dart';
+lib/controllers/canvas_controller.dart:34:import 'package:xournalpp/src/XppPage.dart';
+lib/controllers/canvas_controller.dart:35:import 'package:xournalpp/src/XppPageSize.dart';
+lib/controllers/canvas_controller.dart:36:import 'package:xournalpp/src/globals.dart';
+lib/controllers/canvas_controller.dart:37:import 'package:xournalpp/src/editing_tool.dart';
+lib/controllers/canvas_controller.dart:38:import 'package:xournalpp/widgets/XppPageStack.dart';
+lib/controllers/canvas_controller.dart:40:import 'package:xournalpp/layer_contents/XppStroke.dart';
+lib/controllers/note_audio_controller.dart:6:import 'package:xournalpp/src/XppFile.dart';
+lib/controllers/note_audio_controller.dart:7:import 'package:xournalpp/src/note_audio.dart';
+lib/controllers/note_audio_controller.dart:14:  static const channel = MethodChannel('online.xournal.mobile/audio');
+lib/controllers/workspace_controller.dart:3:import 'package:xournalpp/controllers/canvas_controller.dart';
+lib/controllers/workspace_controller.dart:4:import 'package:xournalpp/src/XppFile.dart';
+lib/controllers/workspace_controller.dart:5:import 'package:xournalpp/src/selection_clipboard.dart';
+lib/generated/intl/messages_de.dart:26:        "aboutXournal": MessageLookupByLibrary.simpleMessage("Über Xournal++"),
+lib/generated/intl/messages_de.dart:27:        "aboutXournalMobileEdition":
+lib/generated/intl/messages_de.dart:28:            MessageLookupByLibrary.simpleMessage("Über Xournal++ Mobile"),
+lib/generated/intl/messages_de.dart:33:                " leider nicht lesen. Bist du dir sicher, dass ich dazu die Berechtigung habe, und, dass es eine richtige Xournal++ Datei ist?"),
+lib/generated/intl/messages_de.dart:135:        "xournalMobileEditionIsAnUnofficialProjectTryingToMake":
+lib/generated/intl/messages_de.dart:137:                "Xournal++ Mobile ist ein Projekt, das es versucht, Xournal++ Dateien und -Funktionen auf anderen Geräten bereitzustellen."),
+lib/generated/intl/messages_en.dart:26:        "aboutXournal": MessageLookupByLibrary.simpleMessage("About Xournal++"),
+lib/generated/intl/messages_en.dart:27:        "aboutXournalMobileEdition":
+lib/generated/intl/messages_en.dart:28:            MessageLookupByLibrary.simpleMessage("About Xournal++ Mobile"),
+lib/generated/intl/messages_en.dart:33:                ". Are you sure I have the permission? And are you sure it is a Xournal++ file?"),
+lib/generated/intl/messages_en.dart:132:        "xournalMobileEditionIsAnUnofficialProjectTryingToMake":
+lib/generated/intl/messages_en.dart:134:                "Xournal++ Mobile is a project trying to make Xournal++ files and features available on different devices."),
+lib/generated/intl/messages_pt.dart:26:        "aboutXournal":
+lib/generated/intl/messages_pt.dart:27:            MessageLookupByLibrary.simpleMessage("Sobre o Xournal++"),
+lib/generated/intl/messages_pt.dart:28:        "aboutXournalMobileEdition":
+lib/generated/intl/messages_pt.dart:29:            MessageLookupByLibrary.simpleMessage("Sobre o Xournal++ Mobile"),
+lib/generated/intl/messages_pt.dart:34:                ". Tem certeza de que tenho a permissão necessária? E tem certeza de que é um arquivo Xournal++?"),
+lib/generated/intl/messages_pt.dart:138:        "xournalMobileEditionIsAnUnofficialProjectTryingToMake":
+lib/generated/intl/messages_pt.dart:140:                "Xournal++ Mobile é um projeto que visa tornar as funcionalidades de Xournal++ e seus arquivos disponíveis em diferentes aparelhos."),
+lib/generated/l10n.dart:183:  /// `About Xournal++ Mobile`
+lib/generated/l10n.dart:184:  String get aboutXournalMobileEdition {
+lib/generated/l10n.dart:186:      'About Xournal++ Mobile',
+lib/generated/l10n.dart:187:      name: 'aboutXournalMobileEdition',
+lib/generated/l10n.dart:193:  /// `Xournal++ Mobile is a project trying to make Xournal++ files and features available on different devices.`
+lib/generated/l10n.dart:194:  String get xournalMobileEditionIsAnUnofficialProjectTryingToMake {
+lib/generated/l10n.dart:196:      'Xournal++ Mobile is a project trying to make Xournal++ files and features available on different devices.',
+lib/generated/l10n.dart:197:      name: 'xournalMobileEditionIsAnUnofficialProjectTryingToMake',
+lib/generated/l10n.dart:203:  /// `About Xournal++`
+lib/generated/l10n.dart:204:  String get aboutXournal {
+lib/generated/l10n.dart:206:      'About Xournal++',
+lib/generated/l10n.dart:207:      name: 'aboutXournal',
+lib/generated/l10n.dart:393:  /// `. Are you sure I have the permission? And are you sure it is a Xournal++ file?`
+lib/generated/l10n.dart:396:      '. Are you sure I have the permission? And are you sure it is a Xournal++ file?',
+lib/l10n/intl_de.arb:15:  "aboutXournalMobileEdition": "Über Xournal++ Mobile",
+lib/l10n/intl_de.arb:16:  "xournalMobileEditionIsAnUnofficialProjectTryingToMake": "Xournal++ Mobile ist ein Projekt, das es versucht, Xournal++ Dateien und -Funktionen auf anderen Geräten bereitzustellen.",
+lib/l10n/intl_de.arb:17:  "aboutXournal": "Über Xournal++",
+lib/l10n/intl_de.arb:36:  "areYouSureIHaveThePermissionAndAreYou": " leider nicht lesen. Bist du dir sicher, dass ich dazu die Berechtigung habe, und, dass es eine richtige Xournal++ Datei ist?",
+lib/l10n/intl_en.arb:15:  "aboutXournalMobileEdition": "About Xournal++ Mobile",
+lib/l10n/intl_en.arb:16:  "xournalMobileEditionIsAnUnofficialProjectTryingToMake": "Xournal++ Mobile is a project trying to make Xournal++ files and features available on different devices.",
+lib/l10n/intl_en.arb:17:  "aboutXournal": "About Xournal++",
+lib/l10n/intl_en.arb:36:  "areYouSureIHaveThePermissionAndAreYou": ". Are you sure I have the permission? And are you sure it is a Xournal++ file?",
+lib/l10n/intl_pt.arb:15:  "aboutXournalMobileEdition": "Sobre o Xournal++ Mobile",
+lib/l10n/intl_pt.arb:16:  "xournalMobileEditionIsAnUnofficialProjectTryingToMake": "Xournal++ Mobile é um projeto que visa tornar as funcionalidades de Xournal++ e seus arquivos disponíveis em diferentes aparelhos.",
+lib/l10n/intl_pt.arb:17:  "aboutXournal": "Sobre o Xournal++",
+lib/l10n/intl_pt.arb:36:  "areYouSureIHaveThePermissionAndAreYou": ". Tem certeza de que tenho a permissão necessária? E tem certeza de que é um arquivo Xournal++?",
+lib/layer_contents/XppImage.dart:1:import 'package:xournalpp/src/decoded_image_cache.dart';
+lib/layer_contents/XppImage.dart:7:import 'package:xournalpp/src/compat/file_picker_cross.dart';
+lib/layer_contents/XppImage.dart:10:import 'package:xournalpp/src/XppLayer.dart';
+lib/layer_contents/XppImage.dart:11:import 'package:xournalpp/src/editing_tool.dart';
+lib/layer_contents/XppStroke.dart:1:import 'package:xournalpp/src/note_audio.dart';
+lib/layer_contents/XppStroke.dart:8:import 'package:xournalpp/src/HexColor.dart';
+lib/layer_contents/XppStroke.dart:9:import 'package:xournalpp/src/XppLayer.dart';
+lib/layer_contents/XppStroke.dart:10:import 'package:xournalpp/src/editing_tool.dart';
+lib/layer_contents/XppStroke.dart:11:import 'package:xournalpp/src/ink_geometry.dart';
+lib/layer_contents/XppTexImage.dart:3:import 'package:xournalpp/layer_contents/XppText.dart';
+lib/layer_contents/XppTexImage.dart:4:import 'package:xournalpp/src/HexColor.dart';
+lib/layer_contents/XppTexImage.dart:5:import 'package:xournalpp/src/XppLayer.dart';
+lib/layer_contents/XppTexImage.dart:6:import 'package:xournalpp/src/editing_tool.dart';
+lib/layer_contents/XppText.dart:3:import 'package:xournalpp/src/HexColor.dart';
+lib/layer_contents/XppText.dart:4:import 'package:xournalpp/src/XppLayer.dart';
+lib/layer_contents/XppText.dart:5:import 'package:xournalpp/src/editing_tool.dart';
+lib/main.dart:1:import 'package:xournalpp/src/dynamic_color_adapter.dart';
+lib/main.dart:4:import 'package:xournalpp/src/app_appearance.dart';
+lib/main.dart:6:import 'package:xournalpp/controllers/theme_controller.dart';
+lib/main.dart:7:import 'package:xournalpp/pages/OpenPage.dart';
+lib/main.dart:8:import 'package:xournalpp/plugins/plugin_controller.dart';
+lib/main.dart:14:  runApp(const XournalppMobile());
+lib/main.dart:25:class XournalppMobile extends StatefulWidget {
+lib/main.dart:26:  const XournalppMobile({super.key});
+lib/main.dart:29:  static _XournalppMobileState of(BuildContext context) =>
+lib/main.dart:30:      context.findAncestorStateOfType<_XournalppMobileState>()!;
+lib/main.dart:33:  State<XournalppMobile> createState() => _XournalppMobileState();
+lib/main.dart:36:class _XournalppMobileState extends State<XournalppMobile> {
+lib/pages/CanvasPage.dart:1:import 'package:xournalpp/plugins/plugin_controller.dart';
+lib/pages/CanvasPage.dart:2:import 'package:xournalpp/widgets/note_flashcards_panel.dart';
+lib/pages/CanvasPage.dart:6:import 'package:xournalpp/widgets/pdf_zoom_detail.dart';
+lib/pages/CanvasPage.dart:7:import 'package:xournalpp/src/XppBackground.dart';
+lib/pages/CanvasPage.dart:9:import 'package:xournalpp/src/app_appearance.dart';
+lib/pages/CanvasPage.dart:13:import 'package:xournalpp/src/document_scene_geometry.dart';
+lib/pages/CanvasPage.dart:14:import 'package:xournalpp/widgets/split_resize_scope.dart';
+lib/pages/CanvasPage.dart:15:import 'package:xournalpp/widgets/virtual_page_column.dart';
+lib/pages/CanvasPage.dart:16:import 'package:xournalpp/widgets/infinite_canvas.dart';
+lib/pages/CanvasPage.dart:25:import 'package:xournalpp/src/XppFile.dart';
+lib/pages/CanvasPage.dart:26:import 'package:xournalpp/widgets/PointerListener.dart';
+lib/pages/CanvasPage.dart:27:import 'package:xournalpp/widgets/XppPageStack.dart';
+lib/pages/CanvasPage.dart:28:import 'package:xournalpp/widgets/ZoomableWidget.dart';
+lib/pages/CanvasPage.dart:29:import 'package:xournalpp/widgets/PomodoroTimer.dart';
+lib/pages/CanvasPage.dart:31:import 'package:xournalpp/controllers/canvas_controller.dart';
+lib/pages/CanvasPage.dart:32:import 'package:xournalpp/widgets/canvas_toolbar.dart';
+lib/pages/CanvasPage.dart:33:import 'package:xournalpp/widgets/unsaved_document_dialog.dart';
+lib/pages/CanvasPage.dart:35:import 'package:xournalpp/src/editing_tool.dart';
+lib/pages/OpenPage.dart:1:import 'package:xournalpp/src/workspace_session.dart';
+lib/pages/OpenPage.dart:2:import 'package:xournalpp/src/note_tags.dart';
+lib/pages/OpenPage.dart:3:import 'package:xournalpp/src/recent_documents.dart';
+lib/pages/OpenPage.dart:4:import 'package:xournalpp/widgets/note_tag_picker.dart';
+lib/pages/OpenPage.dart:5:import 'package:xournalpp/widgets/app_info_dialog.dart';
+lib/pages/OpenPage.dart:6:import 'package:xournalpp/widgets/note_backup_dialog.dart';
+lib/pages/OpenPage.dart:7:import 'package:xournalpp/src/app_appearance.dart';
+lib/pages/OpenPage.dart:13:import 'package:xournalpp/controllers/theme_controller.dart';
+lib/pages/OpenPage.dart:14:import 'package:xournalpp/src/XppBackground.dart';
+lib/pages/OpenPage.dart:15:import 'package:xournalpp/src/XppFile.dart';
+lib/pages/OpenPage.dart:16:import 'package:xournalpp/src/globals.dart';
+lib/pages/OpenPage.dart:17:import 'package:xournalpp/pages/WorkspacePage.dart';
+lib/pages/OpenPage.dart:18:import 'package:xournalpp/src/XppPageSize.dart';
+lib/pages/OpenPage.dart:19:import 'package:xournalpp/src/compat/file_picker_cross.dart';
+lib/pages/OpenPage.dart:20:import 'package:xournalpp/plugins/plugin_controller.dart';
+lib/pages/OpenPage.dart:21:import 'package:xournalpp/plugins/plugin_manager_page.dart';
+lib/pages/OpenPage.dart:22:import 'package:xournalpp/src/autosave_store.dart';
+lib/pages/OpenPage.dart:23:import 'package:xournalpp/widgets/document_library_card.dart';
+lib/pages/WorkspacePage.dart:1:import 'package:xournalpp/plugins/plugin_controller.dart';
+lib/pages/WorkspacePage.dart:6:import 'package:xournalpp/src/workspace_session.dart';
+lib/pages/WorkspacePage.dart:7:import 'package:xournalpp/controllers/canvas_controller.dart';
+lib/pages/WorkspacePage.dart:8:import 'package:xournalpp/src/app_appearance.dart';
+lib/pages/WorkspacePage.dart:9:import 'package:xournalpp/widgets/document_navigator.dart';
+lib/pages/WorkspacePage.dart:10:import 'package:xournalpp/widgets/saved_notes_dialog.dart';
+lib/pages/WorkspacePage.dart:14:import 'package:xournalpp/src/XppFile.dart';
+lib/pages/WorkspacePage.dart:15:import 'package:xournalpp/pages/CanvasPage.dart';
+lib/pages/WorkspacePage.dart:16:import 'package:xournalpp/controllers/theme_controller.dart';
+lib/pages/WorkspacePage.dart:17:import 'package:xournalpp/controllers/workspace_controller.dart';
+lib/pages/WorkspacePage.dart:18:import 'package:xournalpp/widgets/PomodoroTimer.dart';
+lib/pages/WorkspacePage.dart:19:import 'package:xournalpp/widgets/unified_toolbar.dart';
+lib/pages/WorkspacePage.dart:20:import 'package:xournalpp/widgets/split_screen_view.dart';
+lib/pages/WorkspacePage.dart:21:import 'package:xournalpp/widgets/unsaved_document_dialog.dart';
+lib/plugins/plugin_controller.dart:8:import 'package:xournalpp/controllers/canvas_controller.dart';
+lib/plugins/plugin_controller.dart:9:import 'package:xournalpp/layer_contents/XppImage.dart';
+lib/plugins/plugin_controller.dart:10:import 'package:xournalpp/layer_contents/XppStroke.dart';
+lib/plugins/plugin_controller.dart:11:import 'package:xournalpp/layer_contents/XppTexImage.dart';
+lib/plugins/plugin_controller.dart:12:import 'package:xournalpp/layer_contents/XppText.dart';
+lib/plugins/plugin_controller.dart:13:import 'package:xournalpp/src/XppLayer.dart';
+lib/plugins/plugin_controller.dart:14:import 'package:xournalpp/src/content_snapshot.dart';
+lib/plugins/plugin_controller.dart:15:import 'package:xournalpp/src/editing_tool.dart';
+lib/plugins/plugin_manager_page.dart:5:import 'package:xournalpp/controllers/canvas_controller.dart';
+lib/plugins/plugin_manager_page.dart:6:import 'package:xournalpp/src/compat/file_picker_cross.dart';
+lib/plugins/plugin_manager_page.dart:14:import 'package:xournalpp/widgets/note_flashcards_panel.dart';
+lib/plugins/plugin_services.dart:9:import 'package:xournalpp/layer_contents/XppImage.dart';
+lib/plugins/plugin_services.dart:10:import 'package:xournalpp/src/XppLayer.dart';
+lib/plugins/plugin_services.dart:11:import 'package:xournalpp/src/XppBackground.dart';
+lib/plugins/plugin_services.dart:12:import 'package:xournalpp/src/XppPage.dart';
+lib/plugins/plugin_services.dart:13:import 'package:xournalpp/src/document_export.dart';
+lib/plugins/plugin_services.dart:340:  final result = await const MethodChannel('online.xournal.mobile/ocr')
+lib/plugins/plugin_ui.dart:5:import 'package:xournalpp/src/compat/file_picker_cross.dart';
+lib/src/PdfImage.dart:4:import 'package:xournalpp/src/compat/file_picker_cross.dart';
+lib/src/PdfImage.dart:5:import 'package:xournalpp/src/XppPageSize.dart';
+lib/src/ShapeRecognizer.dart:4:import 'package:xournalpp/layer_contents/XppStroke.dart';
+lib/src/ShapeRecognizer.dart:8:/// Xournal++ and modern note-taking apps.
+lib/src/XppBackground.dart:5:import 'package:xournalpp/src/compat/file_picker_cross.dart'; // <--- IMPORTANTE: aggiungi questo per FilePickerCross
+lib/src/XppBackground.dart:6:import 'package:xournalpp/src/PdfImage.dart';
+lib/src/XppBackground.dart:7:import 'package:xournalpp/src/XppPageSize.dart';
+lib/src/XppBackground.dart:195:/// Xournal++ desktop.
+lib/src/XppFile.dart:13:import 'package:xournalpp/src/compat/file_picker_cross.dart';
+lib/src/XppFile.dart:17:import 'package:xournalpp/generated/l10n.dart';
+lib/src/XppFile.dart:18:import 'package:xournalpp/layer_contents/XppImage.dart';
+lib/src/XppFile.dart:19:import 'package:xournalpp/layer_contents/XppStroke.dart';
+lib/src/XppFile.dart:20:import 'package:xournalpp/layer_contents/XppTexImage.dart';
+lib/src/XppFile.dart:21:import 'package:xournalpp/layer_contents/XppText.dart';
+lib/src/XppFile.dart:22:import 'package:xournalpp/pages/WorkspacePage.dart';
+lib/src/XppFile.dart:23:import 'package:xournalpp/src/HexColor.dart';
+lib/src/XppFile.dart:24:import 'package:xournalpp/src/PdfImage.dart';
+lib/src/XppFile.dart:25:import 'package:xournalpp/src/XppBackground.dart';
+lib/src/XppFile.dart:26:import 'package:xournalpp/src/XppPageSize.dart';
+lib/src/XppFile.dart:27:import 'package:xournalpp/src/content_snapshot.dart';
+lib/src/XppFile.dart:210:        .findElements('xournal')
+lib/src/XppFile.dart:213:      throw const FormatException('Missing xournal root element');
+lib/src/XppFile.dart:488:        XmlName('xournal'),
+lib/src/XppFile.dart:504:                'Xournal document - see http://math.mit.edu/~auroux/software/xournal/',
+lib/src/XppLayer.dart:3:import 'package:xournalpp/src/editing_tool.dart';
+lib/src/XppPage.dart:3:import 'package:xournalpp/src/XppPageSize.dart';
+lib/src/XppPage.dart:4:import 'package:xournalpp/src/XppBackground.dart';
+lib/src/app_appearance.dart:2:import 'package:xournalpp/controllers/theme_controller.dart';
+lib/src/autosave_store.dart:6:import 'package:xournalpp/src/XppFile.dart';
+lib/src/autosave_store.dart:7:import 'package:xournalpp/src/compat/file_picker_cross.dart';
+lib/src/compat/file_picker_cross.dart:19:  static const _documents = MethodChannel('online.xournal.mobile/documents');
+lib/src/compat/internal_storage_io.dart:8:  final dir = Directory('${docs.path}${Platform.pathSeparator}xournalpp');
+lib/src/content_snapshot.dart:1:import 'package:xournalpp/layer_contents/XppImage.dart';
+lib/src/content_snapshot.dart:2:import 'package:xournalpp/layer_contents/XppStroke.dart';
+lib/src/content_snapshot.dart:3:import 'package:xournalpp/layer_contents/XppTexImage.dart';
+lib/src/content_snapshot.dart:4:import 'package:xournalpp/layer_contents/XppText.dart';
+lib/src/content_snapshot.dart:5:import 'package:xournalpp/src/XppLayer.dart';
+lib/src/document_export.dart:14:import 'package:xournalpp/layer_contents/XppImage.dart';
+lib/src/document_export.dart:15:import 'package:xournalpp/layer_contents/XppStroke.dart';
+lib/src/document_export.dart:16:import 'package:xournalpp/layer_contents/XppText.dart';
+lib/src/document_export.dart:17:import 'package:xournalpp/layer_contents/XppTexImage.dart';
+lib/src/document_export.dart:18:import 'package:xournalpp/src/ink_geometry.dart';
+lib/src/document_export.dart:19:import 'package:xournalpp/src/XppBackground.dart';
+lib/src/document_export.dart:20:import 'package:xournalpp/src/XppFile.dart';
+lib/src/document_export.dart:21:import 'package:xournalpp/src/XppLayer.dart';
+lib/src/document_export.dart:22:import 'package:xournalpp/src/XppPage.dart';
+lib/src/document_export.dart:23:import 'package:xournalpp/src/XppPageSize.dart';
+lib/src/document_export.dart:24:import 'package:xournalpp/src/content_snapshot.dart';
+lib/src/library_metadata.dart:3:import 'package:xournalpp/controllers/canvas_controller.dart';
+lib/src/selection_clipboard.dart:5:import 'package:xournalpp/layer_contents/XppStroke.dart';
+lib/src/selection_clipboard.dart:7:import 'package:xournalpp/src/XppLayer.dart';
+lib/src/selection_clipboard.dart:8:import 'package:xournalpp/src/content_snapshot.dart';
+lib/widgets/PointerListener.dart:3:import 'package:xournalpp/controllers/note_audio_controller.dart';
+lib/widgets/PointerListener.dart:4:import 'package:xournalpp/src/note_audio.dart';
+lib/widgets/PointerListener.dart:12:import 'package:xournalpp/layer_contents/XppStroke.dart';
+lib/widgets/PointerListener.dart:13:import 'package:xournalpp/layer_contents/XppTexImage.dart';
+lib/widgets/PointerListener.dart:14:import 'package:xournalpp/layer_contents/XppText.dart';
+lib/widgets/PointerListener.dart:15:import 'package:xournalpp/src/ShapeRecognizer.dart';
+lib/widgets/PointerListener.dart:16:import 'package:xournalpp/src/ink_geometry.dart';
+lib/widgets/PointerListener.dart:17:import 'package:xournalpp/src/selection_clipboard.dart';
+lib/widgets/PointerListener.dart:18:import 'package:xournalpp/src/XppLayer.dart';
+lib/widgets/PointerListener.dart:19:import 'package:xournalpp/src/editing_tool.dart';
+lib/widgets/PointerListener.dart:20:import 'package:xournalpp/widgets/ZoomableWidget.dart';
+lib/widgets/PointerListener.dart:204:  static const platform = MethodChannel('online.xournal.mobile/pen');
+lib/widgets/PomodoroTimer.dart:1:import 'package:xournalpp/src/app_appearance.dart';
+lib/widgets/PomodoroTimer.dart:10:import 'package:xournalpp/controllers/theme_controller.dart';
+lib/widgets/XppPageStack.dart:1:import 'package:xournalpp/layer_contents/XppImage.dart';
+lib/widgets/XppPageStack.dart:2:import 'package:xournalpp/src/decoded_image_cache.dart';
+lib/widgets/XppPageStack.dart:12:import 'package:xournalpp/src/XppBackground.dart';
+lib/widgets/XppPageStack.dart:13:import 'package:xournalpp/src/XppLayer.dart';
+lib/widgets/XppPageStack.dart:14:import 'package:xournalpp/src/XppPage.dart';
+lib/widgets/app_info_dialog.dart:40:              'Basata su Xournal++ Mobile. Compatibile con documenti .xopp. Licenza EUPL-1.2.',
+lib/widgets/audio_timeline_overlay.dart:4:import 'package:xournalpp/controllers/note_audio_controller.dart';
+lib/widgets/audio_timeline_overlay.dart:5:import 'package:xournalpp/layer_contents/XppStroke.dart';
+lib/widgets/audio_timeline_overlay.dart:6:import 'package:xournalpp/src/XppPage.dart';
+lib/widgets/audio_timeline_overlay.dart:7:import 'package:xournalpp/src/XppLayer.dart';
+lib/widgets/canvas_toolbar.dart:4:import 'package:xournalpp/src/app_appearance.dart';
+lib/widgets/canvas_toolbar.dart:12:import 'package:xournalpp/src/editing_tool.dart';
+lib/widgets/canvas_toolbar.dart:13:import 'package:xournalpp/controllers/canvas_controller.dart';
+lib/widgets/canvas_toolbar.dart:14:import 'package:xournalpp/controllers/theme_controller.dart';
+lib/widgets/canvas_toolbar.dart:15:import 'package:xournalpp/plugins/plugin_controller.dart';
+lib/widgets/canvas_toolbar.dart:16:import 'package:xournalpp/plugins/plugin_manager_page.dart';
+lib/widgets/document_library_card.dart:1:import 'package:xournalpp/src/app_appearance.dart';
+lib/widgets/document_library_card.dart:8:import 'package:xournalpp/src/library_metadata.dart';
+lib/widgets/document_navigator.dart:5:import 'package:xournalpp/controllers/canvas_controller.dart';
+lib/widgets/infinite_canvas.dart:3:import 'package:xournalpp/layer_contents/XppImage.dart';
+lib/widgets/infinite_canvas.dart:4:import 'package:xournalpp/src/decoded_image_cache.dart';
+lib/widgets/infinite_canvas.dart:12:import 'package:xournalpp/controllers/canvas_controller.dart';
+lib/widgets/infinite_canvas.dart:13:import 'package:xournalpp/src/XppBackground.dart';
+lib/widgets/infinite_canvas.dart:14:import 'package:xournalpp/src/canvas_geometry_cache.dart';
+lib/widgets/layers_panel.dart:2:import 'package:xournalpp/controllers/canvas_controller.dart';
+lib/widgets/note_audio_panel.dart:4:import 'package:xournalpp/controllers/note_audio_controller.dart';
+lib/widgets/note_backup_dialog.dart:2:import 'package:xournalpp/src/compat/file_picker_cross.dart';
+lib/widgets/note_backup_dialog.dart:3:import 'package:xournalpp/src/note_backup.dart';
+lib/widgets/note_flashcards_panel.dart:7:import 'package:xournalpp/controllers/canvas_controller.dart';
+lib/widgets/note_flashcards_panel.dart:8:import 'package:xournalpp/layer_contents/XppText.dart';
+lib/widgets/note_flashcards_panel.dart:9:import 'package:xournalpp/plugins/plugin_controller.dart';
+lib/widgets/note_flashcards_panel.dart:10:import 'package:xournalpp/src/compat/file_picker_cross.dart';
+lib/widgets/note_flashcards_panel.dart:11:import 'package:xournalpp/src/document_export.dart';
+lib/widgets/note_flashcards_panel.dart:12:import 'package:xournalpp/src/editing_tool.dart';
+lib/widgets/note_flashcards_panel.dart:13:import 'package:xournalpp/src/note_flashcards.dart';
+lib/widgets/note_flashcards_panel.dart:14:import 'package:xournalpp/src/XppPage.dart';
+lib/widgets/note_flashcards_panel.dart:15:import 'package:xournalpp/src/XppBackground.dart';
+lib/widgets/note_flashcards_panel.dart:16:import 'package:xournalpp/src/XppLayer.dart';
+lib/widgets/note_flashcards_panel.dart:17:import 'package:xournalpp/src/content_snapshot.dart';
+lib/widgets/note_tag_picker.dart:2:import 'package:xournalpp/src/note_tags.dart';
+lib/widgets/pdf_zoom_detail.dart:7:import 'package:xournalpp/controllers/canvas_controller.dart';
+lib/widgets/saved_notes_dialog.dart:2:import 'package:xournalpp/src/XppFile.dart';
+lib/widgets/saved_notes_dialog.dart:3:import 'package:xournalpp/src/recent_documents.dart';
+lib/widgets/saved_notes_dialog.dart:4:import 'package:xournalpp/src/compat/file_picker_cross.dart';
+lib/widgets/split_screen_view.dart:4:import 'package:xournalpp/controllers/workspace_controller.dart';
+lib/widgets/unified_toolbar.dart:1:import 'package:xournalpp/src/app_appearance.dart';
+lib/widgets/unified_toolbar.dart:9:import 'package:xournalpp/controllers/canvas_controller.dart';
+lib/widgets/unified_toolbar.dart:10:import 'package:xournalpp/controllers/workspace_controller.dart';
+lib/widgets/unified_toolbar.dart:11:import 'package:xournalpp/widgets/canvas_toolbar.dart';
+lib/widgets/unified_toolbar.dart:12:import 'package:xournalpp/src/editing_tool.dart'; // EditingTool
+lib/widgets/unsaved_document_dialog.dart:2:import 'package:xournalpp/controllers/canvas_controller.dart';
+pubspec.yaml:1:name: xournalpp
+pubspec.yaml:2:description: OSI - Appunti, disegno e annotazioni PDF compatibili con Xournal++.
+scripts/audit_upstream.py:53:                if uri.startswith("package:xournalpp/"):
+scripts/audit_upstream.py:54:                    target="lib/"+uri.removeprefix("package:xournalpp/")
+scripts/audit_upstream.py:88:            "upstream_url":"https://gitlab.com/TheOneWithTheBraid/xournalpp_mobile", "shingle_size":20}
+test/advanced_plugin_test.dart:10:import 'package:xournalpp/plugins/plugin_controller.dart';
+test/advanced_plugin_test.dart:11:import 'package:xournalpp/plugins/plugin_examples.dart';
+test/advanced_plugin_test.dart:12:import 'package:xournalpp/plugins/plugin_latex.dart';
+test/advanced_plugin_test.dart:13:import 'package:xournalpp/plugins/plugin_manifest.dart';
+test/advanced_plugin_test.dart:14:import 'package:xournalpp/plugins/plugin_package.dart';
+test/advanced_plugin_test.dart:15:import 'package:xournalpp/plugins/plugin_services.dart';
+test/advanced_plugin_test.dart:16:import 'package:xournalpp/plugins/plugin_runtime.dart';
+test/canvas_workspace_test.dart:12:import 'package:xournalpp/controllers/canvas_controller.dart';
+test/canvas_workspace_test.dart:13:import 'package:xournalpp/layer_contents/XppStroke.dart';
+test/canvas_workspace_test.dart:14:import 'package:xournalpp/src/XppFile.dart';
+test/canvas_workspace_test.dart:15:import 'package:xournalpp/src/XppLayer.dart';
+test/canvas_workspace_test.dart:16:import 'package:xournalpp/src/autosave_store.dart';
+test/canvas_workspace_test.dart:17:import 'package:xournalpp/src/compat/file_picker_cross.dart';
+test/canvas_workspace_test.dart:18:import 'package:xournalpp/src/document_export.dart';
+test/canvas_workspace_test.dart:19:import 'package:xournalpp/widgets/infinite_canvas.dart';
+test/canvas_workspace_test.dart:20:import 'package:xournalpp/widgets/PointerListener.dart';
+test/canvas_workspace_test.dart:21:import 'package:xournalpp/widgets/layers_panel.dart';
+test/canvas_workspace_test.dart:22:import 'package:xournalpp/src/editing_tool.dart';
+test/canvas_workspace_test.dart:23:import 'package:xournalpp/plugins/plugin_controller.dart';
+test/canvas_workspace_test.dart:302:        final files = Directory('${directory.path}/xournalpp').listSync();
+test/document_export_test.dart:10:import 'package:xournalpp/controllers/canvas_controller.dart';
+test/document_export_test.dart:11:import 'package:xournalpp/layer_contents/XppImage.dart';
+test/document_export_test.dart:12:import 'package:xournalpp/layer_contents/XppStroke.dart';
+test/document_export_test.dart:13:import 'package:xournalpp/layer_contents/XppTexImage.dart';
+test/document_export_test.dart:14:import 'package:xournalpp/layer_contents/XppText.dart';
+test/document_export_test.dart:15:import 'package:xournalpp/src/XppBackground.dart';
+test/document_export_test.dart:16:import 'package:xournalpp/src/XppFile.dart';
+test/document_export_test.dart:17:import 'package:xournalpp/src/XppLayer.dart';
+test/document_export_test.dart:18:import 'package:xournalpp/src/XppPage.dart';
+test/document_export_test.dart:19:import 'package:xournalpp/src/XppPageSize.dart';
+test/document_export_test.dart:20:import 'package:xournalpp/src/compat/file_picker_cross.dart';
+test/document_export_test.dart:21:import 'package:xournalpp/src/document_export.dart';
+test/document_export_test.dart:183:      const channel = MethodChannel('online.xournal.mobile/documents');
+test/document_export_test.dart:252:    const channel = MethodChannel('online.xournal.mobile/documents');
+test/document_storage_test.dart:11:import 'package:xournalpp/controllers/canvas_controller.dart';
+test/document_storage_test.dart:12:import 'package:xournalpp/layer_contents/XppImage.dart';
+test/document_storage_test.dart:13:import 'package:xournalpp/layer_contents/XppStroke.dart';
+test/document_storage_test.dart:14:import 'package:xournalpp/layer_contents/XppText.dart';
+test/document_storage_test.dart:15:import 'package:xournalpp/src/XppBackground.dart';
+test/document_storage_test.dart:16:import 'package:xournalpp/src/XppFile.dart';
+test/document_storage_test.dart:17:import 'package:xournalpp/src/compat/file_picker_cross.dart';
+test/document_storage_test.dart:83:  test('native PDF page numbers and omitted filenames follow Xournal format',
+test/document_storage_test.dart:85:    final file = await readXml('''<xournal>
+test/document_storage_test.dart:88:    </xournal>''', path: 'native.xopp');
+test/document_storage_test.dart:97:    final file = await readXml('''<xournal><page width="100" height="200">
+test/document_storage_test.dart:100:      3\t4</stroke></layer></page></xournal>''');
+test/document_storage_test.dart:122:    final file = await readXml('''<xournal><page width="100" height="200">
+test/document_storage_test.dart:125:      </layer></page></xournal>''');
+test/document_toolbar_test.dart:7:import 'package:xournalpp/controllers/canvas_controller.dart';
+test/document_toolbar_test.dart:8:import 'package:xournalpp/controllers/theme_controller.dart';
+test/document_toolbar_test.dart:9:import 'package:xournalpp/controllers/workspace_controller.dart';
+test/document_toolbar_test.dart:10:import 'package:xournalpp/pages/CanvasPage.dart';
+test/document_toolbar_test.dart:11:import 'package:xournalpp/pages/WorkspacePage.dart';
+test/document_toolbar_test.dart:12:import 'package:xournalpp/src/XppFile.dart';
+test/document_toolbar_test.dart:13:import 'package:xournalpp/widgets/unified_toolbar.dart';
+test/dynamic_color_adapter_test.dart:4:import 'package:xournalpp/src/dynamic_color_adapter.dart';
+test/eraser_stability_test.dart:3:import 'package:xournalpp/layer_contents/XppStroke.dart';
+test/eraser_zoom_repaint_test.dart:8:import 'package:xournalpp/controllers/canvas_controller.dart';
+test/eraser_zoom_repaint_test.dart:9:import 'package:xournalpp/layer_contents/XppStroke.dart';
+test/eraser_zoom_repaint_test.dart:10:import 'package:xournalpp/src/XppBackground.dart';
+test/eraser_zoom_repaint_test.dart:11:import 'package:xournalpp/src/XppFile.dart';
+test/eraser_zoom_repaint_test.dart:12:import 'package:xournalpp/src/XppPageSize.dart';
+test/eraser_zoom_repaint_test.dart:13:import 'package:xournalpp/widgets/PointerListener.dart';
+test/eraser_zoom_repaint_test.dart:14:import 'package:xournalpp/src/editing_tool.dart';
+test/eraser_zoom_repaint_test.dart:15:import 'package:xournalpp/widgets/XppPageStack.dart';
+test/home_delete_test.dart:11:import 'package:xournalpp/main.dart';
+test/home_delete_test.dart:12:import 'package:xournalpp/src/compat/file_picker_cross.dart';
+test/home_delete_test.dart:13:import 'package:xournalpp/src/recent_documents.dart';
+test/home_delete_test.dart:14:import 'package:xournalpp/src/globals.dart';
+test/home_delete_test.dart:15:import 'package:xournalpp/src/autosave_store.dart';
+test/home_delete_test.dart:66:      const channel = MethodChannel('online.xournal.mobile/documents');
+test/home_delete_test.dart:145:        RepaintBoundary(key: key, child: const XournalppMobile()),
+test/ink_preview_test.dart:5:import 'package:xournalpp/layer_contents/XppStroke.dart';
+test/ink_preview_test.dart:6:import 'package:xournalpp/widgets/PointerListener.dart';
+test/ink_round_continuity_test.dart:7:import 'package:xournalpp/layer_contents/XppStroke.dart';
+test/ink_round_continuity_test.dart:8:import 'package:xournalpp/widgets/PointerListener.dart';
+test/ink_round_continuity_test.dart:9:import 'package:xournalpp/src/editing_tool.dart';
+test/library_preview_test.dart:11:import 'package:xournalpp/controllers/canvas_controller.dart';
+test/library_preview_test.dart:12:import 'package:xournalpp/layer_contents/XppStroke.dart';
+test/library_preview_test.dart:13:import 'package:xournalpp/src/XppBackground.dart';
+test/library_preview_test.dart:14:import 'package:xournalpp/src/XppFile.dart';
+test/library_preview_test.dart:15:import 'package:xournalpp/src/XppLayer.dart';
+test/library_preview_test.dart:16:import 'package:xournalpp/src/canvas_geometry_cache.dart';
+test/library_preview_test.dart:17:import 'package:xournalpp/src/compat/file_picker_cross.dart';
+test/library_preview_test.dart:18:import 'package:xournalpp/src/globals.dart';
+test/library_preview_test.dart:19:import 'package:xournalpp/src/library_metadata.dart';
+test/library_preview_test.dart:20:import 'package:xournalpp/src/recent_documents.dart';
+test/library_preview_test.dart:21:import 'package:xournalpp/widgets/document_library_card.dart';
+test/library_preview_test.dart:22:import 'package:xournalpp/widgets/infinite_canvas.dart';
+test/library_preview_test.dart:259:      const channel = MethodChannel('online.xournal.mobile/documents');
+test/library_responsive_test.dart:11:import 'package:xournalpp/controllers/theme_controller.dart';
+test/library_responsive_test.dart:12:import 'package:xournalpp/pages/OpenPage.dart';
+test/library_responsive_test.dart:13:import 'package:xournalpp/src/globals.dart';
+test/note_audio_test.dart:12:import 'package:xournalpp/controllers/note_audio_controller.dart';
+test/note_audio_test.dart:13:import 'package:xournalpp/controllers/canvas_controller.dart';
+test/note_audio_test.dart:14:import 'package:xournalpp/layer_contents/XppStroke.dart';
+test/note_audio_test.dart:15:import 'package:xournalpp/src/XppFile.dart';
+test/note_audio_test.dart:16:import 'package:xournalpp/src/app_appearance.dart';
+test/note_audio_test.dart:17:import 'package:xournalpp/controllers/theme_controller.dart';
+test/note_audio_test.dart:18:import 'package:xournalpp/src/compat/file_picker_cross.dart';
+test/note_audio_test.dart:19:import 'package:xournalpp/src/note_audio.dart';
+test/note_audio_test.dart:20:import 'package:xournalpp/src/content_snapshot.dart';
+test/note_audio_test.dart:21:import 'package:xournalpp/src/selection_clipboard.dart';
+test/note_audio_test.dart:22:import 'package:xournalpp/widgets/PointerListener.dart';
+test/note_audio_test.dart:23:import 'package:xournalpp/widgets/note_audio_panel.dart';
+test/note_audio_test.dart:24:import 'package:xournalpp/widgets/audio_timeline_overlay.dart';
+test/note_audio_test.dart:25:import 'package:xournalpp/src/editing_tool.dart';
+test/note_backup_test.dart:11:import 'package:xournalpp/layer_contents/XppImage.dart';
+test/note_backup_test.dart:12:import 'package:xournalpp/layer_contents/XppText.dart';
+test/note_backup_test.dart:13:import 'package:xournalpp/main.dart';
+test/note_backup_test.dart:14:import 'package:xournalpp/src/XppBackground.dart';
+test/note_backup_test.dart:15:import 'package:xournalpp/src/XppFile.dart';
+test/note_backup_test.dart:16:import 'package:xournalpp/src/autosave_store.dart';
+test/note_backup_test.dart:17:import 'package:xournalpp/src/compat/file_picker_cross.dart';
+test/note_backup_test.dart:18:import 'package:xournalpp/src/compat/internal_storage_generic.dart'
+test/note_backup_test.dart:20:import 'package:xournalpp/src/globals.dart';
+test/note_backup_test.dart:21:import 'package:xournalpp/src/note_audio.dart';
+test/note_backup_test.dart:22:import 'package:xournalpp/src/note_backup.dart';
+test/note_backup_test.dart:23:import 'package:xournalpp/src/note_flashcards.dart';
+test/note_backup_test.dart:24:import 'package:xournalpp/src/note_tags.dart';
+test/note_backup_test.dart:25:import 'package:xournalpp/src/recent_documents.dart';
+test/note_backup_test.dart:279:    final staged = await Directory('${dir.path}/xournalpp').list().toList();
+test/note_backup_test.dart:309:      await tester.pumpWidget(const XournalppMobile());
+test/note_tags_test.dart:8:import 'package:xournalpp/main.dart';
+test/note_tags_test.dart:9:import 'package:xournalpp/src/XppFile.dart';
+test/note_tags_test.dart:10:import 'package:xournalpp/src/compat/file_picker_cross.dart';
+test/note_tags_test.dart:11:import 'package:xournalpp/src/globals.dart';
+test/note_tags_test.dart:12:import 'package:xournalpp/src/note_tags.dart';
+test/note_tags_test.dart:13:import 'package:xournalpp/src/recent_documents.dart';
+test/note_tags_test.dart:14:import 'package:xournalpp/widgets/note_tag_picker.dart';
+test/note_tags_test.dart:84:      packageName: 'online.xournal.mobile',
+test/note_tags_test.dart:102:      RepaintBoundary(key: key, child: const XournalppMobile()),
+test/note_tags_test.dart:123:      RepaintBoundary(key: key, child: const XournalppMobile()),
+test/pdf_zoom_detail_test.dart:7:import 'package:xournalpp/controllers/canvas_controller.dart';
+test/pdf_zoom_detail_test.dart:8:import 'package:xournalpp/widgets/pdf_zoom_detail.dart';
+test/pdf_zoom_detail_test.dart:9:import 'package:xournalpp/src/XppFile.dart';
+test/pdf_zoom_detail_test.dart:10:import 'package:xournalpp/src/XppBackground.dart';
+test/performance_resources_test.dart:5:import 'package:xournalpp/src/XppBackground.dart';
+test/performance_resources_test.dart:18:import 'package:xournalpp/controllers/canvas_controller.dart';
+test/performance_resources_test.dart:19:import 'package:xournalpp/layer_contents/XppImage.dart';
+test/performance_resources_test.dart:20:import 'package:xournalpp/src/XppFile.dart';
+test/performance_resources_test.dart:21:import 'package:xournalpp/src/XppPage.dart';
+test/performance_resources_test.dart:22:import 'package:xournalpp/src/XppPageSize.dart';
+test/performance_resources_test.dart:23:import 'package:xournalpp/src/decoded_image_cache.dart';
+test/performance_resources_test.dart:24:import 'package:xournalpp/src/autosave_store.dart';
+test/performance_resources_test.dart:25:import 'package:xournalpp/src/compat/file_picker_cross.dart';
+test/performance_resources_test.dart:26:import 'package:xournalpp/src/document_export.dart';
+test/performance_resources_test.dart:27:import 'package:xournalpp/widgets/virtual_page_column.dart';
+test/performance_resources_test.dart:28:import 'package:xournalpp/widgets/XppPageStack.dart';
+test/pixel_eraser_test.dart:7:import 'package:xournalpp/controllers/canvas_controller.dart';
+test/pixel_eraser_test.dart:8:import 'package:xournalpp/layer_contents/XppStroke.dart';
+test/pixel_eraser_test.dart:9:import 'package:xournalpp/src/XppFile.dart';
+test/pixel_eraser_test.dart:10:import 'package:xournalpp/src/compat/file_picker_cross.dart';
+test/pixel_eraser_test.dart:11:import 'package:xournalpp/src/content_snapshot.dart';
+test/pixel_eraser_test.dart:12:import 'package:xournalpp/widgets/PointerListener.dart';
+test/pixel_eraser_test.dart:13:import 'package:xournalpp/src/editing_tool.dart';
+test/plugin_javascript_test.dart:6:import 'package:xournalpp/layer_contents/XppText.dart';
+test/plugin_javascript_test.dart:7:import 'package:xournalpp/plugins/plugin_controller.dart';
+test/plugin_javascript_test.dart:8:import 'package:xournalpp/plugins/plugin_examples.dart';
+test/plugin_javascript_test.dart:9:import 'package:xournalpp/plugins/plugin_script.dart';
+test/plugin_javascript_test.dart:10:import 'package:xournalpp/plugins/plugin_script_native.dart' as native;
+test/plugin_javascript_test.dart:11:import 'package:xournalpp/plugins/plugin_runtime.dart';
+test/plugin_javascript_test.dart:12:import 'package:xournalpp/plugins/plugin_services.dart';
+test/plugin_security_test.dart:13:import 'package:xournalpp/layer_contents/XppText.dart';
+test/plugin_security_test.dart:14:import 'package:xournalpp/plugins/plugin_controller.dart';
+test/plugin_security_test.dart:15:import 'package:xournalpp/plugins/plugin_http.dart';
+test/plugin_security_test.dart:16:import 'package:xournalpp/plugins/plugin_http_native.dart';
+test/plugin_security_test.dart:17:import 'package:xournalpp/plugins/plugin_manifest.dart';
+test/plugin_security_test.dart:18:import 'package:xournalpp/plugins/plugin_manager_page.dart';
+test/plugin_security_test.dart:19:import 'package:xournalpp/plugins/plugin_package.dart';
+test/plugin_security_test.dart:20:import 'package:xournalpp/plugins/plugin_runtime.dart';
+test/plugin_security_test.dart:21:import 'package:xournalpp/plugins/plugin_ui.dart';
+test/plugin_system_test.dart:8:import 'package:xournalpp/controllers/canvas_controller.dart';
+test/plugin_system_test.dart:9:import 'package:xournalpp/layer_contents/XppText.dart';
+test/plugin_system_test.dart:10:import 'package:xournalpp/plugins/plugin_controller.dart';
+test/plugin_system_test.dart:11:import 'package:xournalpp/plugins/plugin_examples.dart';
+test/plugin_system_test.dart:12:import 'package:xournalpp/plugins/plugin_manager_page.dart';
+test/plugin_system_test.dart:13:import 'package:xournalpp/plugins/plugin_manifest.dart';
+test/plugin_system_test.dart:14:import 'package:xournalpp/plugins/plugin_runtime.dart';
+test/plugin_system_test.dart:15:import 'package:xournalpp/src/XppFile.dart';
+test/plugin_system_test.dart:16:import 'package:xournalpp/src/XppPageSize.dart';
+test/pointer_input_test.dart:6:import 'package:xournalpp/src/XppLayer.dart';
+test/pointer_input_test.dart:7:import 'package:xournalpp/widgets/PointerListener.dart';
+test/pointer_input_test.dart:8:import 'package:xournalpp/src/editing_tool.dart';
+test/pointer_input_test.dart:9:import 'package:xournalpp/widgets/ZoomableWidget.dart';
+test/pomodoro_appearance_test.dart:10:import 'package:xournalpp/main.dart';
+test/pomodoro_appearance_test.dart:11:import 'package:xournalpp/pages/OpenPage.dart';
+test/pomodoro_appearance_test.dart:12:import 'package:xournalpp/src/app_appearance.dart';
+test/pomodoro_appearance_test.dart:13:import 'package:xournalpp/src/globals.dart';
+test/pomodoro_appearance_test.dart:14:import 'package:xournalpp/widgets/PomodoroTimer.dart';
+test/pomodoro_appearance_test.dart:63:        RepaintBoundary(key: key, child: const XournalppMobile()),
+test/rendering_memory_test.dart:5:import 'package:xournalpp/src/pdf_raster_cache.dart';
+test/rendering_memory_test.dart:6:import 'package:xournalpp/widgets/virtual_page_column.dart';
+test/rendering_memory_test.dart:7:import 'package:xournalpp/controllers/canvas_controller.dart';
+test/saved_document_home_test.dart:12:import 'package:xournalpp/controllers/workspace_controller.dart';
+test/saved_document_home_test.dart:13:import 'package:xournalpp/layer_contents/XppStroke.dart';
+test/saved_document_home_test.dart:14:import 'package:xournalpp/main.dart';
+test/saved_document_home_test.dart:15:import 'package:xournalpp/pages/CanvasPage.dart';
+test/saved_document_home_test.dart:16:import 'package:xournalpp/pages/OpenPage.dart';
+test/saved_document_home_test.dart:17:import 'package:xournalpp/src/XppFile.dart';
+test/saved_document_home_test.dart:18:import 'package:xournalpp/src/globals.dart';
+test/saved_document_home_test.dart:19:import 'package:xournalpp/src/recent_documents.dart';
+test/saved_document_home_test.dart:20:import 'package:xournalpp/widgets/document_library_card.dart';
+test/saved_document_home_test.dart:21:import 'package:xournalpp/widgets/note_tag_picker.dart';
+test/saved_document_home_test.dart:115:        RepaintBoundary(key: key, child: const XournalppMobile()),
+test/saved_document_home_test.dart:160:        RepaintBoundary(key: key, child: const XournalppMobile()),
+test/saved_document_home_test.dart:232:        RepaintBoundary(key: key, child: const XournalppMobile()),
+test/selection_tools_test.dart:5:import 'package:xournalpp/controllers/canvas_controller.dart';
+test/selection_tools_test.dart:6:import 'package:xournalpp/layer_contents/XppStroke.dart';
+test/selection_tools_test.dart:7:import 'package:xournalpp/layer_contents/XppText.dart';
+test/selection_tools_test.dart:8:import 'package:xournalpp/pages/CanvasPage.dart';
+test/selection_tools_test.dart:9:import 'package:xournalpp/src/XppFile.dart';
+test/selection_tools_test.dart:10:import 'package:xournalpp/src/XppLayer.dart';
+test/selection_tools_test.dart:11:import 'package:xournalpp/src/XppPageSize.dart';
+test/selection_tools_test.dart:12:import 'package:xournalpp/src/selection_clipboard.dart';
+test/selection_tools_test.dart:13:import 'package:xournalpp/widgets/PointerListener.dart';
+test/selection_tools_test.dart:14:import 'package:xournalpp/src/editing_tool.dart';
+test/selection_tools_test.dart:15:import 'package:xournalpp/widgets/XppPageStack.dart';
+test/split_resize_test.dart:5:import 'package:xournalpp/controllers/theme_controller.dart';
+test/split_resize_test.dart:6:import 'package:xournalpp/controllers/workspace_controller.dart';
+test/split_resize_test.dart:7:import 'package:xournalpp/pages/CanvasPage.dart';
+test/split_resize_test.dart:8:import 'package:xournalpp/src/XppFile.dart';
+test/split_resize_test.dart:9:import 'package:xournalpp/src/document_scene_geometry.dart';
+test/split_resize_test.dart:10:import 'package:xournalpp/widgets/split_screen_view.dart';
+test/split_resize_test.dart:11:import 'package:xournalpp/widgets/virtual_page_column.dart';
+test/split_resize_test.dart:12:import 'package:xournalpp/widgets/ZoomableWidget.dart';
+test/stroke_model_geometry_test.dart:8:import 'package:xournalpp/layer_contents/XppStroke.dart';
+test/stroke_model_geometry_test.dart:9:import 'package:xournalpp/src/content_snapshot.dart';
+test/stroke_model_geometry_test.dart:10:import 'package:xournalpp/src/editing_tool.dart';
+test/stroke_model_geometry_test.dart:11:import 'package:xournalpp/src/ink_geometry.dart';
+test/study_plugins_test.dart:11:import 'package:xournalpp/controllers/canvas_controller.dart';
+test/study_plugins_test.dart:12:import 'package:xournalpp/controllers/theme_controller.dart';
+test/study_plugins_test.dart:13:import 'package:xournalpp/layer_contents/XppText.dart';
+test/study_plugins_test.dart:14:import 'package:xournalpp/plugins/plugin_controller.dart';
+test/study_plugins_test.dart:15:import 'package:xournalpp/plugins/plugin_manager_page.dart';
+test/study_plugins_test.dart:16:import 'package:xournalpp/src/XppFile.dart';
+test/study_plugins_test.dart:17:import 'package:xournalpp/src/compat/file_picker_cross.dart';
+test/study_plugins_test.dart:18:import 'package:xournalpp/src/editing_tool.dart';
+test/study_plugins_test.dart:19:import 'package:xournalpp/src/note_flashcards.dart';
+test/study_plugins_test.dart:20:import 'package:xournalpp/widgets/PointerListener.dart';
+test/study_plugins_test.dart:21:import 'package:xournalpp/widgets/canvas_toolbar.dart';
+test/study_plugins_test.dart:22:import 'package:xournalpp/widgets/note_flashcards_panel.dart';
+test/undo_snapshot_test.dart:3:import 'package:xournalpp/controllers/canvas_controller.dart';
+test/undo_snapshot_test.dart:4:import 'package:xournalpp/layer_contents/XppStroke.dart';
+test/undo_snapshot_test.dart:5:import 'package:xournalpp/layer_contents/XppText.dart';
+test/undo_snapshot_test.dart:6:import 'package:xournalpp/src/XppFile.dart';
+test/undo_snapshot_test.dart:7:import 'package:xournalpp/src/content_snapshot.dart';
+test/widget_test.dart:4:import 'package:xournalpp/main.dart';
+test/widget_test.dart:5:import 'package:xournalpp/pages/OpenPage.dart';
+test/widget_test.dart:12:    await tester.pumpWidget(const XournalppMobile());
+test/workspace_navigation_test.dart:11:import 'package:xournalpp/controllers/canvas_controller.dart';
+test/workspace_navigation_test.dart:12:import 'package:xournalpp/controllers/theme_controller.dart';
+test/workspace_navigation_test.dart:13:import 'package:xournalpp/controllers/workspace_controller.dart';
+test/workspace_navigation_test.dart:14:import 'package:xournalpp/layer_contents/XppStroke.dart';
+test/workspace_navigation_test.dart:15:import 'package:xournalpp/pages/CanvasPage.dart';
+test/workspace_navigation_test.dart:16:import 'package:xournalpp/pages/WorkspacePage.dart';
+test/workspace_navigation_test.dart:17:import 'package:xournalpp/src/XppBackground.dart';
+test/workspace_navigation_test.dart:18:import 'package:xournalpp/src/XppFile.dart';
+test/workspace_navigation_test.dart:19:import 'package:xournalpp/src/XppPage.dart';
+test/workspace_navigation_test.dart:20:import 'package:xournalpp/src/autosave_store.dart';
+test/workspace_navigation_test.dart:21:import 'package:xournalpp/src/compat/file_picker_cross.dart';
+test/workspace_navigation_test.dart:22:import 'package:xournalpp/src/globals.dart';
+test/workspace_navigation_test.dart:23:import 'package:xournalpp/src/app_appearance.dart';
+test/workspace_navigation_test.dart:24:import 'package:xournalpp/src/note_audio.dart';
+test/workspace_navigation_test.dart:25:import 'package:xournalpp/src/workspace_session.dart';
+test/workspace_navigation_test.dart:26:import 'package:xournalpp/widgets/ZoomableWidget.dart';
+test/workspace_navigation_test.dart:27:import 'package:xournalpp/widgets/PointerListener.dart';
+test/workspace_navigation_test.dart:28:import 'package:xournalpp/widgets/document_navigator.dart';
+test/workspace_navigation_test.dart:29:import 'package:xournalpp/widgets/infinite_canvas.dart';
+test/workspace_navigation_test.dart:30:import 'package:xournalpp/widgets/saved_notes_dialog.dart';
+test/workspace_safety_test.dart:6:import 'package:xournalpp/controllers/theme_controller.dart';
+test/workspace_safety_test.dart:7:import 'package:xournalpp/pages/CanvasPage.dart';
+test/workspace_safety_test.dart:8:import 'package:xournalpp/pages/WorkspacePage.dart';
+test/workspace_safety_test.dart:9:import 'package:xournalpp/controllers/canvas_controller.dart';
+test/workspace_safety_test.dart:10:import 'package:xournalpp/controllers/workspace_controller.dart';
+test/workspace_safety_test.dart:11:import 'package:xournalpp/src/XppFile.dart';
+test/workspace_safety_test.dart:12:import 'package:xournalpp/widgets/unsaved_document_dialog.dart';
+test/workspace_safety_test.dart:13:import 'package:xournalpp/src/editing_tool.dart';
+test/workspace_safety_test.dart:14:import 'package:xournalpp/src/globals.dart';
+tool/generate_plugin_examples.dart:6:import 'package:xournalpp/plugins/plugin_examples.dart';
+tool/package_plugin.dart:5:import 'package:xournalpp/plugins/plugin_package.dart';

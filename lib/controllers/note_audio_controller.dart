@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:xournalpp/src/XppFile.dart';
 import 'package:xournalpp/src/note_audio.dart';
+import 'package:xournalpp/src/compat/audio_platform_stub.dart'
+    if (dart.library.io) 'package:xournalpp/src/compat/audio_platform_io.dart';
 
 abstract class NoteAudioBackend {
   Future<Object?> invoke(String method, [Map<String, Object?>? arguments]);
@@ -19,6 +21,8 @@ class AndroidNoteAudioBackend implements NoteAudioBackend {
       channel.setMethodCallHandler((call) async {
         if (call.method == 'interrupted')
           await NoteAudioController.owner?.stop();
+        if (call.method == 'segmentReady')
+          await NoteAudioController.owner?.rotateSegment();
       });
     }
   }
@@ -81,8 +85,7 @@ class NoteAudioController extends ChangeNotifier {
   String? recordingId, error;
   int _stoppedAt = 0;
   bool get supported =>
-      backend is! AndroidNoteAudioBackend ||
-      (!kIsWeb && defaultTargetPlatform == TargetPlatform.android);
+      backend is! AndroidNoteAudioBackend || (!kIsWeb && nativeAudioAvailable);
   int get elapsedMs => elapsedClock?.call() ?? _clock.elapsedMilliseconds;
   int get totalBytes =>
       document.recordings.values.fold(0, (n, r) => n + r.bytes.length);
@@ -125,7 +128,8 @@ class NoteAudioController extends ChangeNotifier {
     owner = this;
   }
 
-  Future<void> start() => _run(() async {
+  Future<void> start() => _run(_startRecording);
+  Future<void> _startRecording() async {
     if (!supported) {
       error = 'Registrazione disponibile su Android';
       return;
@@ -138,20 +142,95 @@ class NoteAudioController extends ChangeNotifier {
     await _claim();
     _timer?.cancel();
     cursor.value = const AudioCursor();
-    await backend.invoke('start');
+    recordingId =
+        '${DateTime.now().microsecondsSinceEpoch}-${Random.secure().nextInt(1 << 32)}';
+    await backend.invoke('start', {
+      'noteId': document.localId,
+      'id': recordingId,
+    });
     if (_disposed) {
       await backend.invoke('release');
       owner = null;
       return;
     }
-    recordingId =
-        '${DateTime.now().microsecondsSinceEpoch}-${Random.secure().nextInt(1 << 32)}';
     _clock.reset();
     _clock.start();
     recording = true;
     listenMode = false;
     onModeChanged();
     _startTimer();
+  }
+
+  Future<void> rotateSegment() => _run(() async {
+    if (!recording || owner != this) return;
+    await _stopRecording();
+    if (!_disposed && totalBytes + maxRecordingBytes <= maxAudioBytes)
+      await _startRecording();
+  });
+  Future<void> acknowledge(Iterable<String> ids) async {
+    if (!supported || ids.isEmpty) return;
+    try {
+      await backend.invoke('ack', {
+        'noteId': document.localId,
+        'ids': ids.toList(),
+      });
+    } catch (_) {
+      /* Durable staging is intentionally retained if ACK fails. */
+    }
+  }
+
+  Future<void> recoverStaged() => _run(() async {
+    if (!supported) return;
+    final raw = await backend.invoke('recover', {'noteId': document.localId});
+    if (raw is! List) return;
+    var changed = false;
+    var partial = false;
+    for (final value in raw.whereType<Map>()) {
+      if (value['state'] != 'ready') {
+        partial = true;
+        error = 'Registrazione interrotta non finalizzata: originale conservato per il recupero';
+        continue;
+      }
+      final id = value['id'];
+      var bytes = value['bytes'], duration = value['duration'];
+      if (id is String &&
+          validAudioId(id) &&
+          bytes == null &&
+          !document.recordings.containsKey(id)) {
+        try {
+          final segment = await backend.invoke('readSegment', {
+            'noteId': document.localId,
+            'id': id,
+          });
+          if (segment is Map) {
+            bytes = segment['bytes'];
+            duration = segment['duration'];
+          }
+        } catch (_) {
+          error = 'Segmento audio non disponibile: staging conservato';
+          continue;
+        }
+      }
+      if (id is! String ||
+          !validAudioId(id) ||
+          bytes is! Uint8List ||
+          bytes.isEmpty ||
+          bytes.length > maxRecordingBytes ||
+          duration is! int ||
+          duration <= 0 ||
+          duration > maxRecordingMs ||
+          document.recordings.containsKey(id) ||
+          totalBytes + bytes.length > maxAudioBytes)
+        continue;
+      document.recordings[id] = NoteRecording(id, duration, bytes);
+      changed = true;
+    }
+    if (changed) {
+      error = partial
+          ? 'Segmenti audio recuperati; salvare l’appunto. Registrazione non finalizzata conservata per il recupero.'
+          : 'Segmenti audio recuperati; salvare l’appunto';
+      onDocumentChanged();
+    }
   });
   Future<void> stop() =>
       !recording && !busy ? Future.value() : _run(_stopRecording);

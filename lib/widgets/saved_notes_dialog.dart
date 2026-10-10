@@ -61,6 +61,8 @@ Future<XppFile?> openSavedNote(BuildContext context) async {
     ),
   );
   file.sourcePath = path;
+  if (selected['localId'] is String)
+    file.localId = selected['localId'] as String;
   file.title = selected['name'] as String? ?? file.title;
   file.tag = selected['tag'] as String? ?? file.tag;
   return file;

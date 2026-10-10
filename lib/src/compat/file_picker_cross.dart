@@ -4,6 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:crypto/crypto.dart';
+
+import 'backup_staging_stub.dart'
+    if (dart.library.io) 'backup_staging_io.dart'
+    as staging;
 
 import 'internal_storage_generic.dart'
     if (dart.library.io) 'internal_storage_io.dart'
@@ -16,9 +21,71 @@ import 'internal_storage_generic.dart'
 enum FileTypeCross { any, image, custom }
 
 class FilePickerCross {
+  static Future<String?> importBackupToStaging() async {
+    final file = await FilePicker.pickFile(
+      type: FileType.custom,
+      allowedExtensions: ['zip'],
+    );
+    if (file == null) return null;
+    return staging.writeStream(file.readAsByteStream(), 513 * 1024 * 1024);
+  }
+
+  static Future<void> discardStagedBackup(String path) =>
+      staging.disposeStaging(
+        path.substring(
+          0,
+          path.lastIndexOf('/') > path.lastIndexOf('\\')
+              ? path.lastIndexOf('/')
+              : path.lastIndexOf('\\'),
+        ),
+      );
+  static Future<String?> exportStagedBackup(String source, String name) async {
+    // The picker requires bytes. The complete private archive exists before it
+    // touches the selected destination; failures retain that staging candidate.
+    final uri = await FilePicker.saveFile(
+      fileName: name,
+      bytes: Uint8List(0),
+      mimeType: name.endsWith('.pdf') ? 'application/pdf' : 'application/zip',
+    );
+    if (uri == null) return null;
+    if (uri.scheme == 'content') {
+      await _documents.invokeMethod<void>('writeFromFile', {
+        'uri': uri.toString(),
+        'source': source,
+      });
+      return uri.toString();
+    }
+    if (uri.scheme != 'file')
+      throw StateError('Destinazione backup non disponibile');
+    await staging.copyToPath(source, uri.toFilePath());
+    return uri.toFilePath();
+  }
+
+  static Future<String> resolvePath(String path) => storage.resolve(path);
   static const _documents = MethodChannel('online.xournal.mobile/documents');
   final Uint8List _bytes;
   final String? path;
+  bool reopenableGrant = true;
+  String get contentHash => sha256.convert(_bytes).toString();
+  Future<bool> verifyAt(String path) async {
+    try {
+      return await hashAt(path, maxBytes: _bytes.length + 1) == contentHash;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  static Future<String?> hashAt(
+    String path, {
+    int maxBytes = 128 * 1024 * 1024,
+  }) async {
+    if (path.startsWith('content://'))
+      return _documents.invokeMethod<String>('hash', {
+        'uri': path,
+        'maxBytes': maxBytes,
+      });
+    return storage.hashFile(await storage.resolve(path), maxBytes: maxBytes);
+  }
 
   FilePickerCross(
     Uint8List bytes, {
@@ -40,6 +107,7 @@ class FilePickerCross {
   static Future<FilePickerCross> importFromStorage({
     FileTypeCross type = FileTypeCross.any,
     String? fileExtension,
+    int maxBytes = 128 * 1024 * 1024,
   }) async {
     FileType fileType = FileType.any;
     List<String>? extensions;
@@ -59,10 +127,20 @@ class FilePickerCross {
     if (file == null) {
       throw 'No file selected.';
     }
-    final selectedPath = file.path;
+    final selectedPath =
+        file.path ??
+        (file.uri.scheme == 'content' ? file.uri.toString() : null);
     // v13 reads local paths, Android content URIs and browser blobs through
     // PlatformFile, without requiring a filesystem path or eager withData.
-    final data = await file.readAsBytes();
+    final reportedLength = file.lengthSync();
+    if (reportedLength != null && reportedLength > maxBytes) {
+      throw const FormatException('File troppo grande');
+    }
+    if (selectedPath?.startsWith('content://') == true) {
+      // Use our bounded native reader for the explicitly selected SAF URI.
+      return fromInternalPath(path: selectedPath!, maxBytes: maxBytes);
+    }
+    final data = await readLimitedBytes(file.readAsByteStream(), maxBytes);
     return FilePickerCross(
       data,
       type: type,
@@ -78,16 +156,21 @@ class FilePickerCross {
   /// directly from disk.
   static Future<FilePickerCross> fromInternalPath({
     required String path,
+    int maxBytes = 128 * 1024 * 1024,
   }) async {
     if (path.startsWith('content://')) {
       final data = await _documents.invokeMethod<Uint8List>('read', {
         'uri': path,
+        'maxBytes': maxBytes,
       });
       if (data == null) throw StateError('Documento non disponibile');
+      if (data.length > maxBytes) {
+        throw const FormatException('File troppo grande');
+      }
       return FilePickerCross(data, path: path);
     }
     final resolved = await storage.resolve(path);
-    final data = await storage.readFile(resolved);
+    final data = await storage.readFile(resolved, maxBytes: maxBytes);
     return FilePickerCross(data, path: resolved);
   }
 
@@ -143,9 +226,11 @@ class FilePickerCross {
     );
     if (savedUri == null) return kIsWeb ? name : null;
     if (savedUri.scheme == 'content') {
-      await _documents.invokeMethod<bool>('retain', {
-        'uri': savedUri.toString(),
-      });
+      reopenableGrant =
+          await _documents.invokeMethod<bool>('retain', {
+            'uri': savedUri.toString(),
+          }) ??
+          false;
     }
     return savedUri.scheme == 'file'
         ? savedUri.toFilePath()
@@ -159,4 +244,18 @@ class FilePickerCross {
     }
     await storage.deleteFile(await storage.resolve(path));
   }
+}
+
+Future<Uint8List> readLimitedBytes(
+  Stream<List<int>> stream,
+  int maxBytes,
+) async {
+  final bytes = BytesBuilder(copy: false);
+  await for (final chunk in stream) {
+    if (bytes.length + chunk.length > maxBytes) {
+      throw const FormatException('File troppo grande');
+    }
+    bytes.add(chunk);
+  }
+  return bytes.takeBytes();
 }

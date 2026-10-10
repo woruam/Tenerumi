@@ -1,0 +1,10 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart
+00:00 +0: restoration prefers checkpoint over original and preserves audio synchronization
+00:00 +0 -1: restoration prefers checkpoint over original and preserves audio synchronization [E]
+  Null check operator used on a null value
+  test\workspace_navigation_test.dart 170:58  main.<fn>
+  
+00:00 +0 -1: Some tests failed.
+
+Failing tests:
+  C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: restoration prefers checkpoint over original and preserves audio synchronization

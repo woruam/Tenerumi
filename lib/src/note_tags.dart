@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'globals.dart';
 import 'recent_documents.dart';
+import 'critical_data.dart';
 
 /// Small, local tag catalog. Existing library tags are included on migration.
 abstract final class NoteTags {
@@ -11,10 +14,24 @@ abstract final class NoteTags {
 
   static Future<List<String>> load() async {
     final prefs = await SharedPreferences.getInstance();
+    var catalog =
+        await CriticalData.read(PreferencesKeys.kNoteTags) ??
+        prefs.get(PreferencesKeys.kNoteTags) ??
+        <String>[];
+    if (catalog is! List || catalog.any((e) => e is! String)) {
+      await CriticalData.quarantine(
+        PreferencesKeys.kNoteTags,
+        jsonEncode(catalog),
+      );
+      catalog = catalog is List
+          ? catalog.whereType<String>().toList()
+          : <String>[];
+      await CriticalData.write(PreferencesKeys.kNoteTags, catalog);
+    }
     final tags = <String>[];
     for (final value in [
       ...defaults,
-      ...?prefs.getStringList(PreferencesKeys.kNoteTags),
+      ...catalog.whereType<String>(),
       ...(await RecentDocuments.list())
           .map((entry) => entry['tag'])
           .whereType<String>(),
@@ -44,12 +61,18 @@ abstract final class NoteTags {
         .firstOrNull;
     if (existing != null) return existing;
     tags.add(tag);
-    if (!await (await SharedPreferences.getInstance()).setStringList(
-      PreferencesKeys.kNoteTags,
-      tags.where((item) => !defaults.contains(item)).toList(),
-    )) {
-      throw StateError('Impossibile salvare il tag');
-    }
+    await CriticalData.transaction((state) async {
+      final current =
+          (state[PreferencesKeys.kNoteTags] as List?)
+              ?.whereType<String>()
+              .toList() ??
+          [];
+      for (final value in tags.where((item) => !defaults.contains(item))) {
+        if (!current.any((e) => e.toLowerCase() == value.toLowerCase()))
+          current.add(value);
+      }
+      state[PreferencesKeys.kNoteTags] = current;
+    });
     return tag;
   }
 }

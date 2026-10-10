@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'dart:math' as math;
+
+import 'package:flutter/scheduler.dart';
 
 import 'package:flutter/foundation.dart';
 
@@ -8,6 +11,7 @@ class _Entry {
   final WeakReference<Uint8List> source;
   ui.Image? image;
   bool failed = false;
+  bool pending = true;
   _Entry(Uint8List bytes) : source = WeakReference(bytes);
   int get bytes => image == null ? 0 : image!.width * image!.height * 4;
 }
@@ -19,9 +23,9 @@ class DecodedImageCache extends ChangeNotifier {
   final int maxEntries, maxBytes;
   final int? maxDimension;
   DecodedImageCache({
-    this.maxEntries = 16,
+    this.maxEntries = 64,
     this.maxBytes = 32 * 1024 * 1024,
-    this.maxDimension,
+    this.maxDimension = 2048,
   });
   final List<_Entry> _entries = [];
   Future<void>? _queue;
@@ -32,7 +36,28 @@ class DecodedImageCache extends ChangeNotifier {
   void retain(Object owner, Iterable<Uint8List> sources) {
     _owners[owner] = sources.map(WeakReference<Uint8List>.new).toList();
     _trim();
+    final fairShare = maxBytes ~/ math.max(1, _activeSourceCount);
+    if (_entries.any((e) => e.bytes > fairShare)) {
+      // Downgrade on the next frame, after current painters released their use.
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        for (final e in _entries) {
+          if (e.bytes > fairShare) {
+            e.image?.dispose();
+            e.image = null;
+            e.failed = false;
+          }
+        }
+        if (_owners.isNotEmpty) notifyListeners();
+      });
+    }
   }
+
+  int get _activeSourceCount => _owners.values
+      .expand((e) => e)
+      .map((e) => e.target)
+      .whereType<Uint8List>()
+      .toSet()
+      .length;
 
   bool _pinned(_Entry entry) => _owners.values.any(
     (sources) =>
@@ -50,6 +75,12 @@ class DecodedImageCache extends ChangeNotifier {
         entry.image?.dispose();
       }
     }
+    // Waiting visible images get another admission attempt after resources
+    // were released. Dispose can run while the widget tree is locked.
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (_owners.isNotEmpty) notifyListeners();
+    });
+    SchedulerBinding.instance.ensureVisualUpdate();
   }
 
   ui.Image? lookup(Uint8List data) {
@@ -59,9 +90,17 @@ class DecodedImageCache extends ChangeNotifier {
     if (old != null) {
       _entries.remove(old);
       _entries.add(old);
-      return old.image;
+      if (old.image != null || old.failed || old.pending) return old.image;
+      // A downgraded entry is admitted again at its new quality.
+      _entries.remove(old);
     }
     if (data.isEmpty) return null;
+    if (_entries.length >= maxEntries) {
+      final unpinned = _entries.where((e) => !_pinned(e)).firstOrNull;
+      if (unpinned == null) return null;
+      _entries.remove(unpinned);
+      unpinned.image?.dispose();
+    }
     final entry = _Entry(data);
     _entries.add(entry);
     _trim();
@@ -78,14 +117,46 @@ class DecodedImageCache extends ChangeNotifier {
         ui.ImageDescriptor? descriptor;
         try {
           descriptor = await ui.ImageDescriptor.encoded(buffer);
+          final width = descriptor.width, height = descriptor.height;
+          if (width <= 0 ||
+              height <= 0 ||
+              width > 16384 ||
+              height > 16384 ||
+              width * height > 16 * 1024 * 1024)
+            throw const FormatException('Dimensioni immagine oltre il limite');
           final largest = descriptor.width > descriptor.height
               ? descriptor.width
               : descriptor.height;
-          final bound = maxDimension ?? largest;
-          final scale = largest > bound ? bound / largest : 1.0;
+          final bound = maxDimension ?? 2048;
+          final allocation = math.min(
+            maxBytes - byteCount,
+            maxBytes ~/ math.max(1, _activeSourceCount),
+          );
+          if (allocation < 4) throw StateError('Budget immagini esaurito');
+          final scale = math.min(
+            1.0,
+            math.min(
+              bound / largest,
+              math.sqrt(allocation / (width * height * 4)),
+            ),
+          );
+          var targetWidth = (width * scale).floor().clamp(1, bound);
+          var targetHeight = (height * scale).floor().clamp(1, bound);
+          if (targetWidth * targetHeight * 4 > allocation) {
+            if (targetWidth >= targetHeight)
+              targetWidth = (allocation ~/ (4 * targetHeight)).clamp(
+                1,
+                targetWidth,
+              );
+            else
+              targetHeight = (allocation ~/ (4 * targetWidth)).clamp(
+                1,
+                targetHeight,
+              );
+          }
           codec = await descriptor.instantiateCodec(
-            targetWidth: (descriptor.width * scale).round().clamp(1, bound),
-            targetHeight: (descriptor.height * scale).round().clamp(1, bound),
+            targetWidth: targetWidth,
+            targetHeight: targetHeight,
           );
           result = (await codec.getNextFrame()).image;
         } finally {
@@ -96,6 +167,8 @@ class DecodedImageCache extends ChangeNotifier {
           result.dispose();
           return;
         }
+        if (result.width * result.height * 4 + byteCount > maxBytes)
+          throw StateError('Decoder oltre il budget');
         entry.image = result;
         _trim();
         notifyListeners();
@@ -103,6 +176,7 @@ class DecodedImageCache extends ChangeNotifier {
         result?.dispose();
         entry.failed = true;
       } finally {
+        entry.pending = false;
         codec?.dispose();
       }
     });

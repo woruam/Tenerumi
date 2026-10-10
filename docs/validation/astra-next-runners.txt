@@ -1,0 +1,15 @@
+Creating project .dart_tool\astra-runners...
+Wrote 34 files.
+
+All done!
+You can find general documentation for Flutter at: https://docs.flutter.dev/
+Detailed API documentation is available at: https://api.flutter.dev/
+If you prefer video documentation, consider: https://www.youtube.com/c/flutterdev
+
+In order to run your application, type:
+
+  $ cd .dart_tool\astra-runners
+  $ flutter run
+
+Your application code is in .dart_tool\astra-runners\lib\main.dart.
+

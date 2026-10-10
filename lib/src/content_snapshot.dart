@@ -7,20 +7,7 @@ import 'package:xournalpp/src/XppLayer.dart';
 /// Copies mutable geometry while sharing immutable pixel data.
 XppContent cloneContent(XppContent content) {
   if (content is XppStroke) {
-    return content.newStroke(
-        color: content.color,
-        points: content.points
-            ?.map(
-              (point) =>
-                  XppStrokePoint(x: point.x, y: point.y, width: point.width),
-            )
-            .toList(),
-      )
-      ..audioLink = content.audioLink
-      ..editingTool = content.editingTool
-      ..isShape = content.isShape
-      ..smooth = content.smooth
-      ..erasures = List.of(content.erasures);
+    return content.copyWithSharedPoints();
   }
   if (content is XppText) {
     return XppText(

@@ -9,9 +9,11 @@ import 'XppFile.dart';
 import 'globals.dart';
 import 'compat/file_picker_cross.dart';
 import 'autosave_store.dart';
+import 'critical_data.dart';
 
 bool hasDocumentPreview(Object? value) {
-  if (value is! String || value.isEmpty) return false;
+  if (value is! String || value.isEmpty || value.length > 512 * 1024)
+    return false;
   try {
     final bytes = base64Decode(value);
     return bytes.isNotEmpty && !listEquals(bytes, kTransparentImage);
@@ -23,6 +25,7 @@ bool hasDocumentPreview(Object? value) {
 /// Serialize metadata writes across autosave, manual save and lazy migrations.
 /// Preserve user fields and never replace a newer saved entry with old metadata.
 class RecentDocuments {
+  static bool restoring = false;
   static Future<void>? _queue;
   static Future<T> _serial<T>(Future<T> Function() operation) {
     final result = (_queue ?? Future.value()).then((_) => operation());
@@ -40,12 +43,64 @@ class RecentDocuments {
   }
 
   static Future<List<Map<String, dynamic>>> list() async {
-    final prefs = await SharedPreferences.getInstance();
-    return (jsonDecode(prefs.getString(PreferencesKeys.kRecentFiles) ?? '[]')
-            as List)
-        .whereType<Map>()
-        .map((e) => Map<String, dynamic>.from(e))
-        .toList();
+    final missingIndex =
+        await CriticalData.read(PreferencesKeys.kRecentFiles) == null;
+    final entries = await CriticalData.records(
+      PreferencesKeys.kRecentFiles,
+      (e) =>
+          e['path'] is String &&
+          e['name'] is String &&
+          (e['id'] == null || e['id'] is String) &&
+          (e['tag'] == null || e['tag'] is String) &&
+          (e['favorite'] == null || e['favorite'] is bool) &&
+          (e['key'] == null || e['key'] is String) &&
+          (e['localId'] == null || e['localId'] is String) &&
+          (e['preview'] == null ||
+              e['preview'] is String &&
+                  (e['preview'] as String).length <= 512 * 1024) &&
+          (e['modifiedAt'] == null || e['modifiedAt'] is String),
+    );
+    if (missingIndex || entries.isEmpty && CriticalData.warnings.isNotEmpty) {
+      for (final candidate in await CriticalData.libraryCandidates()) {
+        final path = candidate['path'];
+        if (path is String &&
+            candidate['name'] is String &&
+            !entries.any((e) => e['path'] == path)) {
+          try {
+            if (await FilePickerCross.exists(path)) entries.add(candidate);
+          } catch (_) {}
+        }
+      }
+      await CriticalData.write(PreferencesKeys.kRecentFiles, entries);
+    }
+    final pending = await CriticalData.read('restorePending');
+    if (!restoring && pending is List && pending.isNotEmpty) {
+      for (final record in pending.whereType<Map>()) {
+        final path = record['path'];
+        if (path is! String || entries.any((e) => e['path'] == path)) continue;
+        try {
+          final file = await XppFile.fromFilePickerCross(
+            await FilePickerCross.fromInternalPath(path: path),
+            null,
+            (_) async => throw StateError('Sfondo mancante'),
+          );
+          entries.add({
+            ...Map<String, dynamic>.from(record),
+            'id': file.documentId,
+          });
+        } catch (_) {
+          await CriticalData.quarantine('restorePending', jsonEncode(record));
+        }
+      }
+      await CriticalData.transaction((state) async {
+        state[PreferencesKeys.kRecentFiles] = entries;
+        state['restorePending'] = [];
+      });
+      CriticalData.warnings.add(
+        'Ripristino interrotto: gli appunti completi sono stati recuperati nella libreria.',
+      );
+    }
+    return entries;
   }
 
   static Future<void> save(XppFile snapshot, String path) => _serial(() async {
@@ -54,9 +109,11 @@ class RecentDocuments {
     entries.removeWhere((e) => e['path'] == path);
     entries.add({
       ...?previous,
-      'name': snapshot.title,
+      'name': snapshot.title ?? 'Documento',
       'path': path,
       'id': snapshot.documentId,
+      'key': XppFile.recoveryKeyFor(path, snapshot.localId),
+      'localId': snapshot.localId,
       'favorite': previous?['favorite'] ?? false,
       'tag': snapshot.tag ?? previous?['tag'] ?? 'Appunti',
       'preview': snapshot.previewImage == null
@@ -65,6 +122,7 @@ class RecentDocuments {
       if (snapshot.modifiedAt != null)
         'modifiedAt': snapshot.modifiedAt!.toUtc().toIso8601String(),
     });
+    await CriticalData.stageLibrary(entries.last);
     await _write(entries);
   });
 
@@ -75,7 +133,11 @@ class RecentDocuments {
   ) => _serial(() async {
     final entries = await list();
     final prefs = await SharedPreferences.getInstance();
-    final previousTags = prefs.getStringList(PreferencesKeys.kNoteTags);
+    final previousTags =
+        (await CriticalData.read(PreferencesKeys.kNoteTags) as List?)
+            ?.whereType<String>()
+            .toList() ??
+        prefs.getStringList(PreferencesKeys.kNoteTags);
     final tags = [...?previousTags];
     for (final value in backupTags) {
       final tag = value.trim();
@@ -87,10 +149,13 @@ class RecentDocuments {
     }
     for (final document in documents) {
       final file = document.file;
+      entries.removeWhere((e) => e['path'] == file.sourcePath);
       entries.add({
-        'name': file.title,
+        'name': file.title ?? 'Documento',
         'path': file.sourcePath,
         'id': file.documentId,
+        'key': file.recoveryKey,
+        'localId': file.localId,
         'tag': file.tag ?? 'Appunti',
         'favorite': document.favorite,
         'preview': file.previewImage == null
@@ -100,19 +165,17 @@ class RecentDocuments {
           'modifiedAt': file.modifiedAt!.toUtc().toIso8601String(),
       });
     }
-    if (!await prefs.setStringList(PreferencesKeys.kNoteTags, tags)) {
-      throw StateError('Impossibile ripristinare i tag');
+    for (final entry in entries) {
+      await CriticalData.stageLibrary(entry);
     }
-    try {
-      await _write(entries);
-    } catch (_) {
-      if (previousTags == null) {
-        await prefs.remove(PreferencesKeys.kNoteTags);
-      } else {
-        await prefs.setStringList(PreferencesKeys.kNoteTags, previousTags);
-      }
-      rethrow;
-    }
+    await CriticalData.transaction((state) async {
+      state[PreferencesKeys.kNoteTags] = {
+        ...?(state[PreferencesKeys.kNoteTags] as List?),
+        ...tags,
+      }.toList();
+      state[PreferencesKeys.kRecentFiles] = entries;
+      state['restorePending'] = [];
+    });
   });
 
   static Future<void> delete(
@@ -121,14 +184,11 @@ class RecentDocuments {
   }) => _serial(() async {
     final entries = await list();
     final path = entry['path'];
-    final id = entry['id'];
     final current = entries
         .where(
           (e) => path is String && path.isNotEmpty
               ? e['path'] == path
-              : id is String && id.isNotEmpty
-              ? e['id'] == id
-              : e['path'] == path && e['name'] == entry['name'],
+              : e['key'] != null && e['key'] == entry['key'],
         )
         .firstOrNull;
     if (current == null) return;
@@ -139,10 +199,15 @@ class RecentDocuments {
         await FilePickerCross.delete(path: path);
     }
     entries.remove(current);
+    if (path is String) await CriticalData.forgetLibrary(path);
     await _write(entries);
-    final documentId = current['id'];
-    if (documentId is String && documentId.isNotEmpty)
-      await AutosaveStore.remove(documentId);
+    await AutosaveStore.remove(
+      current['key'] as String? ??
+          XppFile.recoveryKeyFor(
+            path as String?,
+            current['localId'] as String? ?? 'legacy',
+          ),
+    );
   });
 
   static Future<void> setTag(Map<String, dynamic> entry, String tag) =>
@@ -178,11 +243,6 @@ class RecentDocuments {
     await _write(entries);
   });
   static Future<void> _write(List<Map<String, dynamic>> entries) async {
-    if (!await (await SharedPreferences.getInstance()).setString(
-      PreferencesKeys.kRecentFiles,
-      jsonEncode(entries),
-    )) {
-      throw StateError('Impossibile aggiornare i documenti recenti');
-    }
+    await CriticalData.write(PreferencesKeys.kRecentFiles, entries);
   }
 }

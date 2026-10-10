@@ -174,6 +174,9 @@ class _WorkspacePageState extends State<WorkspacePage>
             {
               'template': _emptyTemplate(f),
               'id': f.documentId,
+              'key': f.recoveryKey,
+              'localId': f.localId,
+              'recoveryOnly': f.recovered,
               'path': f.sourcePath,
               'title': f.title,
               'tag': f.tag,

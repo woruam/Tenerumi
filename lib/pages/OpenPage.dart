@@ -7,6 +7,9 @@ import 'package:xournalpp/widgets/note_backup_dialog.dart';
 import 'package:xournalpp/src/app_appearance.dart';
 
 import 'package:flutter/material.dart';
+import 'package:xournalpp/src/critical_data.dart';
+import 'package:flutter/services.dart';
+import 'package:xournalpp/controllers/note_audio_controller.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,6 +23,8 @@ import 'package:xournalpp/src/compat/file_picker_cross.dart';
 import 'package:xournalpp/plugins/plugin_controller.dart';
 import 'package:xournalpp/plugins/plugin_manager_page.dart';
 import 'package:xournalpp/src/autosave_store.dart';
+import 'package:xournalpp/src/compat/audio_platform_stub.dart'
+    if (dart.library.io) 'package:xournalpp/src/compat/audio_platform_io.dart';
 import 'package:xournalpp/widgets/document_library_card.dart';
 
 class OpenPage extends StatefulWidget {
@@ -30,6 +35,7 @@ class OpenPage extends StatefulWidget {
 class _OpenPageState extends State<OpenPage> {
   List<dynamic> recentFiles = [];
   List<Map<String, dynamic>> recoveryFiles = [];
+  List<Map<String, dynamic>> audioRecoveries = [];
 
   List<String> tags = ['Tutti', 'Appunti', 'Scuola', 'Lavoro'];
   String selectedTag = 'Tutti';
@@ -123,7 +129,14 @@ class _OpenPageState extends State<OpenPage> {
   }
 
   Future<void> _restoreWorkspace() async {
-    final restored = await WorkspaceSession.restore();
+    RestoredWorkspace? restored;
+    try {
+      restored = await WorkspaceSession.restore();
+    } catch (error) {
+      CriticalData.warnings.add('Sessione non disponibile: $error');
+      if (mounted) setState(() {});
+      return;
+    }
     if (!mounted ||
         restored == null ||
         ModalRoute.of(context)?.isCurrent != true)
@@ -135,26 +148,45 @@ class _OpenPageState extends State<OpenPage> {
   }
 
   Future<void> _loadRecentFiles() async {
-    final files = await RecentDocuments.list();
-    final recoveries = await AutosaveStore.list();
-    final availableTags = await NoteTags.load();
-    if (!mounted) return;
-    setState(() {
-      recoveryFiles = recoveries;
-      recentFiles = files;
-      tags = ['Tutti', ...availableTags];
-      if (!tags.contains(selectedTag)) selectedTag = 'Tutti';
-      for (final file in recentFiles) {
-        final currentTag = NoteTags.normalize(
-          file['tag'] as String? ?? 'Appunti',
-        );
-        file['tag'] =
-            availableTags
-                .where((tag) => tag.toLowerCase() == currentTag.toLowerCase())
-                .firstOrNull ??
-            'Appunti';
-      }
-    });
+    try {
+      final files = await RecentDocuments.list();
+      final recoveries = await AutosaveStore.list();
+      final availableTags = await NoteTags.load();
+      List<Map<String, dynamic>> stagedAudio = [];
+      try {
+        if (nativeAudioAvailable) {
+          final raw = await AndroidNoteAudioBackend.channel.invokeMethod<List>(
+            'orphans',
+          );
+          stagedAudio = (raw ?? [])
+              .whereType<Map>()
+              .map((e) => Map<String, dynamic>.from(e))
+              .where((e) => e['noteId'] is String && e['count'] is int)
+              .toList();
+        }
+      } catch (_) {}
+      if (!mounted) return;
+      setState(() {
+        recoveryFiles = recoveries;
+        audioRecoveries = stagedAudio;
+        recentFiles = files;
+        tags = ['Tutti', ...availableTags];
+        if (!tags.contains(selectedTag)) selectedTag = 'Tutti';
+        for (final file in recentFiles) {
+          final currentTag = NoteTags.normalize(
+            file['tag'] as String? ?? 'Appunti',
+          );
+          file['tag'] =
+              availableTags
+                  .where((tag) => tag.toLowerCase() == currentTag.toLowerCase())
+                  .firstOrNull ??
+              'Appunti';
+        }
+      });
+    } catch (error) {
+      CriticalData.warnings.add('Impossibile aprire la libreria: $error');
+      if (mounted) setState(() {});
+    }
   }
 
   Future<String?> _createTag(BuildContext dialogContext) async {
@@ -879,7 +911,49 @@ class _OpenPageState extends State<OpenPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (CriticalData.warnings.isNotEmpty)
+            MaterialBanner(
+              content: Text(CriticalData.warnings.join('\n')),
+              actions: [
+                TextButton(
+                  onPressed: () =>
+                      setState(() => CriticalData.warnings.clear()),
+                  child: const Text('Ho capito'),
+                ),
+              ],
+            ),
           // Barra orizzontale dei Tag
+          if (audioRecoveries.isNotEmpty)
+            ListTile(
+              leading: const Icon(Icons.mic),
+              title: Text(
+                'Audio da recuperare: ${audioRecoveries.length} appunti',
+              ),
+              subtitle: const Text(
+                'I segmenti finalizzati sono conservati; le registrazioni incomplete vengono segnalate.',
+              ),
+              onTap: () async {
+                final entry = await showDialog<Map<String, dynamic>>(
+                  context: context,
+                  builder: (context) => SimpleDialog(
+                    title: const Text('Recupera audio'),
+                    children: [
+                      for (final e in audioRecoveries)
+                        SimpleDialogOption(
+                          onPressed: () => Navigator.pop(context, e),
+                          child: Text(
+                            '${e['count']} segmenti — ${e['noteId']}',
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+                if (entry == null || !mounted) return;
+                final file = XppFile.empty(title: 'Audio recuperato')
+                  ..localId = entry['noteId'] as String;
+                _openFile(file);
+              },
+            ),
           if (recoveryFiles.isNotEmpty)
             SizedBox(
               height: 96,
@@ -952,7 +1026,9 @@ class _OpenPageState extends State<OpenPage> {
                               ),
                             );
                             if (confirmed == true) {
-                              await AutosaveStore.remove(entry['id'] as String);
+                              await AutosaveStore.remove(
+                                entry['key'] as String,
+                              );
                               _loadRecentFiles();
                             }
                           },
@@ -1050,6 +1126,9 @@ class _OpenPageState extends State<OpenPage> {
                                     );
 
                                 loadedFile.title = fileData['name'];
+                                if (fileData['localId'] is String)
+                                  loadedFile.localId =
+                                      fileData['localId'] as String;
                                 loadedFile.tag =
                                     fileData['tag'] as String? ??
                                     loadedFile.tag;
