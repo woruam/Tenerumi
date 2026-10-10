@@ -1,0 +1,18 @@
+APK: build/app/outputs/flutter-apk/app-release.apk
+Engine/bridge entries found: 0
+Native libraries:
+lib/arm64-v8a/libapp.so
+lib/arm64-v8a/libdartjni.so
+lib/arm64-v8a/libdatastore_shared_counter.so
+lib/arm64-v8a/libflutter.so
+lib/arm64-v8a/libmlkit_google_ocr_pipeline.so
+lib/armeabi-v7a/libapp.so
+lib/armeabi-v7a/libdartjni.so
+lib/armeabi-v7a/libdatastore_shared_counter.so
+lib/armeabi-v7a/libflutter.so
+lib/armeabi-v7a/libmlkit_google_ocr_pipeline.so
+lib/x86_64/libapp.so
+lib/x86_64/libdartjni.so
+lib/x86_64/libdatastore_shared_counter.so
+lib/x86_64/libflutter.so
+lib/x86_64/libmlkit_google_ocr_pipeline.so

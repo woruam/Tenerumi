@@ -11,7 +11,7 @@ Future<void> main() async {
   for (var index = 0; index < pluginExamples.length; index++) {
     final id = pluginExamples[index]['id'];
     await File('${directory.path}/$id.osiplugin.json')
-        .writeAsString('${exampleSource(index)}\n');
+        .writeAsString('${workflowExampleSource(index)}\n');
     if (pluginExamples[index]['runtime'] == 'javascript') {
       final manifest = Map<String, dynamic>.of(pluginExamples[index]);
       final modules = manifest.remove('modules') as Map;

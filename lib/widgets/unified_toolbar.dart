@@ -307,7 +307,7 @@ class _UnifiedToolbarState extends State<UnifiedToolbar> {
             ),
             const Divider(),
             const Text(
-              'Proprietà Penna:',
+              'Proprietà figure:',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -325,7 +325,7 @@ class _UnifiedToolbarState extends State<UnifiedToolbar> {
                       .map(
                         (c) => InkWell(
                           onTap: () {
-                            ctrl.setPenProps(c, null);
+                            ctrl.setShapeProps(c, null);
                             setDialogState(() {});
                           },
                           child: Container(
@@ -335,10 +335,10 @@ class _UnifiedToolbarState extends State<UnifiedToolbar> {
                               color: c,
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: ctrl.penColor == c
+                                color: ctrl.shapeColor == c
                                     ? Colors.black
                                     : Colors.black12,
-                                width: ctrl.penColor == c ? 3 : 1,
+                                width: ctrl.shapeColor == c ? 3 : 1,
                               ),
                             ),
                           ),
@@ -347,11 +347,11 @@ class _UnifiedToolbarState extends State<UnifiedToolbar> {
                       .toList(),
             ),
             Slider(
-              value: ctrl.penWidth,
+              value: ctrl.shapeWidth,
               min: 0.5,
               max: 20.0,
               onChanged: (val) {
-                ctrl.setPenProps(null, val);
+                ctrl.setShapeProps(null, val);
                 setDialogState(() {});
               },
             ),

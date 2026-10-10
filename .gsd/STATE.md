@@ -1,5 +1,12 @@
 # Stato della correzione operativa — 2026-10-06
 
+## Revisione sicurezza plugin — 2026-10-10
+
+- Riprodotto con un file temporaneo innocuo il caricamento di moduli esterni in FJS 3.2.0. Motore/bridge rimossi dalle dipendenze dell'app; JavaScript rifiutato nel controller e nei runner, senza preferenze, flag o interruttori di riattivazione.
+- Workflow JSON LaTeX/OCR disponibili; rafforzati ZIP/decompressione, dati e default UI, permessi immutabili, geometrie, risorse, cancellazione e HTTPS/DNS. Guida e modello di minaccia aggiornati.
+- Prove: 209 test superati, analisi senza errori/warning, APK release compilato e ispezionato senza FJS/bridge. Log in `docs/validation/plugin-security-*`; rapporto in `docs/PLUGIN_SECURITY.md`.
+- Limiti residui: prove OCR/file picker su Android fisico, manutenzione dei decoder e del nucleo. Un futuro motore richiede loader chiuso e isolamento del sistema operativo, non un opt-in utente.
+
 SPEC finalizzata; wave implementazione e integrazione completate.
 
 ## Modifiche

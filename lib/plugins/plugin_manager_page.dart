@@ -11,6 +11,8 @@ import 'plugin_manifest.dart';
 import 'plugin_package.dart';
 import 'plugin_ui.dart';
 
+import 'package:xournalpp/widgets/note_flashcards_panel.dart';
+
 class PluginManagerPage extends StatefulWidget {
   final PluginController plugins;
   final CanvasController? canvas;
@@ -20,6 +22,15 @@ class PluginManagerPage extends StatefulWidget {
 }
 
 class _PluginManagerPageState extends State<PluginManagerPage> {
+  Future<void> _toggleBuiltIn(String id, bool value) async {
+    try {
+      await widget.plugins.setBuiltInEnabled(id, value);
+      if (!value && id == 'anki') widget.canvas?.cancelFlashcard();
+    } catch (error) {
+      _error(error);
+    }
+  }
+
   void _error(Object error) {
     if (mounted) {
       ScaffoldMessenger.of(context)
@@ -37,6 +48,60 @@ class _PluginManagerPageState extends State<PluginManagerPage> {
     );
     if (result == null) return;
     try {
+      final plugin = widget.plugins.validateSource(result);
+      if (!mounted) return;
+      final accepted = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Autorizza ${plugin.name}'),
+          content: SizedBox(
+            width: 460,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    replace
+                        ? 'Verifica gli accessi anche quando aggiorni un plugin.'
+                        : 'Questo plugin richiede i seguenti accessi:',
+                  ),
+                  if (plugin.permissions.isEmpty)
+                    const Text('Nessun accesso ai dati.'),
+                  for (final permission in plugin.permissions)
+                    Text('• ${pluginPermissions[permission]}'),
+                  if (plugin.permissions.contains('network')) ...[
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Può inviare ai seguenti server i dati che gli concedi:',
+                    ),
+                    for (final host
+                        in plugin.manifest['networkHosts'] as List? ?? [])
+                      Text('• $host'),
+                  ],
+                  if (plugin.isJavaScript) ...[
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Puoi conservare questo plugin, ma la sua esecuzione JavaScript è sospesa per sicurezza. Usa un workflow JSON.',
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Annulla'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Autorizza e installa'),
+            ),
+          ],
+        ),
+      );
+      if (accepted != true) return;
       await widget.plugins.install(result, replace: replace);
     } catch (error) {
       _error(error);
@@ -63,14 +128,17 @@ class _PluginManagerPageState extends State<PluginManagerPage> {
         title: const Text('Esempi pronti'),
         children: [
           for (var i = 0; i < pluginExamples.length; i++)
-            SimpleDialogOption(
-              onPressed: () => Navigator.pop(context, i),
-              child: Text(pluginExamples[i]['name'] as String),
-            ),
+            if (pluginExamples[i]['id'] != 'example.anki')
+              SimpleDialogOption(
+                onPressed: () => Navigator.pop(context, i),
+                child: Text(pluginExamples[i]['name'] as String),
+              ),
         ],
       ),
     );
-    if (choice != null && mounted) await _edit(source: exampleSource(choice));
+    if (choice != null && mounted) {
+      await _edit(source: workflowExampleSource(choice));
+    }
   }
 
   Future<void> _export(NotePlugin plugin) async {
@@ -150,6 +218,63 @@ class _PluginManagerPageState extends State<PluginManagerPage> {
               'Crea un plugin guidato o importa un plugin programmabile .osiplugin. Apri un documento per eseguire i comandi.',
             ),
             const SizedBox(height: 12),
+            Card(
+              child: SwitchListTile(
+                key: const ValueKey('plugin-pomodoro'),
+                title: const Text('Timer Pomodoro'),
+                subtitle: const Text(
+                  'Mostra il timer nella toolbar quando è attivo.',
+                ),
+                secondary: const Icon(Icons.timer_outlined),
+                value: plugins.pomodoroEnabled,
+                onChanged: plugins.running || plugins.loading
+                    ? null
+                    : (v) => _toggleBuiltIn('pomodoro', v),
+              ),
+            ),
+            Card(
+              child: Column(
+                children: [
+                  SwitchListTile(
+                    key: const ValueKey('plugin-anki'),
+                    title: const Text('Flashcard per Anki'),
+                    subtitle: const Text(
+                      'Doppia selezione: titolo e risposta. '
+                      'Ogni appunto conserva il proprio set modificabile.',
+                    ),
+                    secondary: const Icon(Icons.style_outlined),
+                    value: plugins.ankiEnabled,
+                    onChanged: plugins.running || plugins.loading
+                        ? null
+                        : (v) => _toggleBuiltIn('anki', v),
+                  ),
+                  if (plugins.ankiEnabled && widget.canvas != null)
+                    Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          FilledButton.tonal(
+                            onPressed: widget.canvas!.savingFile
+                                ? null
+                                : () {
+                                    widget.canvas!.beginFlashcard();
+                                    Navigator.pop(context);
+                                  },
+                            child: const Text('Doppia selezione'),
+                          ),
+                          OutlinedButton(
+                            onPressed: () =>
+                                showNoteFlashcards(context, widget.canvas!),
+                            child: const Text('Flashcard dell’appunto'),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            ),
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -196,92 +321,126 @@ class _PluginManagerPageState extends State<PluginManagerPage> {
                 ),
               ),
             for (final entry in plugins.installed)
-              Card(
-                child: ExpansionTile(
-                  title: Text(entry.plugin.name),
-                  subtitle: Text(
-                    '${entry.plugin.version} · ${entry.enabled ? 'Attivo' : 'Disattivato'}',
-                  ),
-                  trailing: Switch(
-                    value: entry.enabled,
-                    onChanged: plugins.running
-                        ? null
-                        : (value) async {
-                            try {
-                              await plugins.setEnabled(entry.plugin.id, value);
-                            } catch (e) {
-                              _error(e);
-                            }
-                          },
-                  ),
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(entry.plugin.description),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Accesso: ${entry.plugin.permissions.isEmpty ? 'solo messaggi' : entry.plugin.permissions.map((p) => pluginPermissions[p]).join(', ')}',
-                          ),
-                          const SizedBox(height: 8),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: [
-                              for (final command in entry.plugin.commands)
-                                FilledButton.tonal(
-                                  onPressed:
-                                      !entry.enabled ||
-                                          plugins.running ||
-                                          widget.canvas == null
-                                      ? null
-                                      : () => _run(entry, command),
-                                  child: Text(command['label'] as String),
-                                ),
-                            ],
-                          ),
-                          Wrap(
-                            spacing: 8,
-                            children: [
-                              TextButton(
-                                onPressed: plugins.running
-                                    ? null
-                                    : () => _edit(
-                                        source: entry.plugin.source,
-                                        replace: true,
-                                      ),
-                                child: const Text('Modifica JSON'),
-                              ),
-                              TextButton(
-                                onPressed: plugins.running
-                                    ? null
-                                    : () => _export(entry.plugin),
-                                child: const Text('Condividi file'),
-                              ),
-                              TextButton(
-                                onPressed: plugins.running
-                                    ? null
-                                    : () async {
-                                        try {
-                                          await plugins.uninstall(
-                                            entry.plugin.id,
-                                          );
-                                        } catch (e) {
-                                          _error(e);
-                                        }
-                                      },
-                                child: const Text('Rimuovi'),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+              if (entry.plugin.id != 'example.anki')
+                Card(
+                  child: ExpansionTile(
+                    title: Text(entry.plugin.name),
+                    subtitle: Text(
+                      '${entry.plugin.version} · ${entry.plugin.isJavaScript
+                          ? 'Sospeso'
+                          : entry.enabled
+                          ? 'Attivo'
+                          : 'Disattivato'}',
                     ),
-                  ],
+                    trailing: Switch(
+                      value: entry.enabled && !entry.plugin.isJavaScript,
+                      onChanged: plugins.running || entry.plugin.isJavaScript
+                          ? null
+                          : (value) async {
+                              try {
+                                await plugins.setEnabled(
+                                  entry.plugin.id,
+                                  value,
+                                );
+                              } catch (e) {
+                                _error(e);
+                              }
+                            },
+                    ),
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(entry.plugin.description),
+                            if (entry.plugin.isJavaScript)
+                              const Text(
+                                'JavaScript sospeso per sicurezza. Nessun interruttore può riattivarlo.',
+                              ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Accesso: ${entry.plugin.permissions.isEmpty ? 'solo messaggi' : entry.plugin.permissions.map((p) => pluginPermissions[p]).join(', ')}',
+                            ),
+                            const SizedBox(height: 8),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: [
+                                for (final command in entry.plugin.commands)
+                                  FilledButton.tonal(
+                                    onPressed:
+                                        !entry.enabled ||
+                                            entry.plugin.isJavaScript ||
+                                            plugins.running ||
+                                            widget.canvas == null
+                                        ? null
+                                        : () => _run(entry, command),
+                                    child: Text(command['label'] as String),
+                                  ),
+                              ],
+                            ),
+                            Wrap(
+                              spacing: 8,
+                              children: [
+                                if (entry.plugin.isJavaScript &&
+                                    [
+                                      'example.latex',
+                                      'example.ocr',
+                                    ].contains(entry.plugin.id))
+                                  TextButton(
+                                    onPressed: plugins.running
+                                        ? null
+                                        : () => _edit(
+                                            source: workflowExampleSource(
+                                              pluginExamples.indexWhere(
+                                                (p) =>
+                                                    p['id'] == entry.plugin.id,
+                                              ),
+                                            ),
+                                            replace: true,
+                                          ),
+                                    child: const Text(
+                                      'Usa l’esempio JSON sicuro',
+                                    ),
+                                  ),
+                                TextButton(
+                                  onPressed: plugins.running
+                                      ? null
+                                      : () => _edit(
+                                          source: entry.plugin.source,
+                                          replace: true,
+                                        ),
+                                  child: const Text('Modifica JSON'),
+                                ),
+                                TextButton(
+                                  onPressed: plugins.running
+                                      ? null
+                                      : () => _export(entry.plugin),
+                                  child: const Text('Condividi file'),
+                                ),
+                                TextButton(
+                                  onPressed: plugins.running
+                                      ? null
+                                      : () async {
+                                          try {
+                                            await plugins.uninstall(
+                                              entry.plugin.id,
+                                            );
+                                          } catch (e) {
+                                            _error(e);
+                                          }
+                                        },
+                                  child: const Text('Rimuovi'),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
           ],
         ),
       );

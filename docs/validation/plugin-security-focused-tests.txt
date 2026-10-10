@@ -1,0 +1,47 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart
+00:00 +0: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: valid images commit; malformed images cannot corrupt a document
+00:00 +1: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: invalid manifest, permissions and unknown API do not install
+00:00 +2: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: all bundled examples install and generate undoable notes or persistent tools
+00:00 +3: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: conditions, foreach, arithmetic, text transforms and storage compose
+00:00 +4: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: failed plugin rolls back content, state, tool and undo history
+00:00 +5: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: instruction budget interrupts nested loops without committing partial edits
+00:00 +6: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: large string expansion is rejected before allocating huge output
+00:00 +7: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: disable, update and uninstall persist across restarts
+00:00 +8: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: corrupt installed entries are isolated from healthy plugins
+00:00 +9: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: required input and types are validated before editing
+00:00 +10: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: host API extensions preserve transaction and conflict protection
+00:00 +11: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: execution targets the chosen page and controller only
+00:00 +12: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:00 +13: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:00 +14: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:00 +15: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:00 +16: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:00 +17: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:00 +18: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:00 +19: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:00 +20: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:00 +21: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:00 +22: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:00 +23: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:00 +24: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:01 +25: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:01 +26: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:01 +27: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:01 +28: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:01 +29: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:01 +30: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:01 +31: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:01 +32: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:01 +33: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:01 +34: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:01 +35: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:01 +36: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:01 +37: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:01 +38: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:02 +39: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:02 +40: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:02 +41: C:/Users/aless/Documents/GitHub/OSIpp/test/study_plugins_test.dart: plugin activation controls toolbar and selection UI
+00:02 +42: C:/Users/aless/Documents/GitHub/OSIpp/test/study_plugins_test.dart: cards can be edited and deleted only in their note
+00:03 +43: C:/Users/aless/Documents/GitHub/OSIpp/test/study_plugins_test.dart: native plugins are listed without installation
+00:03 +44: C:/Users/aless/Documents/GitHub/OSIpp/test/study_plugins_test.dart: two captures create a reviewed card without changing source text
+00:03 +45: All tests passed!

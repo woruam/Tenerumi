@@ -1,3 +1,5 @@
+import 'package:xournalpp/plugins/plugin_controller.dart';
+
 import 'dart:convert';
 import 'dart:async';
 
@@ -139,6 +141,7 @@ class _WorkspacePageState extends State<WorkspacePage>
     if (file.sourcePath != null ||
         file.pdfAttachments.isNotEmpty ||
         file.recordings.isNotEmpty ||
+        file.flashcards.isNotEmpty ||
         file.pages?.length != 1 ||
         file.pages!.any(
           (p) => p.layers!.any((l) => l.content?.isNotEmpty == true),
@@ -332,6 +335,9 @@ class _WorkspacePageState extends State<WorkspacePage>
 
   @override
   Widget build(BuildContext context) {
+    final pomodoroEnabled =
+        context.watch<PluginController?>()?.pomodoroEnabled == true;
+    if (!pomodoroEnabled) _showPomodoro = false;
     return ChangeNotifierProvider<WorkspaceController>.value(
       value: _ws,
       child: Consumer<WorkspaceController>(
@@ -404,7 +410,7 @@ class _WorkspacePageState extends State<WorkspacePage>
                       ),
                     ),
                   // ---- Pannello Pomodoro (globale, trascinabile, sempre vivo) ----
-                  _buildPomodoroOverlay(context),
+                  if (pomodoroEnabled) _buildPomodoroOverlay(context),
                 ],
               ),
             ),

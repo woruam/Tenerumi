@@ -7,6 +7,7 @@ enum EditingTool {
   IMAGE,
   MOVE,
   SELECT,
+  FLASHCARD,
   ERASER,
   WHITEOUT,
   SHAPE_LINE,

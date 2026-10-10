@@ -313,3 +313,108 @@ final pluginExamples = [..._simplePluginExamples, ..._advancedPluginExamples];
 
 String exampleSource(int index) =>
     const JsonEncoder.withIndent('  ').convert(pluginExamples[index]);
+
+/// Safe host workflows keep the shipped LaTeX/OCR tools usable while JS is gated.
+String workflowExampleSource(int index) {
+  final original = pluginExamples[index];
+  final id = original['id'];
+  if (id != 'example.latex' && id != 'example.ocr') return exampleSource(index);
+  final manifest = Map<String, dynamic>.from(original)
+    ..remove('modules')
+    ..remove('entry')
+    ..['runtime'] = 'workflow';
+  manifest['commands'] = id == 'example.latex'
+      ? [
+          {
+            'id': 'insert',
+            'label': 'Inserisci formula',
+            'inputs': [
+              {
+                'id': 'formula',
+                'label': 'LaTeX',
+                'type': 'text',
+                'required': true,
+                'multiline': true,
+              },
+              {
+                'id': 'size',
+                'label': 'Dimensione',
+                'type': 'number',
+                'default': 24,
+              },
+            ],
+            'steps': [
+              {
+                'action': 'tex.add',
+                'args': {
+                  'text': r'${input.formula}',
+                  'size': {'var': 'input.size'},
+                },
+              },
+            ],
+          },
+        ]
+      : [
+          {
+            'id': 'recognize',
+            'label': 'Riconosci testo',
+            'steps': [
+              {
+                'action': 'files.open',
+                'args': {'type': 'image'},
+                'as': 'image',
+              },
+              {
+                'if': {
+                  'op': 'ne',
+                  'args': [
+                    {'var': 'image'},
+                    null,
+                  ],
+                },
+                'then': [
+                  {
+                    'action': 'ocr.recognize',
+                    'args': {'var': 'image'},
+                    'as': 'recognized',
+                  },
+                  {
+                    'action': 'ui.form',
+                    'args': {
+                      'title': 'Correggi il testo',
+                      'fields': [
+                        {
+                          'id': 'text',
+                          'label': 'Testo riconosciuto',
+                          'type': 'text',
+                          'multiline': true,
+                          'default': {'var': 'recognized.text'},
+                        },
+                      ],
+                    },
+                    'as': 'corrected',
+                  },
+                  {
+                    'if': {
+                      'op': 'ne',
+                      'args': [
+                        {'var': 'corrected'},
+                        null,
+                      ],
+                    },
+                    'then': [
+                      {
+                        'action': 'text.add',
+                        'args': {
+                          'text': {'var': 'corrected.text'},
+                        },
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ];
+  return const JsonEncoder.withIndent('  ').convert(manifest);
+}

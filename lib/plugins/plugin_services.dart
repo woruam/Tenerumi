@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -13,6 +14,8 @@ import 'package:xournalpp/src/document_export.dart';
 
 import 'plugin_controller.dart';
 import 'plugin_runtime.dart';
+import 'plugin_http.dart';
+import 'plugin_script.dart';
 
 class PluginOutput {
   final String name;
@@ -22,20 +25,56 @@ class PluginOutput {
 
 /// UI capabilities are supplied by the command's owner, never a global context.
 class PluginHost {
+  final void Function()? close;
   final Future<Map<String, dynamic>?> Function(Map<String, dynamic>)? form;
   final Future<Object?> Function(Map<String, dynamic>)? preview;
   final Future<Map<String, dynamic>?> Function(Map<String, dynamic>)? openFile;
   final Future<Map<String, dynamic>> Function(Map<String, dynamic>)? latex;
   final Future<Map<String, dynamic>> Function(Uint8List)? ocr;
-  PluginHost({this.form, this.preview, this.openFile, this.latex, this.ocr});
+  PluginHost({
+    this.form,
+    this.preview,
+    this.openFile,
+    this.latex,
+    this.ocr,
+    this.close,
+  });
 }
 
 Uint8List pluginBytes(Map<String, dynamic> args) {
+  if ((args['base64'] is String &&
+          (args['base64'] as String).length > 11200000) ||
+      (args['text'] is String &&
+          (args['text'] as String).length > 8 * 1024 * 1024)) {
+    throw StateError('File: massimo 8 MiB');
+  }
   final bytes = args['base64'] is String
       ? base64Decode(args['base64'] as String)
       : Uint8List.fromList(utf8.encode(args['text'] as String? ?? ''));
   if (bytes.length > 8 * 1024 * 1024) throw StateError('File: massimo 8 MiB');
   return bytes;
+}
+
+Future<void> validatePluginImage(Uint8List bytes) async {
+  final buffer = await ui.ImmutableBuffer.fromUint8List(bytes);
+  try {
+    final descriptor = await ui.ImageDescriptor.encoded(buffer);
+    try {
+      if (descriptor.width * descriptor.height > 4000000) {
+        throw StateError('Immagine: massimo 4 milioni di pixel');
+      }
+      final codec = await descriptor.instantiateCodec();
+      try {
+        (await codec.getNextFrame()).image.dispose();
+      } finally {
+        codec.dispose();
+      }
+    } finally {
+      descriptor.dispose();
+    }
+  } finally {
+    buffer.dispose();
+  }
 }
 
 String ankiTsv(List cards, {String deck = 'OSIpp'}) {
@@ -219,6 +258,8 @@ void registerPluginServices(PluginApi api, PluginSession? session) {
   });
   api.register('ocr.recognize', {'ocr'}, (a) async {
     final bytes = pluginBytes(a);
+    await validatePluginImage(bytes);
+    current();
     final callback = current().host?.ocr ?? recognizePluginText;
     final result = await callback(bytes).timeout(const Duration(seconds: 45));
     current();
@@ -229,7 +270,7 @@ void registerPluginServices(PluginApi api, PluginSession? session) {
     {},
     (_) => {
       'actions': api.actions,
-      'javascript': !kIsWeb,
+      'javascript': pluginJavaScriptAvailable && !kIsWeb,
       'ocr':
           current().host?.ocr != null ||
           !kIsWeb && defaultTargetPlatform == TargetPlatform.android,
@@ -249,38 +290,42 @@ void registerPluginServices(PluginApi api, PluginSession? session) {
     if (!['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].contains(method)) {
       throw StateError('Metodo HTTP non valido');
     }
-    final client = http.Client();
+    validatePluginHttpUri(uri, hosts.cast<String>());
+    final client = createPluginHttpClient();
+    s.cleanup.add(client.close);
     try {
       final request = http.Request(method, uri)..followRedirects = false;
       if (a['headers'] is Map) {
+        validatePluginHttpHeaders(a['headers'] as Map);
         request.headers.addAll(Map<String, String>.from(a['headers'] as Map));
       }
       if (a['body'] is String) request.body = a['body'] as String;
       if (request.bodyBytes.length > 8 * 1024 * 1024) {
         throw StateError('Richiesta troppo grande');
       }
-      final response = await client
-          .send(request)
-          .timeout(const Duration(seconds: 20));
-      final bytes = BytesBuilder(copy: false);
-      await for (final chunk in response.stream.timeout(
-        const Duration(seconds: 20),
-      )) {
-        current();
-        if (bytes.length + chunk.length > 8 * 1024 * 1024) {
-          throw StateError('Risposta troppo grande');
+      Future<Map<String, dynamic>> receive() async {
+        final response = await client.send(request);
+        final bytes = BytesBuilder(copy: false);
+        await for (final chunk in response.stream) {
+          current();
+          if (bytes.length + chunk.length > 8 * 1024 * 1024) {
+            throw StateError('Risposta troppo grande');
+          }
+          bytes.add(chunk);
         }
-        bytes.add(chunk);
+        current();
+        final data = bytes.takeBytes();
+        return {
+          'status': response.statusCode,
+          'headers': response.headers,
+          'text': utf8.decode(data, allowMalformed: true),
+          'base64': base64Encode(data),
+        };
       }
-      current();
-      final data = bytes.takeBytes();
-      return {
-        'status': response.statusCode,
-        'headers': response.headers,
-        'text': utf8.decode(data, allowMalformed: true),
-        'base64': base64Encode(data),
-      };
+
+      return await receive().timeout(const Duration(seconds: 20));
     } finally {
+      s.cleanup.remove(client.close);
       client.close();
     }
   });

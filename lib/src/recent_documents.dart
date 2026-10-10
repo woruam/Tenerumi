@@ -68,6 +68,53 @@ class RecentDocuments {
     await _write(entries);
   });
 
+  /// Commit a restored library in one metadata write after every file exists.
+  static Future<void> addRestored(
+    List<({XppFile file, bool favorite})> documents,
+    List<String> backupTags,
+  ) => _serial(() async {
+    final entries = await list();
+    final prefs = await SharedPreferences.getInstance();
+    final previousTags = prefs.getStringList(PreferencesKeys.kNoteTags);
+    final tags = [...?previousTags];
+    for (final value in backupTags) {
+      final tag = value.trim();
+      if (tag.isNotEmpty &&
+          tag.toLowerCase() != 'tutti' &&
+          !tags.any((t) => t.toLowerCase() == tag.toLowerCase())) {
+        tags.add(tag);
+      }
+    }
+    for (final document in documents) {
+      final file = document.file;
+      entries.add({
+        'name': file.title,
+        'path': file.sourcePath,
+        'id': file.documentId,
+        'tag': file.tag ?? 'Appunti',
+        'favorite': document.favorite,
+        'preview': file.previewImage == null
+            ? ''
+            : base64Encode(file.previewImage!),
+        if (file.modifiedAt != null)
+          'modifiedAt': file.modifiedAt!.toUtc().toIso8601String(),
+      });
+    }
+    if (!await prefs.setStringList(PreferencesKeys.kNoteTags, tags)) {
+      throw StateError('Impossibile ripristinare i tag');
+    }
+    try {
+      await _write(entries);
+    } catch (_) {
+      if (previousTags == null) {
+        await prefs.remove(PreferencesKeys.kNoteTags);
+      } else {
+        await prefs.setStringList(PreferencesKeys.kNoteTags, previousTags);
+      }
+      rethrow;
+    }
+  });
+
   static Future<void> delete(
     Map<String, dynamic> entry, {
     Future<void> Function(String)? deleteFile,

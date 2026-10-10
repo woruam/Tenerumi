@@ -3,6 +3,7 @@ import 'dart:async';
 import 'note_audio_controller.dart';
 
 import 'package:xournalpp/src/note_audio.dart';
+import 'package:xournalpp/src/note_flashcards.dart';
 
 import 'package:xournalpp/src/autosave_store.dart';
 import 'package:xournalpp/src/recent_documents.dart';
@@ -109,6 +110,55 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
 
   Color penColor = Colors.black;
   double penWidth = 2.5;
+  Color shapeColor = Colors.black;
+  double shapeWidth = 2.5;
+  FlashcardSide? flashcardFront;
+  bool capturingFlashcard = false;
+  int flashcardGeneration = 0;
+  void refreshFlashcardTool() {
+    if (!_disposed) notifyListeners();
+  }
+
+  Future<Uint8List?> flashcardBackground(int pageIndex) async {
+    final background = file?.pages?[pageIndex].background;
+    if (background is! XppBackgroundPdf) return null;
+    return pdfBackgrounds[pageIndex] ??
+        await _rasterPdfBackground(background, pixelBudget: 4000000);
+  }
+
+  void beginFlashcard() {
+    flashcardFront = null;
+    setTool(EditingTool.FLASHCARD);
+  }
+
+  void cancelFlashcard() {
+    flashcardFront = null;
+    if (toolData[PointerDeviceKind.stylus] == EditingTool.FLASHCARD) {
+      setTool(EditingTool.STYLUS);
+    }
+  }
+
+  void saveFlashcard(NoteFlashcard card) {
+    if (savingFile || file == null) {
+      throw StateError('Attendere il salvataggio');
+    }
+    if (!file!.flashcards.containsKey(card.id) &&
+        file!.flashcards.length >= 10000) {
+      throw StateError('Massimo 10000 flashcard per appunto');
+    }
+    file!.flashcards[card.id] = card;
+    hasUnsavedChanges = true;
+    notifyListeners();
+  }
+
+  void deleteFlashcard(String id) {
+    if (savingFile || file == null) return;
+    if (file!.flashcards.remove(id) != null) {
+      hasUnsavedChanges = true;
+      notifyListeners();
+    }
+  }
+
   Color highlighterColor = const Color(0xFFFFF59D);
   double highlighterWidth = 15.0;
   EraserMode eraserMode = EraserMode.pixel;
@@ -1315,11 +1365,18 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   void setTool(EditingTool t) {
+    flashcardGeneration++;
+    if (t != EditingTool.FLASHCARD) flashcardFront = null;
     if (audio.listenMode) audio.setListenMode(false);
     toolData = Map.from(toolData);
-    toolData[PointerDeviceKind.touch] = touchDrawingEnabled
+    toolData[PointerDeviceKind.touch] =
+        touchDrawingEnabled || t == EditingTool.FLASHCARD
         ? t
         : EditingTool.MOVE;
+    if (t == EditingTool.FLASHCARD ||
+        toolData.containsKey(PointerDeviceKind.mouse)) {
+      toolData[PointerDeviceKind.mouse] = t;
+    }
     toolData[PointerDeviceKind.stylus] = t;
     // La coda-gomma delle penne da tavoletta resta sempre gomma.
     toolData[PointerDeviceKind.invertedStylus] = EditingTool.ERASER;
@@ -1475,13 +1532,23 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   Color getCurrentToolColor() =>
       toolData[PointerDeviceKind.stylus] == EditingTool.HIGHLIGHT
       ? highlighterColor
+      : isShapeTool
+      ? shapeColor
       : penColor;
   double getCurrentToolWidth() =>
       toolData[PointerDeviceKind.stylus] == EditingTool.HIGHLIGHT
       ? highlighterWidth
       : (toolData[PointerDeviceKind.stylus] == EditingTool.ERASER
             ? eraserWidth
+            : isShapeTool
+            ? shapeWidth
             : penWidth);
+  void setShapeProps(Color? c, double? w) {
+    if (c != null) shapeColor = c;
+    if (w != null) shapeWidth = w;
+    notifyListeners();
+  }
+
   void setPenProps(Color? c, double? w) {
     if (c != null) penColor = c;
     if (w != null) penWidth = w;

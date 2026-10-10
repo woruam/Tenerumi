@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'note_audio.dart';
+import 'note_flashcards.dart';
 
 import 'dart:math' as math;
 import 'dart:typed_data';
@@ -44,6 +45,7 @@ class XppFile {
     String? documentId,
     Map<String, Uint8List>? pdfAttachments,
     Map<String, NoteRecording>? recordings,
+    Map<String, NoteFlashcard>? flashcards,
   }) : documentId =
            (documentId != null &&
                    RegExp(r'^[a-zA-Z0-9_-]{1,100}$').hasMatch(documentId)
@@ -51,7 +53,8 @@ class XppFile {
                : null) ??
            '${DateTime.now().microsecondsSinceEpoch}-${math.Random.secure().nextInt(1 << 32)}',
        pdfAttachments = pdfAttachments ?? {},
-       recordings = recordings ?? {};
+       recordings = recordings ?? {},
+       flashcards = flashcards ?? {};
   final String documentId;
   bool recovered = false;
   DateTime? modifiedAt;
@@ -446,6 +449,9 @@ class XppFile {
       pages: pages,
       sourcePath: input['path'] as String?,
       pdfAttachments: attachments,
+      flashcards: NoteFlashcard.decode(
+        documentTree.findElements('osipp-flashcard'),
+      ),
       recordings: NoteRecording.decode(
         documentTree.findElements('osipp-audio'),
       ),
@@ -459,6 +465,7 @@ class XppFile {
   String? sourcePath;
   final Map<String, Uint8List> pdfAttachments;
   final Map<String, NoteRecording> recordings;
+  final Map<String, NoteFlashcard> flashcards;
 
   static String titleFromPath(String? path) {
     final normalized = (path ?? '').replaceAll('\\', '/');
@@ -511,6 +518,7 @@ class XppFile {
             ),
           )
           ..addAll(recordings.values.map((e) => e.toXml()))
+          ..addAll(flashcards.values.map((e) => e.toXml()))
           ..addAll(pages!.map((e) => e.toXmlElement())),
       ),
     ]);
@@ -547,6 +555,7 @@ class XppFile {
       previewImage: previewImage,
       pdfAttachments: Map.of(pdfAttachments),
       recordings: Map.of(recordings),
+      flashcards: Map.of(flashcards),
       pages: pages?.map((page) {
         final background = page.background;
         return XppPage(

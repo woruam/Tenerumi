@@ -1,3 +1,5 @@
+import 'note_flashcards_panel.dart';
+
 import 'package:xournalpp/layer_contents/XppImage.dart';
 import 'package:xournalpp/src/decoded_image_cache.dart';
 
@@ -198,6 +200,8 @@ class _InfiniteCanvasState extends State<InfiniteCanvas> {
                         shapeRecognition: ctrl.shapeRecognition,
                         buttonDownAction: ctrl.buttonDownAction,
                         buttonUpAction: ctrl.buttonUpAction,
+                        onFlashcardSelection: (region) =>
+                            captureFlashcardSelection(context, ctrl, 0, region),
                         clipboard: ctrl.clipboard,
                         onPasteContent: (p) => ctrl.pasteSelection(0, p),
                         getPageContent: () => ctrl.activeLayer(0).content ?? [],

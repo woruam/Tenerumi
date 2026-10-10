@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'plugin_manifest.dart';
+import 'plugin_limits.dart';
 
 typedef PluginAction = FutureOr<Object?> Function(Map<String, dynamic> args);
 
@@ -13,6 +14,10 @@ class PluginCapability {
 
 /// Public extension point: register new host actions without changing the DSL.
 class PluginApi {
+  final void Function()? beforeInvoke;
+  final void Function()? afterInvoke;
+  final void Function()? onFailure;
+  PluginApi({this.beforeInvoke, this.afterInvoke, this.onFailure});
   final Map<String, PluginCapability> _actions = {};
   List<String> get actions => List.unmodifiable(_actions.keys);
   Future<Object?> invoke(
@@ -20,19 +25,29 @@ class PluginApi {
     String name,
     Map<String, dynamic> args,
   ) async {
-    final action = _actions[name];
-    if (action == null) throw StateError('Azione sconosciuta: $name');
-    if (!plugin.permissions.containsAll(action.permissions)) {
-      throw StateError('Permessi mancanti per $name');
+    try {
+      beforeInvoke?.call();
+      validatePluginValue(args);
+      final action = _actions[name];
+      if (action == null) throw StateError('Azione sconosciuta: $name');
+      if (!plugin.permissions.containsAll(action.permissions)) {
+        throw StateError('Permessi mancanti per $name');
+      }
+      final result = await action.run(args);
+      afterInvoke?.call();
+      validatePluginValue(result, maxBytes: 24 * 1024 * 1024);
+      return result;
+    } catch (_) {
+      onFailure?.call();
+      rethrow;
     }
-    return await action.run(args);
   }
 
   void register(String name, Set<String> permissions, PluginAction handler) {
     if (_actions.containsKey(name)) {
       throw StateError('Azione già registrata: $name');
     }
-    _actions[name] = PluginCapability(permissions, handler);
+    _actions[name] = PluginCapability(Set.unmodifiable(permissions), handler);
   }
 
   void validate(NotePlugin plugin) {
@@ -217,7 +232,8 @@ class PluginRuntime {
         _clock.stop();
         final Object? result;
         try {
-          result = await Future<Object?>.sync(() => action.run(args))
+          result = await api
+              .invoke(plugin, name, args)
               .timeout(const Duration(minutes: 2));
         } finally {
           _clock.start();

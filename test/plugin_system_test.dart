@@ -558,12 +558,16 @@ void main() {
     await tester.enterText(find.byType(TextField).last, 'Creato senza codice');
     await tester.tap(find.text('Installa'));
     await tester.pumpAndSettle();
+    await tester.tap(find.text('Autorizza e installa'));
+    await tester.pumpAndSettle();
     expect(plugins.installed, hasLength(1));
+    await tester.scrollUntilVisible(find.text('Il mio timbro').first, 150);
     await tester.tap(find.text('Il mio timbro').first);
     await tester.pumpAndSettle();
     await tester.ensureVisible(
       find.widgetWithText(FilledButton, 'Il mio timbro'),
     );
+    await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(FilledButton, 'Il mio timbro'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Esegui'));

@@ -1,5 +1,7 @@
 # Verifica del progetto
 
+Revisione sicurezza plugin del 10 ottobre 2026: JavaScript è bloccato nel controller e nei runner; FJS e il bridge sono stati rimossi dalle dipendenze del prodotto. Non è riattivabile da UI, preferenze o manifest. Guida corrente: [plugin](../PLUGIN_GUIDE.md) e [sicurezza](PLUGIN_SECURITY.md). I riepiloghi JavaScript del 7 ottobre qui sotto descrivono soltanto il precedente runtime.
+
 Aggiornamento del 6 ottobre 2026: Flutter 3.47.6 / Dart 3.13.5 e 16 dipendenze
 aggiornate. Dopo le correzioni di evidenziatore e lazo, la suite completa passa
 70 test. La revisione PDF/XOPP del 7 ottobre passa 77 test; l'analisi non rileva
@@ -51,7 +53,8 @@ Gli avvisi e gli errori bloccano la verifica. Le informazioni sullo stile del co
 | `document_export_test.dart` | Fedeltà raster PDF di contenuto misto e cancellature, tutte le pagine e livelli, sfondi non in cache, dimensioni, XOPP riapribile, annullamento, errori e URI documenti Android |
 | `plugin_system_test.dart` | Formato e permessi, esempi, logica e generatori, immagini, editor su telefono, persistenza, rollback, undo, budget, conflitti, aggiornamento, disattivazione e SDK |
 | `advanced_plugin_test.dart` | Pacchetti e percorsi, Anki/HTML, export preparati, permessi dinamici, OCR asincrono, cancellazione, rete e rendering LaTeX/PNG |
-| `plugin_javascript_test.dart` | Motore reale: moduli ES, async/await, rollback, permessi, interruzione nativa di un ciclo infinito ed esecuzione degli esempi LaTeX/Anki/OCR |
+| `plugin_javascript_test.dart` | Blocco JavaScript anche con flag/permessi di bypass, runner nativo bloccato ed esempi LaTeX/OCR in JSON |
+| `plugin_security_test.dart` | ZIP/CRC/decompressione, default UI, permessi immutabili, limiti host, cancellazione, DNS/HTTP, dati legacy corrotti e interfaccia senza riattivazione JavaScript |
 | `rendering_memory_test.dart` | Budget LRU in byte/pagine, richieste PDF seriali, dispose durante rasterizzazione, risultati obsoleti, culling di 100 pagine durante pan |
 | `workspace_safety_test.dart` | Tutte le schede e split, annullamento, cambio indici, salvataggio fallito, gesture Indietro reale con documento inattivo, preferenza touch |
 | `pointer_input_test.dart` | Touch abilitato/disabilitato, pinch nella stessa pagina e fra pagine, instradamento penna hardware |

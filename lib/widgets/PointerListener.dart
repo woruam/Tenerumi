@@ -22,6 +22,7 @@ import 'package:xournalpp/widgets/ZoomableWidget.dart';
 class PointerListener extends StatefulWidget {
   final NoteAudioController? audio;
   final void Function(Offset)? onListenAt;
+  final void Function(Rect)? onFlashcardSelection;
   final bool readOnly;
   final Offset canvasOrigin;
   final Function(XppContent?)? onNewContent;
@@ -61,6 +62,7 @@ class PointerListener extends StatefulWidget {
     this.readOnly = false,
     this.audio,
     this.onListenAt,
+    this.onFlashcardSelection,
     this.canvasOrigin = Offset.zero,
     this.onNewContent,
     this.child,
@@ -95,6 +97,8 @@ class PointerListener extends StatefulWidget {
 enum _SelectionDragMode { none, lasso, move, resize }
 
 class PointerListenerState extends State<PointerListener> {
+  Offset? _flashcardStart;
+  Rect? _flashcardRect;
   Offset? _lastEraserPosition;
 
   void _eraseAt(PointerEvent event, {bool begin = false}) {
@@ -136,6 +140,7 @@ class PointerListenerState extends State<PointerListener> {
     _pasteHoldTimer?.cancel();
     _longPressConsumed = false;
     if (event.kind != PointerDeviceKind.stylus ||
+        widget.toolData[event.kind] == EditingTool.FLASHCARD ||
         widget.clipboard?.hasContent != true ||
         widget.onPasteContent == null ||
         isEraser(event) ||
@@ -280,6 +285,16 @@ class PointerListenerState extends State<PointerListener> {
 
   @override
   void didUpdateWidget(covariant PointerListener oldWidget) {
+    if (oldWidget.toolData != widget.toolData) {
+      _flashcardStart = null;
+      _flashcardRect = null;
+      if (oldWidget.toolData[PointerDeviceKind.stylus] ==
+          EditingTool.FLASHCARD) {
+        _drawingPointer = null;
+        _heldButtonAction = null;
+        _strokeTool = null;
+      }
+    }
     if (widget.readOnly && !oldWidget.readOnly) {
       _pasteHoldTimer?.cancel();
       _pastePosition = null;
@@ -360,6 +375,10 @@ class PointerListenerState extends State<PointerListener> {
                 widget.onEraserEnd?.call();
               }
               _drawingPointer = null;
+              setState(() {
+                _flashcardStart = null;
+                _flashcardRect = null;
+              });
               _longPressConsumed = false;
               clearPoints();
               _lassoPoints.clear();
@@ -378,6 +397,22 @@ class PointerListenerState extends State<PointerListener> {
               clipBehavior: Clip.none,
               children: [
                 widget.child!,
+                if (_flashcardRect != null)
+                  Positioned.fromRect(
+                    rect: _flashcardRect!.shift(-widget.canvasOrigin),
+                    child: IgnorePointer(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary
+                              .withValues(alpha: .12),
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 Positioned.fill(
                   child: IgnorePointer(
                     child: RepaintBoundary(
@@ -587,6 +622,8 @@ class PointerListenerState extends State<PointerListener> {
         setState(() {
           clearPoints();
           _lassoPoints.clear();
+          _flashcardStart = null;
+          _flashcardRect = null;
         });
         _drawingPointer = null;
       }
@@ -628,6 +665,17 @@ class PointerListenerState extends State<PointerListener> {
     _strokeTool = currentTool;
     tool = currentTool;
     widget.onDeviceChange?.call(device: data.device, kind: data.kind);
+
+    if (widget.toolData[data.kind] == EditingTool.FLASHCARD && drawingEnabled) {
+      _pasteHoldTimer?.cancel();
+      setState(() {
+        _flashcardStart = _canvasPoint(data);
+        _flashcardRect = Rect.fromPoints(_flashcardStart!, _flashcardStart!);
+        _selectedContent.clear();
+        _selectionRect = null;
+      });
+      return;
+    }
 
     if ((isSelect(data) || _moveSelectionArmed) && drawingEnabled) {
       final position = _canvasPoint(data);
@@ -683,6 +731,8 @@ class PointerListenerState extends State<PointerListener> {
         (CanvasTouchScope.of(context)?.cancellationEpoch ?? 0) != _touchEpoch) {
       clearPoints();
       _lassoPoints.clear();
+      _flashcardStart = null;
+      _flashcardRect = null;
       _drawingPointer = null;
       return;
     }
@@ -696,6 +746,16 @@ class PointerListenerState extends State<PointerListener> {
     if (_longPressConsumed) return;
     widget.onDeviceChange?.call(device: data.device, kind: data.kind);
     if (!drawingEnabled) return;
+
+    if (_flashcardStart != null) {
+      setState(
+        () => _flashcardRect = Rect.fromPoints(
+          _flashcardStart!,
+          _canvasPoint(data),
+        ),
+      );
+      return;
+    }
 
     if (_dragMode != _SelectionDragMode.none) {
       final position = _canvasPoint(data);
@@ -762,6 +822,10 @@ class PointerListenerState extends State<PointerListener> {
         (CanvasTouchScope.of(context)?.cancellationEpoch ?? 0) != _touchEpoch) {
       clearPoints();
       _lassoPoints.clear();
+      setState(() {
+        _flashcardStart = null;
+        _flashcardRect = null;
+      });
       _drawingPointer = null;
     }
     if (data.kind == PointerDeviceKind.touch) {
@@ -771,6 +835,19 @@ class PointerListenerState extends State<PointerListener> {
     if (_drawingPointer != data.pointer) return;
     _pasteHoldTimer?.cancel();
     _drawingPointer = null;
+    if (_flashcardStart != null) {
+      final rect = Rect.fromPoints(_flashcardStart!, _canvasPoint(data));
+      setState(() {
+        _flashcardStart = null;
+        _flashcardRect = null;
+      });
+      _heldButtonAction = null;
+      _strokeTool = null;
+      if (widget.toolData[data.kind] == EditingTool.FLASHCARD) {
+        widget.onFlashcardSelection?.call(rect);
+      }
+      return;
+    }
     if (_longPressConsumed) {
       _longPressConsumed = false;
       clearPoints();

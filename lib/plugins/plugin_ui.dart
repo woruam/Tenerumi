@@ -8,84 +8,118 @@ import 'plugin_latex.dart';
 import 'plugin_manifest.dart';
 import 'plugin_services.dart';
 
-PluginHost pluginUiHost(BuildContext context) => PluginHost(
-  latex: renderPluginLatex,
-  openFile: (args) async {
-    if (!context.mounted) throw StateError('Interfaccia chiusa');
-    try {
-      final file = await FilePickerCross.importFromStorage(
-        type: args['type'] == 'image' ? FileTypeCross.image : FileTypeCross.any,
-      );
-      final bytes = file.toUint8List();
-      if (bytes.length > 8 * 1024 * 1024) {
-        throw StateError('File: massimo 8 MiB');
-      }
-      return {
-        'name': file.fileName ?? 'file',
-        'base64': base64Encode(bytes),
-        if (args['encoding'] == 'utf8') 'text': utf8.decode(bytes),
-      };
-    } catch (error) {
-      if (error == 'No file selected.') return null;
-      rethrow;
+void _validateUiLabels(Map<String, dynamic> args) {
+  for (final key in ['title', 'submitLabel']) {
+    final value = args[key];
+    if (value != null && (value is! String || value.length > 240)) {
+      throw StateError('Etichetta del modulo non valida o troppo lunga');
     }
-  },
-  form: (args) async {
+  }
+}
+
+PluginHost pluginUiHost(BuildContext context) {
+  final routes = <DialogRoute<dynamic>>{};
+  Future<T?> dialog<T>(WidgetBuilder builder) async {
     if (!context.mounted) throw StateError('Interfaccia chiusa');
-    // Reuse the manifest's input validation before building an untrusted form.
-    NotePlugin.parse(
-      jsonEncode({
-        'apiVersion': 1,
-        'id': 'host.form',
-        'name': 'Form',
-        'version': '1',
-        'permissions': [],
-        'commands': [
-          {
-            'id': 'form',
-            'label': 'Form',
-            'inputs': args['fields'],
-            'steps': [],
-          },
-        ],
-      }),
-    );
-    return showDialog<Map<String, dynamic>>(
-      context: context,
-      builder: (_) => _DynamicPluginForm(args),
-    );
-  },
-  preview: (args) async {
-    if (!context.mounted) throw StateError('Interfaccia chiusa');
-    final text = args['text'] as String? ?? '';
-    if (text.length > 65536) throw StateError('Anteprima troppo lunga');
-    final child = switch (args['type']) {
-      'latex' => Math.tex(text, textStyle: const TextStyle(fontSize: 24)),
-      'image' => Image.memory(pluginBytes(args)),
-      _ => SelectableText(text),
-    };
-    return await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(args['title'] as String? ?? 'Anteprima'),
-        content: SizedBox(
-          width: 480,
-          child: SingleChildScrollView(child: child),
+    final route = DialogRoute<T>(context: context, builder: builder);
+    routes.add(route);
+    try {
+      return await Navigator.of(context, rootNavigator: true).push(route);
+    } finally {
+      routes.remove(route);
+    }
+  }
+
+  return PluginHost(
+    close: () {
+      for (final route in routes.toList()) {
+        if (route.isActive) route.navigator?.removeRoute(route);
+      }
+    },
+    latex: renderPluginLatex,
+    openFile: (args) async {
+      if (!context.mounted) throw StateError('Interfaccia chiusa');
+      try {
+        final file = await FilePickerCross.importFromStorage(
+          type: args['type'] == 'image'
+              ? FileTypeCross.image
+              : FileTypeCross.any,
+        );
+        final bytes = file.toUint8List();
+        if (bytes.length > 8 * 1024 * 1024) {
+          throw StateError('File: massimo 8 MiB');
+        }
+        return {
+          'name': file.fileName ?? 'file',
+          'base64': base64Encode(bytes),
+          if (args['encoding'] == 'utf8') 'text': utf8.decode(bytes),
+        };
+      } catch (error) {
+        if (error == 'No file selected.') return null;
+        rethrow;
+      }
+    },
+    form: (args) async {
+      if (!context.mounted) throw StateError('Interfaccia chiusa');
+      _validateUiLabels(args);
+      // Reuse the manifest's input validation before building an untrusted form.
+      NotePlugin.parse(
+        jsonEncode({
+          'apiVersion': 1,
+          'id': 'host.form',
+          'name': 'Form',
+          'version': '1',
+          'permissions': [],
+          'commands': [
+            {
+              'id': 'form',
+              'label': 'Form',
+              'inputs': args['fields'],
+              'steps': [],
+            },
+          ],
+        }),
+      );
+      return dialog<Map<String, dynamic>>((_) => _DynamicPluginForm(args));
+    },
+    preview: (args) async {
+      if (!context.mounted) throw StateError('Interfaccia chiusa');
+      _validateUiLabels(args);
+      final text = args['text'] as String? ?? '';
+      if (text.length > 65536) throw StateError('Anteprima troppo lunga');
+      if (args['type'] == 'latex' && text.length > 8192) {
+        throw StateError('Formula: massimo 8192 caratteri');
+      }
+      final imageBytes = args['type'] == 'image' ? pluginBytes(args) : null;
+      if (imageBytes != null) await validatePluginImage(imageBytes);
+      if (!context.mounted) throw StateError('Interfaccia chiusa');
+      final child = switch (args['type']) {
+        'latex' => Math.tex(text, textStyle: const TextStyle(fontSize: 24)),
+        'image' => Image.memory(imageBytes!, gaplessPlayback: true),
+        _ => SelectableText(text),
+      };
+      return await dialog<bool>(
+        (context) => AlertDialog(
+          title: Text(args['title'] as String? ?? 'Anteprima'),
+          content: SizedBox(
+            width: 480,
+            child: SingleChildScrollView(child: child),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Annulla'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Continua'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annulla'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Continua'),
-          ),
-        ],
-      ),
-    );
-  },
-);
+      );
+    },
+  );
+}
 
 class _DynamicPluginForm extends StatefulWidget {
   final Map<String, dynamic> args;

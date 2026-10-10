@@ -4,19 +4,41 @@
   "name": "Formule LaTeX",
   "version": "2.0.0",
   "description": "Anteprima matematica e inserimento di una formula nel foglio.",
-  "runtime": "javascript",
+  "runtime": "workflow",
   "permissions": [
     "document.write",
     "ui"
   ],
-  "modules": {
-    "main.js": "export async function insert(context) {\n  const input = await osipp.call('ui.form', { title: 'Formula LaTeX', fields: [\n    {id:'formula', label:'Formula', type:'text', multiline:true, required:true, default:'\\\\frac{a}{b} = \\\\sqrt{x}'},\n    {id:'size', label:'Dimensione', type:'number', default:24}\n  ]});\n  if (!input) return;\n  if (!await osipp.call('ui.preview', {type:'latex', text:input.formula, title:'Anteprima formula'})) return;\n  const image = await osipp.call('latex.render', {text:input.formula, size:input.size});\n  await osipp.call('image.add', {...image, x:40, y:40});\n}\n"
-  },
   "commands": [
     {
       "id": "insert",
       "label": "Inserisci formula",
-      "handler": "insert"
+      "inputs": [
+        {
+          "id": "formula",
+          "label": "LaTeX",
+          "type": "text",
+          "required": true,
+          "multiline": true
+        },
+        {
+          "id": "size",
+          "label": "Dimensione",
+          "type": "number",
+          "default": 24
+        }
+      ],
+      "steps": [
+        {
+          "action": "tex.add",
+          "args": {
+            "text": "${input.formula}",
+            "size": {
+              "var": "input.size"
+            }
+          }
+        }
+      ]
     }
   ]
 }

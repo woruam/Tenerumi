@@ -1,0 +1,52 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart
+00:00 +0: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: complete backup transfers portable notes, latest recovery and metadata to another device
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-source-4950d88d\xournalpp\recovery-1791591360609293-615557822-1791591360659177.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-source-4950d88d\xournalpp\recovery-1791591360670185-4157708295-1791591360672183.xopp
+00:00 +1: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: complete backup transfers portable notes, latest recovery and metadata to another device
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-b55355f7\xournalpp\backup-1791591360872243-3210795652.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-b55355f7\xournalpp\backup-1791591360898763-1045988445.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-b55355f7\xournalpp\backup-1791591360908763-4052574371.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-b55355f7\xournalpp\backup-1791591360932765-3490688282.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-b55355f7\xournalpp\backup-1791591360943812-997381514.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-b55355f7\xournalpp\backup-1791591360952837-1987335542.xopp
+00:00 +2: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: async document round trip preserves strokes and portable PDF bytes
+00:00 +3: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: async document round trip preserves strokes and portable PDF bytes
+00:00 +4: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: invalid archives and path traversal are rejected before any import
+00:00 +5: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: native PDF page numbers and omitted filenames follow Xournal format
+00:00 +6: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: CRC verification rejects a damaged payload without importing anything
+00:00 +7: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: unknown layer nodes do not drop later strokes; whitespace is accepted
+00:00 +8: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: a malformed note makes the entire archive fail validation
+00:00 +9: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: saved files reopen at the same path and overwrite existing bytes
+00:00 +9: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: failure during restoration removes staged files and preserves existing library
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-rollback-8a2eac3b\xournalpp\backup-1791591361048773-4211768934.xopp
+00:00 +9: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: saved files reopen at the same path and overwrite existing bytes
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-storage-52665d6a\note.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-storage-52665d6a\note.xopp
+00:00 +10: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: saved files reopen at the same path and overwrite existing bytes
+00:00 +11: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: saved files reopen at the same path and overwrite existing bytes
+00:00 +12: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: app settings expose Ripristina Backup and Crea Backup on a phone
+00:00 +13: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: app settings expose Ripristina Backup and Crea Backup on a phone
+00:00 +13: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: failed replacement does not truncate the original file
+❌ ERRORE DI SALVATAGGIO IMPREVISTO: PathAccessException: Cannot rename file to 'C:\Users\aless\AppData\Local\Temp\osipp-failure-80ab6d28\folder', path = 'C:\Users\aless\AppData\Local\Temp\osipp-failure-80ab6d28\folder.1791591361106978.tmp' (OS Error: Accesso negato, errno = 5)
+00:00 +14: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: app settings expose Ripristina Backup and Crea Backup on a phone
+00:00 +15: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: app settings expose Ripristina Backup and Crea Backup on a phone
+00:00 +16: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: app settings expose Ripristina Backup and Crea Backup on a phone
+00:01 +17: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: app settings expose Ripristina Backup and Crea Backup on a phone
+00:01 +17: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: failed save keeps dirty state and resets saving state
+❌ ERRORE DI SALVATAGGIO IMPREVISTO: PathAccessException: Cannot rename file to 'C:\Users\aless\AppData\Local\Temp\osipp-save-error-45870f90', path = 'C:\Users\aless\AppData\Local\Temp\osipp-save-error-45870f90.1791591361643404.tmp' (OS Error: Accesso negato, errno = 5)
+00:01 +18: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: app settings expose Ripristina Backup and Crea Backup on a phone
+00:01 +18: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: changes made during save remain dirty and are not in saved snapshot
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-save-race-a33a5027\notes.xopp
+00:01 +19: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: app settings expose Ripristina Backup and Crea Backup on a phone
+00:01 +19: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: new notes with duplicate titles get distinct files
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-duplicate-a8d0e9a5\xournalpp\notes.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-duplicate-a8d0e9a5\xournalpp\notes (2).xopp
+00:01 +20: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: app settings expose Ripristina Backup and Crea Backup on a phone
+00:01 +20: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+dynamic_color: Dynamic color not detected on this device.
+00:02 +21: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+00:03 +22: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-home-reopen-15ea12ad\xournalpp\Appunto appena salvato.xopp
+dynamic_color: Dynamic color not detected on this device.
+dynamic_color: Dynamic color not detected on this device.
+00:05 +23: All tests passed!

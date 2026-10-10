@@ -1,0 +1,16 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart
+00:00 +0: invalid form defaults and duplicate choices rejected before UI builds
+00:00 +1: validated manifests and registered permissions cannot be mutated
+00:00 +2: package CRC corruption and directory entries are rejected
+00:00 +3: ZIP duplicate names cannot disappear during archive decoding
+00:00 +4: forged decompressed size and symlinks are rejected before large inflation
+00:00 +5: malformed legacy Anki state cannot break the plugin UI
+00:00 +6: oversized host text and repeated geometry expansion cannot commit
+00:00 +7: text.update applies its own text limit and leaves original unchanged
+00:00 +8: cancellation immediately releases a pending provider and ignores late result
+00:00 +9: no HTTP access to local literals, reserved hosts or overridden routing
+00:00 +10: DNS rejects all private/reserved answers including IPv6 and mixed answers
+00:00 +11: invalid plugin form is rejected without a Flutter build failure
+00:00 +12: plugin host closes only its own form on cancellation
+00:00 +13: JavaScript remains visibly disabled with no UI activation route
+00:01 +14: All tests passed!

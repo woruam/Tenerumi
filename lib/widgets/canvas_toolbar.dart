@@ -1,4 +1,5 @@
 import 'note_audio_panel.dart';
+import 'note_flashcards_panel.dart';
 
 import 'package:xournalpp/src/app_appearance.dart';
 import 'package:flutter/material.dart';
@@ -316,14 +317,51 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
               onPressed: onImportPdf,
             ),
 
-            IconButton(
-              icon: Icon(icons.timer),
-              tooltip: 'Pomodoro',
-              color: pomodoroActive
-                  ? Theme.of(context).colorScheme.primary
-                  : null,
-              onPressed: onPomodoroTap,
-            ),
+            if (plugins?.ankiEnabled == true) ...[
+              IconButton(
+                tooltip: ctrl.capturingFlashcard
+                    ? 'Preparazione flashcard…'
+                    : stylusTool == EditingTool.FLASHCARD
+                    ? ctrl.flashcardFront == null
+                          ? '1. Seleziona il titolo'
+                          : '2. Seleziona la risposta'
+                    : 'Flashcard: doppia selezione',
+                icon: const Icon(Icons.crop_free),
+                color: stylusTool == EditingTool.FLASHCARD
+                    ? Theme.of(context).colorScheme.primary
+                    : null,
+                onPressed: ctrl.capturingFlashcard || ctrl.savingFile
+                    ? null
+                    : stylusTool == EditingTool.FLASHCARD
+                    ? ctrl.cancelFlashcard
+                    : ctrl.beginFlashcard,
+              ),
+              IconButton(
+                tooltip: 'Flashcard dell’appunto',
+                icon: const Icon(Icons.style_outlined),
+                onPressed: () => showNoteFlashcards(context, ctrl),
+              ),
+              if (stylusTool == EditingTool.FLASHCARD)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                  child: Center(
+                    child: Text(
+                      ctrl.flashcardFront == null
+                          ? '1 · Titolo'
+                          : '2 · Risposta',
+                    ),
+                  ),
+                ),
+            ],
+            if (plugins?.pomodoroEnabled == true)
+              IconButton(
+                icon: Icon(icons.timer),
+                tooltip: 'Pomodoro',
+                color: pomodoroActive
+                    ? Theme.of(context).colorScheme.primary
+                    : null,
+                onPressed: onPomodoroTap,
+              ),
             const SizedBox(width: 16),
             if (ctrl.savingFile)
               const SizedBox(

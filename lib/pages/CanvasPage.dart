@@ -1,3 +1,6 @@
+import 'package:xournalpp/plugins/plugin_controller.dart';
+import 'package:xournalpp/widgets/note_flashcards_panel.dart';
+
 import '../widgets/audio_timeline_overlay.dart';
 
 import 'package:xournalpp/widgets/pdf_zoom_detail.dart';
@@ -177,6 +180,16 @@ class CanvasPageState extends State<CanvasPage> {
   @override
   Widget build(BuildContext context) {
     final resizing = SplitResizeScope.isResizing(context);
+    final plugins = context.watch<PluginController?>();
+    final pomodoroEnabled = plugins?.pomodoroEnabled == true;
+    if (!pomodoroEnabled) _showPomodoro = false;
+    if (plugins?.ankiEnabled != true &&
+        _controller.toolData[PointerDeviceKind.stylus] ==
+            EditingTool.FLASHCARD) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _controller.cancelFlashcard();
+      });
+    }
     return ChangeNotifierProvider.value(
       value: _controller,
       child: Consumer<CanvasController>(
@@ -374,6 +387,13 @@ class CanvasPageState extends State<CanvasPage> {
                                                 ctrl.highlighterWidth,
                                             highlighterColor:
                                                 ctrl.highlighterColor,
+                                            onFlashcardSelection: (region) =>
+                                                captureFlashcardSelection(
+                                                  context,
+                                                  ctrl,
+                                                  pageIndex,
+                                                  region,
+                                                ),
                                             clipboard: ctrl.clipboard,
                                             onPasteContent: (position) =>
                                                 ctrl.pasteSelection(
@@ -534,27 +554,28 @@ class CanvasPageState extends State<CanvasPage> {
                     ),
                   ),
                   // Pannello Pomodoro a comparsa (resta attivo anche se nascosto)
-                  Positioned(
-                    top: 12,
-                    right: 12,
-                    child: Offstage(
-                      offstage: !_showPomodoro,
-                      child: PomodoroTimer(
-                        onClose: () => setState(() => _showPomodoro = false),
-                        onPhaseComplete: (finished, next) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                finished == PomodoroPhase.work
-                                    ? "Sessione finita! Tempo di pausa."
-                                    : "Pausa finita! Si torna a lavorare.",
+                  if (widget.showInternalToolbar && pomodoroEnabled)
+                    Positioned(
+                      top: 12,
+                      right: 12,
+                      child: Offstage(
+                        offstage: !_showPomodoro,
+                        child: PomodoroTimer(
+                          onClose: () => setState(() => _showPomodoro = false),
+                          onPhaseComplete: (finished, next) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  finished == PomodoroPhase.work
+                                      ? "Sessione finita! Tempo di pausa."
+                                      : "Pausa finita! Si torna a lavorare.",
+                                ),
                               ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),
@@ -676,7 +697,7 @@ class CanvasPageState extends State<CanvasPage> {
                         ),
                         const Divider(),
                         const Text(
-                          'Proprietà Penna:',
+                          'Proprietà figure:',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 8),
@@ -694,7 +715,7 @@ class CanvasPageState extends State<CanvasPage> {
                                   .map(
                                     (c) => InkWell(
                                       onTap: () {
-                                        ctrl.setPenProps(c, null);
+                                        ctrl.setShapeProps(c, null);
                                         setDialogState(() {});
                                       },
                                       child: Container(
@@ -704,10 +725,10 @@ class CanvasPageState extends State<CanvasPage> {
                                           color: c,
                                           shape: BoxShape.circle,
                                           border: Border.all(
-                                            color: ctrl.penColor == c
+                                            color: ctrl.shapeColor == c
                                                 ? Colors.black
                                                 : Colors.black12,
-                                            width: ctrl.penColor == c ? 3 : 1,
+                                            width: ctrl.shapeColor == c ? 3 : 1,
                                           ),
                                         ),
                                       ),
@@ -716,11 +737,11 @@ class CanvasPageState extends State<CanvasPage> {
                                   .toList(),
                         ),
                         Slider(
-                          value: ctrl.penWidth,
+                          value: ctrl.shapeWidth,
                           min: 0.5,
                           max: 20.0,
                           onChanged: (val) {
-                            ctrl.setPenProps(null, val);
+                            ctrl.setShapeProps(null, val);
                             setDialogState(() {});
                           },
                         ),

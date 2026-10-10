@@ -6,12 +6,14 @@ import 'package:archive/archive.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:transparent_image/transparent_image.dart';
 import 'package:xournalpp/plugins/plugin_controller.dart';
 import 'package:xournalpp/plugins/plugin_examples.dart';
 import 'package:xournalpp/plugins/plugin_latex.dart';
 import 'package:xournalpp/plugins/plugin_manifest.dart';
 import 'package:xournalpp/plugins/plugin_package.dart';
 import 'package:xournalpp/plugins/plugin_services.dart';
+import 'package:xournalpp/plugins/plugin_runtime.dart';
 
 import 'plugin_system_test.dart' show canvas, content, source;
 
@@ -116,22 +118,21 @@ void main() {
     expect(utf8.decode(result.files.single.bytes), contains('Q\tA\t'));
   });
   test('new host actions enforce permissions at dynamic invocation', () async {
-    final plugins = PluginController(
-      scriptRunner: (p, handler, api, ctx, cancelled) async {
-        await api.invoke(p, 'text.add', {'text': 'not allowed'});
-      },
-    );
-    final c = canvas();
-    addTearDown(plugins.dispose);
-    addTearDown(c.dispose);
+    final api = PluginApi();
+    var called = false;
+    api.register('text.add', {'document.write'}, (_) {
+      called = true;
+      return null;
+    });
     final js = jsonDecode(exampleSource(3)) as Map;
     js['permissions'] = [];
-    await plugins.install(jsonEncode(js));
     await expectLater(
-      plugins.execute('example.latex', 'insert', c),
+      api.invoke(NotePlugin.parse(jsonEncode(js)), 'text.add', {
+        'text': 'not allowed',
+      }),
       throwsStateError,
     );
-    expect(content(c), isEmpty);
+    expect(called, false);
   });
   test(
     'async OCR and forms compose and late completions cannot edit canvas',
@@ -145,9 +146,7 @@ void main() {
           [
             {
               'action': 'ocr.recognize',
-              'args': {
-                'base64': base64Encode([1, 2, 3]),
-              },
+              'args': {'base64': base64Encode(kTransparentImage)},
               'as': 'recognized',
             },
             {

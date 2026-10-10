@@ -1,0 +1,4 @@
+Formatted lib\plugins\plugin_manager_page.dart
+Formatted lib\plugins\plugin_package.dart
+Formatted test/plugin_security_test.dart
+Formatted 17 files (3 changed) in 0.08 seconds.

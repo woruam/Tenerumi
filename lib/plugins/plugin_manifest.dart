@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'plugin_limits.dart';
+
 const pluginPermissions = {
   'document.read': 'Leggere gli appunti',
   'document.write': 'Modificare gli appunti',
@@ -14,7 +16,18 @@ const pluginPermissions = {
 
 class NotePlugin {
   final Map<String, dynamic> manifest;
-  NotePlugin._(this.manifest);
+  NotePlugin._(Map<String, dynamic> value)
+    : manifest = _freeze(value) as Map<String, dynamic>;
+  static Object? _freeze(Object? value) {
+    if (value is Map) {
+      return Map<String, dynamic>.unmodifiable(
+        value.map((k, v) => MapEntry(k as String, _freeze(v))),
+      );
+    }
+    if (value is List) return List<dynamic>.unmodifiable(value.map(_freeze));
+    return value;
+  }
+
   String get id => manifest['id'] as String;
   String get name => manifest['name'] as String;
   String get version => manifest['version'] as String;
@@ -33,6 +46,7 @@ class NotePlugin {
       throw const FormatException('Plugin troppo grande (massimo 2 MiB)');
     }
     final value = jsonDecode(source);
+    validatePluginValue(value, maxBytes: 2 * 1024 * 1024);
     if (value is! Map<String, dynamic>) {
       throw const FormatException('Il plugin deve essere un oggetto JSON');
     }
@@ -74,6 +88,7 @@ class NotePlugin {
               (value['networkHosts'] as List).every(
                 (h) =>
                     h is String &&
+                    h.length <= 253 &&
                     RegExp(r'^[a-z0-9]+([.-][a-z0-9]+)*$').hasMatch(h),
               ),
       'networkHosts deve contenere nomi di server, senza URL o wildcard',
@@ -92,7 +107,9 @@ class NotePlugin {
       );
     }
     check(
-      value['description'] == null || value['description'] is String,
+      value['description'] == null ||
+          value['description'] is String &&
+              (value['description'] as String).length <= 4096,
       'description deve essere testo',
     );
     check(
@@ -162,7 +179,9 @@ class NotePlugin {
         'ID comando non valido o duplicato',
       );
       check(
-        c['label'] is String && (c['label'] as String).trim().isNotEmpty,
+        c['label'] is String &&
+            (c['label'] as String).trim().isNotEmpty &&
+            (c['label'] as String).length <= 240,
         'Il comando richiede label',
       );
       check(
@@ -183,6 +202,7 @@ class NotePlugin {
         );
         check(
           f['label'] is String &&
+              (f['label'] as String).length <= 240 &&
               ['text', 'number', 'boolean', 'choice'].contains(f['type']),
           'label/type campo non validi',
         );
@@ -190,9 +210,32 @@ class NotePlugin {
           check(
             f['options'] is List &&
                 (f['options'] as List).isNotEmpty &&
-                (f['options'] as List).every((v) => v is String),
+                (f['options'] as List).length <= 256 &&
+                (f['options'] as List).every(
+                  (v) => v is String && v.length <= 240,
+                ) &&
+                (f['options'] as List).toSet().length ==
+                    (f['options'] as List).length,
             'choice richiede options testuali',
           );
+        }
+        check(
+          f['required'] == null || f['required'] is bool,
+          'required deve essere booleano',
+        );
+        check(
+          f['multiline'] == null || f['multiline'] is bool,
+          'multiline deve essere booleano',
+        );
+        if (f.containsKey('default')) {
+          final d = f['default'];
+          check(switch (f['type']) {
+            'text' => d == null || d is String && d.length <= 65536,
+            'number' => d is num && d.isFinite,
+            'boolean' => d is bool,
+            'choice' => (f['options'] as List).contains(d),
+            _ => false,
+          }, 'default non valido per ${f['id']}');
         }
       }
       if (value['runtime'] == 'javascript') {

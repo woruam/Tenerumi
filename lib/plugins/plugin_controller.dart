@@ -16,8 +16,8 @@ import 'package:xournalpp/src/editing_tool.dart';
 
 import 'plugin_manifest.dart';
 import 'plugin_runtime.dart';
-import 'plugin_script.dart';
 import 'plugin_services.dart';
+import 'plugin_limits.dart';
 
 class InstalledPlugin {
   final NotePlugin plugin;
@@ -46,6 +46,31 @@ class PluginSession {
   bool active = true;
   Map<String, dynamic>? tool;
   bool changed = false;
+  int calls = 0, generatedBytes = 0, generatedPoints = 0;
+  final List<void Function()> cleanup = [];
+  void ensureActive() {
+    if (!active) throw StateError('Sessione plugin terminata');
+  }
+
+  void finish() {
+    active = false;
+    for (final close in cleanup) {
+      try {
+        close();
+      } catch (_) {}
+    }
+    cleanup.clear();
+  }
+
+  void reserve({int bytes = 0, int points = 0}) {
+    ensureActive();
+    generatedBytes += bytes;
+    generatedPoints += points;
+    if (generatedBytes > 32 * 1024 * 1024 || generatedPoints > 100000) {
+      throw StateError('Comando troppo grande: suddividerlo in più esecuzioni');
+    }
+  }
+
   PluginSession(this.canvas, this.pageIndex, Map<String, dynamic> storedState)
     : layerIndex = canvas.activeLayerIndex(pageIndex),
       content = cloneContents(canvas.activeLayer(pageIndex).content ?? []),
@@ -87,6 +112,10 @@ class PluginSession {
     if (content.length >= 10000) {
       throw StateError('Massimo 10000 elementi nella pagina');
     }
+    if (element is XppText) {
+      reserve(bytes: utf8.encode(pluginText(element.text)).length);
+    }
+    if (element is XppStroke) reserve(points: element.points?.length ?? 0);
     content.add(element);
     changed = true;
     return content.length - 1;
@@ -120,15 +149,47 @@ class PluginSession {
 class PluginController extends ChangeNotifier {
   static const storageKey = 'osipp.plugins.v1';
   final void Function(PluginApi, PluginSession?)? extendApi;
-  final PluginScriptRunner scriptRunner;
   Completer<void>? _cancel;
+  PluginSession? _session;
   void cancel() {
+    _session?.finish();
     if (_cancel?.isCompleted == false) _cancel!.complete();
   }
 
-  PluginController({this.extendApi, this.scriptRunner = runPluginScript});
+  PluginController({this.extendApi});
   List<InstalledPlugin> _installed = [];
   List<InstalledPlugin> get installed => List.unmodifiable(_installed);
+  static const builtInKey = 'osipp.builtin-plugins.v1';
+  bool pomodoroEnabled = false;
+  bool? _ankiEnabled;
+  bool get ankiEnabled =>
+      _ankiEnabled ??
+      _installed.any((e) => e.plugin.id == 'example.anki' && e.enabled);
+  List<Map<String, dynamic>> get legacyAnkiCards => [
+    for (final e in _installed.where((e) => e.plugin.id == 'example.anki'))
+      if (e.state['cards'] is List)
+        for (final c in e.state['cards'] as List)
+          if (c is Map && c['front'] is String && c['back'] is String)
+            Map<String, dynamic>.from(c),
+  ];
+
+  Future<void> setBuiltInEnabled(String id, bool enabled) async {
+    if (!['pomodoro', 'anki'].contains(id)) throw ArgumentError.value(id);
+    await load();
+    return _exclusive(() async {
+      final prefs = await SharedPreferences.getInstance();
+      final values = {
+        'pomodoro': id == 'pomodoro' ? enabled : pomodoroEnabled,
+        'anki': id == 'anki' ? enabled : ankiEnabled,
+      };
+      if (!await prefs.setString(builtInKey, jsonEncode(values))) {
+        throw StateError('Impossibile conservare le impostazioni plugin');
+      }
+      pomodoroEnabled = values['pomodoro']!;
+      _ankiEnabled = values['anki'];
+    });
+  }
+
   final List<String> loadErrors = [];
   bool running = false;
   bool loading = false;
@@ -139,13 +200,29 @@ class PluginController extends ChangeNotifier {
     loading = true;
     try {
       final prefs = await SharedPreferences.getInstance();
-      final raw = jsonDecode(prefs.getString(storageKey) ?? '[]');
+      try {
+        final builtIns = jsonDecode(prefs.getString(builtInKey) ?? '{}');
+        if (builtIns is Map) {
+          pomodoroEnabled = builtIns['pomodoro'] == true;
+          _ankiEnabled = builtIns['anki'] is bool
+              ? builtIns['anki'] as bool
+              : null;
+        }
+      } catch (error) {
+        loadErrors.add('Impostazioni plugin integrati: $error');
+      }
+      final stored = prefs.getString(storageKey) ?? '[]';
+      if (utf8.encode(stored).length > 8 * 1024 * 1024) {
+        throw const FormatException('Archivio plugin troppo grande');
+      }
+      final raw = jsonDecode(stored);
       if (raw is! List || raw.length > 32) {
         throw const FormatException('Archivio plugin non valido');
       }
       final loaded = <InstalledPlugin>[];
       for (final entry in raw) {
         try {
+          validatePluginValue(entry['state'] ?? {}, maxBytes: 65536);
           final plugin = NotePlugin.parse(jsonEncode(entry['manifest']));
           _api(null).validate(plugin);
           if (loaded.any((p) => p.plugin.id == plugin.id)) {
@@ -261,7 +338,14 @@ class PluginController extends ChangeNotifier {
   }
 
   PluginApi _api(PluginSession? s) {
-    final api = PluginApi();
+    final api = PluginApi(
+      beforeInvoke: () {
+        s!.ensureActive();
+        if (++s.calls > 2000) throw StateError('Troppe chiamate API');
+      },
+      afterInvoke: () => s!.ensureActive(),
+      onFailure: () => s?.finish(),
+    );
     void action(String name, Set<String> permissions, PluginAction run) =>
         api.register(name, permissions, run);
     action('message', {}, (a) {
@@ -277,7 +361,7 @@ class PluginController extends ChangeNotifier {
       {'document.write'},
       (a) => s!.add(
         XppText(
-          text: '${a['text'] ?? ''}',
+          text: pluginText(a['text']),
           offset: Offset(s.number(a, 'x', 40), s.number(a, 'y', 40)),
           size: s.number(a, 'size', 16).clamp(1, 512),
           color: s.color(a),
@@ -293,6 +377,7 @@ class PluginController extends ChangeNotifier {
       });
     });
     action('image.add', {'document.write'}, (a) async {
+      final session = s!;
       final bytes = pluginBytes(a);
       final buffer = await ui.ImmutableBuffer.fromUint8List(bytes);
       try {
@@ -301,6 +386,9 @@ class PluginController extends ChangeNotifier {
           if (descriptor.width * descriptor.height > 4000000) {
             throw StateError('Immagine plugin: massimo 4 milioni di pixel');
           }
+          session.reserve(
+            bytes: bytes.length + descriptor.width * descriptor.height * 4,
+          );
           final codec = await descriptor.instantiateCodec();
           try {
             (await codec.getNextFrame()).image.dispose();
@@ -313,13 +401,18 @@ class PluginController extends ChangeNotifier {
       } finally {
         buffer.dispose();
       }
-      return s!.add(
+      return session.add(
         XppImage(
           data: bytes,
-          topLeft: Offset(s.number(a, 'x', 40), s.number(a, 'y', 40)),
+          topLeft: Offset(
+            session.number(a, 'x', 40),
+            session.number(a, 'y', 40),
+          ),
           bottomRight: Offset(
-            s.number(a, 'x', 40) + s.number(a, 'width', 100).clamp(1, 10000),
-            s.number(a, 'y', 40) + s.number(a, 'height', 100).clamp(1, 10000),
+            session.number(a, 'x', 40) +
+                session.number(a, 'width', 100).clamp(1, 10000),
+            session.number(a, 'y', 40) +
+                session.number(a, 'height', 100).clamp(1, 10000),
           ),
         ),
       );
@@ -409,6 +502,16 @@ class PluginController extends ChangeNotifier {
         s.content[id]?.translate(
           Offset(s.number(a, 'dx', 0), s.number(a, 'dy', 0)),
         );
+        final bounds = s.content[id]?.bounds();
+        if (bounds != null &&
+            [
+              bounds.left,
+              bounds.top,
+              bounds.right,
+              bounds.bottom,
+            ].any((v) => !v.isFinite || v.abs() > 100000)) {
+          throw StateError('La trasformazione supera i limiti del foglio');
+        }
         s.changed = true;
       }
       return null;
@@ -421,7 +524,9 @@ class PluginController extends ChangeNotifier {
           s.content[id] is! XppText) {
         throw StateError('id deve indicare un testo');
       }
-      (s.content[id] as XppText).text = '${a['text'] ?? ''}';
+      final text = pluginText(a['text']);
+      s.reserve(bytes: utf8.encode(text).length);
+      (s.content[id] as XppText).text = text;
       s.changed = true;
       return null;
     });
@@ -480,6 +585,11 @@ class PluginController extends ChangeNotifier {
     }
     final entry = _installed.where((p) => p.plugin.id == id).firstOrNull;
     if (entry == null || !entry.enabled) throw StateError('Plugin non attivo');
+    if (entry.plugin.isJavaScript) {
+      throw UnsupportedError(
+        'JavaScript sospeso per sicurezza. Usa un workflow JSON.',
+      );
+    }
     final command = entry.plugin.commands
         .where((c) => c['id'] == commandId)
         .firstOrNull;
@@ -506,15 +616,18 @@ class PluginController extends ChangeNotifier {
       if (!valid) throw StateError('Valore non valido per ${field['label']}');
       values[field['id'] as String] = value;
     }
+    validatePluginValue(values, maxBytes: 2 * 1024 * 1024);
     final session = PluginSession(canvas, pageIndex, entry.state);
     session.plugin = entry.plugin;
     session.host = host;
+    if (host?.close != null) session.cleanup.add(host!.close!);
     final page = canvas.file!.pages![pageIndex];
     final originalRevision = canvas.pluginRevision;
     final api = _api(session);
     api.validate(entry.plugin);
     running = true;
     _cancel = Completer<void>();
+    _session = session;
     notifyListeners();
     try {
       final context = <String, dynamic>{
@@ -536,25 +649,22 @@ class PluginController extends ChangeNotifier {
             'contents': session.describeContent(),
           },
       };
-      if (entry.plugin.isJavaScript) {
-        await scriptRunner(
-          entry.plugin,
-          command['handler'] as String,
-          api,
-          context,
-          _cancel!.future,
-        );
-      } else {
-        final runtime = PluginRuntime(
-          entry.plugin,
-          api,
-          context,
-          cancelled: () => _cancel!.isCompleted,
-        );
-        await runtime.run(command['steps'] as List);
-      }
+      final runtime = PluginRuntime(
+        entry.plugin,
+        api,
+        context,
+        cancelled: () => !session.active,
+      );
+      final operation = runtime.run(command['steps'] as List);
+      await Future.any([
+        operation,
+        _cancel!.future.then<void>(
+          (_) => throw StateError('Comando annullato'),
+        ),
+      ]).timeout(const Duration(minutes: 2));
       if (_cancel!.isCompleted) throw StateError('Comando annullato');
-      session.active = false;
+      session.ensureActive();
+      session.finish();
       if (_disposed ||
           !canvas.acceptsPluginEdits ||
           canvas.pluginRevision != originalRevision ||
@@ -576,6 +686,7 @@ class PluginController extends ChangeNotifier {
       ];
       await _persist(entries);
       if (_disposed ||
+          _cancel!.isCompleted ||
           !canvas.acceptsPluginEdits ||
           canvas.pluginRevision != originalRevision) {
         await _persist(_installed);
@@ -618,9 +729,10 @@ class PluginController extends ChangeNotifier {
       _installed = entries;
       return session;
     } finally {
-      session.active = false;
+      session.finish();
       if (_cancel?.isCompleted == false) _cancel!.complete();
       _cancel = null;
+      _session = null;
       running = false;
       if (!_disposed) notifyListeners();
     }

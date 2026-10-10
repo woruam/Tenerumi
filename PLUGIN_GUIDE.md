@@ -1,8 +1,8 @@
 # Creare plugin per OSIpp
 
-Il sistema plugin permette di aggiungere comandi, moduli di inserimento, generatori di contenuti, strumenti preimpostati e automazioni eseguite su richiesta. Puoi iniziare senza codice con il creatore guidato, combinare azioni in un workflow JSON, oppure scrivere **JavaScript con moduli ES, funzioni, algoritmi e async/await** per plugin complessi. Si distribuiscono come file `.osiplugin.json` o pacchetti `.osiplugin`, senza ricompilare l'app.
+Il sistema plugin permette di aggiungere comandi, moduli di inserimento, generatori di contenuti, strumenti preimpostati e automazioni eseguite su richiesta. Puoi iniziare con il creatore guidato oppure combinare azioni, cicli ed espressioni in un workflow JSON. I plugin operativi si distribuiscono come file `.osiplugin.json`, senza ricompilare l'app. JavaScript è sospeso per sicurezza e non può essere riattivato dall'utente.
 
-L'API comprende formule LaTeX, file generici, flashcard Anki, OCR locale Android, richieste HTTPS e interfacce a più passaggi. Le funzioni native ulteriori si possono integrare tramite l'SDK. Il runtime JavaScript funziona nell'app Android e desktop; sul Web restano disponibili i workflow JSON. Non esiste un sistema che aggiunga automaticamente qualsiasi nuovo sensore o libreria nativa: la logica del plugin è dinamica, le capacità del dispositivo passano attraverso le API host.
+L'API comprende formule LaTeX, file generici, export Anki, OCR locale Android, richieste HTTPS su Android/desktop e interfacce a più passaggi. Le funzioni native ulteriori si integrano tramite l'SDK, nel codice verificato dell'app. I workflow funzionano anche sul Web; le capacità del dispositivo passano attraverso API host con permessi e limiti.
 
 ## Primo plugin senza scrivere codice
 
@@ -15,87 +15,42 @@ L'API comprende formule LaTeX, file generici, flashcard Anki, OCR locale Android
 
 I comandi modificano il documento dal quale hai aperto il gestore, compreso il pannello attivo in modalità affiancata. La pagina proposta è l'ultima con cui hai interagito; puoi sceglierne un'altra. Dal gestore aperto nella libreria puoi creare e installare plugin, ma per eseguirli serve aprire un documento.
 
-**Esempi** offre Timbro data, Planner settimanale, Strumenti studio, **Formule LaTeX**, **Flashcard per Anki** e **OCR immagini**. I file importabili e i sorgenti sono in [`examples/plugins`](examples/plugins). Il planner usa cicli e si adatta alle dimensioni del foglio. I preset dimostrano come ricordare dati fra riavvii.
+**Esempi** offre Timbro data, Planner settimanale, Strumenti studio, **Formule LaTeX** e **OCR immagini** in JSON. Timer e flashcard si attivano come plugin integrati. I file importabili sono in [`examples/plugins`](examples/plugins). Il planner usa cicli e si adatta al foglio; i preset dimostrano la persistenza fra riavvii.
 
 Puoi disattivare un plugin con l'interruttore, modificarlo con **Modifica JSON**, salvarne una copia con **Condividi file** o rimuoverlo con **Rimuovi**. La rimozione elimina anche i suoi dati privati, ma non gli elementi che ha già inserito negli appunti. I plugin non vengono incorporati nei documenti XOPP: i contenuti creati vengono salvati come normali testi, forme, immagini o tratti e restano leggibili senza il plugin.
 
-## Plugin programmabili: da poche righe a progetti complessi
+## Workflow sicuri e API estensibili
 
-Un pacchetto è un archivio ZIP rinominato `.osiplugin`, con `manifest.json` e uno o più file `.js`. Il gestore importa anche un unico JSON contenente `modules`, utile per modificarlo nell'app. Gli esempi avanzati includono entrambe le forme e le cartelle sorgente.
+**JavaScript è sospeso per sicurezza.** La verifica del motore FJS 3.2.0 ha riprodotto l'importazione di un modulo locale esterno al pacchetto anche con i builtin disabilitati. Il motore è stato rimosso dalle dipendenze dell'app. Non esistono impostazioni, permessi o flag nel manifest per riattivarlo. I vecchi plugin JavaScript possono essere conservati, modificati ed esportati, ma i loro comandi non vengono eseguiti. Per LaTeX e OCR il gestore offre esempi JSON equivalenti e il pulsante **Usa l’esempio JSON sicuro** per sostituire un vecchio esempio.
 
-`manifest.json`:
+I plugin nuovi usano workflow JSON: cicli, condizioni, espressioni, variabili, moduli e API host possono essere combinati per costruire strumenti di studio, generatori, conversioni e integrazioni. Nessun tema o tipo di idea è vietato; le capacità disponibili e i limiti di risorse sono invece espliciti. Una capacità mancante si aggiunge al nucleo tramite l'SDK e viene poi combinata liberamente dai plugin. Un plugin distribuito non può introdurre da solo una nuova libreria nativa, un accesso di sistema o un interprete.
 
-```json
-{
-  "apiVersion": 1,
-  "id": "mio.studio",
-  "name": "Assistente studio",
-  "version": "1.0.0",
-  "runtime": "javascript",
-  "entry": "main.js",
-  "permissions": ["document.write", "ui"],
-  "commands": [{"id": "inserisci", "label": "Inserisci formula", "handler": "inserisci"}]
-}
-```
+I file `.osiplugin.json` sono il formato operativo. I pacchetti `.osiplugin` dei vecchi esempi JavaScript sono conservati come materiale storico: importarli non consente di eseguirli. Il confezionatore può verificarne il formato, non certificare la sicurezza del loro codice. Le nuove copie JSON di LaTeX/OCR si trovano in `examples/plugins`.
 
-`main.js`:
-
-```javascript
-export async function inserisci(context) {
-  const dati = await osipp.call('ui.form', {
-    title: 'Formula',
-    fields: [{id:'formula', label:'LaTeX', type:'text', required:true, multiline:true}]
-  });
-  if (!dati) return; // L'utente ha chiuso il modulo.
-  const png = await osipp.call('latex.render', {text:dati.formula, size:24});
-  await osipp.call('image.add', {...png, x:40, y:40});
-}
-```
-
-Puoi suddividere la logica in `lib/parser.js`, `lib/cards.js` e altri moduli, importandoli con `import { funzione } from './lib/parser.js'`. Sono disponibili JavaScript, array, oggetti, classi, JSON, matematica, espressioni regolari e Promise. Le librerie JavaScript possono essere incluse come sorgenti ES oppure raccolte in un bundle; non viene installato automaticamente npm. Librerie che dipendono da DOM, Node.js, processi o moduli nativi non funzionano direttamente.
-
-Per creare il file distribuibile dal repository:
-
-```powershell
-dart tool/package_plugin.dart percorso/cartella mio-plugin.osiplugin
-```
-
-In alternativa comprimi `manifest.json` e i file JavaScript alla radice dello ZIP e rinomina l'estensione. Sono ammessi percorsi relativi come `lib/cards.js`; percorsi assoluti e `..` vengono rifiutati. Non aggiungere una cartella esterna allo ZIP. Il comando di confezionamento valida il pacchetto; la sintassi JavaScript e l'esistenza della funzione esportata sono verificate dal motore quando esegui il comando.
-
-`handler` identifica una funzione esportata dal modulo `entry` (predefinito `main.js`). Riceve `context.input`, `context.page`, `context.today` e, con `document.read`, `context.document`. Gli `inputs` del manifest funzionano anche per JavaScript. Usa `await osipp.call(nome, argomenti)` per tutte le API della tabella seguente e per quelle del workflow. I valori sono JSON. Non avviare chiamate senza `await`: una funzione deve terminare solo dopo le proprie operazioni.
-
-### API per plugin complessi
-
-| Azione | Argomenti e risultato | Permessi |
+| Azione host | Argomenti e risultato | Permessi |
 | --- | --- | --- |
-| `capabilities` | Restituisce `actions`, `javascript`, `ocr`; controlla i servizi disponibili | nessuno |
-| `ui.form` | `title`, `fields`, `submitLabel`; restituisce i valori o `null`. Campi come gli `inputs`, con `multiline:true` per testi lunghi. Puoi concatenare più moduli e calcolarne i campi dinamicamente | `ui` |
-| `ui.preview` | `title`, `type` (`text`, `latex`, `image`), `text` o `base64`; restituisce `true` con Continua, `false`/`null` con Annulla | `ui` |
-| `latex.render` | `text` LaTeX, `size` 8–128, `color` `#RRGGBB`; restituisce PNG trasparente `{base64,width,height}` | nessuno |
-| `files.open` | `type:'image'` opzionale, `encoding:'utf8'` opzionale; restituisce `{name,base64,text?}` oppure `null`. Solo file scelti esplicitamente nel selettore | `files.read` |
-| `files.export` | `name` e `text` UTF-8 oppure `base64`; prepara un file da salvare dopo il successo del comando | `export` |
-| `anki.export` | `cards:[{front,back,tags?}]`, `deck`, `name`; prepara TSV UTF-8 con intestazioni Anki, HTML e separatori correttamente codificati; restituisce `{count}` | `export` |
-| `content.image` | `id` dell'immagine; restituisce `{base64}` | `document.read` |
-| `page.render` | `index` opzionale; restituisce PNG `{base64,width,height}` della pagina, inclusi gli sfondi e le modifiche preparate dal plugin nella pagina corrente | `document.read` |
-| `document.pages` | Elenco `{index,width,height,layers,infinite}` delle pagine | `document.read` |
-| `ocr.recognize` | Immagine in `base64`; restituisce `{text,blocks:[{text,x,y,width,height,lines}]}` | `ocr` |
-| `http.request` | `url`, `method` (GET/POST/PUT/PATCH/DELETE), `headers`, `body` testuale; restituisce `{status,headers,text,base64}` | `network` |
+| `capabilities` | `actions`, `javascript:false`, `ocr`; controlla i servizi disponibili | nessuno |
+| `ui.form` | `title`, `fields`, `submitLabel`; valori o `null`. Campi validati come gli `inputs`; `multiline:true` per testi | `ui` |
+| `ui.preview` | `title`, `type` (`text`, `latex`, `image`), `text`/`base64`; `true`, `false` o `null` | `ui` |
+| `latex.render` | `text`, `size` 8–128, `color` `#RRGGBB`; PNG `{base64,width,height}` | nessuno |
+| `files.open` | `type:'image'`, `encoding:'utf8'` opzionali; `{name,base64,text?}` o `null`. Solo file scelti dall'utente | `files.read` |
+| `files.export` | `name`, `text` UTF-8 o `base64`; prepara un export dopo il successo | `export` |
+| `anki.export` | `cards:[{front,back,tags?}]`, `deck`, `name`; TSV UTF-8 con HTML codificato e intestazioni Anki, `{count}` | `export` |
+| `content.image` | `id` immagine; `{base64}` | `document.read` |
+| `page.render` | `index` opzionale; PNG `{base64,width,height}`, sfondi e contenuti preparati inclusi | `document.read` |
+| `document.pages` | Elenco `{index,width,height,layers,infinite}` | `document.read` |
+| `ocr.recognize` | Immagine `base64`; `{text,blocks}`. OCR locale su Android | `ocr` |
+| `http.request` | HTTPS `url`, `method`, `headers`, `body`; `{status,headers,text,base64}` | `network` |
 
-LaTeX viene composto matematicamente tramite Flutter Math e inserito come immagine: frazioni, radici e simboli vengono disegnati, non mostrati come codice. Le formule si conservano in PDF/XOPP senza il plugin. Per un editor di formule che ricordi il sorgente, conserva anche il LaTeX tramite `state.set`; l'immagine da sola non contiene un sorgente modificabile. È supportato il sottoinsieme matematico del renderer, non la compilazione di un documento TeX completo.
+Le formule sono renderizzate con Flutter Math, non compilate come documenti TeX completi. Per conservarne anche il sorgente usa `state.set`. L'OCR locale Android usa ML Kit offline; per altri provider puoi combinare `page.render`, moduli e HTTPS. Le immagini vengono validate prima di passare al renderer/OCR.
 
-Le flashcard dell'esempio sono conservate per plugin, con comandi Aggiungi, Importa JSON ed Esporta. In Anki importa `flashcard.tsv` tramite **File → Importa**. È un formato di importazione testuale, non un pacchetto `.apkg` né una sincronizzazione con AnkiConnect. Puoi scrivere plugin con conversioni più elaborate o integrazioni con server tramite le API. Riferimento: [importazione testuale Anki](https://docs.ankiweb.net/manual/importing/text-files).
+In **Plugin** si attivano anche **Timer Pomodoro** e **Flashcard per Anki**, implementati nel nucleo. Le flashcard native usano due selezioni per fronte e retro, hanno un set modificabile per appunto e vengono salvate nel documento, nel recupero automatico e nel backup. Il vecchio esempio Anki conserva dati per plugin: il pannello nativo permette di copiarli nel documento. Il suo JavaScript resta sospeso. Per importare in Anki usa testo e immagini secondo il [manuale Anki](https://docs.ankiweb.net/manual/importing/text-files); un JSON OSI è una copia dei dati, non un formato nativo Anki.
 
-L'OCR incorporato usa il modello latino ML Kit **offline su Android**; non invia immagini a server. L'esempio legge una foto, permette di correggere il risultato e inserisce testo nel foglio. Per riconoscere una pagina usa `page.render` seguito da `ocr.recognize`. Il riconoscimento della scrittura a mano dipende dalla qualità del modello e dell'immagine. Per altre lingue, modelli avanzati o piattaforme puoi implementare un provider remoto con `http.request`, oppure aggiungere un provider nativo tramite `PluginHost.ocr`. Riferimento: [ML Kit Text Recognition](https://developers.google.com/ml-kit/vision/text-recognition/v2/android).
+Per la rete dichiara `"networkHosts":["api.mioservizio.it"]`. Il gestore mostra permessi e server prima dell'installazione e di ogni aggiornamento. Le richieste accettano soltanto HTTPS sulla porta 443, host esatti, nessun redirect, credenziale nell'URL o header che alteri il routing. Su Android/desktop tutti gli indirizzi DNS devono essere pubblici: la connessione usa l'indirizzo verificato senza una seconda risoluzione e mantiene la verifica TLS del nome del server. Rete locale, loopback e indirizzi riservati sono esclusi. Sul Web `http.request` è indisponibile perché il browser non permette all'app di vincolare gli indirizzi DNS.
 
-Per rete dichiara anche `"networkHosts":["api.mioservizio.it"]` nel manifest. Sono accettati soltanto HTTPS sulla porta 443 e gli host esatti dichiarati, senza wildcard, credenziali nell'URL o redirect automatici. Un servizio OCR/AI remoto può essere chiamato con POST; l'utente deve sapere nel nome/descrizione del plugin quali dati saranno inviati. Le credenziali in `state` non sono un deposito cifrato: non distribuire chiavi segrete nel sorgente e preferisci token limitati. Errori e risposte HTTP devono essere gestiti dal codice del plugin.
+Un plugin con accessi a dati e rete può inviare quei dati ai server autorizzati: il consenso non garantisce l'onestà del server. Descrivi chiaramente i dati trasmessi. `state` non è cifrato: non distribuire segreti nel sorgente e preferisci token limitati. Richieste già inviate non possono essere ritirate. Timeout e cancellazione chiudono il client e impediscono di applicare risultati tardivi.
 
-### Esecuzione, annullamento e piattaforme
-
-Ogni comando JavaScript ha un motore QuickJS separato, memoria limitata a 64 MiB, stack di 512 KiB, massimo 2000 chiamate host e durata complessiva massima di due minuti. Il gestore offre **Annulla esecuzione**; l'interruzione nativa ferma anche cicli JavaScript infiniti. Le chiamate host sono serializzate. Il codice non riceve filesystem, processi, timer o rete nativi: usa le API esplicite dell'app. Il motore e i limiti evitano molti errori accidentali, ma non costituiscono isolamento tramite processo/OS per eseguire codice ostile: installa plugin di provenienza attendibile. Riferimento del motore: [FJS](https://pub.dev/packages/fjs).
-
-Le modifiche al foglio e ai dati del plugin diventano effettive soltanto al successo. Un errore o una cancellazione le scarta, e un comando modifica il foglio con una sola azione Annulla. File esportati si salvano dopo la transazione; annullare un selettore file non annulla le modifiche già accettate. Richieste HTTP già inviate non sono annullabili e le API native già avviate possono completare in background; il loro risultato non viene applicato alla sessione terminata. Per lavori lunghi dividi il processo in comandi e salva progressi intermedi.
-
-JSON funziona su tutte le piattaforme dell'app; JavaScript richiede Android o desktop; OCR locale richiede Android. Un'API `latex.render`, `ui.form` o `files.open` richiede un `PluginHost`, che il gestore fornisce automaticamente. In test o altre integrazioni puoi passare provider propri a `PluginController.execute(..., host: PluginHost(...))`. Per nuovi widget interattivi, sensori, librerie native o hook della penna occorre aggiungere capacità compilate nell'app; non promettiamo che codice JavaScript possa creare automaticamente qualsiasi nuova funzione nativa.
+Il modello di minaccia, la verifica riproducibile e i requisiti per un futuro motore sono in [Sicurezza dei plugin](docs/PLUGIN_SECURITY.md). Non promettiamo immunità assoluta da exploit: anche parser e renderer del nucleo richiedono aggiornamenti e verifiche.
 
 ## Un esempio minimo JSON
 
@@ -147,7 +102,7 @@ Un comando può chiedere informazioni all'utente:
 ]
 ```
 
-I campi disponibili sono `text`, `number`, `boolean` e `choice`. `required` impone la compilazione; `default` propone il valore iniziale. `choice` richiede una lista non vuota di stringhe in `options`. Massimo 32 campi per comando. Per numeri e booleani definisci un valore iniziale coerente; un `number` deve essere finito, un `boolean` è `true` o `false`.
+I campi disponibili sono `text`, `number`, `boolean` e `choice`. `required` impone la compilazione; `default` propone un valore del tipo corretto. `choice` richiede da 1 a 256 stringhe uniche e un default presente in `options`. Massimo 32 campi per comando, etichette/opzioni di 240 caratteri. I numeri devono essere finiti e i booleani `true`/`false`; valori incompatibili vengono rifiutati prima di costruire l'interfaccia.
 
 Usa `${input.titolo}` dentro una stringa oppure `{"var":"input.dimensione"}` per conservare il tipo numerico. Esempio:
 
@@ -273,12 +228,12 @@ Annulla/Ripristina riguarda gli elementi del foglio; i preset degli strumenti e 
 ## Limiti della versione 1
 
 - 32 plugin installati; JSON/pacchetto e sorgenti decompressi massimo 2 MiB; archivio locale complessivo massimo 8 MiB. Pacchetti: massimo 64 moduli JavaScript.
-- Workflow JSON: massimo 2000 step, 100.000 valutazioni e circa 2 secondi di elaborazione effettiva; l'attesa delle API asincrone non consuma questo budget. Ogni 100 step il runtime cede il controllo all'interfaccia. Ogni chiamata asincrona ha un timeout massimo di due minuti.
+- Workflow JSON: massimo 2000 step/chiamate host, 100.000 valutazioni e circa 2 secondi di elaborazione effettiva; ogni 100 step cede il controllo all'interfaccia. L'intero comando, inclusa l'attesa delle API e dell'utente, dura al massimo due minuti. Annullamento, errori e timeout invalidano la sessione e impediscono nuove azioni o risultati tardivi.
 - Annidamento step massimo 24; espressioni massimo 32 livelli; lista di un ciclo massimo 1000 elementi.
 - Testi generati massimo 65.536 caratteri; massimo 20 messaggi da 4096 caratteri; dati privati massimo 64 KiB.
-- Massimo 10.000 elementi nella pagina per un'inserzione plugin, 10.000 punti per `stroke.add`, liste costruite con `append` massimo 10.000 elementi. Immagini decodificate massimo 4 milioni di pixel.
+- Massimo 10.000 elementi nella pagina per un'inserzione plugin, 10.000 punti per `stroke.add`, 100.000 punti aggiunti per comando, liste con `append` massimo 10.000 elementi. Immagini decodificate massimo 4 milioni di pixel. Testi e immagini generati hanno un budget complessivo di 32 MiB, includendo la memoria dei pixel delle immagini inserite.
 - Numeri dei parametri host finiti, con valore assoluto massimo 100.000; spessori limitati a 0,1–512; testo 1–512; fattore di scala maggiore di zero e massimo 100. Posizioni fuori dal foglio sono possibili: usa `page.width`/`height` per produrre contenuti visibili.
-- File: massimo 8 MiB ciascuno; fino a 8 export per comando, massimo 16 MiB totali. OCR: immagini massimo 4 milioni di pixel; timeout 45 secondi. HTTP: richieste/risposte massimo 8 MiB, timeout 20 secondi per risposta o inattività del flusso.
+- File: massimo 8 MiB ciascuno; fino a 8 export per comando, massimo 16 MiB totali. OCR: immagini massimo 4 milioni di pixel; timeout 45 secondi. HTTP: richieste/risposte massimo 8 MiB, header massimo 16 KiB, timeout complessivo 20 secondi e risoluzione DNS 5 secondi. I dati che attraversano le API sono JSON con complessità limitata; trasformazioni che producono geometrie fuori dai limiti vengono rifiutate.
 - UI tramite moduli e anteprime; niente shell o accesso generale al filesystem. Gli hook automatici della penna richiedono estensioni SDK.
 
 Questi limiti mantengono reattiva l'app e rendono prevedibili gli errori. Per operazioni più grandi, dividi il lavoro in più comandi oppure aggiungi una capacità host specifica.
@@ -314,20 +269,12 @@ L'aggiunta di nuove capacità native richiede una build dell'app. Una volta pubb
 
 ## Verifica e manutenzione
 
-`test/plugin_system_test.dart` verifica formato e permessi, esempi, cicli e condizioni, trasformazioni, persistenza, disattivazione, aggiornamento, disinstallazione, rollback, limiti di elaborazione, conflitti con modifiche dell'utente, immagini valide/corrotte e uso dell'editor su telefono da 380dp. La suite completa continua a controllare penna, lazo, gomma, memoria, documenti e PDF/XOPP.
+Le regressioni sono in `test/plugin_system_test.dart`, `advanced_plugin_test.dart`, `plugin_javascript_test.dart` e `plugin_security_test.dart`: validazione, permessi, esempi JSON, rollback, concorrenza, cancellazione, ZIP corrotti/duplicati, decompressione limitata, moduli con default errati, indirizzi DNS privati e tentativi di riattivare JavaScript. I test del blocco non richiedono una libreria nativa JavaScript.
 
-Per aggiornare i file degli esempi dopo una modifica a `plugin_examples.dart`, esegui:
+Dopo una modifica agli esempi esegui `dart tool/generate_plugin_examples.dart`, `flutter test` e `flutter analyze --no-fatal-infos`. I log della revisione sono `docs/validation/plugin-security-focused-tests.txt`, `plugin-security-all-tests.txt`, `plugin-security-analyze.txt` e `plugin-security-dependencies.txt`.
 
-```powershell
-dart tool/generate_plugin_examples.dart
-flutter test
-flutter analyze --no-fatal-infos
-```
+L'audit del precedente motore è separato in `tool/plugin_engine_audit`; le sue dipendenze non appartengono all'app. Il test riproduce la falla usando solo un file temporaneo innocuo. La verifica originale è registrata in `docs/validation/plugin-loader-audit.txt`. Per ripeterla seguire il README di quella cartella; non reinserire FJS nelle dipendenze del prodotto.
 
-Le prove di questa revisione sono in `docs/validation/plugins-tests.txt`, `plugins-analyze.txt` e `plugins-android-build.txt`. Il selettore file Android e la conservazione dei plugin dopo il riavvio sul dispositivo richiedono anche una prova fisica.
+Le verifiche storiche del 7 ottobre riguardavano il precedente runtime e non certificano la sicurezza della versione corrente. OCR nativo e selettori file richiedono anche prove su dispositivo Android fisico.
 
-La suite avanzata include `advanced_plugin_test.dart` e `plugin_javascript_test.dart`. I test JavaScript usano il motore nativo reale: per prepararli su Windows esegui `powershell -ExecutionPolicy Bypass -File tool/prepare_plugin_tests.ps1 -FlutterRoot C:\src\flutter`, poi `flutter test`. Il download usa il controllo di firma di Cargokit. Senza libreria nativa i quattro test JavaScript sono esplicitamente saltati, non simulati; puoi indicare un percorso diverso con la variabile d'ambiente `PLUGIN_FJS_LIBRARY`.
-
-Verifica del 7 ottobre 2026: **103 test complessivi superati**, compresi **4 test con JavaScript reale**, moduli ES, chiamate asincrone, rollback, permessi e interruzione di un ciclo infinito. LaTeX produce PNG di formule reali; Anki, pacchetti, OCR tramite provider controllabile e raster della pagina sono verificati. Log aggiornati: `docs/validation/advanced-plugins-all-tests.txt`, `advanced-plugins-analyze-final.txt`, `advanced-plugins-build-final.txt`, `advanced-plugins-web-build.txt`. L'OCR nativo e i selettori file devono ancora essere provati su dispositivo Android fisico. I warning sulla futura versione minima di Gradle/AGP/Kotlin sono quelli già descritti in `docs/DEPENDENCY_UPGRADE.md`.
-
-Analisi finale: zero errori e warning, 196 informazioni di stile. Build APK release riuscita (**117,8 MB**, include motore JavaScript e modello OCR), in `build/app/outputs/flutter-apk/app-release.apk`; build Web release riuscita. La build Web esegue i workflow JSON, non il motore JavaScript nativo.
+Verifica del 10 ottobre: **209 test superati**, nessun errore o warning nell'analisi e APK release compilato. Il controllo dei contenuti dell'APK non trova il motore JavaScript o il bridge. Queste verifiche chiudono i problemi riprodotti; non certificano l'assenza di ogni possibile exploit.

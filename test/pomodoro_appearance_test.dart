@@ -45,6 +45,7 @@ void main() {
         }
       });
       SharedPreferences.setMockInitialValues({
+        'osipp.builtin-plugins.v1': jsonEncode({'pomodoro': true}),
         PreferencesKeys.kRecentFiles: jsonEncode(
           List.generate(
             8,

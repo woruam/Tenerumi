@@ -618,6 +618,7 @@ Future<Uint8List> rasterizeExportPage(
   double maxScale = 2,
   int maxDimension = 4096,
   int pixelBudget = 4000000,
+  bool clipToPage = true,
 }) async {
   if (maxDimension < 1 || pixelBudget < 1) {
     throw ArgumentError('Raster budget must be positive');
@@ -673,8 +674,19 @@ Future<Uint8List> rasterizeExportPage(
     Paint()..filterQuality = FilterQuality.high,
   );
   try {
-    canvas.clipRect(Offset.zero & size);
-    if (paintBackground) paintPaperBackground(canvas, size, page.background);
+    canvas.clipRect(clipToPage ? Offset.zero & size : area);
+    if (paintBackground) {
+      if (!clipToPage) {
+        canvas.drawRect(
+          area,
+          Paint()
+            ..color = page.background is XppBackgroundNothingDark
+                ? const Color(0xff161616)
+                : Colors.white,
+        );
+      }
+      paintPaperBackground(canvas, size, page.background);
+    }
     if (backgroundBytes != null) {
       drawImage(
         await decode(backgroundBytes, Offset.zero & size),

@@ -1,0 +1,11 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/study_plugins_test.dart
+00:00 +0: shape properties survive switching tools without changing pen
+00:00 +1: built-in activation persists independently
+00:00 +2: flashcards round trip with crops; snapshots and notes stay independent
+00:00 +3: Anki bundle escapes text, contains media and a JSON backup
+00:00 +4: double-selection tool emits rectangles and never ink
+00:01 +5: plugin activation controls toolbar and selection UI
+00:02 +6: cards can be edited and deleted only in their note
+00:03 +7: native plugins are listed without installation
+00:03 +8: two captures create a reviewed card without changing source text
+00:03 +9: All tests passed!

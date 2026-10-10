@@ -3,6 +3,7 @@ import 'package:xournalpp/src/note_tags.dart';
 import 'package:xournalpp/src/recent_documents.dart';
 import 'package:xournalpp/widgets/note_tag_picker.dart';
 import 'package:xournalpp/widgets/app_info_dialog.dart';
+import 'package:xournalpp/widgets/note_backup_dialog.dart';
 import 'package:xournalpp/src/app_appearance.dart';
 
 import 'package:flutter/material.dart';
@@ -458,6 +459,40 @@ class _OpenPageState extends State<OpenPage> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: const Icon(Icons.backup_outlined),
+                        title: const Text('Crea Backup'),
+                        subtitle: const Text(
+                          'Esporta gli appunti per un altro dispositivo',
+                        ),
+                        onTap: () async {
+                          Navigator.pop(context);
+                          await showNoteBackupDialog(
+                            this.context,
+                            restore: false,
+                          );
+                          if (mounted) await _loadRecentFiles();
+                        },
+                      ),
+                      ListTile(
+                        key: const ValueKey('restore-backup'),
+                        contentPadding: EdgeInsets.zero,
+                        leading: const Icon(Icons.restore_outlined),
+                        title: const Text('Ripristina Backup'),
+                        subtitle: const Text(
+                          'Carica gli appunti da un backup OSI',
+                        ),
+                        onTap: () async {
+                          Navigator.pop(context);
+                          await showNoteBackupDialog(
+                            this.context,
+                            restore: true,
+                          );
+                          if (mounted) await _loadRecentFiles();
+                        },
+                      ),
+                      const Divider(),
                       SwitchListTile(
                         contentPadding: EdgeInsets.zero,
                         title: const Text('Disegna con le dita'),
