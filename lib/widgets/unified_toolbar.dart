@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:xournalpp/src/app_appearance.dart';
 
 import 'dart:math' as math;
@@ -27,7 +29,8 @@ class UnifiedToolbar extends StatefulWidget implements PreferredSizeWidget {
   /// Callback della WorkspacePage per aprire un PDF in una scheda separata:
   /// serve a far funzionare l'opzione "In una nuova scheda" del dialogo di
   /// import anche dalla toolbar unificata (la logica PDF resta invariata).
-  final void Function(String pdfPath, String title)? onOpenPdfInNewTab;
+  final void Function(String pdfPath, String title, Uint8List pickedBytes)?
+      onOpenPdfInNewTab;
 
   const UnifiedToolbar({
     super.key,

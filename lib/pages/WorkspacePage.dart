@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:xournalpp/plugins/plugin_controller.dart';
 
 import 'dart:convert';
@@ -51,7 +53,7 @@ class _WorkspacePageState extends State<WorkspacePage>
   // Chiavi per richiamare promptSaveIfUnsaved sullo stato di ogni CanvasPage.
   final Map<XppFile, GlobalKey<CanvasPageState>> canvasKeys = {};
   // PDF in attesa di import nelle schede appena create.
-  final Map<XppFile, String> _pendingPdf = {};
+  final Map<XppFile, (String, Uint8List)> _pendingPdf = {};
 
   // ---------------- POMODORO GLOBALE ----------------
   // FIX: prima il pulsante Pomodoro della toolbar unificata era collegato a un
@@ -264,9 +266,9 @@ class _WorkspacePageState extends State<WorkspacePage>
   }
 
   // Apre un PDF in una scheda separata, senza toccare i documenti gia' aperti.
-  void _openPdfInNewTab(String pdfPath, String title) {
+  void _openPdfInNewTab(String pdfPath, String title, Uint8List pickedBytes) {
     final XppFile f = XppFile.empty()..title = title;
-    _pendingPdf[f] = pdfPath;
+    _pendingPdf[f] = (pdfPath, pickedBytes);
     _ws.addDocument(f);
     _ws.setPrimary(_ws.documents.length - 1);
   }
@@ -549,7 +551,7 @@ class _WorkspacePageState extends State<WorkspacePage>
         _ws.documents[index.clamp(0, _ws.documents.length - 1)];
     // Il PDF in attesa va consumato UNA volta sola: se il pannello viene
     // ricostruito (es. attivando/disattivando lo split) non va re-importato.
-    final String? pending = _pendingPdf.remove(file);
+    final pending = _pendingPdf.remove(file);
     return CanvasPage(
       key: _keyFor(file),
       file: file,
@@ -560,7 +562,8 @@ class _WorkspacePageState extends State<WorkspacePage>
       showInternalToolbar: false, // la toolbar e' unica e globale
       onFocus: () =>
           _ws.focus(panel), // tocco -> questo pannello prende il focus
-      pdfToImportPath: pending,
+      pdfToImportPath: pending?.$1,
+      pdfToImportBytes: pending?.$2,
       onOpenPdfInNewTab: _openPdfInNewTab,
     );
   }

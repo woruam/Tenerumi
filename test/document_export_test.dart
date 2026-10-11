@@ -51,6 +51,39 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
+  testWidgets('PDF export preserves bounded PNG bytes and propagates image budget',
+      (tester) async {
+    await tester.runAsync(() async {
+      final png = await solidPng(Colors.blue);
+      // A valid ancillary chunk makes re-encoding observable.
+      final data = Uint8List.fromList([
+        ...png.take(png.length - 12),
+        0,0,0,34,116,69,88,116,67,111,109,109,101,110,116,0,112,114,101,115,101,114,118,101,32,111,114,105,103,105,110,97,108,32,101,110,99,111,100,105,110,103,178,99,117,143,
+        ...png.skip(png.length - 12),
+      ]);
+      final file = XppFile.empty(title: 'Background budget');
+      file.pages = List.generate(5, (_) => XppPage(
+          pageSize: XppPageSize(width: 100, height: 100),
+          background: XppBackgroundImage(filename: 'background.png'),
+          layers: [XppLayer.empty()]));
+      final budgets = <int>[];
+      final result = await prepareNotesPdf(file,
+          loadBackground: (_, _, budget) async {
+        budgets.add(budget);
+        return data;
+      });
+      try {
+        expect(budgets, List.filled(5, 16 * 1024 * 1024 ~/ 5));
+        final images = await Directory(result.root!).list()
+            .where((entry) => entry.path.endsWith('.png')).toList();
+        expect(images, hasLength(1));
+        expect(await File(images.single.path).readAsBytes(), data);
+      } finally {
+        await result.dispose();
+      }
+    });
+  });
+
   testWidgets('PDF keeps pressure ink, overlapping erasures and layer order', (
     tester,
   ) async {
@@ -99,7 +132,7 @@ void main() {
       )..addFont(rootBundle.load('fonts/Inter/Inter-Variable.ttf'))).load();
       final bytes = await buildNotesPdf(
         file,
-        loadBackground: (_, _) async => null,
+        loadBackground: (_, _, _) async => null,
       );
       expect(latin1.decode(bytes), contains('%PDF-'));
       await File('docs/validation/pdf-quality.pdf').writeAsBytes(bytes);
@@ -153,7 +186,7 @@ void main() {
         )..addFont(rootBundle.load('fonts/Inter/Inter-Variable.ttf'))).load();
         final pdf = await buildNotesPdf(
           file,
-          loadBackground: (_, _) async => null,
+          loadBackground: (_, _, _) async => null,
         );
         expect(latin1.decode(pdf), isNot(contains('/Subtype /Image')));
         await File('docs/validation/pdf-vector-shapes.pdf').writeAsBytes(pdf);
@@ -168,7 +201,7 @@ void main() {
         ];
         final imagePdf = await buildNotesPdf(
           file,
-          loadBackground: (_, _) async => null,
+          loadBackground: (_, _, _) async => null,
         );
         final encoded = latin1.decode(imagePdf);
         expect(encoded, contains('/Width 8'));
@@ -415,7 +448,7 @@ void main() {
       onUnavailable: unavailable,
     );
     await expectLater(
-      buildNotesPdf(file, loadBackground: (_, _) async => null),
+      buildNotesPdf(file, loadBackground: (_, _, _) async => null),
       throwsStateError,
     );
   });

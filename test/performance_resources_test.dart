@@ -296,8 +296,9 @@ void main() {
     final previous = PdfxPlatform.instance;
     final backend = _PdfBackend(await solidPng(Colors.white));
     PdfxPlatform.instance = backend;
-    final selected = FilePickerCross(Uint8List.fromList([1, 2, 3]));
-    final path = await selected.saveToPath(path: 'import-recovery-test.pdf');
+    final pickedBytes = Uint8List.fromList([1, 2, 3]);
+    // Selected bytes are sufficient: no temporary PDF needs to exist on disk.
+    const path = 'missing-import-recovery-test.pdf';
     final tab = XppFile.empty(title: 'PDF');
     final controller = CanvasController(autosaveEnabled: false)..init(tab);
     var renderedAfterCheckpoint = false;
@@ -308,7 +309,8 @@ void main() {
       }
     });
     try {
-      await controller.loadPdfFresh(path, 'Imported PDF');
+      await controller.loadPdfFresh(path, 'Imported PDF', pickedBytes: pickedBytes);
+      expect(controller.pdfErrors, isEmpty);
       expect(identical(controller.file, tab), isTrue);
       expect(tab.pages, hasLength(3));
       expect(renderedAfterCheckpoint, isTrue);
@@ -683,7 +685,7 @@ void main() {
     );
     final bytes = await buildNotesPdf(
       file,
-      loadBackground: (_, _) async => null,
+      loadBackground: (_, _, _) async => null,
     );
     final text = latin1.decode(bytes);
     expect(text, contains('%PDF-'));

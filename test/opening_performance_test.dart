@@ -6,12 +6,68 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:archive/archive.dart';
 import 'package:xournalpp/layer_contents/XppStroke.dart';
+import 'package:xournalpp/layer_contents/XppImage.dart';
+import 'package:xournalpp/layer_contents/XppText.dart';
+import 'package:xournalpp/layer_contents/XppTexImage.dart';
+import 'package:xournalpp/src/XppLayer.dart';
+import 'package:xournalpp/src/XppPage.dart';
+import 'package:xournalpp/src/XppPageSize.dart';
+import 'package:xml/xml.dart';
 import 'package:xournalpp/src/XppFile.dart';
 import 'package:xournalpp/src/bounded_archive.dart';
 import 'package:xournalpp/src/compat/file_picker_cross.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test('mixed layer content retains order and unsupported warnings', () async {
+    const xml = '<xournal xmlns:foreign="urn:foreign"><page width="100" height="100">'
+        '<layer><text color="#000000ff" size="12" font="Sans" x="1" y="2">first</text>'
+        '<future-item value="1"/><foreign:stroke/>'
+        '<stroke tool="eraser"/><stroke tool="future"/>'
+        '<stroke tool="pen" color="#000000ff" width="2">1 2 3 4</stroke>'
+        '<image left="1" top="2" right="3" bottom="4">AA==</image>'
+        '<teximage text="x" color="#000000ff" left="1" top="2" right="3" bottom="4"/>'
+        '<text color="#000000ff" size="12" font="Sans" x="5" y="6">last</text>'
+        '</layer></page></xournal>';
+    final file = await XppFile.fromFilePickerCross(
+      FilePickerCross(Uint8List.fromList(GZipEncoder().encode(utf8.encode(xml)))),
+      null,
+      (_) async => throw StateError('Unavailable'),
+    );
+    final content = file.pages!.single.layers!.single.content!;
+    expect(content.map((item) => item.runtimeType),
+        [XppText, XppStrokePen, XppImage, XppTexImage, XppText]);
+    expect((content.first as XppText).text, 'first');
+    expect((content.last as XppText).text, 'last');
+    expect(file.importWarnings, contains('Contenuto del livello non supportato: future-item'));
+    expect(file.importWarnings, contains('Cancellatura whiteout non supportata'));
+    expect(file.importWarnings, contains('Strumento del tratto non supportato'));
+  });
+
+  test('streamed XOPP preserves serializer metadata and escaped text', () async {
+    final file = XppFile.empty(title: 'Streaming');
+    file.pdfAttachments['a&b.pdf'] = Uint8List.fromList([1, 2, 3, 4]);
+    file.pages!.add(XppPage(pageSize: XppPageSize(width: 320, height: 240),
+        infinite: true, layers: [XppLayer(name: 'A & "B"', visible: false,
+            locked: true, content: [null, XppText(text: '<a>&b',
+                color: Colors.black, size: 12, fontFamily: 'Sans',
+                offset: const Offset(-5, 6))]), XppLayer.empty()]));
+    final encoded = await file.toUint8ListAsync();
+    final actual = XmlDocument.parse(utf8.decode(GZipDecoder().decodeBytes(encoded)));
+    // Streaming must retain the same XML, including empty and null contents.
+    expect(actual.rootElement.toXmlString(), file.toXmlDocument().rootElement.toXmlString());
+    final reopened = await XppFile.fromFilePickerCross(
+        FilePickerCross(encoded), null, (_) async => throw StateError('Unavailable'));
+    final page = reopened.pages!.last;
+    expect(page.infinite, isTrue);
+    expect(page.pageSize!.width, 320);
+    expect(page.layers!.first.name, 'A & "B"');
+    expect(page.layers!.first.visible, isFalse);
+    expect(page.layers!.first.locked, isTrue);
+    expect((page.layers!.first.content!.single as XppText).text, '<a>&b');
+    expect(page.layers!.last.content, isEmpty);
+  });
+
   test(
     'point scanner preserves whitespace and partial pressure lists',
     () async {

@@ -726,7 +726,8 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   // --- FUNZIONE PER IMPORTARE IL PDF (Ottimizzata) ---
   Future<void> importPdf(
     BuildContext context, {
-    void Function(String pdfPath, String title)? onOpenInNewTab,
+    void Function(String pdfPath, String title, Uint8List pickedBytes)?
+        onOpenInNewTab,
   }) async {
     try {
       final fileData = await FilePickerCross.importFromStorage(
@@ -761,10 +762,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
 
       // Opzione "nuova scheda": deleghiamo alla WorkspacePage.
       if (choice.newTab) {
-        final storedPath = await fileData.saveToPath(
-          path: 'import_${DateTime.now().microsecondsSinceEpoch}.pdf',
-        );
-        onOpenInNewTab?.call(storedPath, pdfTitle);
+        onOpenInNewTab?.call(filePath, pdfTitle, fileData.toUint8List());
         return;
       }
 
@@ -879,7 +877,11 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   // Carica un PDF in una scheda NUOVA e vuota.
-  Future<void> loadPdfFresh(String pdfPath, String title) async {
+  Future<void> loadPdfFresh(
+    String pdfPath,
+    String title, {
+    Uint8List? pickedBytes,
+  }) async {
     if (_disposed) return;
     // The workspace owns this instance and persists its local recovery key.
     // Replacing it leaves the workspace pointing at the original empty tab.
@@ -889,7 +891,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     pdfBackgrounds.clear();
     linkedPdfPath = pdfPath;
     try {
-      await _insertPdfAt(pdfPath, 0);
+      await _insertPdfAt(pdfPath, 0, pickedBytes: pickedBytes);
     } catch (e) {
       if (!_disposed) pdfErrors[0] = e.toString();
     } finally {
@@ -1243,7 +1245,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     try {
       return await prepareNotesPdf(
         document,
-        loadBackground: (index, background) async {
+        loadBackground: (index, background, pixelBudget) async {
           if (background is XppBackgroundPdf) {
             if (pdfRasterizer != null) return pdfRasterizer!(index);
             final name = background.filename;
@@ -1256,7 +1258,11 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
               source = await _openPdf(name);
               sourceName = name;
             }
-            return _renderPdfPage(source!, background, pixelBudget: 4000000);
+            return _renderPdfPage(
+              source!,
+              background,
+              pixelBudget: pixelBudget.toDouble(),
+            );
           }
           if (background is XppBackgroundImage && background.filename != null)
             return _readPdfBytes(background.filename!);

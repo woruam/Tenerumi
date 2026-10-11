@@ -1,0 +1,5 @@
+model = "gpt-6.1-sol"
+model_reasoning_effort = "medium"
+
+# Limite a 2 subagenti paralleli per gestire i rate limit del piano Plus
+max_concurrent_subagents = 2

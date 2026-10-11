@@ -459,12 +459,10 @@ class XppFile {
 
       for (XmlElement layer in layerElements) {
         attributes(layer, {'name', 'osipp-visible', 'osipp-locked'});
-        Map<int, XppContent?> content = {};
-        int index = 0;
-        layer.children.forEach((XmlNode node) {
-          if (node.nodeType == XmlNodeType.TEXT) return;
-          if (node.nodeType != XmlNodeType.ELEMENT) return;
-          attributes(node as XmlElement, switch (node.name.local) {
+        final content = <XppContent>[];
+        // Visit each element once; XML order is the painting order.
+        for (final node in layer.childElements) {
+          attributes(node, switch (node.name.local) {
             'stroke' => {
               'tool',
               'color',
@@ -489,166 +487,167 @@ class XppFile {
             'teximage',
           ].contains(node.name.local))
             warn('Contenuto del livello non supportato: ${node.name.local}');
-          node.setAttribute('counter', index.toString());
-          index++;
-        });
-
-        layer.findElements('image').forEach((imageElement) {
-          _validateImageRectangle(imageElement);
-          content[int.parse(imageElement.getAttribute('counter')!)] = XppImage(
-            data: budget.media(imageElement.innerText.trim()),
-            topLeft: Offset(
-              documentNumber(imageElement.getAttribute('left')),
-              documentNumber(imageElement.getAttribute('top')),
-            ),
-            bottomRight: Offset(
-              documentNumber(imageElement.getAttribute('right')),
-              documentNumber(imageElement.getAttribute('bottom')),
-            ),
-          );
-        });
-
-        layer.findElements('text').forEach((textElement) {
-          Color color = parseColor(textElement.getAttribute('color'));
-          content[int.parse(textElement.getAttribute('counter')!)] = XppText(
-            color: color,
-            text: textElement.innerText,
-            size: XppPageSize.pt2mm(
-              documentNumber(
-                textElement.getAttribute('size'),
-                min: 0.01,
-                max: 1000,
-              ),
-            ),
-            fontFamily: textElement.getAttribute('font'),
-            offset: Offset(
-              documentNumber(textElement.getAttribute('x')),
-              documentNumber(textElement.getAttribute('y')),
-            ),
-          );
-        });
-
-        layer.findElements('teximage').forEach((texElement) {
-          // Older OSI formulas use right=bottom=0 for automatic text bounds.
-          final left = documentNumber(texElement.getAttribute('left'));
-          final top = documentNumber(texElement.getAttribute('top'));
-          var right = documentNumber(texElement.getAttribute('right'));
-          var bottom = documentNumber(texElement.getAttribute('bottom'));
-          if (right == 0 && bottom == 0) {
-            final length = (texElement.getAttribute('text') ?? '').length;
-            right = documentNumber('${left + math.max(1, length) * 10}');
-            bottom = documentNumber('${top + 24}');
-          }
-          if (right <= left || bottom <= top) {
-            throw const FormatException('Rettangolo della formula non valido');
-          }
-          content[int.parse(texElement.getAttribute('counter')!)] = XppTexImage(
-            text: texElement.getAttribute('text')!.trim(),
-            color: parseColor(texElement.getAttribute('color')!.trim()),
-            topLeft: Offset(left, top),
-            bottomRight: Offset(right, bottom),
-          );
-        });
-
-        layer.findElements('stroke').forEach((strokeElement) {
-          late XppStrokeTool tool;
-          switch (strokeElement.getAttribute('tool')) {
-            case "pen":
-              tool = XppStrokeTool.PEN;
+          if (node.name.qualified != node.name.local) continue;
+          switch (node.name.local) {
+            case 'image': {
+              final imageElement = node;
+              _validateImageRectangle(imageElement);
+              content.add(XppImage(
+                data: budget.media(imageElement.innerText.trim()),
+                topLeft: Offset(
+                  documentNumber(imageElement.getAttribute('left')),
+                  documentNumber(imageElement.getAttribute('top')),
+                ),
+                bottomRight: Offset(
+                  documentNumber(imageElement.getAttribute('right')),
+                  documentNumber(imageElement.getAttribute('bottom')),
+                ),
+              ));
               break;
-            case "eraser":
-              warn('Cancellatura whiteout non supportata');
-              return;
-            case "highlighter":
-              tool = XppStrokeTool.HIGHLIGHTER;
+            }
+            case 'text': {
+              final textElement = node;
+              Color color = parseColor(textElement.getAttribute('color'));
+              content.add(XppText(
+                color: color,
+                text: textElement.innerText,
+                size: XppPageSize.pt2mm(
+                  documentNumber(
+                    textElement.getAttribute('size'),
+                    min: 0.01,
+                    max: 1000,
+                  ),
+                ),
+                fontFamily: textElement.getAttribute('font'),
+                offset: Offset(
+                  documentNumber(textElement.getAttribute('x')),
+                  documentNumber(textElement.getAttribute('y')),
+                ),
+              ));
               break;
-            default:
-              warn('Strumento del tratto non supportato');
-              return;
-          }
-          Color color = parseColor(strokeElement.getAttribute('color'));
-          List<XppStrokePoint> points = [];
-          final tokens = RegExp(r'\S+');
-          final widths = <double>[];
-          for (final token in tokens.allMatches(
-            strokeElement.getAttribute('width') ?? '',
-          )) {
-            if (widths.length >= limits.points - budget.pointCount + 1) {
-              throw const FormatException('Troppi spessori nel tratto');
             }
-            widths.add(
-              documentNumber(
-                token.group(0),
-                min: 0,
-                max: DocumentLimits.maxWidth,
-              ),
-            );
-          }
-          if (widths.isEmpty) {
-            throw const FormatException('Spessore del tratto mancante');
-          }
-          final coordinates = tokens
-              .allMatches(strokeElement.innerText)
-              .iterator;
-          while (coordinates.moveNext()) {
-            final x = documentNumber(coordinates.current.group(0));
-            if (!coordinates.moveNext()) {
-              throw const FormatException('Coordinate incomplete');
+            case 'teximage': {
+              final texElement = node;
+              // Older OSI formulas use right=bottom=0 for automatic text bounds.
+              final left = documentNumber(texElement.getAttribute('left'));
+              final top = documentNumber(texElement.getAttribute('top'));
+              var right = documentNumber(texElement.getAttribute('right'));
+              var bottom = documentNumber(texElement.getAttribute('bottom'));
+              if (right == 0 && bottom == 0) {
+                final length = (texElement.getAttribute('text') ?? '').length;
+                right = documentNumber('${left + math.max(1, length) * 10}');
+                bottom = documentNumber('${top + 24}');
+              }
+              if (right <= left || bottom <= top) {
+                throw const FormatException('Rettangolo della formula non valido');
+              }
+              content.add(XppTexImage(
+                text: texElement.getAttribute('text')!.trim(),
+                color: parseColor(texElement.getAttribute('color')!.trim()),
+                topLeft: Offset(left, top),
+                bottomRight: Offset(right, bottom),
+              ));
+              break;
             }
-            final y = documentNumber(coordinates.current.group(0));
-            budget.points(1); // Check before allocating another point.
-            final index = points.length;
-            if (index % 1024 == 0) budget.checkTime();
-            points.add(
-              XppStrokePoint(
-                width: index < widths.length ? widths[index] : widths.first,
-                x: x,
-                y: y,
-              ),
-            );
-          }
-          if (points.isEmpty) {
-            throw const FormatException('Coordinate incomplete');
-          }
-          if (widths.length > points.length + 1) {
-            throw const FormatException('Troppi spessori nel tratto');
-          }
-          content[int.parse(strokeElement.getAttribute('counter')!)] =
-              XppStroke.byTool(
-                  tool: tool,
-                  color: color,
-                  points: points,
-                  isShape: strokeElement.getAttribute('osipp-shape') == 'true',
-                  smooth: strokeElement.getAttribute('osipp-smooth') == 'true',
-                )
-                ..audioLink = StrokeAudioLink.decode(
-                  strokeElement,
-                  points.length,
-                )
-                ..erasures = StrokeErasure.decode(
-                  strokeElement.getAttribute('osipp-erasures'),
+            case 'stroke': {
+              final strokeElement = node;
+              late XppStrokeTool tool;
+              switch (strokeElement.getAttribute('tool')) {
+                case "pen":
+                  tool = XppStrokeTool.PEN;
+                  break;
+                case "eraser":
+                  warn('Cancellatura whiteout non supportata');
+                  continue;
+                case "highlighter":
+                  tool = XppStrokeTool.HIGHLIGHTER;
+                  break;
+                default:
+                  warn('Strumento del tratto non supportato');
+                  continue;
+              }
+              Color color = parseColor(strokeElement.getAttribute('color'));
+              List<XppStrokePoint> points = [];
+              final tokens = RegExp(r'\S+');
+              final widths = <double>[];
+              for (final token in tokens.allMatches(
+                strokeElement.getAttribute('width') ?? '',
+              )) {
+                if (widths.length >= limits.points - budget.pointCount + 1) {
+                  throw const FormatException('Troppi spessori nel tratto');
+                }
+                widths.add(
+                  documentNumber(
+                    token.group(0),
+                    min: 0,
+                    max: DocumentLimits.maxWidth,
+                  ),
                 );
-          final stroke =
-              content[int.parse(strokeElement.getAttribute('counter')!)]
-                  as XppStroke;
-          budget.points(stroke.erasures.length);
-          for (final erasure in stroke.erasures) {
-            documentNumber('${erasure.start.dx}');
-            documentNumber('${erasure.start.dy}');
-            documentNumber('${erasure.end.dx}');
-            documentNumber('${erasure.end.dy}');
-            documentNumber(
-              '${erasure.radius}',
-              min: 0.001,
-              max: DocumentLimits.maxWidth,
-            );
+              }
+              if (widths.isEmpty) {
+                throw const FormatException('Spessore del tratto mancante');
+              }
+              final coordinates = tokens
+                  .allMatches(strokeElement.innerText)
+                  .iterator;
+              while (coordinates.moveNext()) {
+                final x = documentNumber(coordinates.current.group(0));
+                if (!coordinates.moveNext()) {
+                  throw const FormatException('Coordinate incomplete');
+                }
+                final y = documentNumber(coordinates.current.group(0));
+                budget.points(1); // Check before allocating another point.
+                final index = points.length;
+                if (index % 1024 == 0) budget.checkTime();
+                points.add(
+                  XppStrokePoint(
+                    width: index < widths.length ? widths[index] : widths.first,
+                    x: x,
+                    y: y,
+                  ),
+                );
+              }
+              if (points.isEmpty) {
+                throw const FormatException('Coordinate incomplete');
+              }
+              if (widths.length > points.length + 1) {
+                throw const FormatException('Troppi spessori nel tratto');
+              }
+              final stroke = XppStroke.byTool(
+                    tool: tool,
+                    color: color,
+                    points: points,
+                    isShape: strokeElement.getAttribute('osipp-shape') == 'true',
+                    smooth: strokeElement.getAttribute('osipp-smooth') == 'true',
+                  )
+                  ..audioLink = StrokeAudioLink.decode(
+                    strokeElement,
+                    points.length,
+                  )
+                  ..erasures = StrokeErasure.decode(
+                    strokeElement.getAttribute('osipp-erasures'),
+                  );
+              budget.points(stroke.erasures.length);
+              for (final erasure in stroke.erasures) {
+                documentNumber('${erasure.start.dx}');
+                documentNumber('${erasure.start.dy}');
+                documentNumber('${erasure.end.dx}');
+                documentNumber('${erasure.end.dy}');
+                documentNumber(
+                  '${erasure.radius}',
+                  min: 0.001,
+                  max: DocumentLimits.maxWidth,
+                );
+              }
+              content.add(stroke);
+              break;
+            }
           }
-        });
+        }
 
-        final ordered = content.keys.toList()..sort();
         layers.add(
           XppLayer(
-            content: ordered.map((idx) => content[idx]).toList(),
+            content: content,
             name: layer.getAttribute('name') ?? 'Livello ${layers.length + 1}',
             visible: layer.getAttribute('osipp-visible') != 'false',
             locked: layer.getAttribute('osipp-locked') == 'true',
@@ -821,7 +820,30 @@ class XppFile {
       yield card.toXml().toXmlString();
     }
     for (final page in pages!) {
-      yield page.toXmlElement().toXmlString();
+      final pageTag = page.toXmlElement(includeChildren: false).toXmlString();
+      if ((page.background == null || page.background == XppBackground.none) &&
+          page.layers!.isEmpty) {
+        yield pageTag;
+        continue;
+      }
+      yield '${pageTag.substring(0, pageTag.length - 2)}>';
+      if (page.background != null && page.background != XppBackground.none) {
+        yield page.background!.toXmlElement().toXmlString();
+      }
+      for (final layer in page.layers!) {
+        final layerTag = layer.toXmlElement(includeChildren: false).toXmlString();
+        final contents = (layer.content ?? []).whereType<XppContent>();
+        if (contents.isEmpty) {
+          yield layerTag;
+          continue;
+        }
+        yield '${layerTag.substring(0, layerTag.length - 2)}>';
+        for (final content in contents) {
+          yield content.toXmlElement().toXmlString();
+        }
+        yield '</layer>';
+      }
+      yield '</page>';
     }
     yield '</xournal>';
   }

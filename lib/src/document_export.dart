@@ -77,6 +77,7 @@ XppPage exportPageSnapshot(XppPage source) {
 typedef ExportBackgroundLoader = Future<Uint8List?> Function(
   int index,
   XppBackground background,
+  int pixelBudget,
 );
 
 class PreparedPdf {
@@ -149,7 +150,7 @@ Future<PreparedPdf> prepareNotesPdf(
       Uint8List? background;
       if (page.background case final XppBackground source
           when source is XppBackgroundPdf || source is XppBackgroundImage) {
-        background = await loadBackground(index, source);
+        background = await loadBackground(index, source, pixelBudget);
         if (background == null) {
           throw StateError(
             'Impossibile caricare lo sfondo della pagina ${index + 1}',
@@ -468,6 +469,19 @@ Future<Uint8List> _boundedPdfImage(Uint8List bytes, int pixels) async {
       targetHeight: height,
     );
     image = (await codec.getNextFrame()).image;
+    // Keep already bounded PNG bytes. Decoding one frame still validates
+    // the payload; avoiding another PNG encoding saves CPU and allocations.
+    final pngInput =
+        bytes.length >= 8 &&
+        bytes[0] == 137 &&
+        bytes[1] == 80 &&
+        bytes[2] == 78 &&
+        bytes[3] == 71 &&
+        bytes[4] == 13 &&
+        bytes[5] == 10 &&
+        bytes[6] == 26 &&
+        bytes[7] == 10;
+    if (w == width && h == height && pngInput) return bytes;
     final png = await image.toByteData(format: ui.ImageByteFormat.png);
     if (png == null) throw StateError('Immagine PDF non disponibile');
     return png.buffer.asUint8List(png.offsetInBytes, png.lengthInBytes);

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:xournalpp/plugins/plugin_controller.dart';
 import 'package:xournalpp/widgets/bounded_image.dart';
 import 'package:xournalpp/widgets/note_flashcards_panel.dart';
@@ -69,8 +71,10 @@ class CanvasPage extends StatefulWidget {
   final String? filePath;
   // PDF da importare automaticamente quando la pagina nasce in una NUOVA scheda.
   final String? pdfToImportPath;
+  final Uint8List? pdfToImportBytes;
   // Callback per aprire un PDF in una scheda separata (gestita dalla WorkspacePage).
-  final void Function(String pdfPath, String title)? onOpenPdfInNewTab;
+  final void Function(String pdfPath, String title, Uint8List pickedBytes)?
+      onOpenPdfInNewTab;
   // Controller esterno (fornito dal WorkspaceController in split). Se null, la pagina ne crea uno proprio.
   final CanvasController? controller;
   final TransformationController? zoomController;
@@ -83,6 +87,7 @@ class CanvasPage extends StatefulWidget {
     this.file,
     this.filePath,
     this.pdfToImportPath,
+    this.pdfToImportBytes,
     this.onOpenPdfInNewTab,
     this.controller,
     this.zoomController,
@@ -149,6 +154,7 @@ class CanvasPageState extends State<CanvasPage> {
         _controller.loadPdfFresh(
           widget.pdfToImportPath!,
           widget.file?.title ?? 'PDF',
+          pickedBytes: widget.pdfToImportBytes,
         );
       });
     }

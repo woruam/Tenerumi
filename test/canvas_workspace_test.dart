@@ -273,7 +273,7 @@ void main() {
     expect(pixels.where((value) => value == 0).length, greaterThan(0));
     frame.image.dispose();
     codec.dispose();
-    final pdf = await buildNotesPdf(file, loadBackground: (_, _) async => null);
+    final pdf = await buildNotesPdf(file, loadBackground: (_, _, _) async => null);
     expect(String.fromCharCodes(pdf.take(4)), '%PDF');
   });
 

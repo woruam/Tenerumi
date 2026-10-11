@@ -33,7 +33,7 @@ class XppPage {
     );
   }
 
-  XmlElement toXmlElement() {
+  XmlElement toXmlElement({bool includeChildren = true}) {
     return XmlElement(
       XmlName('page'),
       [
@@ -45,9 +45,11 @@ class XppPage {
         if (infinite) XmlAttribute(XmlName('osipp-infinite'), 'true'),
       ],
       [
-        if (background != null && background != XppBackground.none)
+        if (includeChildren &&
+            background != null &&
+            background != XppBackground.none)
           background!.toXmlElement(),
-        ...layers!.map((layer) => layer.toXmlElement()),
+        if (includeChildren) ...layers!.map((layer) => layer.toXmlElement()),
       ],
     );
   }

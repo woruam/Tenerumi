@@ -18,11 +18,17 @@ class XppLayer {
 
   static XppLayer empty() => XppLayer(content: []);
 
-  XmlElement toXmlElement() => XmlElement(XmlName('layer'), [
-    XmlAttribute(XmlName('name'), name),
-    XmlAttribute(XmlName('osipp-visible'), visible.toString()),
-    XmlAttribute(XmlName('osipp-locked'), locked.toString()),
-  ], (content ?? []).whereType<XppContent>().map((e) => e.toXmlElement()));
+  XmlElement toXmlElement({bool includeChildren = true}) => XmlElement(
+    XmlName('layer'),
+    [
+      XmlAttribute(XmlName('name'), name),
+      XmlAttribute(XmlName('osipp-visible'), visible.toString()),
+      XmlAttribute(XmlName('osipp-locked'), locked.toString()),
+    ],
+    includeChildren
+        ? (content ?? []).whereType<XppContent>().map((e) => e.toXmlElement())
+        : const <XmlNode>[],
+  );
 }
 
 abstract class XppContent {
