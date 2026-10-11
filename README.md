@@ -69,7 +69,23 @@ flutter test
 flutter analyze
 ```
 
-Per creare l’APK:
+Per creare un APK da provare sul dispositivo:
+
+```sh
+flutter build apk --debug
+```
+
+Il file risultante è `build/app/outputs/flutter-apk/app-debug.apk`.
+
+Per creare un APK release serve una chiave di firma stabile, anche per la distribuzione diretta senza Play Store. Alla prima distribuzione, su Windows, genera e configura la chiave una sola volta:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/configure_release.ps1
+```
+
+Lo script conserva la chiave e le password in file locali esclusi da Git e non sostituisce chiavi esistenti. Conserva insieme `android/keystore` e `android/key.properties` in una copia sicura fuori dal repository. Se esiste già una chiave utilizzata per distribuire l’app, configura quella seguendo la [guida alla firma](docs/RELEASE_SIGNING.md).
+
+Poi, per ogni release:
 
 ```sh
 flutter build apk --release

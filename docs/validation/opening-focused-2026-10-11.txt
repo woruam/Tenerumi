@@ -1,0 +1,56 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart
+00:00 +0: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A01 interpolation rejects doubling before replacing the variable
+00:00 +1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A01 implicit recursive text conversions and explosive operators reject
+00:00 +2: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A01 shared lists count at every occurrence in intermediate results
+00:00 +3: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A01 environment budget also applies across variables and API results
+00:00 +4: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 selected content URI uses the bounded native channel and checks its response
+00:00 +5: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 GZIP checks actual output, CRC, truncation and multiple members
+00:00 +6: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 output refuses the offending write and keeps its previous length
+00:00 +7: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 stream reader stops and cancels when actual bytes exceed the quota
+00:00 +8: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 forged ZIP sizes and compressed symlinks reject before extraction
+00:00 +9: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 expanded XML, nesting, nodes, pages, layers and points have quotas
+00:00 +10: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 media quota includes duplicate attachments, audio and cards
+00:00 +11: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 DOCTYPE rejects and one valid page is required at the root
+00:00 +12: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 invalid page dimension NaN rejects
+00:00 +13: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 invalid page dimension Infinity rejects
+00:00 +14: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 invalid page dimension -Infinity rejects
+00:00 +15: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 invalid page dimension 0 rejects
+00:00 +16: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 invalid page dimension -1 rejects
+00:00 +17: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 invalid page dimension 20001 rejects
+00:00 +18: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 invalid text, rectangles, stroke coordinates/widths/erasures reject
+00:00 +19: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 PDF references and native page geometry reject before rendering
+00:00 +20: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 grid work depends on visible area and has a primitive budget
+00:00 +21: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A04 missing backgrounds expose explicit selection in the editor
+00:02 +22: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A04 document references never invoke an external callback
+00:02 +23: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A04 backup excludes unselected local resources; explicit attachment survives transfer
+00:02 +24: loading C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart
+00:03 +24: C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart: native gzip rejects every truncated trailer including empty members
+00:03 +25: C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart: measure XOPP opening and preserve large attachments and pressure ink
+00:09 +26: loading C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart
+00:10 +26: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: Android PDF metadata uses one reply and preserves different page dimensions
+00:10 +27: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: Android missing metadata channel falls back and closes all pages
+00:10 +28: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: invalid or incomplete PDF metadata rejects and closes its source
+00:10 +29: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: parallel PDF requests transfer only one document at a time
+00:10 +30: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: streamed save preserves legacy XML, large PDF bytes and metadata
+00:11 +31: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: large attachment hashes yield to the event loop and retain SHA-256
+00:11 +32: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: PDF imported into a tab keeps its workspace identity and is immediately recoverable
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-b5194c06\xournalpp\import-recovery-test.pdf
+00:12 +33: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: PDF size import opens and closes one source for all pages
+00:12 +34: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: visible pages requested during import render after recovery is committed
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e1291cd8\xournalpp\queued-import-test.pdf
+00:12 +35: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: 10000 pages: pixel pans reuse page widgets and coalesce range notifications
+00:13 +36: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: XOPP fast gzip is lossless and benchmarks compression separately from XML
+00:14 +37: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: decoded image resources are released with owners and late decode cannot resurrect them
+00:14 +38: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: image completion repaints a stationary page and unmount releases its native cache
+00:14 +39: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: manual save reuses current checkpoint and reserializes after edits
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-checkpoint-f3c1e336\xournalpp\Reuse.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-checkpoint-f3c1e336\xournalpp\Reuse.xopp
+00:14 +40: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: checkpoint reader rejects mismatched timestamps
+00:14 +41: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: PDF export snapshots are complete and retain page order through background worker
+00:14 +42: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: PDF viewing/export open the source once and close every native resource
+00:15 +43: loading C:/Users/aless/Documents/GitHub/OSIpp/test/pdf_zoom_detail_test.dart
+00:16 +43: C:/Users/aless/Documents/GitHub/OSIpp/test/pdf_zoom_detail_test.dart: visible crops stay bounded even at extreme zoom and pixel density
+00:16 +44: C:/Users/aless/Documents/GitHub/OSIpp/test/pdf_zoom_detail_test.dart: detail identity changes when a source page is remapped
+00:16 +45: C:/Users/aless/Documents/GitHub/OSIpp/test/pdf_zoom_detail_test.dart: zoom is debounced; detail uses a crop and releases on background
+00:18 +46: C:/Users/aless/Documents/GitHub/OSIpp/test/pdf_zoom_detail_test.dart: closing during render disposes stale texture and closes document even on release failure
+00:18 +47: All tests passed!

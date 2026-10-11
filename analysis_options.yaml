@@ -12,3 +12,5 @@ analyzer:
     - web/**
     # Separate forensic project: its legacy engine is not an app dependency.
     - tool/plugin_engine_audit/**
+    - windows/**
+    - linux/**

@@ -1,0 +1,76 @@
+Waiting for another flutter command to release the startup lock...
+Running Gradle task 'assembleDebug'...                          
+Warning: Flutter support for your project's Gradle version (8.14.0) will soon be dropped. Please upgrade your Gradle version to a version of at least 9.1.0 soon.
+Alternatively, use the flag "--android-skip-build-dependency-validation" to bypass this check.
+
+Potential fix: Your project's gradle version is typically defined in the gradle wrapper file. By default, this can be found at C:\Users\aless\Documents\GitHub\OSIpp\android/gradle/wrapper/gradle-wrapper.properties. 
+For more information, see https://docs.gradle.org/current/userguide/gradle_wrapper.html.
+
+Warning: Flutter support for your project's Android Gradle Plugin version (Android Gradle Plugin version 8.12.1) will soon be dropped. Please upgrade your Android Gradle Plugin version to a version of at least Android Gradle Plugin version 9.0.1 soon.
+Alternatively, use the flag "--android-skip-build-dependency-validation" to bypass this check.
+
+Potential fix: Your project's AGP version is typically defined in the plugins block of the `settings.gradle` file (C:\Users\aless\Documents\GitHub\OSIpp\android/settings.gradle), by a plugin with the id of com.android.application. 
+If you don't see a plugins block, your project was likely created with an older template version. In this case it is most likely defined in the top-level build.gradle file (C:\Users\aless\Documents\GitHub\OSIpp\android/build.gradle) by the following line in the dependencies block of the buildscript: "classpath 'com.android.tools.build:gradle:<version>'".
+
+Warning: Flutter support for your project's Kotlin version (2.2.20) will soon be dropped. Please upgrade your Kotlin version to a version of at least 2.3.20 soon.
+Alternatively, use the flag "--android-skip-build-dependency-validation" to bypass this check.
+
+Potential fix: Your project's KGP version is typically defined in the plugins block of the `settings.gradle` file (C:\Users\aless\Documents\GitHub\OSIpp\android/settings.gradle), by a plugin with the id of org.jetbrains.kotlin.android. 
+If you don't see a plugins block, your project was likely created with an older template version, in which case it is most likely defined in the top-level build.gradle file (C:\Users\aless\Documents\GitHub\OSIpp\android/build.gradle) by the ext.kotlin_version property.
+
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/Messages.kt:22:31 Unresolved reference 'DocumentRepository'.
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/Messages.kt:23:31 Unresolved reference 'PageRepository'.
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/Messages.kt:39:39 Unresolved reference 'DocumentRepository'.
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/Messages.kt:40:35 Unresolved reference 'PageRepository'.
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/Messages.kt:65:50 Unresolved reference 'register'.
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/Messages.kt:98:30 Unresolved reference 'takeAll'.
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/Messages.kt:99:38 Unresolved reference 'takeAll'.
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/Messages.kt:101:26 Method 'iterator()' is ambiguous for this expression. Applicable candidates:
+fun <T> Enumeration<T>.iterator(): Iterator<T>
+fun <T> Iterator<T>.iterator(): Iterator<T>
+fun <K, V> Map<out K, V>.iterator(): Iterator<Map.Entry<K, V>>
+fun <K, V> MutableMap<K, V>.iterator(): MutableIterator<MutableMap.MutableEntry<K, V>>
+fun CharSequence.iterator(): CharIterator
+fun BufferedInputStream.iterator(): ByteIterator
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/Messages.kt:102:30 Method 'iterator()' is ambiguous for this expression. Applicable candidates:
+fun <T> Enumeration<T>.iterator(): Iterator<T>
+fun <T> Iterator<T>.iterator(): Iterator<T>
+fun <K, V> Map<out K, V>.iterator(): Iterator<Map.Entry<K, V>>
+fun <K, V> MutableMap<K, V>.iterator(): MutableIterator<MutableMap.MutableEntry<K, V>>
+fun CharSequence.iterator(): CharIterator
+fun BufferedInputStream.iterator(): ByteIterator
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/Messages.kt:112:45 Unresolved reference 'close'.
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/Messages.kt:134:43 Unresolved reference 'openPage'.
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/Messages.kt:135:49 Unresolved reference 'width'.
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/Messages.kt:136:50 Unresolved reference 'height'.
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/Messages.kt:139:62 Unresolved reference 'openPage'.
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/Messages.kt:140:34 Unresolved reference 'register'.
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/Messages.kt:208:38 Unresolved reference 'render'.
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/Messages.kt:244:19 Unresolved reference 'close'.
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/Messages.kt:316:26 Unresolved reference 'openPage'.
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/Messages.kt:317:63 Unresolved reference 'width'.
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/Messages.kt:318:65 Unresolved reference 'height'.
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/Messages.kt:321:66 Unresolved reference 'width'.
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/Messages.kt:322:52 Unresolved reference 'height'.
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/Messages.kt:327:26 Unresolved reference 'render'.
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/PdfxPlugin.kt:8:31 Unresolved reference 'DocumentRepository'.
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/PdfxPlugin.kt:9:31 Unresolved reference 'PageRepository'.
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/PdfxPlugin.kt:16:29 Unresolved reference 'DocumentRepository'.
+e: file:///C:/Users/aless/Documents/GitHub/OSIpp/packages/pdfx/android/src/main/kotlin/io/scer/pdfx/PdfxPlugin.kt:17:25 Unresolved reference 'PageRepository'.
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':pdfx:compileDebugKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 1m 8s
+Running Gradle task 'assembleDebug'...                             69,2s
+Gradle task assembleDebug failed with exit code 1

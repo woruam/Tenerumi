@@ -1,0 +1,157 @@
+Compiled from "FilePickerDelegate.kt"
+final class com.mr.flutter.plugin.filepicker.FilePickerDelegate$saveFile$1 extends kotlin.coroutines.jvm.internal.SuspendLambda implements kotlin.jvm.functions.Function2<kotlinx.coroutines.CoroutineScope, kotlin.coroutines.Continuation<? super kotlin.Unit>, java.lang.Object> {
+  int label;
+
+  final com.mr.flutter.plugin.filepicker.FilePickerDelegate this$0;
+
+  final android.net.Uri $uri;
+
+  com.mr.flutter.plugin.filepicker.FilePickerDelegate$saveFile$1(com.mr.flutter.plugin.filepicker.FilePickerDelegate, android.net.Uri, kotlin.coroutines.Continuation<? super com.mr.flutter.plugin.filepicker.FilePickerDelegate$saveFile$1>);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #14                 // Field this$0:Lcom/mr/flutter/plugin/filepicker/FilePickerDelegate;
+       5: aload_0
+       6: aload_2
+       7: putfield      #18                 // Field $uri:Landroid/net/Uri;
+      10: aload_0
+      11: iconst_2
+      12: aload_3
+      13: invokespecial #21                 // Method kotlin/coroutines/jvm/internal/SuspendLambda."<init>":(ILkotlin/coroutines/Continuation;)V
+      16: return
+
+  public final java.lang.Object invokeSuspend(java.lang.Object);
+    Code:
+       0: invokestatic  #48                 // Method kotlin/coroutines/intrinsics/IntrinsicsKt.getCOROUTINE_SUSPENDED:()Ljava/lang/Object;
+       3: pop
+       4: aload_0
+       5: getfield      #52                 // Field label:I
+       8: tableswitch   { // 0 to 0
+
+                     0: 28
+               default: 170
+          }
+      28: aload_1
+      29: invokestatic  #58                 // Method kotlin/ResultKt.throwOnFailure:(Ljava/lang/Object;)V
+      32: nop
+      33: getstatic     #64                 // Field com/mr/flutter/plugin/filepicker/FileUtils.INSTANCE:Lcom/mr/flutter/plugin/filepicker/FileUtils;
+      36: aload_0
+      37: getfield      #14                 // Field this$0:Lcom/mr/flutter/plugin/filepicker/FilePickerDelegate;
+      40: invokevirtual #70                 // Method com/mr/flutter/plugin/filepicker/FilePickerDelegate.getActivity:()Landroid/app/Activity;
+      43: checkcast     #72                 // class android/content/Context
+      46: aload_0
+      47: getfield      #18                 // Field $uri:Landroid/net/Uri;
+      50: aload_0
+      51: getfield      #14                 // Field this$0:Lcom/mr/flutter/plugin/filepicker/FilePickerDelegate;
+      54: invokevirtual #76                 // Method com/mr/flutter/plugin/filepicker/FilePickerDelegate.getBytes:()[B
+      57: invokevirtual #80                 // Method com/mr/flutter/plugin/filepicker/FileUtils.writeBytesData:(Landroid/content/Context;Landroid/net/Uri;[B)Landroid/net/Uri;
+      60: dup
+      61: ifnonnull     69
+      64: pop
+      65: aload_0
+      66: getfield      #18                 // Field $uri:Landroid/net/Uri;
+      69: astore_2
+      70: getstatic     #64                 // Field com/mr/flutter/plugin/filepicker/FileUtils.INSTANCE:Lcom/mr/flutter/plugin/filepicker/FileUtils;
+      73: aload_0
+      74: getfield      #14                 // Field this$0:Lcom/mr/flutter/plugin/filepicker/FilePickerDelegate;
+      77: invokevirtual #70                 // Method com/mr/flutter/plugin/filepicker/FilePickerDelegate.getActivity:()Landroid/app/Activity;
+      80: checkcast     #72                 // class android/content/Context
+      83: aload_2
+      84: aload_0
+      85: getfield      #14                 // Field this$0:Lcom/mr/flutter/plugin/filepicker/FilePickerDelegate;
+      88: invokevirtual #84                 // Method com/mr/flutter/plugin/filepicker/FilePickerDelegate.getSaveFileName:()Ljava/lang/String;
+      91: aload_0
+      92: getfield      #14                 // Field this$0:Lcom/mr/flutter/plugin/filepicker/FilePickerDelegate;
+      95: invokevirtual #87                 // Method com/mr/flutter/plugin/filepicker/FilePickerDelegate.getSaveMimeType:()Ljava/lang/String;
+      98: invokevirtual #91                 // Method com/mr/flutter/plugin/filepicker/FileUtils.maybeRenameGenericMimeDuplicate:(Landroid/content/Context;Landroid/net/Uri;Ljava/lang/String;Ljava/lang/String;)Landroid/net/Uri;
+     101: astore_3
+     102: new           #93                 // class android/os/Handler
+     105: dup
+     106: invokestatic  #99                 // Method android/os/Looper.getMainLooper:()Landroid/os/Looper;
+     109: invokespecial #102                // Method android/os/Handler."<init>":(Landroid/os/Looper;)V
+     112: aload_0
+     113: getfield      #14                 // Field this$0:Lcom/mr/flutter/plugin/filepicker/FilePickerDelegate;
+     116: aload_3
+     117: invokedynamic #120,  0            // InvokeDynamic #0:run:(Lcom/mr/flutter/plugin/filepicker/FilePickerDelegate;Landroid/net/Uri;)Ljava/lang/Runnable;
+     122: invokevirtual #124                // Method android/os/Handler.post:(Ljava/lang/Runnable;)Z
+     125: pop
+     126: goto          166
+     129: astore_3
+     130: ldc           #126                // String FilePickerDelegate
+     132: ldc           #128                // String Error while saving file
+     134: aload_3
+     135: checkcast     #130                // class java/lang/Throwable
+     138: invokestatic  #136                // Method android/util/Log.e:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+     141: pop
+     142: new           #93                 // class android/os/Handler
+     145: dup
+     146: invokestatic  #99                 // Method android/os/Looper.getMainLooper:()Landroid/os/Looper;
+     149: invokespecial #102                // Method android/os/Handler."<init>":(Landroid/os/Looper;)V
+     152: aload_0
+     153: getfield      #14                 // Field this$0:Lcom/mr/flutter/plugin/filepicker/FilePickerDelegate;
+     156: aload_3
+     157: invokedynamic #144,  0            // InvokeDynamic #1:run:(Lcom/mr/flutter/plugin/filepicker/FilePickerDelegate;Ljava/io/IOException;)Ljava/lang/Runnable;
+     162: invokevirtual #124                // Method android/os/Handler.post:(Ljava/lang/Runnable;)Z
+     165: pop
+     166: getstatic     #149                // Field kotlin/Unit.INSTANCE:Lkotlin/Unit;
+     169: areturn
+     170: new           #151                // class java/lang/IllegalStateException
+     173: dup
+     174: ldc           #153                // String call to \'resume\' before \'invoke\' with coroutine
+     176: invokespecial #156                // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+     179: athrow
+    Exception table:
+       from    to  target type
+          32   126   129   Class java/io/IOException
+
+  public final kotlin.coroutines.Continuation<kotlin.Unit> create(java.lang.Object, kotlin.coroutines.Continuation<?>);
+    Code:
+       0: new           #2                  // class com/mr/flutter/plugin/filepicker/FilePickerDelegate$saveFile$1
+       3: dup
+       4: aload_0
+       5: getfield      #14                 // Field this$0:Lcom/mr/flutter/plugin/filepicker/FilePickerDelegate;
+       8: aload_0
+       9: getfield      #18                 // Field $uri:Landroid/net/Uri;
+      12: aload_2
+      13: invokespecial #170                // Method "<init>":(Lcom/mr/flutter/plugin/filepicker/FilePickerDelegate;Landroid/net/Uri;Lkotlin/coroutines/Continuation;)V
+      16: checkcast     #172                // class kotlin/coroutines/Continuation
+      19: areturn
+
+  public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope, kotlin.coroutines.Continuation<? super kotlin.Unit>);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: invokevirtual #178                // Method create:(Ljava/lang/Object;Lkotlin/coroutines/Continuation;)Lkotlin/coroutines/Continuation;
+       6: checkcast     #2                  // class com/mr/flutter/plugin/filepicker/FilePickerDelegate$saveFile$1
+       9: getstatic     #149                // Field kotlin/Unit.INSTANCE:Lkotlin/Unit;
+      12: invokevirtual #180                // Method invokeSuspend:(Ljava/lang/Object;)Ljava/lang/Object;
+      15: areturn
+
+  private static final void invokeSuspend$lambda$0(com.mr.flutter.plugin.filepicker.FilePickerDelegate, android.net.Uri);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokevirtual #186                // Method android/net/Uri.toString:()Ljava/lang/String;
+       5: invokevirtual #189                // Method com/mr/flutter/plugin/filepicker/FilePickerDelegate.finishWithSuccess:(Ljava/lang/Object;)V
+       8: return
+
+  private static final void invokeSuspend$lambda$1(com.mr.flutter.plugin.filepicker.FilePickerDelegate, java.io.IOException);
+    Code:
+       0: aload_0
+       1: ldc           #128                // String Error while saving file
+       3: aload_1
+       4: invokevirtual #193                // Method java/io/IOException.getMessage:()Ljava/lang/String;
+       7: invokevirtual #197                // Method com/mr/flutter/plugin/filepicker/FilePickerDelegate.finishWithError:(Ljava/lang/String;Ljava/lang/String;)V
+      10: return
+
+  public java.lang.Object invoke(java.lang.Object, java.lang.Object);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: checkcast     #201                // class kotlinx/coroutines/CoroutineScope
+       5: aload_2
+       6: checkcast     #172                // class kotlin/coroutines/Continuation
+       9: invokevirtual #203                // Method invoke:(Lkotlinx/coroutines/CoroutineScope;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+      12: areturn
+}

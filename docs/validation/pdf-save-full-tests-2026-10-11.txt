@@ -1,0 +1,453 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart
+00:00 +0: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: script modules and handlers validated; traversal rejected
+00:00 +1: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: zip package loads multiple modules and refuses unexpected files
+00:00 +2: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: Anki export escapes newlines, tabs, HTML and header injection
+00:00 +3: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: file exports stay staged and disappear on error
+00:00 +4: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: new host actions enforce permissions at dynamic invocation
+00:00 +5: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: async OCR and forms compose and late completions cannot edit canvas
+00:00 +6: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: network calls reject undeclared hosts before contacting server
+00:00 +7: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: page render includes staged content and produces an image for OCR providers
+00:00 +8: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: LaTeX renderer produces actual fraction PNG and rejects invalid syntax
+00:00 +9: loading C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart
+00:01 +9: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A15 wrong preference types and damaged tag/recovery catalogs are isolated
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-8927e466\xournalpp\state-v2/1791715155493342-2354281483.quarantine
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-8927e466\xournalpp\state-v2/00000000000000000001-3877550184.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-8927e466\xournalpp\state-v2/00000000000000000002-2720946424.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-8927e466\xournalpp\state-v2/1791715155557545-2421470111.quarantine
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-8927e466\xournalpp\state-v2/00000000000000000003-2499290774.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-8927e466\xournalpp\state-v2/00000000000000000004-943608542.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-8927e466\xournalpp\state-v2/1791715155624111-3143993789.quarantine
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-8927e466\xournalpp\state-v2/00000000000000000005-98894736.commit
+00:01 +10: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A06 duplicate portable IDs keep separate checkpoints and specific deletion
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-85d57ea8\xournalpp\state-v2/7399e00bdc59f5aee7e7eb35d2cce5350cc3b31e6a68b7ddc623f29bb2015f8b.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-85d57ea8\xournalpp\state-v2/00000000000000000001-1667699877.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-85d57ea8\xournalpp\state-v2/1791715155679630-435425549.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-85d57ea8\xournalpp\state-v2/00000000000000000002-1709710600.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-85d57ea8\xournalpp\state-v2/174f0b790e6b2103b608e1533340fdfa309458be94e3bc175c06c9b878c1341f.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-85d57ea8\xournalpp\state-v2/1791715155746146-1986049680.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-85d57ea8\xournalpp\state-v2/00000000000000000003-3158435248.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-85d57ea8\xournalpp\state-v2/00000000000000000004-1921477775.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-85d57ea8\xournalpp\state-v2/00000000000000000005-281757807.commit
+00:01 +11: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A07 complete orphan checkpoint reconstructs its missing index
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-bd270c6a\xournalpp\state-v2/a63b2af81ca345ac587fb04452c29be46999711e1dfd6c0122bc38c322babb29.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-bd270c6a\xournalpp\state-v2/00000000000000000001-495327694.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-bd270c6a\xournalpp\state-v2/1791715155888695-3603327032.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-bd270c6a\xournalpp\state-v2/00000000000000000002-1531553367.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-bd270c6a\xournalpp\state-v2/00000000000000000003-3990323612.commit
+00:01 +12: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A07 corrupted latest commit falls back and preserves evidence
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-df4edd4b\xournalpp\state-v2/00000000000000000001-1476112395.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-df4edd4b\xournalpp\state-v2/00000000000000000002-1650567160.commit
+00:01 +13: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A15 a damaged record does not hide good records and is quarantined
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-cbb62393\xournalpp\state-v2/1791715156039726-2335511597.quarantine
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-cbb62393\xournalpp\state-v2/00000000000000000001-322700786.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-cbb62393\xournalpp\state-v2/00000000000000000002-194868093.commit
+00:01 +14: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A15 truncated JSON stays intact in quarantine
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-92816088\xournalpp\state-v2/1791715156081879-4257378946.quarantine
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-92816088\xournalpp\state-v2/00000000000000000001-4288383250.commit
+00:01 +15: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A10 unknown tool and future version require save as copy
+00:01 +16: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A11 exact serialized byte boundary and edits are enforced
+00:01 +17: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A11 optional corruption reports partial recovery
+00:01 +18: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A12 changed original and old recovery both survive workspace restore
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-f7194716\xournalpp\state-v2/5618012d1132f90695140247af18e7fc42bc87c47a9858e7fc71ac57c499304a.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-f7194716\xournalpp\state-v2/00000000000000000001-1734034435.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-f7194716\xournalpp\state-v2/1791715156140327-3279098040.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-f7194716\xournalpp\state-v2/00000000000000000002-870945416.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-f7194716\xournalpp\state-v2/00000000000000000003-1023631480.commit
+00:01 +19: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A12 malformed tab does not abandon valid tabs
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-fb5062dc\xournalpp\state-v2/00000000000000000001-117688654.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-fb5062dc\xournalpp\state-v2/00000000000000000002-4009166740.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-fb5062dc\xournalpp\state-v2/1791715156303430-3007833233.quarantine
+00:01 +20: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A10 protected import autosaves privately without rewriting origin
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-cd1ae647\xournalpp\state-v2/b2adbbb6e8d4c99ae3de1cdeee8a84e873c895ca9e09e39e49b91e1bb73a20e0.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-cd1ae647\xournalpp\state-v2/00000000000000000001-1348950784.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-cd1ae647\xournalpp\state-v2/1791715156337435-3298913096.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-cd1ae647\xournalpp\state-v2/00000000000000000002-2561623611.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-cd1ae647\xournalpp\state-v2/00000000000000000003-2990154688.commit
+00:01 +21: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A05 manual save failure first secures a complete checkpoint even without autosave
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-1d632223\xournalpp\state-v2/0745debea985926394dcd4a40bacd6ffbc089edc84b1ea359a8c72daaae12ce5.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-1d632223\xournalpp\state-v2/00000000000000000001-3254172849.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-1d632223\xournalpp\state-v2/1791715156732390-1351316886.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-1d632223\xournalpp\state-v2/00000000000000000002-2227059589.commit
+❌ ERRORE DI SALVATAGGIO IMPREVISTO: PathAccessException: Cannot rename file to 'C:\Users\aless\AppData\Local\Temp\osipp-test-1d632223\xournalpp\blocked', path = 'C:\Users\aless\AppData\Local\Temp\osipp-test-1d632223\xournalpp\blocked.1791715156784447.tmp' (OS Error: Accesso negato, errno = 5)
+00:02 +22: loading C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart
+00:02 +22: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A06 simultaneous instances of the same origin remain independent
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-ef9e59ab\xournalpp\state-v2/394d548827aed96d4de06561fc6717e77ce64118742a1e23fc4593e481406859.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-ef9e59ab\xournalpp\state-v2/00000000000000000001-4092315616.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-ef9e59ab\xournalpp\state-v2/1791715157389421-764858425.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-ef9e59ab\xournalpp\state-v2/00000000000000000002-2636431234.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-ef9e59ab\xournalpp\state-v2/1791715157461388-3376515401.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-ef9e59ab\xournalpp\state-v2/00000000000000000003-3685297846.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-ef9e59ab\xournalpp\state-v2/00000000000000000004-3813489714.commit
+00:03 +23: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: incremental journal round trip retains ink, masks, media, audio and cards
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-872001ab\xournalpp\state-v2/6198db1e278a5867f71b24d3baccf8ba1fc7a86e3d8de05ffb60370038f903c4.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-872001ab\xournalpp\state-v2/039058c6f2c0cb492c533b0a4d14ef77cc0f78abccced5287d84a1a2011cfb81.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-872001ab\xournalpp\state-v2/2e24fb147e880c54602d2c7a566d118b79bc7bef8fb07c6d21c922e2aa542f03.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-872001ab\xournalpp\state-v2/5e1480c4a825184f2a3d786bb34d9533e1f96556cb98ad19be5cb035063a6e14.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-872001ab\xournalpp\state-v2/00000000000000000001-2780455110.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-872001ab\xournalpp\state-v2/1791715157579707-583784421.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-872001ab\xournalpp\state-v2/00000000000000000002-2551147905.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-872001ab\xournalpp\state-v2/1791715157692846-1730305286.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-872001ab\xournalpp\state-v2/00000000000000000003-3235929082.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-872001ab\xournalpp\state-v2/fe9e3841664de21bd450ff51e25509eda9903ba41484caad2fd090a524ef79c0.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-872001ab\xournalpp\state-v2/5e532d216fc7b4368012579e7958091fd974f691aa84b92d6c3ef0a28749c1b9.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-872001ab\xournalpp\state-v2/1791715157753990-297030397.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-872001ab\xournalpp\state-v2/00000000000000000004-989692053.commit
+00:03 +24: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d385893d\xournalpp\state-v2/7c15aaad784764c52bd643d2405aaaf3766854f5fc54728b0ad7def929d5ce7b.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d385893d\xournalpp\state-v2/12752d825fd5ae84eda68d4432a9bc11a4173a3e529d4c85bb81153df71fd99c.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d385893d\xournalpp\state-v2/00000000000000000001-1826889804.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d385893d\xournalpp\state-v2/1791715157820014-856919048.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d385893d\xournalpp\state-v2/00000000000000000002-1392600685.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d385893d\xournalpp\state-v2/83ae9d4108e3ff8c707c670f6ecd7495c8135a1cec98e58f71d14a55d8bce903.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d385893d\xournalpp\state-v2/129f049174ae00413b423f0d98adca11a69d818e2958e0529fd3051f31f7498c.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d385893d\xournalpp\state-v2/1791715157894060-3586216768.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d385893d\xournalpp\state-v2/00000000000000000003-3057221774.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d385893d\xournalpp\state-v2/2f07a756b0cb622c2cb1fe2ab4c7755d7f32063d39bba4c6e5dba24f29d25da6.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d385893d\xournalpp\state-v2/b3d15e00e1a8df5c0681b704c881d8cf4ce7ab711f8c59530a88320b173b7ce5.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d385893d\xournalpp\state-v2/1791715157939785-4224855697.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d385893d\xournalpp\state-v2/00000000000000000004-1902529505.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d385893d\xournalpp\state-v2/22fee15fb66bac19244c2a09f333e4f8818940e5e27983980175a7db635a33b2.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d385893d\xournalpp\state-v2/49dd4a0066b2426aa5a1ed635fc027fed54c448d2406f092685251271cb5b478.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d385893d\xournalpp\state-v2/1791715157984294-3834407957.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d385893d\xournalpp\state-v2/00000000000000000005-2970719092.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d385893d\xournalpp\state-v2/749a94ffa93cd76c70aa98ec885e5b7fce9e3050eb6678155e845e5783c61d07.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d385893d\xournalpp\state-v2/59208d320e984549ab3fcf70f4f76aa61a8c24c669a9d1cc8f9fc2ac0fe3004f.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d385893d\xournalpp\state-v2/1791715158023295-470333101.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d385893d\xournalpp\state-v2/00000000000000000006-562204423.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d385893d\xournalpp\state-v2/2e7d2c03a9507ae265ecf5b5356885a53393a2029d241394997265a1a25aefc6.blob
+00:03 +25: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 library sidecar reconstructs an index after all metadata commits are lost
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-aabc2987\xournalpp\owned.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-aabc2987\xournalpp\state-v2/00000000000000000001-528556548.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-aabc2987\xournalpp\state-v2/00000000000000000002-2121152780.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-aabc2987\xournalpp\state-v2/134a4651c40dd38377d28e06d65be3676b93fff90e5e573c3c1d6734770aa96f.library
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-aabc2987\xournalpp\state-v2/00000000000000000003-1592401255.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-aabc2987\xournalpp\state-v2/00000000000000000001-3534086357.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-aabc2987\xournalpp\state-v2/00000000000000000002-2216785141.commit
+00:03 +26: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A08 pinned images obey byte and entry limits across owners
+00:03 +27: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A09 segments survive rotation and acknowledgement happens explicitly
+00:03 +28: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A18 staged backup preserves conflicting originals, validates lazily and cleans on cancel
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-b505bfa1\xournalpp\source.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-b505bfa1\xournalpp\state-v2/00000000000000000001-2303891731.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-b505bfa1\xournalpp\state-v2/00000000000000000002-3334812525.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-b505bfa1\xournalpp\state-v2/b1d747cbafcfd9e7dc6e147fdfeca4609f773faebbf8dceb7743775419a40cb6.library
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-b505bfa1\xournalpp\state-v2/00000000000000000003-2565558403.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-b505bfa1\xournalpp\state-v2/5db7a978b731d921eaeb69e87afcf6e6850abce6225c58c3f38d80c1f1c291ac.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-b505bfa1\xournalpp\state-v2/00000000000000000004-2684785756.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-b505bfa1\xournalpp\state-v2/1791715158472249-3537891113.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-b505bfa1\xournalpp\state-v2/00000000000000000005-3788343647.commit
+00:04 +29: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: dense undo shares immutable geometry and transformed snapshots stay independent
+00:04 +30: loading C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart
+00:04 +30: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A01 interpolation rejects doubling before replacing the variable
+00:04 +31: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A01 implicit recursive text conversions and explosive operators reject
+00:04 +32: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A01 shared lists count at every occurrence in intermediate results
+00:04 +33: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A01 environment budget also applies across variables and API results
+00:04 +34: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 selected content URI uses the bounded native channel and checks its response
+00:04 +35: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 GZIP checks actual output, CRC, truncation and multiple members
+00:04 +36: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 output refuses the offending write and keeps its previous length
+00:04 +37: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 stream reader stops and cancels when actual bytes exceed the quota
+00:04 +38: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 forged ZIP sizes and compressed symlinks reject before extraction
+00:04 +39: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 expanded XML, nesting, nodes, pages, layers and points have quotas
+00:04 +40: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 media quota includes duplicate attachments, audio and cards
+00:04 +41: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 DOCTYPE rejects and one valid page is required at the root
+00:04 +42: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 invalid page dimension NaN rejects
+00:04 +43: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 invalid page dimension Infinity rejects
+00:04 +44: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 invalid page dimension -Infinity rejects
+00:04 +45: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 invalid page dimension 0 rejects
+00:04 +46: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 invalid page dimension -1 rejects
+00:04 +47: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 invalid page dimension 20001 rejects
+00:04 +48: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 invalid text, rectangles, stroke coordinates/widths/erasures reject
+00:04 +49: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 PDF references and native page geometry reject before rendering
+00:04 +50: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 grid work depends on visible area and has a primitive budget
+00:05 +51: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A04 missing backgrounds expose explicit selection in the editor
+00:05 +52: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A04 document references never invoke an external callback
+00:05 +53: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A04 backup excludes unselected local resources; explicit attachment survives transfer
+00:05 +54: loading C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart
+00:06 +54: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: untrusted document IDs cannot turn checkpoint names into paths
+00:06 +55: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: plugins commit to the active layer and reject locked layers without persisting state
+00:06 +56: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:08 +57: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: plugins render infinite notes using the visible crop dimensions
+00:08 +58: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: XOPP preserves infinite mode, negative coordinates, layers and document identity
+00:08 +59: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: active layer isolates drawing, erasing and undo across layers
+00:08 +60: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: locked and hidden layers reject writing, deleting, erasing and paste
+00:08 +61: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: layer rename, order, visibility and delete are undoable and keep active object
+00:08 +62: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: infinite PDF crop includes negative content without modifying the original
+00:08 +63: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: checkpoint survives controller disposal and restores latest revision
+00:08 +64: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: named document autosaves original; failure keeps the recovery and dirty state
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-auto-original-bbf06eb9/notes.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-auto-original-bbf06eb9/notes.xopp
+❌ ERRORE DI SALVATAGGIO IMPREVISTO: PathAccessException: Cannot rename file to 'C:\Users\aless\AppData\Local\Temp\osipp-auto-original-bbf06eb9', path = 'C:\Users\aless\AppData\Local\Temp\osipp-auto-original-bbf06eb9.1791715162858501.tmp' (OS Error: Accesso negato, errno = 5)
+00:08 +65: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: infinite viewport writes at negative and far-away coordinates at different zooms
+00:08 +66: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: infinite viewport pans horizontally and vertically at 100 percent without adding ink
+00:08 +67: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: locking a selected layer removes edit controls and rejects stylus ink
+00:08 +68: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: layer controls add, select, hide and lock on a narrow phone
+00:09 +69: loading C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart
+00:09 +69: C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: PDF keeps pressure ink, overlapping erasures and layer order
+00:10 +70: C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: PDF exports paper, shapes and bundled text as vectors and retains original image resolution
+00:10 +71: C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: Android document URI can be saved again and reopened from the library
+00:10 +72: C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: Android document write failure preserves unsaved changes
+00:10 +73: C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: PDF raster keeps paper, all layers, text, formulas, image and erased ink
+00:10 +74: C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: PDF loads every uncached background and preserves page dimensions
+00:11 +75: C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: PDF fails instead of silently dropping a missing background
+00:11 +76: C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: save as XOPP round trips portable notes and updates destination only on success
+00:11 +77: C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: PDF cancellation and failure retain editable source and dirty state
+00:11 +78: loading C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart
+00:11 +78: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: titles handle Windows, Unix, missing extensions and missing paths
+00:11 +79: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: async document round trip preserves strokes and portable PDF bytes
+00:12 +80: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: native PDF page numbers and omitted filenames follow Xournal format
+00:12 +81: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: unknown layer nodes do not drop later strokes; whitespace is accepted
+00:12 +82: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: saved files reopen at the same path and overwrite existing bytes
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-storage-b2515569\note.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-storage-b2515569\note.xopp
+00:12 +83: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: XML entities in user text are decoded exactly once
+00:12 +84: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: failed replacement does not truncate the original file
+❌ ERRORE DI SALVATAGGIO IMPREVISTO: PathAccessException: Cannot rename file to 'C:\Users\aless\AppData\Local\Temp\osipp-failure-708cc308\folder', path = 'C:\Users\aless\AppData\Local\Temp\osipp-failure-708cc308\folder.1791715166624219.tmp' (OS Error: Accesso negato, errno = 5)
+00:12 +85: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: failed save keeps dirty state and resets saving state
+❌ ERRORE DI SALVATAGGIO IMPREVISTO: PathAccessException: Cannot rename file to 'C:\Users\aless\AppData\Local\Temp\osipp-save-error-38b320ba', path = 'C:\Users\aless\AppData\Local\Temp\osipp-save-error-38b320ba.1791715167242762.tmp' (OS Error: Accesso negato, errno = 5)
+00:12 +86: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: changes made during save remain dirty and are not in saved snapshot
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-save-race-fd6411f9\notes.xopp
+00:12 +87: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: new notes with duplicate titles get distinct files
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-duplicate-9beeed02\xournalpp\notes.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-duplicate-9beeed02\xournalpp\notes (2).xopp
+00:13 +88: loading C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart
+00:13 +88: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:15 +89: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: save is disabled while document is being saved
+
+Warning: A call to tap() with finder "Found 1 widget with text "Salva": [
+  Text("Salva", dependencies: [DefaultSelectionStyle, DefaultTextStyle, MediaQuery]),
+]" derived an Offset (Offset(672.0, 44.0)) that would not hit test on the specified widget.
+Maybe the widget is actually off-screen, or another widget is obscuring it, or the widget cannot receive pointer events.
+The finder corresponds to this RenderBox: RenderParagraph#3aa8c relayoutBoundary=up39 NEEDS-PAINT
+The hit test result at that offset is: HitTestResult(RenderMouseRegion#f566a@Offset(672.0, 44.0), RenderSemanticsAnnotations#9f721@Offset(672.0, 44.0), RenderPointerListener#7a020@Offset(672.0, 44.0), RenderSemanticsGestureHandler#b1d84@Offset(672.0, 44.0), RenderExcludeSemantics#324a3@Offset(672.0, 44.0), RenderBlockSemantics#a8ded@Offset(672.0, 44.0), RenderIgnorePointer#4a266@Offset(672.0, 44.0), RenderSemanticsAnnotations#4375a@Offset(672.0, 44.0), _RenderTheater#fca23@Offset(672.0, 44.0), RenderAbsorbPointer#01151@Offset(672.0, 44.0), RenderPointerListener#21c55@Offset(672.0, 44.0), RenderSemanticsAnnotations#8c776@Offset(672.0, 44.0), RenderCustomPaint#70d42@Offset(672.0, 44.0), RenderSemanticsAnnotations#a3dc6@Offset(672.0, 44.0), RenderSemanticsAnnotations#017c9@Offset(672.0, 44.0), RenderSemanticsAnnotations#57a39@Offset(672.0, 44.0), RenderTapRegionSurface#d424e@Offset(672.0, 44.0), RenderSemanticsAnnotations#b2bdd@Offset(672.0, 44.0), RenderSemanticsAnnotations#0f38e@Offset(672.0, 44.0), HitTestEntry<HitTestTarget>#9e217(_ReusableRenderView#122c8), HitTestEntry<HitTestTarget>#460b5(<AutomatedTestWidgetsFlutterBinding>))
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2165:25)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1947:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1080:7)
+#3      main.<anonymous closure> (file:///C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart:150:18)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+#6      StackZoneSpecification._registerCallback.<anonymous closure> (package:stack_trace/src/stack_zone_specification.dart:114:42)
+<asynchronous suspension>
+To silence this warning, pass "warnIfMissed: false" to "tap()".
+To make this warning fatal, set WidgetController.hitTestWarningShouldBeFatal to true.
+
+00:15 +90: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: open file success preserves existing tabs and split state
+00:15 +91: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: open file cancel preserves existing tabs and split state
+00:16 +92: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: open file error preserves existing tabs and split state
+00:16 +93: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: open file cannot launch a second picker while waiting
+00:16 +94: loading C:/Users/aless/Documents/GitHub/OSIpp/test/dynamic_color_adapter_test.dart
+00:20 +94: C:/Users/aless/Documents/GitHub/OSIpp/test/dynamic_color_adapter_test.dart: dynamic palette preserves Flutter theme roles and fallback
+00:21 +95: loading C:/Users/aless/Documents/GitHub/OSIpp/test/eraser_stability_test.dart
+00:21 +95: C:/Users/aless/Documents/GitHub/OSIpp/test/eraser_stability_test.dart: 4000 straight eraser events retain one exact sweep and shared samples
+00:21 +96: C:/Users/aless/Documents/GitHub/OSIpp/test/eraser_stability_test.dart: stationary eraser events do not accumulate masks or mark another change
+00:21 +97: C:/Users/aless/Documents/GitHub/OSIpp/test/eraser_stability_test.dart: reversals and turns retain their true circular sweeps
+00:21 +98: C:/Users/aless/Documents/GitHub/OSIpp/test/eraser_stability_test.dart: invalid eraser input never reaches native path rendering
+00:21 +99: loading C:/Users/aless/Documents/GitHub/OSIpp/test/eraser_zoom_repaint_test.dart
+00:22 +99: C:/Users/aless/Documents/GitHub/OSIpp/test/eraser_zoom_repaint_test.dart: eraser repaints at fixed 1.0x before any pan or zoom
+00:22 +100: C:/Users/aless/Documents/GitHub/OSIpp/test/eraser_zoom_repaint_test.dart: eraser repaints at fixed 2.5x before any pan or zoom
+00:23 +101: C:/Users/aless/Documents/GitHub/OSIpp/test/eraser_zoom_repaint_test.dart: eraser repaints at fixed 5.0x before any pan or zoom
+00:23 +102: loading C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart
+00:26 +102: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: delete removes only selected file/index/recovery; failure retains entry
+00:26 +103: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: Android content URI deletion uses document provider and propagates denial
+00:26 +104: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+dynamic_color: Dynamic color not detected on this device.
+00:28 +105: loading C:/Users/aless/Documents/GitHub/OSIpp/test/ink_preview_test.dart
+00:28 +105: C:/Users/aless/Documents/GitHub/OSIpp/test/ink_preview_test.dart: ink burst paints without rebuilding listener or losing samples
+00:29 +106: C:/Users/aless/Documents/GitHub/OSIpp/test/ink_preview_test.dart: cancel clears preview and does not commit stale ink
+00:29 +107: loading C:/Users/aless/Documents/GitHub/OSIpp/test/ink_round_continuity_test.dart
+00:30 +107: C:/Users/aless/Documents/GitHub/OSIpp/test/ink_round_continuity_test.dart: isolated pen contact has a round cap, not a square
+00:30 +108: C:/Users/aless/Documents/GitHub/OSIpp/test/ink_round_continuity_test.dart: round preview stays identical after release: pen
+00:30 +109: C:/Users/aless/Documents/GitHub/OSIpp/test/ink_round_continuity_test.dart: round preview stays identical after release: highlighter
+00:30 +110: C:/Users/aless/Documents/GitHub/OSIpp/test/ink_round_continuity_test.dart: cached freehand path invalidates appended and replaced samples
+00:30 +111: loading C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart
+00:31 +111: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: a new blank note already has a UTC modification date
+00:31 +112: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: modification date survives XOPP and the frozen snapshot
+00:31 +113: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: recent metadata preserves tags and favorites and refuses stale enrichment
+00:31 +114: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: thumbnail is bounded, includes negative ink and ignores hidden layers
+00:31 +115: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: thumbnail loads the PDF background of an unmounted page
+00:31 +116: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: named autosave updates the home thumbnail, date and existing user metadata
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-home-auto-e2d9fca5/notes.xopp
+00:31 +117: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: legacy metadata is generated lazily once and persisted without opening an editor
+00:31 +118: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: hidden queued cards do not read their document
+00:31 +119: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: Android modification dates are queried without reading the document
+00:31 +120: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: geometry cache computes bounds once per revision and reflects moved ink
+00:31 +121: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: home cards show an image and readable last-modified date on a phone
+00:32 +122: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: missing and transparent previews fall back and use a lazy loader
+00:32 +123: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: invalid preview and missing date do not break home cards
+00:32 +124: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: panning reuses geometry; an edited stroke invalidates the cache
+00:32 +125: loading C:/Users/aless/Documents/GitHub/OSIpp/test/library_responsive_test.dart
+00:33 +125: C:/Users/aless/Documents/GitHub/OSIpp/test/library_responsive_test.dart: library fits a 380dp phone and preserves readable cards
+00:34 +126: loading C:/Users/aless/Documents/GitHub/OSIpp/test/note_audio_test.dart
+00:35 +126: C:/Users/aless/Documents/GitHub/OSIpp/test/note_audio_test.dart: portable audio survives isolate serialization, snapshots, clone and pixel eraser
+00:35 +127: C:/Users/aless/Documents/GitHub/OSIpp/test/note_audio_test.dart: malformed optional audio metadata is bounded and leaves notes readable
+00:35 +128: C:/Users/aless/Documents/GitHub/OSIpp/test/note_audio_test.dart: input timing freezes at stop and native owner moves safely across tabs
+00:35 +129: C:/Users/aless/Documents/GitHub/OSIpp/test/note_audio_test.dart: permission denial and disposal during pending start release resources
+00:35 +130: C:/Users/aless/Documents/GitHub/OSIpp/test/note_audio_test.dart: playback uses native clock; seeking, suspend and close stop timers
+00:35 +131: C:/Users/aless/Documents/GitHub/OSIpp/test/note_audio_test.dart: recorded stylus preserves samples/pressure; canceled strokes never associate audio
+00:35 +132: C:/Users/aless/Documents/GitHub/OSIpp/test/note_audio_test.dart: listen mode seeks a stroke without creating ink or invoking eraser buttons
+00:35 +133: C:/Users/aless/Documents/GitHub/OSIpp/test/note_audio_test.dart: cross-document paste carries immutable recording without copying bytes
+00:35 +134: C:/Users/aless/Documents/GitHub/OSIpp/test/note_audio_test.dart: overlay advances sample cursor without modifying ink and panel fits phone
+00:36 +135: loading C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart
+00:38 +135: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: complete backup transfers portable notes, latest recovery and metadata to another device
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-1211095\xournalpp\backup-1791715192940746-3734772968.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-1211095\xournalpp\backup-1791715192980769-1189653434.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-1211095\xournalpp\backup-1791715192993795-1209330946.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-1211095\xournalpp\backup-1791715193004323-1194921406.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-1211095\xournalpp\backup-1791715193047924-3867973715.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-1211095\xournalpp\backup-1791715193061357-2030188954.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-1211095\xournalpp\backup-1791715193076794-4121331919.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-1211095\xournalpp\backup-1791715193088812-3223166293.xopp
+00:38 +136: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: missing documents and missing backgrounds are explicitly reported
+00:38 +137: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: invalid archives and path traversal are rejected before any import
+00:38 +138: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: CRC verification rejects a damaged payload without importing anything
+00:38 +139: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: a malformed note makes the entire archive fail validation
+00:38 +140: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: failure during restoration removes staged files and preserves existing library
+00:38 +141: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: browser storage persists restored notes and deletion removes them
+00:38 +142: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: app settings expose Ripristina Backup and Crea Backup on a phone
+00:40 +143: loading C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart
+00:42 +143: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: custom tags persist, include legacy categories and avoid duplicates
+00:42 +144: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: chosen tags cross snapshots, isolates and subsequent saves
+00:42 +145: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:44 +146: loading C:/Users/aless/Documents/GitHub/OSIpp/test/pdf_zoom_detail_test.dart
+00:45 +146: C:/Users/aless/Documents/GitHub/OSIpp/test/pdf_zoom_detail_test.dart: visible crops stay bounded even at extreme zoom and pixel density
+00:45 +147: C:/Users/aless/Documents/GitHub/OSIpp/test/pdf_zoom_detail_test.dart: detail identity changes when a source page is remapped
+00:45 +148: C:/Users/aless/Documents/GitHub/OSIpp/test/pdf_zoom_detail_test.dart: zoom is debounced; detail uses a crop and releases on background
+00:46 +149: C:/Users/aless/Documents/GitHub/OSIpp/test/pdf_zoom_detail_test.dart: closing during render disposes stale texture and closes document even on release failure
+00:46 +150: loading C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart
+00:47 +150: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: parallel PDF requests transfer only one document at a time
+00:47 +151: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: streamed save preserves legacy XML, large PDF bytes and metadata
+00:48 +152: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: large attachment hashes yield to the event loop and retain SHA-256
+00:48 +153: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: PDF imported into a tab keeps its workspace identity and is immediately recoverable
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d651fea8\xournalpp\import-recovery-test.pdf
+00:48 +154: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: PDF size import opens and closes one source for all pages
+00:48 +155: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: visible pages requested during import render after recovery is committed
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-4c7b9109\xournalpp\queued-import-test.pdf
+00:48 +156: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: 10000 pages: pixel pans reuse page widgets and coalesce range notifications
+00:49 +157: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: XOPP fast gzip is lossless and benchmarks compression separately from XML
+00:49 +158: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: decoded image resources are released with owners and late decode cannot resurrect them
+00:49 +159: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: image completion repaints a stationary page and unmount releases its native cache
+00:49 +160: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: manual save reuses current checkpoint and reserializes after edits
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-checkpoint-a227db62\xournalpp\Reuse.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-checkpoint-a227db62\xournalpp\Reuse.xopp
+00:49 +161: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: checkpoint reader rejects mismatched timestamps
+00:49 +162: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: PDF export snapshots are complete and retain page order through background worker
+00:50 +163: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: PDF viewing/export open the source once and close every native resource
+00:50 +164: loading C:/Users/aless/Documents/GitHub/OSIpp/test/pixel_eraser_test.dart
+00:51 +164: C:/Users/aless/Documents/GitHub/OSIpp/test/pixel_eraser_test.dart: a circular cut reaches between sparse samples without deleting the stroke
+00:51 +165: C:/Users/aless/Documents/GitHub/OSIpp/test/pixel_eraser_test.dart: round eraser preserves diagonal pixels outside its circle
+00:51 +166: C:/Users/aless/Documents/GitHub/OSIpp/test/pixel_eraser_test.dart: swept eraser leaves no gaps between distant events
+00:51 +167: C:/Users/aless/Documents/GitHub/OSIpp/test/pixel_eraser_test.dart: pixel mode erases every overlapping stroke and undo/redo retains cuts
+00:51 +168: C:/Users/aless/Documents/GitHub/OSIpp/test/pixel_eraser_test.dart: eraser hits rendered width outside centerline bounding rectangle
+00:51 +169: C:/Users/aless/Documents/GitHub/OSIpp/test/pixel_eraser_test.dart: cuts, shape flags and transforms survive a document round trip
+00:51 +170: C:/Users/aless/Documents/GitHub/OSIpp/test/pixel_eraser_test.dart: erased ink reveals the background and leaves other content intact
+00:51 +171: C:/Users/aless/Documents/GitHub/OSIpp/test/pixel_eraser_test.dart: pen eraser gesture creates one undo step, uses diameter and resets on cancel
+00:51 +172: loading C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_javascript_test.dart
+00:52 +172: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_javascript_test.dart: JavaScript cannot execute despite permissions and bypass flags
+00:52 +173: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_javascript_test.dart: direct native runner is blocked without initializing FJS
+00:52 +174: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_javascript_test.dart: LaTeX and OCR examples run as safe host workflows
+00:52 +175: loading C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart
+00:53 +175: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: invalid form defaults and duplicate choices rejected before UI builds
+00:53 +176: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: validated manifests and registered permissions cannot be mutated
+00:53 +177: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: package CRC corruption and directory entries are rejected
+00:53 +178: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: ZIP duplicate names cannot disappear during archive decoding
+00:53 +179: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: forged decompressed size and symlinks are rejected before large inflation
+00:53 +180: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: malformed legacy Anki state cannot break the plugin UI
+00:53 +181: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: oversized host text and repeated geometry expansion cannot commit
+00:53 +182: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: text.update applies its own text limit and leaves original unchanged
+00:53 +183: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: cancellation immediately releases a pending provider and ignores late result
+00:53 +184: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: no HTTP access to local literals, reserved hosts or overridden routing
+00:53 +185: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: DNS rejects all private/reserved answers including IPv6 and mixed answers
+00:53 +186: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: invalid plugin form is rejected without a Flutter build failure
+00:54 +187: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: plugin host closes only its own form on cancellation
+00:54 +188: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: JavaScript remains visibly disabled with no UI activation route
+00:55 +189: loading C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart
+00:56 +189: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: valid images commit; malformed images cannot corrupt a document
+00:56 +190: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: invalid manifest, permissions and unknown API do not install
+00:56 +191: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: all bundled examples install and generate undoable notes or persistent tools
+00:56 +192: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: conditions, foreach, arithmetic, text transforms and storage compose
+00:56 +193: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: failed plugin rolls back content, state, tool and undo history
+00:56 +194: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: instruction budget interrupts nested loops without committing partial edits
+00:56 +195: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: large string expansion is rejected before allocating huge output
+00:56 +196: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: disable, update and uninstall persist across restarts
+00:56 +197: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: corrupt installed entries are isolated from healthy plugins
+00:56 +198: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: required input and types are validated before editing
+00:56 +199: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: host API extensions preserve transaction and conflict protection
+00:56 +200: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: execution targets the chosen page and controller only
+00:56 +201: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:58 +202: loading C:/Users/aless/Documents/GitHub/OSIpp/test/pointer_input_test.dart
+00:58 +202: C:/Users/aless/Documents/GitHub/OSIpp/test/pointer_input_test.dart: hardware pen routes to interacted or hovered listener and clears disposed owner
+00:59 +203: C:/Users/aless/Documents/GitHub/OSIpp/test/pointer_input_test.dart: pinch spanning pages cancels pending ink on both pages
+00:59 +204: C:/Users/aless/Documents/GitHub/OSIpp/test/pointer_input_test.dart: touch drawing preference: false
+00:59 +205: C:/Users/aless/Documents/GitHub/OSIpp/test/pointer_input_test.dart: touch drawing preference: true
+00:59 +206: C:/Users/aless/Documents/GitHub/OSIpp/test/pointer_input_test.dart: two fingers cancel pending ink until both lift
+00:59 +207: loading C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart
+01:00 +207: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+dynamic_color: Dynamic color not detected on this device.
+01:03 +208: loading C:/Users/aless/Documents/GitHub/OSIpp/test/rendering_memory_test.dart
+01:04 +208: C:/Users/aless/Documents/GitHub/OSIpp/test/rendering_memory_test.dart: PDF rendering is demand driven, serialized, and ignores disposed results
+01:04 +209: C:/Users/aless/Documents/GitHub/OSIpp/test/rendering_memory_test.dart: suspended PDF request cannot publish stale page bytes
+01:04 +210: C:/Users/aless/Documents/GitHub/OSIpp/test/rendering_memory_test.dart: PDF cache evicts LRU and accounts for replacement and byte budget
+01:04 +211: C:/Users/aless/Documents/GitHub/OSIpp/test/rendering_memory_test.dart: 100 pages mount only visible canvases; pan changes page set
+01:04 +212: loading C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart
+01:06 +212: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: numeric modified dates work without initialized locale symbols
+01:06 +213: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+dynamic_color: Dynamic color not detected on this device.
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-home-reopen-5282073\xournalpp\Appunto appena salvato.xopp
+dynamic_color: Dynamic color not detected on this device.
+dynamic_color: Dynamic color not detected on this device.
+01:12 +214: loading C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart
+01:13 +214: C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart: highlighter width changes committed ink and ignores pressure
+01:14 +215: C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart: stylus can finish and delete a lasso under the pan interceptor
+01:14 +216: C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart: move selected ink at zoom 1.0 is visible and one undo step
+01:14 +217: C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart: move selected ink at zoom 2.5 is visible and one undo step
+01:14 +218: C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart: copy and stylus paste at zoom 1.0 without committing a dot
+01:14 +219: C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart: copy and stylus paste at zoom 2.5 without committing a dot
+01:14 +220: C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart: paste in navigation mode can move without drawing extra ink
+01:14 +221: C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart: moving pen cancels paste hold; hold without a copy draws normally
+01:15 +222: C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart: clipboard snapshots mixed content and repeated pastes across documents
+01:15 +223: loading C:/Users/aless/Documents/GitHub/OSIpp/test/split_resize_test.dart
+01:15 +223: C:/Users/aless/Documents/GitHub/OSIpp/test/split_resize_test.dart: reflow preserves page fraction and fixed gaps for mixed page sizes
+01:15 +224: C:/Users/aless/Documents/GitHub/OSIpp/test/split_resize_test.dart: divider drag freezes document gestures and scene at Size(1000.0, 600.0)
+01:16 +225: C:/Users/aless/Documents/GitHub/OSIpp/test/split_resize_test.dart: divider drag freezes document gestures and scene at Size(400.0, 1000.0)
+01:16 +226: loading C:/Users/aless/Documents/GitHub/OSIpp/test/stroke_model_geometry_test.dart
+01:16 +226: C:/Users/aless/Documents/GitHub/OSIpp/test/stroke_model_geometry_test.dart: stroke subclasses retain mutable state and independent snapshots
+01:16 +227: C:/Users/aless/Documents/GitHub/OSIpp/test/stroke_model_geometry_test.dart: single pass bounds match legacy geometry for all tools and mutations
+01:16 +228: C:/Users/aless/Documents/GitHub/OSIpp/test/stroke_model_geometry_test.dart: curved shape bounds preserve curve overshoot and stroke inflation
+01:16 +229: C:/Users/aless/Documents/GitHub/OSIpp/test/stroke_model_geometry_test.dart: geometry owns its immutable buffer and visits each sample once
+01:17 +230: loading C:/Users/aless/Documents/GitHub/OSIpp/test/study_plugins_test.dart
+01:17 +230: C:/Users/aless/Documents/GitHub/OSIpp/test/study_plugins_test.dart: shape properties survive switching tools without changing pen
+01:17 +231: C:/Users/aless/Documents/GitHub/OSIpp/test/study_plugins_test.dart: built-in activation persists independently
+01:17 +232: C:/Users/aless/Documents/GitHub/OSIpp/test/study_plugins_test.dart: flashcards round trip with crops; snapshots and notes stay independent
+01:17 +233: C:/Users/aless/Documents/GitHub/OSIpp/test/study_plugins_test.dart: Anki bundle escapes text, contains media and a JSON backup
+01:17 +234: C:/Users/aless/Documents/GitHub/OSIpp/test/study_plugins_test.dart: double-selection tool emits rectangles and never ink
+01:18 +235: C:/Users/aless/Documents/GitHub/OSIpp/test/study_plugins_test.dart: plugin activation controls toolbar and selection UI
+01:18 +236: C:/Users/aless/Documents/GitHub/OSIpp/test/study_plugins_test.dart: cards can be edited and deleted only in their note
+01:19 +237: C:/Users/aless/Documents/GitHub/OSIpp/test/study_plugins_test.dart: native plugins are listed without installation
+01:19 +238: C:/Users/aless/Documents/GitHub/OSIpp/test/study_plugins_test.dart: two captures create a reviewed card without changing source text
+01:19 +239: loading C:/Users/aless/Documents/GitHub/OSIpp/test/undo_snapshot_test.dart
+01:19 +239: C:/Users/aless/Documents/GitHub/OSIpp/test/undo_snapshot_test.dart: move and resize do not mutate undo or redo geometry
+01:19 +240: C:/Users/aless/Documents/GitHub/OSIpp/test/undo_snapshot_test.dart: text snapshot retains location and font size after transforms
+01:19 +241: loading C:/Users/aless/Documents/GitHub/OSIpp/test/widget_test.dart
+01:20 +241: C:/Users/aless/Documents/GitHub/OSIpp/test/widget_test.dart: App opens the document hub with an empty library
+01:21 +242: loading C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart
+01:26 +242: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: insertion remaps layers and ink undo without changing PDF ordinals
+01:26 +243: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: native notes grow near bottom and prevent automatic blank chains; PDFs stay finite
+01:26 +244: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: session restores saved files and focus, skipping missing tabs; explicit clear persists
+01:26 +245: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: restoration prefers checkpoint over original and preserves audio synchronization
+01:26 +246: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: pinch pointer drop remains stable and palm is rejected, infinite=false
+01:27 +247: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: pinch pointer drop remains stable and palm is rejected, infinite=true
+01:27 +248: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: upward swipe on last native page grows once without inertia
+01:27 +249: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: saved app notes open without leaving workspace
+01:28 +250: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: sidebar stays open for layer switching, page insertion and thumbnails; workspace survives background
+01:30 +251: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: workspace recreates both tabs, split focus, template and zoom after process loss
+01:31 +252: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: stylus coordinates and undo stay aligned in the real finite canvas at zoom
+01:31 +253: loading C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_safety_test.dart
+01:32 +253: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_safety_test.dart: system back protects an inactive unmounted dirty tab
+01:33 +254: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_safety_test.dart: saved touch preference follows selected tool and preserves inverted eraser
+01:33 +255: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_safety_test.dart: exit checks inactive and secondary documents in order
+01:33 +256: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_safety_test.dart: cancel stops remaining close checks
+01:33 +257: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_safety_test.dart: closing preceding tab preserves selected document
+01:33 +258: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_safety_test.dart: save failure prevents close
+01:34 +259: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_safety_test.dart: save success allows close
+01:34 +260: All tests passed!

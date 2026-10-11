@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import '../responsive_hash.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
@@ -39,7 +41,7 @@ class FilePickerCross {
               : path.lastIndexOf('\\'),
         ),
       );
-  static Future<String?> exportStagedBackup(String source, String name) async {
+  static Future<String?> exportStagedFile(String source, String name) async {
     // The picker requires bytes. The complete private archive exists before it
     // touches the selected destination; failures retain that staging candidate.
     final uri = await FilePicker.saveFile(
@@ -56,7 +58,7 @@ class FilePickerCross {
       return uri.toString();
     }
     if (uri.scheme != 'file')
-      throw StateError('Destinazione backup non disponibile');
+      throw StateError('Destinazione di esportazione non supportata');
     await staging.copyToPath(source, uri.toFilePath());
     return uri.toFilePath();
   }
@@ -67,9 +69,11 @@ class FilePickerCross {
   final String? path;
   bool reopenableGrant = true;
   String get contentHash => sha256.convert(_bytes).toString();
-  Future<bool> verifyAt(String path) async {
+  Future<String> contentHashAsync() => responsiveHash(_bytes);
+  Future<bool> verifyAt(String path, {String? expectedHash}) async {
     try {
-      return await hashAt(path, maxBytes: _bytes.length + 1) == contentHash;
+      return await hashAt(path, maxBytes: _bytes.length + 1) ==
+          (expectedHash ?? await contentHashAsync());
     } catch (_) {
       return false;
     }

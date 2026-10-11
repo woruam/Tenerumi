@@ -1,11 +1,11 @@
 import '../document_limits.dart';
+import '../responsive_hash.dart';
 
 import 'dart:async';
 import 'dart:convert';
 import 'dart:js_interop';
 import 'dart:typed_data';
 
-import 'package:crypto/crypto.dart';
 import 'package:web/web.dart';
 
 Future<IDBDatabase> _database() async {
@@ -27,7 +27,9 @@ Future<IDBDatabase> _database() async {
   request.onerror = ((Event _) {
     if (!done.isCompleted) {
       done.completeError(
-        StateError('Archivio browser non disponibile: ${request.error?.message}'),
+        StateError(
+          'Archivio browser non disponibile: ${request.error?.message}',
+        ),
       );
     }
   }).toJS;
@@ -116,7 +118,7 @@ Future<void> writeState(Map<String, dynamic> state) async {
 Future<void> quarantine(String raw) =>
     _write('quarantine-${DateTime.now().microsecondsSinceEpoch}', raw.toJS);
 Future<String> putBlob(Uint8List bytes) async {
-  final key = sha256.convert(bytes).toString();
+  final key = await responsiveHash(bytes);
   await _write('blob-$key', bytes.toJS);
   return key;
 }
@@ -127,7 +129,7 @@ Future<Uint8List> getBlob(String key) async {
   final raw = await _read('blob-$key');
   if (raw == null) throw StateError('Recupero non disponibile');
   final bytes = (raw as JSUint8Array).toDart;
-  if (sha256.convert(bytes).toString() != key)
+  if (await responsiveHash(bytes) != key)
     throw const FormatException('Recupero corrotto');
   return bytes;
 }

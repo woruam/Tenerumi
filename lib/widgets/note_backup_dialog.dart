@@ -128,7 +128,7 @@ class _NoteBackupDialogState extends State<_NoteBackupDialog> {
         final day =
             '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
         final path = prepared!.stagedPath != null
-            ? await FilePickerCross.exportStagedBackup(
+            ? await FilePickerCross.exportStagedFile(
                 prepared!.stagedPath!,
                 'OSI-backup-$day.zip',
               )

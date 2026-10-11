@@ -1,0 +1,2 @@
+Distribution checks passed
+Patched Android PDF worker and allocation bounds verified in APK

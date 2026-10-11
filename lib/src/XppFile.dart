@@ -6,6 +6,9 @@ import 'note_audio.dart';
 import 'note_flashcards.dart';
 import 'document_limits.dart';
 import 'bounded_archive.dart';
+import 'compat/xml_compression_web.dart'
+    if (dart.library.io) 'compat/xml_compression_io.dart'
+    as compression;
 
 import 'dart:math' as math;
 import 'dart:typed_data';
@@ -13,7 +16,6 @@ import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 
-import 'package:archive/archive.dart';
 import 'package:xournalpp/src/compat/file_picker_cross.dart';
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -121,7 +123,7 @@ class XppFile {
   }
 
   static Future<XppFile> importPdf({required FilePickerCross pdf}) async {
-    final pageCount = await pdfPageCount(pdf);
+    final sizes = await pdfPageSizes(pdf);
     final pdfName = pdf.path ?? 'background.pdf';
     XppFile file = XppFile.empty(title: titleFromPath(pdf.fileName))
       ..autoGeneratePages = false
@@ -129,8 +131,8 @@ class XppFile {
     file.pdfAttachments[pdfName] = pdf.toUint8List();
     Future<FilePickerCross> onUnavailable(String? p) async => pdf;
 
-    for (int i = 0; i < pageCount; i++) {
-      final size = await pdfPageSize(pdf, i);
+    for (int i = 0; i < sizes.length; i++) {
+      final size = sizes[i];
       file.pages!.add(
         XppPage.empty()
           ..pageSize = size
@@ -566,49 +568,51 @@ class XppFile {
           }
           Color color = parseColor(strokeElement.getAttribute('color'));
           List<XppStrokePoint> points = [];
-          final coordinateText = strokeElement.innerText.trim();
-          var count = 0;
-          for (final _ in RegExp(r'\S+').allMatches(coordinateText)) {
-            if (++count > (limits.points - budget.pointCount) * 2) {
-              throw const FormatException('Troppi punti nel documento');
+          final tokens = RegExp(r'\S+');
+          final widths = <double>[];
+          for (final token in tokens.allMatches(
+            strokeElement.getAttribute('width') ?? '',
+          )) {
+            if (widths.length >= limits.points - budget.pointCount + 1) {
+              throw const FormatException('Troppi spessori nel tratto');
             }
-          }
-          if (count < 2 || count.isOdd) {
-            throw const FormatException('Coordinate incomplete');
-          }
-          budget.points(count ~/ 2);
-          List<String> rawWidth = strokeElement
-              .getAttribute('width')!
-              .trim()
-              .split(RegExp(r'\s+'));
-          if (rawWidth.length > count ~/ 2 + 1) {
-            throw const FormatException('Troppi spessori nel tratto');
-          }
-          for (final width in rawWidth) {
-            documentNumber(width, min: 0, max: DocumentLimits.maxWidth);
-          }
-          List<String> rawPoints = strokeElement.innerText.trim().split(
-            RegExp(r'\s+'),
-          );
-          if (rawPoints.length.isOdd ||
-              rawPoints.length < 2 ||
-              rawWidth.isEmpty) {
-            throw const FormatException('Coordinate del tratto incomplete');
-          }
-          for (int i = 0; i < rawPoints.length / 2; i++) {
-            points.add(
-              XppStrokePoint(
-                width: documentNumber(
-                  (rawWidth.length > i) ? rawWidth[i] : rawWidth[0],
-                  min: 0,
-                  max: DocumentLimits.maxWidth,
-                ),
-                x: documentNumber(rawPoints[i * 2]),
-                y: documentNumber(rawPoints[i * 2 + 1]),
+            widths.add(
+              documentNumber(
+                token.group(0),
+                min: 0,
+                max: DocumentLimits.maxWidth,
               ),
             );
           }
-          if (points.isEmpty) return;
+          if (widths.isEmpty) {
+            throw const FormatException('Spessore del tratto mancante');
+          }
+          final coordinates = tokens
+              .allMatches(strokeElement.innerText)
+              .iterator;
+          while (coordinates.moveNext()) {
+            final x = documentNumber(coordinates.current.group(0));
+            if (!coordinates.moveNext()) {
+              throw const FormatException('Coordinate incomplete');
+            }
+            final y = documentNumber(coordinates.current.group(0));
+            budget.points(1); // Check before allocating another point.
+            final index = points.length;
+            if (index % 1024 == 0) budget.checkTime();
+            points.add(
+              XppStrokePoint(
+                width: index < widths.length ? widths[index] : widths.first,
+                x: x,
+                y: y,
+              ),
+            );
+          }
+          if (points.isEmpty) {
+            throw const FormatException('Coordinate incomplete');
+          }
+          if (widths.length > points.length + 1) {
+            throw const FormatException('Troppi spessori nel tratto');
+          }
           content[int.parse(strokeElement.getAttribute('counter')!)] =
               XppStroke.byTool(
                   tool: tool,
@@ -746,48 +750,80 @@ class XppFile {
     return '${safe.isEmpty ? 'Documento' : safe}.xopp';
   }
 
+  XmlElement _xmlSkeleton() => XmlElement(
+    XmlName('xournal'),
+    [
+      XmlAttribute(XmlName('creator'), 'OSI'),
+      XmlAttribute(XmlName('fileversion'), '4'),
+      XmlAttribute(XmlName('osipp-id'), documentId),
+      XmlAttribute(XmlName('osipp-auto-pages'), '$autoGeneratePages'),
+      if (tag != null) XmlAttribute(XmlName('osipp-tag'), tag!),
+      if (modifiedAt != null)
+        XmlAttribute(
+          XmlName('osipp-modified-at'),
+          modifiedAt!.toUtc().toIso8601String(),
+        ),
+    ],
+    [
+      XmlElement(XmlName('title'), const [], [
+        XmlText(
+          'Xournal document - see http://math.mit.edu/~auroux/software/xournal/',
+        ),
+      ]),
+      XmlElement(XmlName('preview'), const [], [
+        XmlText(base64Encode(previewImage ?? kTransparentImage)),
+      ]),
+    ],
+  );
+
   XmlDocument toXmlDocument() {
     validateSaveLimits();
     FlashcardLimits.validate(flashcards.values);
-    return XmlDocument([
-      XmlElement(
-        XmlName('xournal'),
-        [
-          XmlAttribute(XmlName('creator'), 'OSI'),
-          XmlAttribute(XmlName('fileversion'), '4'),
-          XmlAttribute(XmlName('osipp-id'), documentId),
-          XmlAttribute(XmlName('osipp-auto-pages'), '$autoGeneratePages'),
-          if (tag != null) XmlAttribute(XmlName('osipp-tag'), tag!),
-          if (modifiedAt != null)
-            XmlAttribute(
-              XmlName('osipp-modified-at'),
-              modifiedAt!.toUtc().toIso8601String(),
-            ),
-        ],
-        [
-            XmlElement(XmlName('title'), const [], [
-              XmlText(
-                'Xournal document - see http://math.mit.edu/~auroux/software/xournal/',
-              ),
-            ]),
-            XmlElement(XmlName('preview'), const [], [
-              XmlText(base64Encode(previewImage ?? kTransparentImage)),
-            ]),
-          ]
-          ..addAll(
-            pdfAttachments.entries.map(
-              (entry) => XmlElement(
-                XmlName('pdf-attachment'),
-                [XmlAttribute(XmlName('name'), entry.key)],
-                [XmlText(base64Encode(entry.value))],
-              ),
-            ),
-          )
-          ..addAll(recordings.values.map((e) => e.toXml()))
-          ..addAll(flashcards.values.map((e) => e.toXml()))
-          ..addAll(pages!.map((e) => e.toXmlElement())),
+    final root = _xmlSkeleton();
+    root.children.addAll([
+      ...pdfAttachments.entries.map(
+        (entry) => XmlElement(
+          XmlName('pdf-attachment'),
+          [XmlAttribute(XmlName('name'), entry.key)],
+          [XmlText(base64Encode(entry.value))],
+        ),
       ),
+      ...recordings.values.map((e) => e.toXml()),
+      ...flashcards.values.map((e) => e.toXml()),
+      ...pages!.map((e) => e.toXmlElement()),
     ]);
+    return XmlDocument([root]);
+  }
+
+  Iterable<String> _xmlChunks() sync* {
+    validateSaveLimits();
+    FlashcardLimits.validate(flashcards.values);
+    yield '<?xml version="1.0" standalone="no"?>\n';
+    final header = _xmlSkeleton().toXmlString();
+    yield header.substring(0, header.length - '</xournal>'.length);
+    for (final entry in pdfAttachments.entries) {
+      final tag = XmlElement(XmlName('pdf-attachment'), [
+        XmlAttribute(XmlName('name'), entry.key),
+      ]).toXmlString();
+      yield '${tag.substring(0, tag.length - 2)}>';
+      // A multiple of three ensures concatenated base64 chunks are identical
+      // to encoding the entire attachment, without a giant temporary string.
+      for (var offset = 0; offset < entry.value.length; offset += 48 * 1024) {
+        final end = (offset + 48 * 1024).clamp(0, entry.value.length);
+        yield base64Encode(Uint8List.sublistView(entry.value, offset, end));
+      }
+      yield '</pdf-attachment>';
+    }
+    for (final recording in recordings.values) {
+      yield recording.toXml().toXmlString();
+    }
+    for (final card in flashcards.values) {
+      yield card.toXml().toXmlString();
+    }
+    for (final page in pages!) {
+      yield page.toXmlElement().toXmlString();
+    }
+    yield '</xournal>';
   }
 
   void validateSaveLimits() {
@@ -838,7 +874,7 @@ class XppFile {
   }
 
   Uint8List? toUint8List() {
-    return GZipEncoder().encodeBytes(utf8.encode(toXmlString()), level: 1);
+    return compression.compressXml(_xmlChunks());
   }
 
   FilePickerCross toFilePickerCross({String? filePath}) {

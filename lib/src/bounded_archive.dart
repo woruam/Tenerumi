@@ -2,6 +2,10 @@ import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
 
+import 'compat/gzip_decode_stub.dart'
+    if (dart.library.io) 'compat/gzip_decode_io.dart'
+    as native;
+
 /// Checks every write BEFORE the inflater can grow its output buffer.
 class LimitedArchiveOutput extends OutputMemoryStream {
   final int limit;
@@ -54,8 +58,10 @@ Uint8List decodeBoundedGzip(
       bytes[1] != 0x8b) {
     throw const FormatException('File GZIP non valido o troppo grande');
   }
+  final decoded = native.decodeNativeGzip(bytes, maxOutput);
+  if (decoded != null) return decoded;
   final output = LimitedArchiveOutput(maxOutput);
-  // Force the streaming Dart decoder on ALL platforms, with trailer/CRC checks.
+  // Web keeps the streaming Dart decoder with trailer/CRC checks.
   if (!GZipDecoderWeb().decodeStream(
     InputMemoryStream(bytes),
     output,
@@ -73,7 +79,13 @@ Map<String, Uint8List> decodeBoundedZip(
   required int maxOutput,
   required int maxEntries,
   required int Function(String name) entryLimit,
-}) => decodeBoundedZipStream(InputMemoryStream(bytes), maxInput: maxInput, maxOutput: maxOutput, maxEntries: maxEntries, entryLimit: entryLimit);
+}) => decodeBoundedZipStream(
+  InputMemoryStream(bytes),
+  maxInput: maxInput,
+  maxOutput: maxOutput,
+  maxEntries: maxEntries,
+  entryLimit: entryLimit,
+);
 
 Map<String, Uint8List> decodeBoundedZipStream(
   InputStream input, {
@@ -85,20 +97,19 @@ Map<String, Uint8List> decodeBoundedZipStream(
 }) {
   final clock = Stopwatch()..start();
   final length = input.length;
-  int get16(int position) => ByteData.sublistView(input.subset(position: position, length: 2).toUint8List()).getUint16(0, Endian.little);
-  int get32(int position) => ByteData.sublistView(input.subset(position: position, length: 4).toUint8List()).getUint32(0, Endian.little);
+  int get16(int position) => ByteData.sublistView(
+    input.subset(position: position, length: 2).toUint8List(),
+  ).getUint16(0, Endian.little);
+  int get32(int position) => ByteData.sublistView(
+    input.subset(position: position, length: 4).toUint8List(),
+  ).getUint32(0, Endian.little);
   if (length < 22 || length > maxInput) {
     throw const FormatException('Archivio ZIP non valido o troppo grande');
   }
   // Preflight the central directory before ZipDirectory creates its objects.
   var end = -1;
-  for (
-    var i = length - 22;
-    i >= (length - 65557).clamp(0, length);
-    i--
-  ) {
-    if (get32(i) == 0x06054b50 &&
-        i + 22 + get16(i + 20) == length) {
+  for (var i = length - 22; i >= (length - 65557).clamp(0, length); i--) {
+    if (get32(i) == 0x06054b50 && i + 22 + get16(i + 20) == length) {
       end = i;
       break;
     }
@@ -133,8 +144,7 @@ Map<String, Uint8List> decodeBoundedZipStream(
       throw const FormatException('Metadati ZIP troppo grandi');
     }
     final local = get32(at + 42);
-    if (local + 30 > offset ||
-        get32(local) != 0x04034b50) {
+    if (local + 30 > offset || get32(local) != 0x04034b50) {
       throw const FormatException('Header locale ZIP non valido');
     }
     final localName = get16(local + 26);
@@ -207,8 +217,11 @@ Map<String, Uint8List> decodeBoundedZipStream(
         getCrc32(content) != file.crc32) {
       throw const FormatException('Dimensione o checksum ZIP non valido');
     }
-    if (onEntry != null) { onEntry(header.filename, content); }
-    else { result[header.filename] = content; }
+    if (onEntry != null) {
+      onEntry(header.filename, content);
+    } else {
+      result[header.filename] = content;
+    }
   }
   return result;
 }

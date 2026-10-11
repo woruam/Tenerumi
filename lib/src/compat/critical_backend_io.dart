@@ -1,4 +1,5 @@
 import '../document_limits.dart';
+import '../responsive_hash.dart';
 
 import 'dart:convert';
 import 'dart:io';
@@ -104,7 +105,7 @@ Future<void> quarantine(String raw) async {
 final _usage = <String, int>{};
 Future<String> putBlob(Uint8List bytes) async {
   final root = await _root();
-  final key = sha256.convert(bytes).toString();
+  final key = await responsiveHash(bytes);
   final file = File('${root.path}/$key.blob');
   if (!await file.exists()) {
     var used = _usage[root.path] ?? 0;
@@ -127,7 +128,7 @@ Future<Uint8List> getBlob(String key) async {
   if (!RegExp(r'^[a-f0-9]{64}$').hasMatch(key))
     throw const FormatException('Identificatore blob invalido');
   final bytes = await storage.readFile('${(await _root()).path}/$key.blob');
-  if (sha256.convert(bytes).toString() != key)
+  if (await responsiveHash(bytes) != key)
     throw const FormatException('Recupero corrotto');
   return bytes;
 }

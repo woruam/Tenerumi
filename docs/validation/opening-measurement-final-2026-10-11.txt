@@ -1,0 +1,5 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart
+00:00 +0: point scanner preserves whitespace and partial pressure lists
+00:00 +1: native gzip rejects every truncated trailer including empty members
+00:00 +2: measure XOPP opening and preserve large attachments and pressure ink
+00:02 +3: All tests passed!

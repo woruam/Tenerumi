@@ -1,0 +1,35 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/staged_export_test.dart
+00:00 +0: C:/Users/aless/Documents/GitHub/OSIpp/test/staged_export_test.dart: PDF export streams the complete staged file to the selected provider
+00:02 +1: C:/Users/aless/Documents/GitHub/OSIpp/test/staged_export_test.dart: staged backup retains provider authority and encoded document ID
+00:02 +2: C:/Users/aless/Documents/GitHub/OSIpp/test/staged_export_test.dart: desktop staged export copies and verifies the selected file
+00:02 +3: C:/Users/aless/Documents/GitHub/OSIpp/test/staged_export_test.dart: cancelled export performs no document write
+00:02 +4: C:/Users/aless/Documents/GitHub/OSIpp/test/staged_export_test.dart: incomplete provider paths are rejected rather than treated as local files
+00:02 +5: C:/Users/aless/Documents/GitHub/OSIpp/test/staged_export_test.dart: ordinary JSON export retains the complete content URI for future access
+00:02 +6: loading C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart
+00:04 +6: C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: PDF keeps pressure ink, overlapping erasures and layer order
+00:05 +7: C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: PDF exports paper, shapes and bundled text as vectors and retains original image resolution
+00:05 +8: C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: Android document URI can be saved again and reopened from the library
+00:06 +9: C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: Android document write failure preserves unsaved changes
+00:06 +10: C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: PDF raster keeps paper, all layers, text, formulas, image and erased ink
+00:06 +11: C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: PDF loads every uncached background and preserves page dimensions
+00:06 +12: C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: PDF fails instead of silently dropping a missing background
+00:06 +13: C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: save as XOPP round trips portable notes and updates destination only on success
+00:07 +14: C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: PDF cancellation and failure retain editable source and dirty state
+00:08 +15: loading C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart
+00:11 +15: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: complete backup transfers portable notes, latest recovery and metadata to another device
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-2b8192f7\xournalpp\backup-1791717462270130-3344180628.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-2b8192f7\xournalpp\backup-1791717462304035-3192582314.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-2b8192f7\xournalpp\backup-1791717462478622-89442994.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-2b8192f7\xournalpp\backup-1791717462858092-4080569606.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-2b8192f7\xournalpp\backup-1791717462974440-938160481.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-2b8192f7\xournalpp\backup-1791717463153455-3381615470.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-2b8192f7\xournalpp\backup-1791717463166461-942986357.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-2b8192f7\xournalpp\backup-1791717463181459-186550864.xopp
+00:13 +16: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: missing documents and missing backgrounds are explicitly reported
+00:13 +17: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: invalid archives and path traversal are rejected before any import
+00:13 +18: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: CRC verification rejects a damaged payload without importing anything
+00:13 +19: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: a malformed note makes the entire archive fail validation
+00:13 +20: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: failure during restoration removes staged files and preserves existing library
+00:13 +21: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: browser storage persists restored notes and deletion removes them
+00:13 +22: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: app settings expose Ripristina Backup and Crea Backup on a phone
+00:17 +23: All tests passed!

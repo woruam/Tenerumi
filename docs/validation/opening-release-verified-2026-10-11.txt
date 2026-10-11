@@ -1,0 +1,3 @@
+Distribution checks passed
+PDF metadata channel and handler verified in APK
+Latest Dart point parser and metadata caller verified in every APK ABI

@@ -1,4 +1,5 @@
 import 'package:xournalpp/plugins/plugin_controller.dart';
+import 'package:xournalpp/widgets/bounded_image.dart';
 import 'package:xournalpp/widgets/note_flashcards_panel.dart';
 
 import '../widgets/audio_timeline_overlay.dart';
@@ -528,7 +529,7 @@ class CanvasPageState extends State<CanvasPage> {
                                                     // 1. IL PDF SULLO SFONDO (Se caricato)
                                                     if (ctrl.pdfBackgrounds
                                                         .containsKey(pageIndex))
-                                                      Image.memory(
+                                                      BoundedImage(
                                                         ctrl.pdfBackgrounds[pageIndex]!,
                                                         fit: BoxFit.fill,
                                                       ),
@@ -542,11 +543,13 @@ class CanvasPageState extends State<CanvasPage> {
                                                           ),
                                                         ),
                                                       ),
-                                                    if (ctrl
-                                                            .file!
-                                                            .pages![pageIndex]
-                                                            .background
-                                                        is XppBackgroundPdf)
+                                                    if (!ctrl
+                                                            .pdfImportPending &&
+                                                        ctrl
+                                                                .file!
+                                                                .pages![pageIndex]
+                                                                .background
+                                                            is XppBackgroundPdf)
                                                       PdfZoomDetail(
                                                         key: ValueKey((
                                                           ctrl.file!.documentId,

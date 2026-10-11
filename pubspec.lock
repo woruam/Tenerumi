@@ -10,12 +10,11 @@ packages:
     source: hosted
     version: "1.2.0"
   android_file_picker:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: android_file_picker
-      sha256: "537bce9a43bc6fc08670cb68498251acc6eb9134b86a391b43e1f7c863588388"
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/android_file_picker"
+      relative: true
+    source: path
     version: "2.0.1"
   archive:
     dependency: "direct main"
@@ -568,10 +567,9 @@ packages:
   pdfx:
     dependency: "direct main"
     description:
-      name: pdfx
-      sha256: "83bcd2b971fc2f6ee4299659c96d7d66b2ba4807748571a8a4889f1cde14b754"
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/pdfx"
+      relative: true
+    source: path
     version: "2.11.0"
   perfect_freehand:
     dependency: "direct main"

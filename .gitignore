@@ -69,5 +69,6 @@ debian/xournalpp-mobile
 *.snap
 .gradle
 android/key.properties
+/android/keystore/
 *.jks
 *.keystore

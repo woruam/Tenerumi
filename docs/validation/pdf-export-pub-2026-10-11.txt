@@ -1,0 +1,7 @@
+Resolving dependencies...
+Downloading packages...
+! android_file_picker 2.0.1 from path packages\android_file_picker (overridden)
+  xml 7.0.1 (7.1.0 available)
+Got dependencies!
+1 package has newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.

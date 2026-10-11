@@ -1,0 +1,1 @@
+Built app starts, renders a PDF, restores IndexedDB state/binary data after reload, and handles a blocked schema upgrade without external resources

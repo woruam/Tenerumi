@@ -11,6 +11,8 @@ import 'dart:ui' as ui;
 
 import 'package:archive/archive.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart'
+    show debugDefaultTargetPlatformOverride;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,6 +24,10 @@ import 'package:xournalpp/src/XppPage.dart';
 import 'package:xournalpp/src/XppPageSize.dart';
 import 'package:xournalpp/src/decoded_image_cache.dart';
 import 'package:xournalpp/src/autosave_store.dart';
+import 'package:xournalpp/src/workspace_session.dart';
+import 'package:xournalpp/src/responsive_hash.dart';
+import 'package:xournalpp/src/PdfImage.dart';
+import 'package:crypto/crypto.dart';
 import 'package:xournalpp/src/compat/file_picker_cross.dart';
 import 'package:xournalpp/src/document_export.dart';
 import 'package:xournalpp/widgets/virtual_page_column.dart';
@@ -130,6 +136,263 @@ class _PdfImage extends pdfx.PdfPageImage {
 }
 
 void main() {
+  test('Android PDF metadata uses one reply and preserves different page dimensions', () async {
+    final previous = PdfxPlatform.instance;
+    final backend = _PdfBackend(await solidPng(Colors.white));
+    PdfxPlatform.instance = backend;
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    const metadata = MethodChannel('online.xournal.mobile/pdf-metadata');
+    var calls = 0;
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(metadata, (call) async {
+          calls++;
+          expect(call.method, 'pageSizes');
+          expect(call.arguments['documentId'], 'test');
+          return [100.0, 200.0, 300.0, 400.0, 500.0, 600.0];
+        });
+    try {
+      final file = await XppFile.importPdf(
+        pdf: FilePickerCross(Uint8List.fromList([1])),
+      );
+      expect(calls, 1);
+      expect(file.pages!.map((p) => p.pageSize!.width), [100, 300, 500]);
+      expect(file.pages!.map((p) => p.pageSize!.height), [200, 400, 600]);
+      expect(file.pages!.map((p) => (p.background as XppBackgroundPdf).page), [
+        0,
+        1,
+        2,
+      ]);
+      expect(backend.documents.single.pageOpens, 0);
+      expect(backend.documents.single.documentCloses, 1);
+    } finally {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(metadata, null);
+      debugDefaultTargetPlatformOverride = null;
+      PdfxPlatform.instance = previous;
+    }
+  });
+  test(
+    'Android missing metadata channel falls back and closes all pages',
+    () async {
+      final previous = PdfxPlatform.instance;
+      final backend = _PdfBackend(await solidPng(Colors.white));
+      PdfxPlatform.instance = backend;
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      const metadata = MethodChannel('online.xournal.mobile/pdf-metadata');
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(metadata, (_) async {
+            throw MissingPluginException();
+          });
+      try {
+        final sizes = await pdfPageSizes(
+          FilePickerCross(Uint8List.fromList([1])),
+        );
+        expect(sizes, hasLength(3));
+        expect(backend.documents.single.pageOpens, 3);
+        expect(backend.documents.single.pageCloses, 3);
+        expect(backend.documents.single.documentCloses, 1);
+      } finally {
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(metadata, null);
+        debugDefaultTargetPlatformOverride = null;
+        PdfxPlatform.instance = previous;
+      }
+    },
+  );
+  test(
+    'invalid or incomplete PDF metadata rejects and closes its source',
+    () async {
+      final previous = PdfxPlatform.instance;
+      final backend = _PdfBackend(await solidPng(Colors.white));
+      PdfxPlatform.instance = backend;
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      const metadata = MethodChannel('online.xournal.mobile/pdf-metadata');
+      try {
+        for (final values in [
+          [100.0, 200.0],
+          [double.nan, 200.0, 300.0, 400.0, 500.0, 600.0],
+        ]) {
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+              .setMockMethodCallHandler(metadata, (_) async => values);
+          await expectLater(
+            pdfPageSizes(FilePickerCross(Uint8List.fromList([1]))),
+            throwsFormatException,
+          );
+          expect(backend.documents.last.pageOpens, 0);
+          expect(backend.documents.last.documentCloses, 1);
+        }
+      } finally {
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(metadata, null);
+        debugDefaultTargetPlatformOverride = null;
+        PdfxPlatform.instance = previous;
+      }
+    },
+  );
+  test('parallel PDF requests transfer only one document at a time', () async {
+    final previous = PdfxPlatform.instance;
+    final backend = _PdfBackend(await solidPng(Colors.white));
+    final pending = Completer<pdfx.PdfDocument>();
+    backend.pending = pending;
+    PdfxPlatform.instance = backend;
+    try {
+      final first = openPdfData(Uint8List.fromList([1]));
+      final second = openPdfData(Uint8List.fromList([2]));
+      await Future<void>.delayed(Duration.zero);
+      expect(backend.documents, hasLength(1));
+      backend.pending = null;
+      pending.complete(backend.documents.single);
+      final opened = await Future.wait([first, second]);
+      expect(backend.documents, hasLength(2));
+      expect(identical(opened.first, opened.last), isFalse);
+      for (final document in opened) {
+        await document.close();
+      }
+    } finally {
+      PdfxPlatform.instance = previous;
+    }
+  });
+  test(
+    'streamed save preserves legacy XML, large PDF bytes and metadata',
+    () async {
+      final bytes = Uint8List.fromList(
+        List.generate(2 * 1024 * 1024 + 7, (i) => i % 251),
+      );
+      final file = XppFile.empty(title: 'Legacy PDF', tag: 'A & B');
+      file.pdfAttachments['old & "quoted".pdf'] = bytes;
+      file.pages!.first.background = XppBackgroundPdf(
+        filename: 'old & "quoted".pdf',
+        page: 0,
+        onUnavailable: unavailable,
+      );
+      file.pages!.first.layers!.first.content!.add(stroke());
+      final expected = file.toXmlString();
+      final encoded = await file.toUint8ListAsync();
+      expect(utf8.decode(GZipDecoder().decodeBytes(encoded)), expected);
+      final reopened = await XppFile.fromFilePickerCross(
+        FilePickerCross(encoded),
+        null,
+        unavailable,
+      );
+      expect(reopened.pdfAttachments.values.single, bytes);
+      expect(reopened.tag, file.tag);
+      expect(reopened.pages!.first.layers!.first.content, hasLength(1));
+    },
+  );
+
+  test(
+    'large attachment hashes yield to the event loop and retain SHA-256',
+    () async {
+      final bytes = Uint8List(2 * 1024 * 1024 + 7)..[100] = 17;
+      var inputHandled = false;
+      Timer.run(() => inputHandled = true);
+      final hash = await responsiveHash(bytes);
+      expect(inputHandled, isTrue);
+      expect(hash, sha256.convert(bytes).toString());
+    },
+  );
+
+  test('PDF imported into a tab keeps its workspace identity and is immediately recoverable', () async {
+    final previous = PdfxPlatform.instance;
+    final backend = _PdfBackend(await solidPng(Colors.white));
+    PdfxPlatform.instance = backend;
+    final selected = FilePickerCross(Uint8List.fromList([1, 2, 3]));
+    final path = await selected.saveToPath(path: 'import-recovery-test.pdf');
+    final tab = XppFile.empty(title: 'PDF');
+    final controller = CanvasController(autosaveEnabled: false)..init(tab);
+    var renderedAfterCheckpoint = false;
+    controller.addListener(() {
+      if (!controller.savingFile &&
+          controller.file!.pdfAttachments.isNotEmpty) {
+        renderedAfterCheckpoint = true;
+      }
+    });
+    try {
+      await controller.loadPdfFresh(path, 'Imported PDF');
+      expect(identical(controller.file, tab), isTrue);
+      expect(tab.pages, hasLength(3));
+      expect(renderedAfterCheckpoint, isTrue);
+      final entry = (await AutosaveStore.list()).singleWhere(
+        (e) => e['key'] == tab.recoveryKey,
+      );
+      final recovered = await AutosaveStore.restore(entry);
+      expect(recovered.pdfAttachments.values.single, [1, 2, 3]);
+      expect(recovered.pages, hasLength(3));
+      await WorkspaceSession.save({
+        'tabs': [
+          {'key': tab.recoveryKey, 'localId': tab.localId, 'title': tab.title},
+        ],
+      });
+      final workspace = await WorkspaceSession.restore();
+      expect(workspace!.files.single.pdfAttachments.values.single, [1, 2, 3]);
+      expect(backend.documents.single.documentCloses, 1);
+      expect(backend.documents.single.renderedAreas, isEmpty);
+    } finally {
+      controller.dispose();
+      PdfxPlatform.instance = previous;
+    }
+  });
+
+  test('PDF size import opens and closes one source for all pages', () async {
+    final previous = PdfxPlatform.instance;
+    final backend = _PdfBackend(await solidPng(Colors.white));
+    PdfxPlatform.instance = backend;
+    try {
+      final file = await XppFile.importPdf(
+        pdf: FilePickerCross(Uint8List.fromList([1])),
+      );
+      expect(file.pages, hasLength(3));
+      expect(backend.documents, hasLength(1));
+      expect(backend.documents.single.pageCloses, 3);
+      expect(backend.documents.single.documentCloses, 1);
+    } finally {
+      PdfxPlatform.instance = previous;
+    }
+  });
+  test(
+    'visible pages requested during import render after recovery is committed',
+    () async {
+      final previous = PdfxPlatform.instance;
+      final backend = _PdfBackend(await solidPng(Colors.white));
+      final pending = Completer<pdfx.PdfDocument>();
+      backend.pending = pending;
+      PdfxPlatform.instance = backend;
+      final tab = XppFile.empty(title: 'Queued viewport');
+      var renders = 0;
+      late final CanvasController controller;
+      controller = CanvasController(
+        autosaveEnabled: false,
+        pdfRasterizer: (_) async {
+          final entries = await AutosaveStore.list();
+          expect(entries.any((e) => e['key'] == tab.recoveryKey), isTrue);
+          expect(controller.pdfImportPending, isFalse);
+          renders++;
+          return backend.png;
+        },
+      )..init(tab);
+      try {
+        final path = await FilePickerCross(Uint8List.fromList([1, 2, 3]))
+            .saveToPath(path: 'queued-import-test.pdf');
+        final loading = controller.loadPdfFresh(path, 'Queued viewport');
+        while (backend.documents.isEmpty) {
+          await Future<void>.delayed(Duration.zero);
+        }
+        controller.setVisiblePdfPages({0});
+        expect(controller.pdfImportPending, isTrue);
+        expect(renders, 0);
+        backend.pending = null;
+        pending.complete(backend.documents.single);
+        await loading;
+        for (var i = 0; renders == 0 && i < 100; i++) {
+          await Future<void>.delayed(const Duration(milliseconds: 10));
+        }
+        expect(renders, 1);
+      } finally {
+        controller.dispose();
+        PdfxPlatform.instance = previous;
+      }
+    },
+  );
   TestWidgetsFlutterBinding.ensureInitialized();
   setUp(() => SharedPreferences.setMockInitialValues({}));
   testWidgets(
@@ -369,6 +632,14 @@ void main() {
           saved.toUint8List(),
           secured,
         ); // Byte-for-byte reuse, not a new gzip.
+        final savedFile = File(ctrl.file!.sourcePath!);
+        final originalTime = DateTime.utc(2000);
+        await tester.runAsync(() => savedFile.setLastModified(originalTime));
+        expect(await tester.runAsync(() => ctrl.saveFile(context!)), isTrue);
+        expect(
+          (await tester.runAsync(savedFile.lastModified))!.toUtc(),
+          originalTime,
+        ); // Unchanged saves verify the bytes without overwriting the file.
         ctrl.addNewContent(0, stroke(100, 100));
         expect(await tester.runAsync(() => ctrl.saveFile(context!)), isTrue);
         final raw = (await tester.runAsync(

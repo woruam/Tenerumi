@@ -1,0 +1,2 @@
+Firma configurata. Conservare insieme android/keystore e android/key.properties in una copia sicura fuori dal repository.
+Configurazione già presente: la chiave esistente viene conservata.

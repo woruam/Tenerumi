@@ -1,0 +1,40 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart
+00:00 +0: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A01 interpolation rejects doubling before replacing the variable
+00:00 +1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A01 implicit recursive text conversions and explosive operators reject
+00:00 +2: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A01 shared lists count at every occurrence in intermediate results
+00:00 +3: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A01 environment budget also applies across variables and API results
+00:00 +4: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 selected content URI uses the bounded native channel and checks its response
+00:00 +5: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 GZIP checks actual output, CRC, truncation and multiple members
+00:00 +5 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 GZIP checks actual output, CRC, truncation and multiple members [E]
+  Expected: throws anything
+    Actual: <Closure: () => Uint8List>
+     Which: returned [104, 101, 108, 108, 111]
+  
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 473:18  expect
+  test\astra_security_fixes_test.dart 283:7           main.<fn>.<fn>
+  
+00:00 +5 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 output refuses the offending write and keeps its previous length
+00:00 +6 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 stream reader stops and cancels when actual bytes exceed the quota
+00:00 +7 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 forged ZIP sizes and compressed symlinks reject before extraction
+00:00 +8 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 expanded XML, nesting, nodes, pages, layers and points have quotas
+00:00 +9 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 media quota includes duplicate attachments, audio and cards
+00:00 +10 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 DOCTYPE rejects and one valid page is required at the root
+00:00 +11 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 invalid page dimension NaN rejects
+00:00 +12 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 invalid page dimension Infinity rejects
+00:00 +13 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 invalid page dimension -Infinity rejects
+00:00 +14 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 invalid page dimension 0 rejects
+00:00 +15 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 invalid page dimension -1 rejects
+00:00 +16 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 invalid page dimension 20001 rejects
+00:00 +17 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 invalid text, rectangles, stroke coordinates/widths/erasures reject
+00:00 +18 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 PDF references and native page geometry reject before rendering
+00:00 +19 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A03 grid work depends on visible area and has a primitive budget
+00:00 +20 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A04 missing backgrounds expose explicit selection in the editor
+00:00 +21 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A04 document references never invoke an external callback
+00:00 +22 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A04 backup excludes unselected local resources; explicit attachment survives transfer
+00:00 +23 -1: loading C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart
+00:01 +23 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart: measure XOPP opening and preserve large attachments and pressure ink
+00:03 +24 -1: Some tests failed.
+
+Failing tests:
+  C:/Users/aless/Documents/GitHub/OSIpp/test/astra_security_fixes_test.dart: A02 GZIP checks actual output, CRC, truncation and multiple members

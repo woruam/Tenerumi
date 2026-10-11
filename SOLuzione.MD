@@ -213,3 +213,101 @@ Il backend IndexedDB chiude le connessioni quando cambia lo schema e gestisce il
 Non è disponibile una chiave di produzione: nessun APK release firmato di produzione è stato generato e non è stata provata la continuità di aggiornamento delle installazioni reali. I runner desktop sono stati generati/versionati, ma non compilati localmente per ogni piattaforma. Restano da eseguire su dispositivi reali: arresti forzati ai confini blob/manifesto/commit/provider, permessi SAF revocati e provider cloud, registrazione e recupero dopo terminazione del processo, profili heap/RSS/GPU in split screen, qualità delle immagini, latenza della penna e sessioni dense di trasformazioni undo. La sicurezza non viene dichiarata assoluta e le quote non equivalgono al limite dell’heap totale.
 
 Per le modifiche future: mantenere indipendenti identità importate e autorizzazioni locali; non eliminare un payload prima del commit e della scadenza dei riferimenti storici; validare sia writer sia reader; confermare ACK solo dopo persistenza; limitare decode/output prima delle allocazioni; preservare gli originali nelle incompatibilità e nei conflitti; provare gli artefatti compilati, senza rigenerare configurazioni versionate; mantenere stabile la firma e verificare il certificato dell’APK; monitorare e aggiornare le dipendenze vendorizzate con integrità e regressioni. Una maggiore estensibilità dei plugin deve passare da API controllate, quote e transazioni, senza consentire l’attivazione di un motore JavaScript nativo.
+
+## Aggiornamento dell’11 ottobre 2026 — Firma locale e APK release
+
+Il blocco «Firma release non configurata» era il controllo previsto da A14, distinto dagli avvisi sulle versioni Gradle/AGP/Kotlin. Dopo la conferma che si tratta della prima distribuzione, è stata generata una chiave locale stabile e configurato il certificato atteso. Lo [script di configurazione Windows](scripts/configure_release.ps1) genera password casuali senza mostrarle, protegge i file con ACL, conserva le configurazioni presenti e rifiuta di sostituire un keystore esistente. Chiave e credenziali sono escluse da Git. Le istruzioni e la necessità di una copia sicura sono riportate nella [guida alla firma](docs/RELEASE_SIGNING.md).
+
+Superati: [generazione e riesecuzione senza sostituire la chiave in Windows PowerShell 5](docs/validation/astra-signing-setup-2026-10-11.txt), [build debug](docs/validation/astra-build-debug-2026-10-11.txt), [build release](docs/validation/astra-build-release-2026-10-11.txt) e [verifica APK/certificato tramite apksigner](docs/validation/astra-release-verified-2026-10-11.txt). La release è firmata con la nuova chiave e nessun fallback debug. Gli avvisi sulle dipendenze Android restano; non sono stati disabilitati. Non sono stati effettuati push, pubblicazioni, installazioni o prove di aggiornamento su dispositivi reali. La precedente nota sull’assenza di una chiave descriveva la verifica del 10 ottobre, prima di questa configurazione.
+
+## Aggiornamento dell’11 ottobre 2026 — Importazione PDF e salvataggio
+
+La segnalazione riguarda file `.pdf` creati dalla versione precedente: rallentamento e crash durante l’apertura, poi scheda priva del PDF al riavvio. Il PDF specifico e un log del dispositivo non sono disponibili; le cause individuate nel codice e le correzioni verificabili sono descritte qui, senza dichiarare riprodotto quel crash.
+
+### PDF conservato nella scheda e nel recupero
+
+`loadPdfFresh` sostituiva l’istanza di `XppFile` posseduta dalla scheda: il controller mostrava il nuovo documento mentre il workspace conservava l’identità dell’appunto vuoto. Ora aggiorna la stessa istanza. L’importazione registra immediatamente pagine e allegato nel journal durevole, anche con autosave disattivato, prima di avviare il rendering delle pagine. La lettura iniziale delle dimensioni richiede comunque il parser PDF; non è possibile garantire recupero da un arresto del parser precedente al commit.
+
+Durante il commit, le richieste del viewport vengono conservate e il dettaglio zoom non viene montato; dopo il commit parte il rendering delle pagine richieste. Il percorso alternativo `XppFile.importPdf` apre la sorgente una sola volta per leggere tutte le dimensioni. Le aperture dalla parte Dart sono serializzate prima del trasferimento alla piattaforma, per evitare molte copie native contemporaneamente in attesa. Gli sfondi della vista principale usano la cache condivisa delle immagini decodificate, con il budget già previsto da A08.
+
+**File:** [controller](lib/controllers/canvas_controller.dart), [vista](lib/pages/CanvasPage.dart), [apertura PDF](lib/src/PdfImage.dart), [importazione](lib/src/XppFile.dart).
+
+### Lavoro PDF su Android e rilascio delle risorse
+
+È inclusa una copia locale dei sorgenti runtime di `pdfx` 2.11.0 con licenze originali e [registro delle modifiche](packages/pdfx/OSI_PATCHES.md). L’app la usa tramite dipendenza locale; le implementazioni delle altre piattaforme sono conservate.
+
+Su Android, apertura, lettura delle dimensioni e rendering dei ritagli lavorano su una coda dedicata; risposte Flutter e gestione delle texture restano sul thread della piattaforma. Bitmap interi, ritagli e texture vengono riciclati in `finally`. Dimensioni e numero di pixel vengono limitati prima delle allocazioni raster e del ridimensionamento delle texture. Le chiusure dei documenti attendono i rendering in coda; callback tardivi, errori Java recuperabili di allocazione e riferimenti a documenti chiusi vengono gestiti. Lo stato delle texture viene rimosso al rilascio e le risorse native vengono drenate al distacco del motore.
+
+Le copie PDF temporanee private vengono scollegate dopo l’apertura del descrittore, che resta valido su Android. Il file scelto dall’utente non viene eliminato. Il descrittore viene chiuso anche se il costruttore del renderer fallisce. Un errore nativo del motore PDF o una terminazione del processo da parte del sistema possono ancora richiedere diagnosi sul dispositivo: i limiti raster non equivalgono a un limite di memoria dell’intero parser o processo.
+
+### Salvataggio con meno lavoro e copie temporanee
+
+Un salvataggio ripetuto senza modifiche controlla l’originale e termina senza rigenerare anteprima, XML, compressione o riscrittura del provider. Il checkpoint durevole della stessa revisione può essere riusato anche quando il salvataggio manuale attende un autosave già in corso; non viene registrato una seconda volta se la copia verificata è già disponibile.
+
+La serializzazione nativa comprime l’XML progressivamente: gli allegati PDF sono codificati in blocchi base64 da 48 KiB e le pagine vengono serializzate una alla volta. Si evita di costruire contemporaneamente il DOM completo, una base64 completa del PDF, l’intero testo XML e un ulteriore buffer UTF-8. Restano in memoria il modello, l’output compresso e il trasferimento al worker. Il percorso Web conserva un buffer XML completo per la libreria di compressione, con limite esplicito.
+
+Gli hash dei grandi allegati procedono in blocchi da 256 KiB, cedendo il ciclo eventi fra i blocchi. Per la verifica della scrittura si riusa l’hash già calcolato. I controlli di integrità, conflitto con l’originale, compatibilità e recupero locale restano applicati; non si evita la verifica per velocizzare il salvataggio. Non viene dichiarata una misura della latenza reale su Android.
+
+**File:** [compressione nativa](lib/src/compat/xml_compression_io.dart), [compressione Web](lib/src/compat/xml_compression_web.dart), [hash](lib/src/responsive_hash.dart), [verifica file](lib/src/compat/file_picker_cross.dart).
+
+### Regressioni e verifiche
+
+Le regressioni aggiunte in [performance_resources_test.dart](test/performance_resources_test.dart) verificano recupero della scheda e allegato prima del rendering, viewport richiesto durante l’importazione, aperture serializzate, una sola apertura per le dimensioni, equivalenza XML e riapertura degli allegati, hash corretto senza bloccare tutti gli eventi, riuso del checkpoint e assenza di riscrittura di un file invariato. Le prove del dettaglio PDF controllano zoom, budget e chiusura durante il rendering. I log finali sono in `docs/validation/pdf-save-*`; gli errori di compilazione intermedi restano documentati come diagnostica.
+
+Risultati sul codice finale:
+
+- [Suite completa](docs/validation/pdf-save-full-tests-2026-10-11.txt): **260 test superati**; [prove mirate PDF e salvataggio](docs/validation/pdf-save-final-focused-2026-10-11.txt): **18 test superati**.
+- [Analisi statica di `lib` e `test`](docs/validation/pdf-save-analyze-final-2026-10-11.txt): **0 errori, 0 warning, 306 segnalazioni informative**.
+- [APK release](docs/validation/pdf-save-android-release-2026-10-11.txt) compilato con firma di produzione locale; [verifica finale](docs/validation/pdf-save-release-verified-2026-10-11.txt) di certificato, assenza dei motori vietati e presenza della patch PDF nel DEX superata. Gli avvisi sulle versioni Gradle/AGP/Kotlin restano visibili.
+- [Web release](docs/validation/pdf-save-web-2026-10-11.txt) e dry run Wasm riusciti; [smoke test del sito compilato](docs/validation/pdf-save-browser-2026-10-11.txt) superato per avvio, rendering PDF, persistenza binaria dopo ricaricamento e gestione dell’aggiornamento IndexedDB bloccato da un’altra scheda, con risorse esterne bloccate. [Integrità PDF.js](docs/validation/pdf-save-vendor-2026-10-11.txt) verificata.
+
+I file di prova già versionati, rigenerati dalla suite, sono stati ripristinati alla versione iniziale per non introdurre aggiornamenti estranei; i nuovi risultati di verifica restano nei log dedicati. Non sono stati effettuati commit, push, pubblicazioni o installazioni.
+
+Per confermare il problema segnalato, riprovare sul dispositivo il PDF originale, scorrere e ingrandire, mettere l’app in background, riaprirla e verificare pagine e annotazioni salvate. Nessuna prova su quel dispositivo è stata eseguita. Negli aggiornamenti futuri di `pdfx`, confrontare la patch locale con i sorgenti upstream, mantenere limiti e rilascio in caso di errore, preservare la barriera di persistenza prima del rendering e rieseguire le regressioni e le prove su PDF complessi.
+
+## Aggiornamento dell’11 ottobre 2026 — Destinazione di esportazione PDF
+
+Il messaggio «Errore esportazione PDF: Bad state: Destinazione backup non disponibile» proveniva dal controllo del risultato del selettore. Nell’implementazione Android installata (`android_file_picker` 2.0.1, usata da `file_picker` 13.1.0), il callback nativo restituiva `renamedUri.path`: un percorso come `/document/primary:Download/appunti.pdf`, privo di schema `content` e autorità del provider. Dart interpretava quel risultato come URI senza schema e il percorso di esportazione PDF/ZIP lo rifiutava. Convertirlo in un percorso filesystem o inventare l’autorità non permetterebbe un accesso corretto ai documenti.
+
+È inclusa una [patch locale del selettore Android](packages/android_file_picker/OSI_PATCHES.md), con sorgenti runtime e licenza originali, collegata tramite override in `pubspec.yaml`. Il callback ora restituisce `renamedUri.toString()`, conservando schema, autorità e identificatori codificati. La correzione riguarda anche backup, export degli appunti e JSON che usano lo stesso selettore; non cambia il parser PDF o il formato degli appunti.
+
+Il metodo condiviso è stato rinominato `exportStagedFile` ed è usato sia dal [controller PDF](lib/controllers/canvas_controller.dart) sia dal [dialogo backup](lib/widgets/note_backup_dialog.dart). Un tipo di URI non supportato ora segnala una destinazione di esportazione, evitando il riferimento errato ai backup. Restano il trasferimento dal file privato per stream, i controlli di integrità della destinazione e il rifiuto dei percorsi incompleti; non sono stati aggiunti permessi di accesso generale allo storage.
+
+Le [regressioni dedicate](test/staged_export_test.dart) coprono il flusso completo controller → PDF di staging → provider, URI con accenti/spazi e slash codificati, backup su provider, copia e verifica su filesystem, annullamento senza scritture, rifiuto dei percorsi troncati ed export JSON con conservazione dell’URI. I provider sono simulati; resta da provare il selettore reale su Android, nei Download e con eventuali provider cloud. Negli aggiornamenti del selettore, verificare sia la compatibilità della versione forzata dall’override sia il contenuto del callback nativo prima di rimuovere la patch.
+
+Verifiche concluse: **23 test superati** nella [suite PDF, export e backup](docs/validation/pdf-export-tests-2026-10-11.txt); [analisi statica](docs/validation/pdf-export-analyze-2026-10-11.txt) con **0 errori, 0 warning e 306 segnalazioni informative**; [APK release compilato](docs/validation/pdf-export-android-2026-10-11.txt) e [firma di produzione/controlli di distribuzione verificati](docs/validation/pdf-export-release-verified-2026-10-11.txt). L’[ispezione del bytecode Kotlin compilato](docs/validation/pdf-export-native-bytecode-2026-10-11.txt) conferma che il callback usa `Uri.toString()` prima di `finishWithSuccess`. I PDF di prova versionati rigenerati dai test sono stati ripristinati; nessuna installazione, pubblicazione o push è stata effettuata.
+
+## Aggiornamento dell’11 ottobre 2026 — Apertura PDF e XOPP
+
+Sono stati ottimizzati tre passaggi del caricamento, mantenendo i formati, gli allegati, la geometria delle pagine, la pressione della penna, il recupero e i controlli sui documenti.
+
+### XOPP: decompressione nativa limitata e lettura dei punti
+
+La decompressione dei file XOPP sulle piattaforme native usa ora zlib tramite il decoder GZIP di Dart IO, alimentato in blocchi da 16 KiB. Il sink controlla i byte effettivamente prodotti prima di aggiungerli al buffer e mantiene il limite di tempo di 30 secondi. Il controllo dei byte compressi precede la decompressione; i limiti su XML, media, nodi, geometria e punti restano applicati dal lettore. Il parsing continua nel worker, e la hash dell’originale continua a essere calcolata per rilevare conflitti successivi.
+
+Il decoder nativo, usato da solo, accetta alcuni trailer troncati. Questo comportamento è stato individuato dalla regressione di A02 durante lo sviluppo: prima della chiusura viene ora alimentato un membro GZIP vuoto valido, che forza il completamento e la verifica del membro precedente prima di riconoscere la nuova intestazione. Il membro di controllo non produce dati e non viene salvato nei file. Le prove verificano CRC, dimensioni effettive, tutte le troncature da uno a otto byte del trailer anche nei membri vuoti, e concatenazioni valide o oltre quota. Il percorso Web conserva il decoder Dart limitato già esistente. I buffer temporanei del codec e il modello restano parte della memoria del processo; il limite di output non è una promessa sull’heap totale.
+
+Il parser dei tratti legge le coppie di coordinate in una sola scansione: evita la precedente scansione per contare, la lista completa delle stringhe delle coordinate e la successiva rilettura. Gli spessori vengono validati e convertiti una sola volta, conservando sia pressione variabile sia il riuso del primo spessore quando la lista è più corta. La quota viene controllata prima di allocare un altro punto; il controllo del tempo si ripete anche durante tratti lunghi. Coordinate incomplete, numeri non finiti e liste di spessori eccessive restano rifiutati.
+
+**File:** [decompressione nativa](lib/src/compat/gzip_decode_io.dart), [selezione del decoder](lib/src/bounded_archive.dart), [parser XOPP](lib/src/XppFile.dart).
+
+### PDF: dimensioni delle pagine con una sola risposta Android
+
+L’importazione Android usa il canale privato `online.xournal.mobile/pdf-metadata` della patch locale `pdfx`: legge e chiude ogni pagina in sequenza sul worker esistente e restituisce tutte le dimensioni in una sola risposta. Prima erano necessari apertura e chiusura attraverso Flutter per ogni pagina, cioè due scambi per pagina. Si mantiene l’ispezione di tutte le pagine, con ordine e dimensioni originali, senza introdurre dimensioni provvisorie o perdere pagine.
+
+Il lato nativo limita il risultato a 10.000 pagine e dimensioni di 20.000 unità; Dart ricontrolla lunghezza e valori della risposta. Gli errori chiudono il documento tramite il percorso già previsto. Le altre piattaforme e un canale non disponibile usano il percorso precedente. La copia durevole di recupero continua a precedere il rendering. Il parser del PDF deve comunque ispezionare le pagine, e il contenuto complesso resta da rasterizzare: il miglioramento riduce il lavoro di comunicazione, non elimina questi costi.
+
+**File:** [metadati e fallback](lib/src/PdfImage.dart), [importazione](lib/controllers/canvas_controller.dart), [patch Android](packages/pdfx/OSI_PATCHES.md).
+
+### Misure e verifiche
+
+Nel test Windows desktop/JIT con allegato sintetico di 8 MiB e 20.000 punti a pressione variabile, dopo un giro di riscaldamento e tre misure, la mediana è passata da **121,024 ms a 74,302 ms** per lettura XOPP e costruzione del modello (circa **39% in meno**). La sola decompressione passa da **35,836 ms a 7,342 ms**. Dati e condizioni sono nei risultati [prima](docs/validation/opening-before-2026-10-11.json) e [dopo](docs/validation/opening-after-2026-10-11.json); il test finale è stato eseguito a build concluse per ridurre la competizione sulla CPU. I dati PDF del fixture sono un allegato opaco: non viene misurato il rendering né il tempo dal tap al primo frame. Queste misure non rappresentano la latenza su Android e possono variare con dispositivo, compressione, contenuti e provider.
+
+Verifiche concluse:
+
+- [Suite completa](docs/validation/opening-full-tests-2026-10-11.txt): **272 test superati**. Le [prove mirate](docs/validation/opening-focused-2026-10-11.txt) comprendono recupero, cache, PDF, zoom e limiti; le [prove finali del parser e del benchmark](docs/validation/opening-measurement-final-2026-10-11.txt) comprendono anche spaziature e liste di pressione parziali.
+- [Analisi statica](docs/validation/opening-analyze-2026-10-11.txt): **0 errori, 0 warning e 306 segnalazioni informative**.
+- [APK release definitivo](docs/validation/opening-android-2026-10-11.txt) compilato e [firma/controlli di distribuzione](docs/validation/opening-release-verified-2026-10-11.txt) verificati, inclusa la presenza del nuovo canale nel DEX e del parser/caller Dart nelle librerie AOT di ogni ABI.
+- [Web release](docs/validation/opening-web-2026-10-11.txt), dry run Wasm e [smoke test Chromium](docs/validation/opening-browser-2026-10-11.txt) superati, inclusi PDF e persistenza IndexedDB dopo ricaricamento.
+
+Le prove PDF verificano una sola risposta per dimensioni diverse, ordine delle pagine, fallback, rifiuto di dati incompleti/NaN e chiusura del documento. I file di prova versionati rigenerati dalla suite sono stati ripristinati. Non sono stati eseguiti commit, push o installazioni. Restano da misurare sul dispositivo reale il caricamento del PDF/XOPP dell’utente, il provider scelto e il primo rendering. Per le modifiche future, non sostituire il decoder senza provare trailer incompleti e concatenazioni, non indebolire le quote per guadagnare tempo e non mostrare geometrie provvisorie che possano modificare posizioni o proporzioni delle annotazioni.
