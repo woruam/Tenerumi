@@ -122,13 +122,21 @@ class XppFile {
     );
   }
 
-  static Future<XppFile> importPdf({required FilePickerCross pdf}) async {
-    final sizes = await pdfPageSizes(pdf);
+  static Future<XppFile> importPdf({
+    required FilePickerCross pdf,
+    DocumentLimits limits = DocumentLimits.standard,
+  }) async {
+    final bytes = pdf.toUint8List();
+    if (bytes.length > limits.compressedBytes ||
+        bytes.length > limits.mediaBytes) {
+      throw const FormatException('PDF troppo grande');
+    }
+    final sizes = await pdfPageSizes(pdf, limits: limits);
     final pdfName = pdf.path ?? 'background.pdf';
     XppFile file = XppFile.empty(title: titleFromPath(pdf.fileName))
       ..autoGeneratePages = false
       ..pages!.clear();
-    file.pdfAttachments[pdfName] = pdf.toUint8List();
+    file.pdfAttachments[pdfName] = bytes;
     Future<FilePickerCross> onUnavailable(String? p) async => pdf;
 
     for (int i = 0; i < sizes.length; i++) {
@@ -191,7 +199,7 @@ class XppFile {
   ) async {
     FilePickerCross rawFile = await FilePickerCross.importFromStorage(
       type: FileTypeCross.custom,
-      fileExtension: 'xopp',
+      fileExtension: 'xopp,pdf',
     );
     XppFile file = await fromFilePickerCross(
       rawFile,
@@ -217,6 +225,14 @@ class XppFile {
     Uint8List fileBytes = rawFile.toUint8List();
     if (fileBytes.length > limits.compressedBytes) {
       throw const FormatException('Appunto troppo grande');
+    }
+
+    // PDF exports from older versions are actual PDFs, not gzip archives.
+    // Route by content so a renamed Xournal document still uses bounded gzip.
+    if (_hasPdfHeader(fileBytes)) {
+      final file = await importPdf(pdf: rawFile, limits: limits);
+      percentageCallback?.call(1.0);
+      return file;
     }
 
     // 2. LANCIO DELL'ISOLATE: Tutto il codice qui dentro non blocca l'interfaccia
@@ -253,6 +269,14 @@ class XppFile {
     percentageCallback?.call(1.0);
     return parsedFile;
   }
+
+  static bool _hasPdfHeader(Uint8List bytes) =>
+      bytes.length >= 5 &&
+      bytes[0] == 0x25 &&
+      bytes[1] == 0x50 &&
+      bytes[2] == 0x44 &&
+      bytes[3] == 0x46 &&
+      bytes[4] == 0x2d;
 
   static XppFile _parseFile(Map<String, Object?> input) {
     final limits = input['limits'] as DocumentLimits;

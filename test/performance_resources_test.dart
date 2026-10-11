@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:pdfx/pdfx.dart' as pdfx;
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
 import 'package:pdfx/src/renderer/interfaces/platform.dart';
 import 'package:xournalpp/src/XppBackground.dart';
 
@@ -27,6 +29,9 @@ import 'package:xournalpp/src/autosave_store.dart';
 import 'package:xournalpp/src/workspace_session.dart';
 import 'package:xournalpp/src/responsive_hash.dart';
 import 'package:xournalpp/src/PdfImage.dart';
+import 'package:xournalpp/src/document_limits.dart';
+import 'package:xournalpp/src/globals.dart';
+import 'package:xournalpp/widgets/saved_notes_dialog.dart';
 import 'package:crypto/crypto.dart';
 import 'package:xournalpp/src/compat/file_picker_cross.dart';
 import 'package:xournalpp/src/document_export.dart';
@@ -136,6 +141,169 @@ class _PdfImage extends pdfx.PdfPageImage {
 }
 
 void main() {
+  Future<Uint8List> legacyPdf() async {
+    final pdf = pw.Document();
+    for (var i = 0; i < 3; i++) {
+      pdf.addPage(
+        pw.Page(
+          pageFormat: PdfPageFormat.a4,
+          build: (_) => pw.Text('Legacy export ${i + 1}'),
+        ),
+      );
+    }
+    return pdf.save();
+  }
+
+  test(
+    'opening PDF content imports pages and attachments without a save grant',
+    () async {
+      final previous = PdfxPlatform.instance;
+      final backend = _PdfBackend(await solidPng(Colors.white));
+      PdfxPlatform.instance = backend;
+      addTearDown(() => PdfxPlatform.instance = previous);
+      final bytes = await legacyPdf();
+      for (final name in ['old-export.pdf', 'renamed.xopp']) {
+        final progress = <double>[];
+        final file = await XppFile.fromFilePickerCross(
+          FilePickerCross(bytes, path: name),
+          progress.add,
+          unavailable,
+        );
+        expect(file.title, XppFile.titleFromPath(name));
+        expect(file.sourcePath, isNull);
+        expect(file.originHash, isNull);
+        expect(file.autoGeneratePages, isFalse);
+        expect(file.pdfAttachments[name], orderedEquals(bytes));
+        expect(file.pages, hasLength(3));
+        expect(
+          file.pages!.map((p) => (p.background as XppBackgroundPdf).page),
+          [0, 1, 2],
+        );
+        expect(file.pages!.first.pageSize!.width, 595);
+        expect(file.pages!.first.pageSize!.height, 842);
+        expect(progress, [0, 1]);
+      }
+      expect(backend.documents.every((doc) => doc.documentCloses == 1), isTrue);
+    },
+  );
+
+  test('content routing keeps renamed gzip notes and rejects invalid gzip without PDF fallback', () async {
+    final previous = PdfxPlatform.instance;
+    final backend = _PdfBackend(await solidPng(Colors.white));
+    PdfxPlatform.instance = backend;
+    addTearDown(() => PdfxPlatform.instance = previous);
+    final original = XppFile.empty(title: 'Old note');
+    final file = await XppFile.fromFilePickerCross(
+      FilePickerCross(original.toUint8List()!, path: 'old-note.pdf'),
+      null,
+      unavailable,
+    );
+    expect(file.pages, hasLength(1));
+    expect(file.sourcePath, 'old-note.pdf');
+    for (final bytes in [
+      Uint8List(0),
+      Uint8List.fromList(utf8.encode('not a PDF')),
+      Uint8List.fromList([0x1f, 0x8b, 0x08]),
+    ]) {
+      await expectLater(
+        XppFile.fromFilePickerCross(
+          FilePickerCross(bytes, path: 'invalid.pdf'),
+          null,
+          unavailable,
+        ),
+        throwsFormatException,
+      );
+    }
+    expect(backend.documents, isEmpty);
+  });
+
+  test(
+    'PDF imports honor byte and page budgets before enumerating pages',
+    () async {
+      final previous = PdfxPlatform.instance;
+      final backend = _PdfBackend(await solidPng(Colors.white));
+      PdfxPlatform.instance = backend;
+      addTearDown(() => PdfxPlatform.instance = previous);
+      final pdf = FilePickerCross(await legacyPdf(), path: 'old.pdf');
+      for (final limits in [
+        const DocumentLimits(compressedBytes: 4),
+        const DocumentLimits(mediaBytes: 4),
+      ]) {
+        await expectLater(
+          XppFile.fromFilePickerCross(pdf, null, unavailable, limits: limits),
+          throwsFormatException,
+        );
+      }
+      expect(backend.documents, isEmpty);
+      await expectLater(
+        XppFile.fromFilePickerCross(
+          pdf,
+          null,
+          unavailable,
+          limits: const DocumentLimits(pages: 2),
+        ),
+        throwsFormatException,
+      );
+      expect(backend.documents.single.pageOpens, 0);
+      expect(backend.documents.single.documentCloses, 1);
+    },
+  );
+
+  testWidgets(
+    'opening an old PDF from saved notes preserves title and requires a new save',
+    (tester) async {
+      final previous = PdfxPlatform.instance;
+      final backend = _PdfBackend(
+        (await tester.runAsync(() => solidPng(Colors.white)))!,
+      );
+      PdfxPlatform.instance = backend;
+      addTearDown(() => PdfxPlatform.instance = previous);
+      final dir = (await tester.runAsync(
+        () => Directory.systemTemp.createTemp('osi-legacy-pdf-'),
+      ))!;
+      addTearDown(() => dir.delete(recursive: true));
+      final path = '${dir.path}/old.pdf';
+      await tester.runAsync(
+        () async => File(path).writeAsBytes(await legacyPdf()),
+      );
+      SharedPreferences.setMockInitialValues({
+        PreferencesKeys.kRecentFiles: jsonEncode([
+          {'name': 'Vecchio PDF', 'path': path, 'tag': 'Studio'},
+        ]),
+      });
+      XppFile? selected;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () async {
+                selected = await openSavedNote(context);
+              },
+              child: const Text('Apri'),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Apri'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Vecchio PDF'));
+      await tester.pumpAndSettle();
+      for (var i = 0; selected == null && i < 30; i++) {
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 100)),
+        );
+        await tester.pump();
+      }
+      expect(selected, isNotNull);
+      expect(selected!.sourcePath, isNull);
+      expect(selected!.title, 'Vecchio PDF');
+      expect(selected!.tag, 'Studio');
+      expect(selected!.suggestedFileName, 'Vecchio PDF.xopp');
+      expect(selected!.pages, hasLength(3));
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+
   test('Android PDF metadata uses one reply and preserves different page dimensions', () async {
     final previous = PdfxPlatform.instance;
     final backend = _PdfBackend(await solidPng(Colors.white));
@@ -309,7 +477,11 @@ void main() {
       }
     });
     try {
-      await controller.loadPdfFresh(path, 'Imported PDF', pickedBytes: pickedBytes);
+      await controller.loadPdfFresh(
+        path,
+        'Imported PDF',
+        pickedBytes: pickedBytes,
+      );
       expect(controller.pdfErrors, isEmpty);
       expect(identical(controller.file, tab), isTrue);
       expect(tab.pages, hasLength(3));

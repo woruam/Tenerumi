@@ -40,6 +40,7 @@ class _OpenPageState extends State<OpenPage> {
   List<String> tags = ['Tutti', 'Appunti', 'Scuola', 'Lavoro'];
   String selectedTag = 'Tutti';
   bool _deletingNote = false;
+  bool _openingFile = false;
 
   Future<void> _showNoteActions(Map<String, dynamic> entry) async {
     if (_deletingNote) return;
@@ -249,7 +250,32 @@ class _OpenPageState extends State<OpenPage> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => WorkspacePage(initialFile: file)),
-    ).then((_) => _loadRecentFiles());
+    ).then((_) {
+      if (mounted) _loadRecentFiles();
+    });
+  }
+
+  Future<void> _openDeviceFile() async {
+    if (_openingFile) return;
+    setState(() => _openingFile = true);
+    try {
+      final file = await XppFile.open(
+        (_) {},
+        (_) => FilePickerCross.importFromStorage(
+          type: FileTypeCross.custom,
+          fileExtension: 'pdf',
+        ),
+      );
+      if (mounted) _openFile(file);
+    } catch (error) {
+      if (mounted && error != 'No file selected.') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Impossibile aprire il file: $error')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _openingFile = false);
+    }
   }
 
   // --- FINESTRA DI DIALOGO PER CREARE LA NOTA (con scelta del modello) ---
@@ -911,6 +937,18 @@ class _OpenPageState extends State<OpenPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Align(
+            alignment: Alignment.centerRight,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              child: TextButton.icon(
+                key: const ValueKey('home-open-file'),
+                onPressed: _openingFile ? null : _openDeviceFile,
+                icon: const Icon(Icons.folder_open_outlined),
+                label: const Text('Apri file'),
+              ),
+            ),
+          ),
           if (CriticalData.warnings.isNotEmpty)
             MaterialBanner(
               content: Text(CriticalData.warnings.join('\n')),

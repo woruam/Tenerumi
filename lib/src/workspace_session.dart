@@ -81,7 +81,6 @@ class WorkspaceSession {
               null,
               (_) async => throw StateError('Sfondo mancante'),
             );
-            original.sourcePath = path;
             if (tab['localId'] is String) original.localId = localId;
           } catch (_) {}
         }

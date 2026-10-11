@@ -46,12 +46,23 @@ I messaggi di tree shaking delle icone sono normali ottimizzazioni della release
 
 ## Verifica ripetibile
 
-Stato di questa sessione: dipendenze finali risolte correttamente. La prima
-build e i test debug sono stati interrotti per rimuovere `printing` ed eseguire
-le verifiche in sequenza. La richiesta di avvio della build APK finale è stata
-rifiutata (`Rejected("rejected by user")`); **APK finale e test JVM non sono
-verificati**. I log con suffisso `-cancelled` documentano tentativi interrotti,
-non risultati positivi. Eseguire lo script seguente per completare la verifica.
+Verifica aggiornata all'11 ottobre 2026: `flutter build apk --release` è
+riuscito (exit code 0), producendo `build/app/outputs/flutter-apk/app-release.apk`
+(96,8 MB). Anche `:app:testReleaseUnitTest` è riuscito: tre test JVM release,
+zero errori e zero fallimenti (risultati XML dell'11 ottobre 2026, ore 18:46 CEST).
+La verifica precedente è documentata in [DEPENDENCY_UPGRADE.md](DEPENDENCY_UPGRADE.md).
+I log storici con suffisso
+`-cancelled` documentano tentativi interrotti, non risultati positivi.
+
+Il tentativo segnalato con ID `fdb983fc-63cb-4238-9d32-81d5cd69a67f`
+riportava «Gradle build daemon disappeared unexpectedly». Il log completo
+`daemon-10180.out.log` registra la cancellazione dei task `:app:packageRelease`
+e `:app:mergeReleaseNativeDebugMetadata`, seguita da `Connection reset by peer`;
+lo stesso daemon ha poi eseguito la build riuscita. La causa della cancellazione
+non è determinata e il log non prova un esaurimento della memoria o un crash
+della JVM. Il ripristino verificato è stato rieseguire `flutter build apk --release`.
+Gli avvisi sulla futura dismissione della toolchain e il tree shaking delle
+icone erano presenti anche nella build riuscita e non impediscono la compilazione.
 
 Eseguire `flutter build apk --release` per verificare l'intero grafo Android.
 Lo script `scripts/verify-android.ps1 -JavaHome '<cartella JDK>'` esegue

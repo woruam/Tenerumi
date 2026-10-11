@@ -60,7 +60,7 @@ Future<XppFile?> openSavedNote(BuildContext context) async {
       fileExtension: 'pdf',
     ),
   );
-  file.sourcePath = path;
+  // Xournal parsing retains its source; PDF import needs a new .xopp save.
   if (selected['localId'] is String)
     file.localId = selected['localId'] as String;
   file.title = selected['name'] as String? ?? file.title;

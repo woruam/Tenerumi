@@ -119,10 +119,16 @@ Future<XppPageSize> pdfPageSize(FilePickerCross pdf, int index) async {
   }
 }
 
-Future<List<XppPageSize>> pdfPageSizes(FilePickerCross pdf) async {
+Future<List<XppPageSize>> pdfPageSizes(
+  FilePickerCross pdf, {
+  DocumentLimits limits = DocumentLimits.standard,
+}) async {
   _validatePdfBytes(pdf);
   final doc = await openPdfData(pdf.toUint8List());
   try {
+    if (doc.pagesCount < 1 || doc.pagesCount > limits.pages) {
+      throw const FormatException('Troppe pagine nel PDF o PDF vuoto');
+    }
     return await pdfDocumentSizes(doc);
   } finally {
     await doc.close();

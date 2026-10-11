@@ -123,6 +123,15 @@ class FilePickerCross {
           .split(',')
           .map((e) => e.trim().replaceAll('.', ''))
           .toList();
+      // Android filters by MIME type, which has no standard entry for XOPP.
+      // A mixed XOPP/PDF filter otherwise silently becomes PDF-only. Let the
+      // document parser validate selected bytes, keeping PDF-only pickers exact.
+      if (!kIsWeb &&
+          defaultTargetPlatform == TargetPlatform.android &&
+          extensions.any((extension) => extension.toLowerCase() == 'xopp')) {
+        fileType = FileType.any;
+        extensions = null;
+      }
     }
     final file = await FilePicker.pickFile(
       type: fileType,
