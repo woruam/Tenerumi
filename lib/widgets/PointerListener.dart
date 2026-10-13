@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:xournalpp/layer_contents/XppStroke.dart';
 import 'package:xournalpp/layer_contents/XppTexImage.dart';
 import 'package:xournalpp/layer_contents/XppText.dart';
+import 'package:xournalpp/layer_contents/XppImage.dart';
 import 'package:xournalpp/src/ShapeRecognizer.dart';
 import 'package:xournalpp/src/ink_geometry.dart';
 import 'package:xournalpp/src/selection_clipboard.dart';
@@ -24,6 +25,8 @@ class PointerListener extends StatefulWidget {
   final void Function(Offset)? onListenAt;
   final void Function(Rect)? onFlashcardSelection;
   final bool readOnly;
+  final Future<XppImage?> Function(List<Offset>)? onCopyPdfRegion;
+  final Object? selectionIdentity;
   final Offset canvasOrigin;
   final Function(XppContent?)? onNewContent;
   final Function({int? device, PointerDeviceKind? kind})? onDeviceChange;
@@ -60,6 +63,8 @@ class PointerListener extends StatefulWidget {
   const PointerListener({
     Key? key,
     this.readOnly = false,
+    this.onCopyPdfRegion,
+    this.selectionIdentity,
     this.audio,
     this.onListenAt,
     this.onFlashcardSelection,
@@ -125,6 +130,9 @@ class PointerListenerState extends State<PointerListener> {
   bool poppedContentForCurrentPointer = false;
 
   List<Offset> _lassoPoints = [];
+  List<Offset>? _pdfPolygon;
+  int _selectionEpoch = 0;
+  bool _copyingPdf = false;
   List<XppContent> _selectedContent = [];
   Rect? _selectionRect;
   _SelectionDragMode _dragMode = _SelectionDragMode.none;
@@ -139,7 +147,8 @@ class PointerListenerState extends State<PointerListener> {
   void _startPasteHold(PointerDownEvent event) {
     _pasteHoldTimer?.cancel();
     _longPressConsumed = false;
-    if (event.kind != PointerDeviceKind.stylus ||
+    if (widget.readOnly ||
+        event.kind != PointerDeviceKind.stylus ||
         widget.toolData[event.kind] == EditingTool.FLASHCARD ||
         widget.clipboard?.hasContent != true ||
         widget.onPasteContent == null ||
@@ -163,6 +172,8 @@ class PointerListenerState extends State<PointerListener> {
   }
 
   void _clearSelection() {
+    _selectionEpoch++;
+    _pdfPolygon = null;
     _selectedContent.clear();
     _selectionRect = null;
     _moveSelectionArmed = false;
@@ -285,6 +296,12 @@ class PointerListenerState extends State<PointerListener> {
 
   @override
   void didUpdateWidget(covariant PointerListener oldWidget) {
+    if (oldWidget.selectionIdentity != widget.selectionIdentity) {
+      _clearSelection();
+      _lassoPoints.clear();
+      _dragMode = _SelectionDragMode.none;
+      _drawingPointer = null;
+    }
     if (oldWidget.toolData != widget.toolData) {
       _flashcardStart = null;
       _flashcardRect = null;
@@ -453,8 +470,15 @@ class PointerListenerState extends State<PointerListener> {
     final color = Theme.of(context).colorScheme.primary;
     final pageSize = _canvasSize;
     final columns = (pageSize.width / 48).floor().clamp(1, 4);
-    final barWidth = columns * 48.0;
-    final barHeight = (4 / columns).ceil() * 48.0;
+    final barWidth = _pdfPolygon != null
+        ? pageSize.width.clamp(48.0, 240.0)
+        : columns * 48.0;
+    final pdfActionWidth = min(192.0, barWidth);
+    final barHeight = _pdfPolygon != null
+        ? ((_selectedContent.isNotEmpty ? 1 : 0) +
+                  ((pdfActionWidth + 48) / barWidth).ceil()) *
+              48.0
+        : (4 / columns).ceil() * 48.0;
     final preferredTop = rect.top >= barHeight + 8
         ? rect.top - barHeight - 8
         : rect.bottom + 8;
@@ -504,44 +528,58 @@ class PointerListenerState extends State<PointerListener> {
             width: barWidth,
             child: Wrap(
               children: [
-                _CanvasActionButton(
-                  actionKey: const ValueKey('selection-delete'),
-                  icon: Icons.delete_outline,
-                  label: 'Elimina',
-                  onPressed: () {
-                    widget.onDeleteContent?.call(List.of(_selectedContent));
-                    setState(_clearSelection);
-                  },
-                ),
-                _CanvasActionButton(
-                  actionKey: const ValueKey('selection-copy'),
-                  icon: Icons.copy,
-                  label: 'Copia',
-                  onPressed: widget.clipboard == null
-                      ? null
-                      : () {
-                          if (widget.clipboard!.copy(
-                            _selectedContent,
-                            audio:
-                                widget.audio?.document.recordings ?? const {},
-                          )) {
-                            ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Selezione copiata. Tieni premuta la penna per incollare.',
+                if (_selectedContent.isNotEmpty && !widget.readOnly)
+                  _CanvasActionButton(
+                    actionKey: const ValueKey('selection-delete'),
+                    icon: Icons.delete_outline,
+                    label: 'Elimina',
+                    onPressed: () {
+                      widget.onDeleteContent?.call(List.of(_selectedContent));
+                      setState(_clearSelection);
+                    },
+                  ),
+                if (_selectedContent.isNotEmpty)
+                  _CanvasActionButton(
+                    actionKey: const ValueKey('selection-copy'),
+                    icon: Icons.copy,
+                    label: 'Copia',
+                    onPressed: widget.clipboard == null
+                        ? null
+                        : () {
+                            if (widget.clipboard!.copy(
+                              _selectedContent,
+                              audio:
+                                  widget.audio?.document.recordings ?? const {},
+                            )) {
+                              ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Selezione copiata. Tieni premuta la penna per incollare.',
+                                  ),
                                 ),
-                              ),
-                            );
-                          }
-                        },
-                ),
-                _CanvasActionButton(
-                  actionKey: const ValueKey('selection-move'),
-                  icon: Icons.open_with,
-                  label: 'Sposta',
-                  selected: _moveSelectionArmed,
-                  onPressed: () => setState(() => _moveSelectionArmed = true),
-                ),
+                              );
+                            }
+                          },
+                  ),
+                if (_pdfPolygon != null)
+                  _CanvasActionButton(
+                    actionKey: const ValueKey('selection-copy-pdf'),
+                    icon: Icons.picture_as_pdf_outlined,
+                    label: 'Copia porzione PDF',
+                    showLabel: true,
+                    labelWidth: pdfActionWidth,
+                    onPressed: _copyingPdf || widget.clipboard == null
+                        ? null
+                        : _copyPdfRegion,
+                  ),
+                if (_selectedContent.isNotEmpty && !widget.readOnly)
+                  _CanvasActionButton(
+                    actionKey: const ValueKey('selection-move'),
+                    icon: Icons.open_with,
+                    label: 'Sposta',
+                    selected: _moveSelectionArmed,
+                    onPressed: () => setState(() => _moveSelectionArmed = true),
+                  ),
                 _CanvasActionButton(
                   actionKey: const ValueKey('selection-done'),
                   icon: Icons.check,
@@ -608,7 +646,8 @@ class PointerListenerState extends State<PointerListener> {
         ((CanvasTouchScope.of(context)?.rejects(data) ?? false) ||
             data.radiusMajor > 28))
       return;
-    if (widget.readOnly) {
+    if (widget.readOnly &&
+        (widget.onCopyPdfRegion == null || !isSelect(data))) {
       widget.onDeviceChange?.call(device: data.device, kind: data.kind);
       return;
     }
@@ -679,7 +718,9 @@ class PointerListenerState extends State<PointerListener> {
 
     if ((isSelect(data) || _moveSelectionArmed) && drawingEnabled) {
       final position = _canvasPoint(data);
-      if (_selectionRect != null) {
+      if (_selectionRect != null &&
+          _selectedContent.isNotEmpty &&
+          !widget.readOnly) {
         final handle = Rect.fromCircle(
           center: _selectionRect!.bottomRight,
           radius: 24,
@@ -691,14 +732,16 @@ class PointerListenerState extends State<PointerListener> {
           _dragMode = _SelectionDragMode.move;
         } else {
           setState(() {
-            _selectedContent.clear();
-            _selectionRect = null;
+            _clearSelection();
             _lassoPoints = [position];
           });
           _dragMode = _SelectionDragMode.lasso;
         }
       } else {
-        setState(() => _lassoPoints = [position]);
+        setState(() {
+          _clearSelection();
+          _lassoPoints = [position];
+        });
         _dragMode = _SelectionDragMode.lasso;
       }
       _lastDragPosition = position;
@@ -764,6 +807,8 @@ class PointerListenerState extends State<PointerListener> {
           setState(() => _lassoPoints.add(position));
           break;
         case _SelectionDragMode.move:
+          _pdfPolygon = null;
+          _selectionEpoch++;
           final delta = position - _lastDragPosition!;
           if (delta == Offset.zero) break;
           _pasteHoldTimer?.cancel();
@@ -776,6 +821,8 @@ class PointerListenerState extends State<PointerListener> {
           _lastDragPosition = position;
           break;
         case _SelectionDragMode.resize:
+          _pdfPolygon = null;
+          _selectionEpoch++;
           final anchor = _selectionRect!.topLeft;
           final oldDistance = (_lastDragPosition! - anchor).distance;
           final newDistance = (position - anchor).distance;
@@ -953,7 +1000,9 @@ class PointerListenerState extends State<PointerListener> {
     setState(() => _lassoPoints.clear());
     if (lasso.length < 3) return;
 
-    final content = widget.getPageContent?.call() ?? [];
+    final content = widget.readOnly
+        ? <XppContent?>[]
+        : widget.getPageContent?.call() ?? [];
     final selected = <XppContent>[];
 
     for (final element in content) {
@@ -974,7 +1023,7 @@ class PointerListenerState extends State<PointerListener> {
       }
     }
 
-    if (selected.isEmpty) {
+    if (selected.isEmpty && widget.onCopyPdfRegion == null) {
       setState(() {
         _selectedContent.clear();
         _selectionRect = null;
@@ -982,7 +1031,52 @@ class PointerListenerState extends State<PointerListener> {
       return;
     }
 
-    setState(() => _selectContent(selected));
+    setState(() {
+      _selectionEpoch++;
+      _selectContent(selected);
+      _pdfPolygon = widget.onCopyPdfRegion != null ? lasso : null;
+      if (_pdfPolygon != null) {
+        final bounds = (Path()..addPolygon(lasso, true)).getBounds();
+        if (bounds.width >= 0.1 && bounds.height >= 0.1) {
+          _selectionRect = _selectionRect?.expandToInclude(bounds) ?? bounds;
+        } else {
+          _pdfPolygon = null;
+        }
+      }
+    });
+  }
+
+  Future<void> _copyPdfRegion() async {
+    final polygon = _pdfPolygon;
+    final copy = widget.onCopyPdfRegion;
+    final clipboard = widget.clipboard;
+    if (_copyingPdf || polygon == null || copy == null || clipboard == null)
+      return;
+    final epoch = _selectionEpoch;
+    setState(() => _copyingPdf = true);
+    try {
+      final image = await copy(List.of(polygon));
+      if (!mounted || epoch != _selectionEpoch || image == null) return;
+      if (clipboard.copy([image])) {
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Porzione PDF copiata. Tieni premuta la penna per incollare.',
+            ),
+          ),
+        );
+      }
+    } catch (error) {
+      if (mounted && epoch == _selectionEpoch) {
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+          SnackBar(
+            content: Text('Impossibile copiare la porzione PDF: $error'),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _copyingPdf = false);
+    }
   }
 
   static bool _pointInPolygon(Offset point, List<Offset> polygon) {
@@ -1357,6 +1451,7 @@ class _CanvasActionButton extends StatefulWidget {
   final VoidCallback? onPressed;
   final bool selected;
   final bool showLabel;
+  final double labelWidth;
 
   const _CanvasActionButton({
     required this.actionKey,
@@ -1365,6 +1460,7 @@ class _CanvasActionButton extends StatefulWidget {
     this.onPressed,
     this.selected = false,
     this.showLabel = false,
+    this.labelWidth = 160,
   });
 
   @override
@@ -1427,7 +1523,7 @@ class _CanvasActionButtonState extends State<_CanvasActionButton> {
             onTap: widget.onPressed,
             child: SizedBox(
               key: widget.actionKey,
-              width: widget.showLabel ? 160 : 48,
+              width: widget.showLabel ? widget.labelWidth : 48,
               height: 48,
               child: DecoratedBox(
                 decoration: BoxDecoration(

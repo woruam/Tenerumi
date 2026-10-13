@@ -74,7 +74,7 @@ class CanvasPage extends StatefulWidget {
   final Uint8List? pdfToImportBytes;
   // Callback per aprire un PDF in una scheda separata (gestita dalla WorkspacePage).
   final void Function(String pdfPath, String title, Uint8List pickedBytes)?
-      onOpenPdfInNewTab;
+  onOpenPdfInNewTab;
   // Controller esterno (fornito dal WorkspaceController in split). Se null, la pagina ne crea uno proprio.
   final CanvasController? controller;
   final TransformationController? zoomController;
@@ -100,6 +100,13 @@ class CanvasPage extends StatefulWidget {
 
 class CanvasPageState extends State<CanvasPage> {
   double? _pageDisplayWidth;
+  final Set<int> _activeInputs = {};
+
+  void _endInput(PointerEvent event) {
+    if (_activeInputs.remove(event.pointer)) {
+      _controller.endInput(event.pointer);
+    }
+  }
 
   double _layoutPageWidth(
     double viewportWidth,
@@ -177,6 +184,10 @@ class CanvasPageState extends State<CanvasPage> {
 
   @override
   void dispose() {
+    for (final pointer in _activeInputs) {
+      _controller.endInput(pointer);
+    }
+    _activeInputs.clear();
     _controller.pageNavigation.removeListener(_navigateToPage);
     _controller.suspendPdfRendering();
     if (widget.zoomController == null) _zoomController.dispose();
@@ -296,7 +307,13 @@ class CanvasPageState extends State<CanvasPage> {
                 : null,
             body: Listener(
               behavior: HitTestBehavior.translucent,
-              onPointerDown: (_) => widget.onFocus?.call(),
+              onPointerDown: (event) {
+                _activeInputs.add(event.pointer);
+                ctrl.beginInput(event.pointer);
+                widget.onFocus?.call();
+              },
+              onPointerUp: _endInput,
+              onPointerCancel: _endInput,
               child: Stack(
                 children: [
                   RawGestureDetector(
@@ -446,6 +463,20 @@ class CanvasPageState extends State<CanvasPage> {
                                                   region,
                                                 ),
                                             clipboard: ctrl.clipboard,
+                                            selectionIdentity:
+                                                ctrl.file!.pages![pageIndex],
+                                            onCopyPdfRegion:
+                                                ctrl
+                                                        .file!
+                                                        .pages![pageIndex]
+                                                        .background
+                                                    is XppBackgroundPdf
+                                                ? (polygon) =>
+                                                      ctrl.copyPdfRegion(
+                                                        pageIndex,
+                                                        polygon,
+                                                      )
+                                                : null,
                                             onPasteContent: (position) =>
                                                 ctrl.pasteSelection(
                                                   pageIndex,

@@ -134,23 +134,13 @@ abstract class XppStroke extends XppContent {
   Offset getOffset() {
     final samples = points;
     if (samples == null || samples.isEmpty) return Offset.zero;
-    var x = samples.first.x!, y = samples.first.y!;
-    for (final point in samples) {
-      if (point.x! < x) x = point.x!;
-      if (point.y! < y) y = point.y!;
-    }
-    return Offset(x, y);
+    return _sampleExtrema(samples).rect.topLeft;
   }
 
   Offset get bottomRight {
     final samples = points;
     if (samples == null || samples.isEmpty) return Offset.zero;
-    var x = samples.first.x!, y = samples.first.y!;
-    for (final point in samples) {
-      if (point.x! > x) x = point.x!;
-      if (point.y! > y) y = point.y!;
-    }
-    return Offset(x, y);
+    return _sampleExtrema(samples).rect.bottomRight;
   }
 
   // --- NUOVO METODO AD ALTE PRESTAZIONI ---
@@ -216,7 +206,7 @@ abstract class XppStroke extends XppContent {
       }
 
       // Usiamo il pittore esistente per disegnare DIRETTAMENTE sul Canvas
-      final painter = XppStrokePainter(
+      final painter = XppStrokePainter._committed(
         points: points,
         color: colorToUse,
         topLeft: offset, // Reuse the origin already calculated for this paint.
@@ -342,28 +332,13 @@ abstract class XppStroke extends XppContent {
         (points!.first.width ?? 2.5).clamp(1.0, double.infinity) / 2,
       );
     }
-    final samples = points!;
-    final first = samples.first;
-    var minX = first.x!, minY = first.y!;
-    var maxX = minX, maxY = minY;
-    double radius = 0;
-    // Scan extrema and pressure together. Recompute after any mutation rather
-    // than retaining geometry whose validity depends on mutable sample lists.
-    for (final point in samples) {
-      final x = point.x!, y = point.y!;
-      if (x < minX) minX = x;
-      if (y < minY) minY = y;
-      if (x > maxX) maxX = x;
-      if (y > maxY) maxY = y;
-      final r = isShape
-          ? (point.width ?? 2.5).clamp(1.0, double.infinity) / 2
-          : inkRadius(
-              point.width,
-              pressureSensitive: tool == XppStrokeTool.PEN,
-            );
-      if (r > radius) radius = r;
-    }
-    return Rect.fromLTRB(minX, minY, maxX, maxY).inflate(radius);
+    final extrema = _sampleExtrema(points!);
+    final radius = isShape
+        ? extrema.shapeRadius
+        : tool == XppStrokeTool.PEN
+        ? extrema.penRadius
+        : extrema.flatRadius;
+    return extrema.rect.inflate(radius);
   }
 
   @override
@@ -447,17 +422,27 @@ class XppStrokeHighlight extends XppStroke {
 
 // Committed freehand ink shares the live preview geometry.
 class XppStrokePainter extends CustomPainter {
+  @visibleForTesting
+  static int debugPathBuilds = 0;
+  @visibleForTesting
+  static int debugBoundsBuilds = 0;
+  @visibleForTesting
+  static int get debugRetainedSamples => _retainedSamples;
+  @visibleForTesting
+  static int get debugRetainedPaths => _workingPaths.length;
   final List<XppStrokePoint>? points;
   final Color? color;
   final Offset? topLeft;
   final bool? smoothPressure;
   final bool isComplete;
+  final bool _immutableSamples;
 
-  // Bound retained geometry across documents. Point identity checks invalidate
-  // edits, translations and resizes; snapshots only copy references.
-  static final _paths =
-      LinkedHashMap<List<XppStrokePoint>, _CachedInkPath>.identity();
-  static int _cachedSamples = 0;
+  // A bounded strong working set protects recently used paths. Evicted entries
+  // remain weakly discoverable until memory pressure collects them, avoiding
+  // sequential repaint thrash without retaining every visited document's paths.
+  static final _paths = Expando<WeakReference<_CachedInkPath>>();
+  static final _workingPaths = LinkedHashMap<_CachedInkPath, int>.identity();
+  static int _retainedSamples = 0;
   static const _maxCachedStrokes = 64;
   static const _maxCachedSamples = 25000;
 
@@ -467,27 +452,45 @@ class XppStrokePainter extends CustomPainter {
     this.topLeft,
     this.smoothPressure,
     this.isComplete = true,
-  });
+  }) : _immutableSamples = false;
+
+  XppStrokePainter._committed({
+    this.points,
+    this.color,
+    this.topLeft,
+    this.smoothPressure,
+  }) : isComplete = true,
+       _immutableSamples = true;
 
   @override
   void paint(Canvas canvas, Size size) {
     final samples = points;
     if (samples == null || samples.isEmpty) return;
     final pressureSensitive = smoothPressure == true;
-    var cached = _paths.remove(samples);
-    if (cached != null) _cachedSamples -= cached.samples.length;
-    if (cached == null || !cached.matches(samples, pressureSensitive)) {
-      cached = _CachedInkPath(samples, pressureSensitive);
+    var cached = _paths[samples]?.target;
+    if (cached == null ||
+        !cached.matches(
+          samples,
+          pressureSensitive,
+          immutable: _immutableSamples,
+        )) {
+      debugPathBuilds++;
+      cached = _CachedInkPath(
+        samples,
+        pressureSensitive,
+        immutable: _immutableSamples,
+      );
     }
     if (samples.length <= _maxCachedSamples) {
-      while (_paths.isNotEmpty &&
-          (_paths.length >= _maxCachedStrokes ||
-              _cachedSamples + samples.length > _maxCachedSamples)) {
-        final evicted = _paths.remove(_paths.keys.first)!;
-        _cachedSamples -= evicted.samples.length;
+      _paths[samples] = WeakReference(cached);
+      _retainedSamples -= _workingPaths.remove(cached) ?? 0;
+      while (_workingPaths.isNotEmpty &&
+          (_workingPaths.length >= _maxCachedStrokes ||
+              _retainedSamples + samples.length > _maxCachedSamples)) {
+        _retainedSamples -= _workingPaths.remove(_workingPaths.keys.first)!;
       }
-      _paths[samples] = cached;
-      _cachedSamples += cached.samples.length;
+      _workingPaths[cached] = samples.length;
+      _retainedSamples += samples.length;
     }
     final origin = topLeft ?? Offset.zero;
     canvas.save();
@@ -507,23 +510,31 @@ class XppStrokePainter extends CustomPainter {
 }
 
 class _CachedInkPath {
-  final List<XppStrokePoint> samples;
+  final List<XppStrokePoint>? samples;
   final bool pressureSensitive;
   final Path path;
 
-  _CachedInkPath(List<XppStrokePoint> points, this.pressureSensitive)
-    : samples = List.of(points),
-      path = inkStrokePath(
-        points.map((point) => (position: point.offset, width: point.width)),
-        pressureSensitive: pressureSensitive,
-      );
+  _CachedInkPath(
+    List<XppStrokePoint> points,
+    this.pressureSensitive, {
+    required bool immutable,
+  }) : samples = immutable ? null : List.of(points),
+       path = inkStrokePath(
+         points.map((point) => (position: point.offset, width: point.width)),
+         pressureSensitive: pressureSensitive,
+       );
 
-  bool matches(List<XppStrokePoint> points, bool pressureSensitive) {
-    if (this.pressureSensitive != pressureSensitive ||
-        samples.length != points.length)
-      return false;
-    for (var i = 0; i < samples.length; i++) {
-      if (!identical(samples[i], points[i])) return false;
+  bool matches(
+    List<XppStrokePoint> points,
+    bool pressureSensitive, {
+    required bool immutable,
+  }) {
+    if (this.pressureSensitive != pressureSensitive) return false;
+    if (immutable && samples == null) return true;
+    final previous = samples;
+    if (previous == null || previous.length != points.length) return false;
+    for (var i = 0; i < previous.length; i++) {
+      if (!identical(previous[i], points[i])) return false;
     }
     return true;
   }
@@ -634,6 +645,41 @@ double _segmentDistance(Offset a, Offset b, Offset c, Offset d) {
     math.min(_pointSegmentDistance(a, c, d), _pointSegmentDistance(b, c, d)),
     math.min(_pointSegmentDistance(c, a, b), _pointSegmentDistance(d, a, b)),
   );
+}
+
+// Only committed strokes use this cache: their point buffers and points are
+// immutable. Transformations replace the buffer, so history retains its bounds.
+final _extrema = Expando<_StrokeExtrema>();
+_StrokeExtrema _sampleExtrema(List<XppStrokePoint> points) =>
+    _extrema[points] ??= _StrokeExtrema(points);
+
+class _StrokeExtrema {
+  late final Rect rect;
+  double penRadius = 0, flatRadius = 0, shapeRadius = 0;
+  _StrokeExtrema(List<XppStrokePoint> points) {
+    XppStrokePainter.debugBoundsBuilds++;
+    var left = points.first.x!, top = points.first.y!;
+    var right = left, bottom = top;
+    for (final point in points) {
+      left = math.min(left, point.x!);
+      top = math.min(top, point.y!);
+      right = math.max(right, point.x!);
+      bottom = math.max(bottom, point.y!);
+      penRadius = math.max(
+        penRadius,
+        inkRadius(point.width, pressureSensitive: true),
+      );
+      flatRadius = math.max(
+        flatRadius,
+        inkRadius(point.width, pressureSensitive: false),
+      );
+      shapeRadius = math.max(
+        shapeRadius,
+        (point.width ?? 2.5).clamp(1.0, double.infinity) / 2,
+      );
+    }
+    rect = Rect.fromLTRB(left, top, right, bottom);
+  }
 }
 
 class XppStrokePoint {

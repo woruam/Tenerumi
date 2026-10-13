@@ -16,6 +16,7 @@ import 'package:xournalpp/plugins/plugin_controller.dart';
 import 'package:xournalpp/plugins/plugin_manager_page.dart';
 
 import 'layers_panel.dart';
+import 'add_page_button.dart';
 
 class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
   final GlobalKey penKey;
@@ -203,109 +204,57 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
             ),
             const SizedBox(height: 30, child: VerticalDivider(width: 20)),
 
-            AnimatedScale(
-              scale: stylusTool == EditingTool.STYLUS ? 1.15 : 1.0,
-              duration: const Duration(milliseconds: 150),
-              child: IconButton(
-                key: penKey,
-                style: IconButton.styleFrom(
-                  backgroundColor: ctrl.penColor.computeLuminance() < .15
-                      ? Colors.white24
-                      : Colors.transparent,
-                ),
-                icon: Icon(icons.pen, color: ctrl.penColor),
-                tooltip: 'Penna',
-                color: stylusTool == EditingTool.STYLUS
-                    ? Theme.of(context).colorScheme.primary
-                    : Colors.white54,
-                onPressed: () => stylusTool == EditingTool.STYLUS
-                    ? onPenTap()
-                    : onToolSelect(EditingTool.STYLUS),
-              ),
+            _ToolButton(
+              buttonKey: penKey,
+              name: 'Penna',
+              selected: stylusTool == EditingTool.STYLUS,
+              icon: Icon(icons.pen),
+              swatch: ctrl.penColor,
+              onPressed: () => stylusTool == EditingTool.STYLUS
+                  ? onPenTap()
+                  : onToolSelect(EditingTool.STYLUS),
             ),
-            AnimatedScale(
-              scale: stylusTool == EditingTool.HIGHLIGHT ? 1.15 : 1.0,
-              duration: const Duration(milliseconds: 150),
-              child: IconButton(
-                key: highlighterKey,
-                icon: Icon(icons.highlighter, color: ctrl.highlighterColor),
-                tooltip: 'Evidenziatore',
-                color: stylusTool == EditingTool.HIGHLIGHT
-                    ? Theme.of(context).colorScheme.primary
-                    : Colors.white54,
-                onPressed: () => stylusTool == EditingTool.HIGHLIGHT
-                    ? onHighlighterTap()
-                    : onToolSelect(EditingTool.HIGHLIGHT),
-              ),
+            _ToolButton(
+              buttonKey: highlighterKey,
+              name: 'Evidenziatore',
+              selected: stylusTool == EditingTool.HIGHLIGHT,
+              icon: Icon(icons.highlighter),
+              swatch: ctrl.highlighterColor,
+              onPressed: () => stylusTool == EditingTool.HIGHLIGHT
+                  ? onHighlighterTap()
+                  : onToolSelect(EditingTool.HIGHLIGHT),
             ),
-            AnimatedScale(
-              scale: ctrl.isShapeTool ? 1.15 : 1.0,
-              duration: const Duration(milliseconds: 150),
-              child: IconButton(
-                key: shapeKey,
-                icon: Icon(icons.shapes),
-                tooltip: 'Forme Geometriche',
-                color: ctrl.isShapeTool
-                    ? Theme.of(context).colorScheme.primary
-                    : Colors.white54,
-                onPressed: onShapeTap,
-              ),
+            _ToolButton(
+              buttonKey: shapeKey,
+              name: 'Forme Geometriche',
+              selected: ctrl.isShapeTool,
+              icon: Icon(icons.shapes),
+              onPressed: onShapeTap,
             ),
-            AnimatedScale(
-              scale: stylusTool == EditingTool.ERASER ? 1.15 : 1.0,
-              duration: const Duration(milliseconds: 150),
-              child: IconButton(
-                key: eraserKey,
-                icon: const FaIcon(FontAwesomeIcons.eraser),
-                tooltip: 'Gomma',
-                color: stylusTool == EditingTool.ERASER
-                    ? Theme.of(context).colorScheme.primary
-                    : Colors.white54,
-                onPressed: () => stylusTool == EditingTool.ERASER
-                    ? onEraserTap()
-                    : onToolSelect(EditingTool.ERASER),
-              ),
+            _ToolButton(
+              buttonKey: eraserKey,
+              name: 'Gomma',
+              selected: stylusTool == EditingTool.ERASER,
+              icon: const FaIcon(FontAwesomeIcons.eraser),
+              onPressed: () => stylusTool == EditingTool.ERASER
+                  ? onEraserTap()
+                  : onToolSelect(EditingTool.ERASER),
             ),
-            AnimatedScale(
-              scale: stylusTool == EditingTool.SELECT ? 1.15 : 1.0,
-              duration: const Duration(milliseconds: 150),
-              child: IconButton(
-                icon: Icon(icons.lasso),
-                tooltip: 'Lazo',
-                color: stylusTool == EditingTool.SELECT
-                    ? Theme.of(context).colorScheme.primary
-                    : Colors.white54,
-                onPressed: () => onToolSelect(EditingTool.SELECT),
-              ),
+            _ToolButton(
+              name: 'Lazo',
+              selected: stylusTool == EditingTool.SELECT,
+              icon: Icon(icons.lasso),
+              onPressed: () => onToolSelect(EditingTool.SELECT),
             ),
-            AnimatedScale(
-              scale: stylusTool == EditingTool.MOVE ? 1.15 : 1.0,
-              duration: const Duration(milliseconds: 150),
-              child: IconButton(
-                icon: Icon(icons.hand),
-                tooltip: 'Mano (Modalità Sicura)',
-                color: stylusTool == EditingTool.MOVE
-                    ? Theme.of(context).colorScheme.primary
-                    : Colors.white54,
-                onPressed: () => onToolSelect(EditingTool.MOVE),
-              ),
+            _ToolButton(
+              name: 'Mano (Modalità Sicura)',
+              selected: stylusTool == EditingTool.MOVE,
+              icon: Icon(icons.hand),
+              onPressed: () => onToolSelect(EditingTool.MOVE),
             ),
-
             const SizedBox(height: 30, child: VerticalDivider(width: 20)),
 
-            PopupMenuButton<bool>(
-              icon: Icon(icons.addPage),
-              tooltip: "Aggiungi Pagina",
-              enabled: ctrl.file?.pages?.firstOrNull?.infinite != true,
-              onSelected: (after) => ctrl.insertPage(after: after),
-              itemBuilder: (_) => const [
-                PopupMenuItem(
-                  value: false,
-                  child: Text("Pagina prima di questa"),
-                ),
-                PopupMenuItem(value: true, child: Text("Pagina dopo questa")),
-              ],
-            ),
+            AddPageButton(controller: ctrl, icon: icons.addPage),
 
             // --- IL TASTO PDF DIRETTAMENTE QUI, BEN VISIBILE ---
             IconButton(
@@ -318,8 +267,9 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
             ),
 
             if (plugins?.ankiEnabled == true) ...[
-              IconButton(
-                tooltip: ctrl.capturingFlashcard
+              _ToolButton(
+                selected: stylusTool == EditingTool.FLASHCARD,
+                name: ctrl.capturingFlashcard
                     ? 'Preparazione flashcard…'
                     : stylusTool == EditingTool.FLASHCARD
                     ? ctrl.flashcardFront == null
@@ -327,9 +277,6 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
                           : '2. Seleziona la risposta'
                     : 'Flashcard: doppia selezione',
                 icon: const Icon(Icons.crop_free),
-                color: stylusTool == EditingTool.FLASHCARD
-                    ? Theme.of(context).colorScheme.primary
-                    : null,
                 onPressed: ctrl.capturingFlashcard || ctrl.savingFile
                     ? null
                     : stylusTool == EditingTool.FLASHCARD
@@ -377,4 +324,65 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+}
+
+/// Tool selection is independent of ink colour and exposed to accessibility.
+class _ToolButton extends StatelessWidget {
+  final Key? buttonKey;
+  final String name;
+  final bool selected;
+  final Widget icon;
+  final Color? swatch;
+  final VoidCallback? onPressed;
+  const _ToolButton({
+    this.buttonKey,
+    required this.name,
+    required this.selected,
+    required this.icon,
+    this.swatch,
+    required this.onPressed,
+  });
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Semantics(
+      selected: selected,
+      child: IconButton(
+        key: buttonKey,
+        tooltip: name,
+        onPressed: onPressed,
+        style: IconButton.styleFrom(
+          foregroundColor: colors.onSurface,
+          backgroundColor: selected ? colors.surfaceContainerHighest : null,
+          side: BorderSide(
+            color: selected ? colors.onSurface : Colors.transparent,
+            width: 2,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        icon: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            icon,
+            if (swatch != null)
+              Positioned(
+                right: -4,
+                bottom: -4,
+                child: Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color: swatch,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: colors.onSurface),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
 }

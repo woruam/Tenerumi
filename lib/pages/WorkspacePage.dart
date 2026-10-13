@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:xournalpp/src/XppFile.dart';
+import 'package:xournalpp/src/XppBackground.dart';
 import 'package:xournalpp/pages/CanvasPage.dart';
 import 'package:xournalpp/controllers/theme_controller.dart';
 import 'package:xournalpp/controllers/workspace_controller.dart';
@@ -267,7 +268,9 @@ class _WorkspacePageState extends State<WorkspacePage>
 
   // Apre un PDF in una scheda separata, senza toccare i documenti gia' aperti.
   void _openPdfInNewTab(String pdfPath, String title, Uint8List pickedBytes) {
-    final XppFile f = XppFile.empty()..title = title;
+    final XppFile f = XppFile.empty(
+      template: (size) => XppBackgroundSolidPlain(size: size),
+    )..title = title;
     _pendingPdf[f] = (pdfPath, pickedBytes);
     _ws.addDocument(f);
     _ws.setPrimary(_ws.documents.length - 1);

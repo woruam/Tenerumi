@@ -13,6 +13,8 @@ import 'package:flutter/foundation.dart';
 import 'dart:math' as math;
 
 import 'package:xournalpp/src/pdf_raster_cache.dart';
+import 'package:xournalpp/src/pdf_selection.dart';
+import 'package:xournalpp/layer_contents/XppImage.dart';
 
 import 'dart:typed_data';
 
@@ -34,7 +36,7 @@ import 'package:xournalpp/src/document_limits.dart';
 import 'package:xournalpp/src/document_export.dart';
 import 'package:xournalpp/src/selection_clipboard.dart';
 import 'package:xournalpp/src/XppPage.dart';
-import 'package:xournalpp/src/XppPageSize.dart';
+import 'package:xournalpp/src/paper_template.dart';
 import 'package:xournalpp/src/globals.dart';
 import 'package:xournalpp/src/editing_tool.dart';
 import 'package:xournalpp/widgets/XppPageStack.dart';
@@ -191,6 +193,56 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
 
   Timer? _autosaveTimer;
   Timer? _autosaveDeadline;
+  Timer? _compactIdleTimer;
+  final Set<int> _activeInputPointers = {};
+  bool _inputInGrace = false;
+  bool _compactDeferred = false;
+  static const _compactInputGrace = Duration(milliseconds: 250);
+
+  /// Background checkpoints wait for a break in writing, zooming or panning.
+  /// Explicit flushes (save, lifecycle, close) always bypass this scheduling.
+  void beginInput(int pointer) {
+    if (_disposed || !autosaveEnabled) return;
+    _activeInputPointers.add(pointer);
+    _inputInGrace = true;
+    _compactIdleTimer?.cancel();
+  }
+
+  void endInput(int pointer) {
+    if (!_activeInputPointers.remove(pointer)) return;
+    if (_activeInputPointers.isEmpty) {
+      _scheduleCompactIdle();
+    }
+  }
+
+  void _scheduleCompactIdle() {
+    _compactIdleTimer?.cancel();
+    _inputInGrace = true;
+    _compactIdleTimer = Timer(_compactInputGrace, () {
+      _inputInGrace = false;
+      if (_compactDeferred) _scheduledCompact();
+    });
+  }
+
+  void _scheduledCompact() {
+    _autosaveDeadline?.cancel();
+    _autosaveDeadline = null;
+    if (_activeInputPointers.isNotEmpty || _inputInGrace) {
+      _compactDeferred = true;
+      // Keep the recovery deadline while avoiding preview/origin rewrites under
+      // the pen. The complete journal remains durable throughout a long gesture.
+      unawaited(flushAutosave(compact: false));
+      _autosaveDeadline = Timer(const Duration(seconds: 10), _scheduledCompact);
+      return;
+    }
+    _compactDeferred = false;
+    unawaited(_flushAutosave(compact: true, scheduledOnly: true));
+  }
+
+  void _deferScheduledCompaction() {
+    _compactDeferred = true;
+    _autosaveDeadline ??= Timer(const Duration(seconds: 10), _scheduledCompact);
+  }
   Future<void>? _autosaveQueue;
   int _checkpointRevision = -1;
   Uint8List? _checkpointPreview;
@@ -206,7 +258,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     );
     _autosaveDeadline ??= Timer(
       const Duration(seconds: 10),
-      () => unawaited(flushAutosave()),
+      _scheduledCompact,
     );
   }
 
@@ -217,9 +269,17 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     return await FilePickerCross.hashAt(path) != document.originHash;
   }
 
-  Future<void> flushAutosave({bool compact = true}) {
+  Future<void> flushAutosave({bool compact = true}) =>
+      _flushAutosave(compact: compact);
+
+  Future<void> _flushAutosave({required bool compact, bool scheduledOnly = false}) {
     _autosaveTimer?.cancel();
     if (compact) {
+      _compactDeferred = false;
+      if (!scheduledOnly) {
+        _compactIdleTimer?.cancel();
+        _inputInGrace = false;
+      }
       _autosaveDeadline?.cancel();
       _autosaveDeadline = null;
     }
@@ -237,15 +297,27 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
       autosaving = true;
       notifyListeners();
       try {
+        final deferCompact = compact && scheduledOnly &&
+            (_activeInputPointers.isNotEmpty || _inputInGrace);
+        if (deferCompact) _deferScheduledCompaction();
         final snapshot = document.snapshot();
-        if (!compact) {
+        Future<void> secureJournal() async {
           await AutosaveStore.saveIncremental(snapshot);
           await audio.acknowledge(snapshot.recordings.keys);
           lastAutosave = DateTime.now();
           autosaveError = null;
+        }
+        if (!compact || deferCompact) {
+          await secureJournal();
           return;
         }
         await _preparePreview(snapshot);
+        // Input can also begin while an asynchronous PDF preview is rendering.
+        if (scheduledOnly && (_activeInputPointers.isNotEmpty || _inputInGrace)) {
+          _deferScheduledCompaction();
+          await secureJournal();
+          return;
+        }
         final bytes = await snapshot.serializeSnapshotAsync();
         if (_discardRecovery) return;
         await AutosaveStore.save(snapshot, bytes);
@@ -295,6 +367,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     _discardRecovery = true;
     _autosaveTimer?.cancel();
     _autosaveDeadline?.cancel();
+    _compactIdleTimer?.cancel();
     if (_autosaveQueue != null) await _autosaveQueue;
     if (file != null) await AutosaveStore.remove(file!.recoveryKey);
   }
@@ -464,6 +537,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   void dispose() {
     _autosaveTimer?.cancel();
     _autosaveDeadline?.cancel();
+    _compactIdleTimer?.cancel();
     _eraserBounds.clear();
     WidgetsBinding.instance.removeObserver(this);
     if (file != null) {
@@ -641,6 +715,32 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     if (_disposed) throw StateError('Documento chiuso');
     final source = file!.pages![index].background as XppBackgroundPdf;
     return _openPdf(source.filename!);
+  }
+
+  Future<XppImage?> copyPdfRegion(int index, List<Offset> polygon) async {
+    if (_disposed || index < 0 || index >= (file?.pages?.length ?? 0)) return null;
+    final document = file;
+    final page = document!.pages![index];
+    final background = page.background;
+    if (background is! XppBackgroundPdf || background.filename == null) return null;
+    if (polygon.length < 3 || polygon.length > 20000 ||
+        polygon.any((p) => !p.dx.isFinite || !p.dy.isFinite)) return null;
+    final pageSize = page.pageSize;
+    if (pageSize == null) return null;
+    final filename = background.filename;
+    final sourcePage = background.page;
+    final epoch = _pdfEpoch;
+    final selection = List<Offset>.of(polygon);
+    bool current() => !_disposed && identical(file, document) &&
+        epoch == _pdfEpoch && index < document.pages!.length &&
+        identical(document.pages![index], page) && identical(page.background, background) &&
+        identical(page.pageSize, pageSize) && background.filename == filename &&
+        background.page == sourcePage;
+    final raster = await _rasterPdfBackground(background, pixelBudget: 4000000);
+    if (!current() || raster == null) return null;
+    final image = await cropPdfSelection(
+      raster, pageSize.toSize(), selection);
+    return current() ? image : null;
   }
 
   Future<Uint8List?> rasterPdfPage(int index) async {
@@ -1559,16 +1659,18 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   void addPage() => insertPage(after: true);
-  void insertPage({required bool after}) => insertBlankPage(
+  void insertPage({required bool after, PaperSettings? paper}) => insertBlankPage(
     activePageIndex + (after ? 1 : 0),
     reference: activePageIndex,
     navigate: true,
+    paper: paper,
   );
 
   void insertBlankPage(
     int at, {
     required int reference,
     bool navigate = false,
+    PaperSettings? paper,
   }) {
     final pages = file?.pages;
     if (_disposed ||
@@ -1577,16 +1679,11 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
         pages.any((p) => p.infinite) ||
         pages.length >= 10000)
       return;
-    final previous = pages[reference.clamp(0, pages.length - 1)];
-    final size = XppPageSize(
-      width: previous.pageSize!.width,
-      height: previous.pageSize!.height,
-    );
+    final chosen = paper ?? file!.defaultPaper;
+    final size = chosen.size;
     final page = XppPage.empty(
       pageSize: size,
-      template:
-          _cloneBackgroundForNewPage(previous.background, size) ??
-          XppBackgroundSolidLined(color: Colors.white, size: size),
+      template: chosen.build(),
     );
     at = at.clamp(0, pages.length);
     // Index changes preserve layer selection and existing ink undo history.
@@ -1649,36 +1746,6 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
       insertBlankPage(file!.pages!.length, reference: page);
       _lastAutomaticBlank = file!.pages!.last;
     }
-  }
-
-  /// Ricrea lo stesso tipo di sfondo della pagina precedente, adattato alla
-  /// nuova dimensione. Le pagine con sfondo PDF/immagine restituiscono null.
-  XppBackground? _cloneBackgroundForNewPage(
-    XppBackground? prev,
-    XppPageSize size,
-  ) {
-    if (prev is XppBackgroundNothingDark) {
-      return XppBackgroundNothingDark(size: size);
-    }
-    if (prev is XppBackgroundNothingLight) {
-      return XppBackgroundNothingLight(size: size);
-    }
-    if (prev is XppBackgroundSolidLined) {
-      return XppBackgroundSolidLined(color: prev.color, size: size);
-    }
-    if (prev is XppBackgroundSolidRuled) {
-      return XppBackgroundSolidRuled(color: prev.color, size: size);
-    }
-    if (prev is XppBackgroundSolidGraph) {
-      return XppBackgroundSolidGraph(color: prev.color, size: size);
-    }
-    if (prev is XppBackgroundSolidDot) {
-      return XppBackgroundSolidDot(color: prev.color, size: size);
-    }
-    if (prev is XppBackgroundSolidPlain) {
-      return XppBackgroundSolidPlain(color: prev.color, size: size);
-    }
-    return null;
   }
 
   Color getCurrentToolColor() =>

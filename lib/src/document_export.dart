@@ -125,7 +125,8 @@ Future<PreparedPdf> prepareNotesPdf(
   for (final page in pages) {
     if (page.background is XppBackgroundPdf ||
         page.background is XppBackgroundImage ||
-        page.background is XppBackgroundSolidDot)
+        page.background is XppBackgroundSolidDot ||
+        page.background is XppBackgroundSmith)
       backgroundCount++;
     for (final item
         in page.layers?.expand((l) => l.content ?? <XppContent?>[]) ??
@@ -158,9 +159,10 @@ Future<PreparedPdf> prepareNotesPdf(
         }
       }
       final parts = <Map<String, Object>>[];
-      if (page.background is XppBackgroundSolidDot) {
-        // This legacy template has ~160000 dots/A4. Keep its bounded raster;
-        // emitting every dot would inflate CPU/memory while ink stays vector.
+      if (page.background is XppBackgroundSolidDot ||
+          page.background is XppBackgroundSmith) {
+        // Dense dots and the Smith chart share the editor's bounded painter;
+        // ink remains vector and the chart has identical clipped geometry.
         parts.add({
           'png': await rasterizeExportPage(
             XppPage(
@@ -610,7 +612,11 @@ void _paintPdfPaper(
     canvas.setStrokeColor(PdfColor.fromInt(0xff9e9e9e));
     canvas.setFillColor(PdfColor.fromInt(0xff9e9e9e));
     canvas.setLineWidth(1);
-    final spacing = kind == 'lines' ? 24.0 : XppPageSize.pt2mm(5);
+    final spacing = kind == 'lines'
+        ? 24.0
+        : kind == 'graph'
+        ? graphPaperSpacing
+        : XppPageSize.pt2mm(5);
     for (double y = spacing; y < height; y += spacing) {
       if (kind == 'dot') {
         for (double x = spacing; x < width; x += spacing) {

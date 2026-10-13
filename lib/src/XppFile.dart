@@ -4,6 +4,7 @@ import 'package:crypto/crypto.dart';
 
 import 'note_audio.dart';
 import 'note_flashcards.dart';
+import 'paper_template.dart';
 import 'document_limits.dart';
 import 'bounded_archive.dart';
 import 'compat/xml_compression_web.dart'
@@ -48,6 +49,7 @@ class XppFile {
     this.modifiedAt,
     this.tag,
     this.autoGeneratePages = false,
+    PaperSettings? defaultPaper,
     String? documentId,
     String? localId,
     this.originHash,
@@ -67,7 +69,13 @@ class XppFile {
        importWarnings = importWarnings ?? [],
        pdfAttachments = pdfAttachments ?? {},
        recordings = recordings ?? {},
-       flashcards = flashcards ?? {};
+       flashcards = flashcards ?? {},
+       defaultPaper =
+           defaultPaper ??
+           PaperSettings.fromBackground(
+             pages?.firstOrNull?.background,
+             pages?.firstOrNull?.pageSize,
+           );
   final String documentId;
   String localId;
   String? originHash;
@@ -89,6 +97,7 @@ class XppFile {
   DateTime? modifiedAt;
   String? tag;
   bool autoGeneratePages;
+  final PaperSettings defaultPaper;
   int importedXmlBytes = 0,
       importedMediaBytes = 0,
       importedNodes = 0,
@@ -133,9 +142,14 @@ class XppFile {
     }
     final sizes = await pdfPageSizes(pdf, limits: limits);
     final pdfName = pdf.path ?? 'background.pdf';
-    XppFile file = XppFile.empty(title: titleFromPath(pdf.fileName))
-      ..autoGeneratePages = false
-      ..pages!.clear();
+    XppFile file =
+        XppFile.empty(
+            title: titleFromPath(pdf.fileName),
+            pageSize: sizes.first,
+            template: (size) => XppBackgroundSolidPlain(size: size),
+          )
+          ..autoGeneratePages = false
+          ..pages!.clear();
     file.pdfAttachments[pdfName] = bytes;
     Future<FilePickerCross> onUnavailable(String? p) async => pdf;
 
@@ -312,6 +326,7 @@ class XppFile {
       'osipp-id',
       'osipp-tag',
       'osipp-auto-pages',
+      'osipp-default-paper',
       'osipp-modified-at',
     });
     final version = documentTree.getAttribute('fileversion');
@@ -397,6 +412,7 @@ class XppFile {
           'pageno',
           'style',
           'color',
+          'osipp-template',
         });
         switch (backgroundElement.getAttribute('type')) {
           case "pixmap":
@@ -474,6 +490,14 @@ class XppFile {
         }
       }
 
+      if (backgroundElement?.getAttribute('osipp-template') == 'smith' &&
+          background is XppBackgroundSolid) {
+        background = XppBackgroundSmith(
+          size: pageSize,
+          color: background.color,
+        );
+      }
+
       List<XppLayer> layers = [];
       for (final child in pageElement.childElements) {
         if (!['background', 'layer'].contains(child.name.local))
@@ -513,159 +537,177 @@ class XppFile {
             warn('Contenuto del livello non supportato: ${node.name.local}');
           if (node.name.qualified != node.name.local) continue;
           switch (node.name.local) {
-            case 'image': {
-              final imageElement = node;
-              _validateImageRectangle(imageElement);
-              content.add(XppImage(
-                data: budget.media(imageElement.innerText.trim()),
-                topLeft: Offset(
-                  documentNumber(imageElement.getAttribute('left')),
-                  documentNumber(imageElement.getAttribute('top')),
-                ),
-                bottomRight: Offset(
-                  documentNumber(imageElement.getAttribute('right')),
-                  documentNumber(imageElement.getAttribute('bottom')),
-                ),
-              ));
-              break;
-            }
-            case 'text': {
-              final textElement = node;
-              Color color = parseColor(textElement.getAttribute('color'));
-              content.add(XppText(
-                color: color,
-                text: textElement.innerText,
-                size: XppPageSize.pt2mm(
-                  documentNumber(
-                    textElement.getAttribute('size'),
-                    min: 0.01,
-                    max: 1000,
-                  ),
-                ),
-                fontFamily: textElement.getAttribute('font'),
-                offset: Offset(
-                  documentNumber(textElement.getAttribute('x')),
-                  documentNumber(textElement.getAttribute('y')),
-                ),
-              ));
-              break;
-            }
-            case 'teximage': {
-              final texElement = node;
-              // Older OSI formulas use right=bottom=0 for automatic text bounds.
-              final left = documentNumber(texElement.getAttribute('left'));
-              final top = documentNumber(texElement.getAttribute('top'));
-              var right = documentNumber(texElement.getAttribute('right'));
-              var bottom = documentNumber(texElement.getAttribute('bottom'));
-              if (right == 0 && bottom == 0) {
-                final length = (texElement.getAttribute('text') ?? '').length;
-                right = documentNumber('${left + math.max(1, length) * 10}');
-                bottom = documentNumber('${top + 24}');
-              }
-              if (right <= left || bottom <= top) {
-                throw const FormatException('Rettangolo della formula non valido');
-              }
-              content.add(XppTexImage(
-                text: texElement.getAttribute('text')!.trim(),
-                color: parseColor(texElement.getAttribute('color')!.trim()),
-                topLeft: Offset(left, top),
-                bottomRight: Offset(right, bottom),
-              ));
-              break;
-            }
-            case 'stroke': {
-              final strokeElement = node;
-              late XppStrokeTool tool;
-              switch (strokeElement.getAttribute('tool')) {
-                case "pen":
-                  tool = XppStrokeTool.PEN;
-                  break;
-                case "eraser":
-                  warn('Cancellatura whiteout non supportata');
-                  continue;
-                case "highlighter":
-                  tool = XppStrokeTool.HIGHLIGHTER;
-                  break;
-                default:
-                  warn('Strumento del tratto non supportato');
-                  continue;
-              }
-              Color color = parseColor(strokeElement.getAttribute('color'));
-              List<XppStrokePoint> points = [];
-              final tokens = RegExp(r'\S+');
-              final widths = <double>[];
-              for (final token in tokens.allMatches(
-                strokeElement.getAttribute('width') ?? '',
-              )) {
-                if (widths.length >= limits.points - budget.pointCount + 1) {
-                  throw const FormatException('Troppi spessori nel tratto');
-                }
-                widths.add(
-                  documentNumber(
-                    token.group(0),
-                    min: 0,
-                    max: DocumentLimits.maxWidth,
+            case 'image':
+              {
+                final imageElement = node;
+                _validateImageRectangle(imageElement);
+                content.add(
+                  XppImage(
+                    data: budget.media(imageElement.innerText.trim()),
+                    topLeft: Offset(
+                      documentNumber(imageElement.getAttribute('left')),
+                      documentNumber(imageElement.getAttribute('top')),
+                    ),
+                    bottomRight: Offset(
+                      documentNumber(imageElement.getAttribute('right')),
+                      documentNumber(imageElement.getAttribute('bottom')),
+                    ),
                   ),
                 );
+                break;
               }
-              if (widths.isEmpty) {
-                throw const FormatException('Spessore del tratto mancante');
+            case 'text':
+              {
+                final textElement = node;
+                Color color = parseColor(textElement.getAttribute('color'));
+                content.add(
+                  XppText(
+                    color: color,
+                    text: textElement.innerText,
+                    size: XppPageSize.pt2mm(
+                      documentNumber(
+                        textElement.getAttribute('size'),
+                        min: 0.01,
+                        max: 1000,
+                      ),
+                    ),
+                    fontFamily: textElement.getAttribute('font'),
+                    offset: Offset(
+                      documentNumber(textElement.getAttribute('x')),
+                      documentNumber(textElement.getAttribute('y')),
+                    ),
+                  ),
+                );
+                break;
               }
-              final coordinates = tokens
-                  .allMatches(strokeElement.innerText)
-                  .iterator;
-              while (coordinates.moveNext()) {
-                final x = documentNumber(coordinates.current.group(0));
-                if (!coordinates.moveNext()) {
+            case 'teximage':
+              {
+                final texElement = node;
+                // Older OSI formulas use right=bottom=0 for automatic text bounds.
+                final left = documentNumber(texElement.getAttribute('left'));
+                final top = documentNumber(texElement.getAttribute('top'));
+                var right = documentNumber(texElement.getAttribute('right'));
+                var bottom = documentNumber(texElement.getAttribute('bottom'));
+                if (right == 0 && bottom == 0) {
+                  final length = (texElement.getAttribute('text') ?? '').length;
+                  right = documentNumber('${left + math.max(1, length) * 10}');
+                  bottom = documentNumber('${top + 24}');
+                }
+                if (right <= left || bottom <= top) {
+                  throw const FormatException(
+                    'Rettangolo della formula non valido',
+                  );
+                }
+                content.add(
+                  XppTexImage(
+                    text: texElement.getAttribute('text')!.trim(),
+                    color: parseColor(texElement.getAttribute('color')!.trim()),
+                    topLeft: Offset(left, top),
+                    bottomRight: Offset(right, bottom),
+                  ),
+                );
+                break;
+              }
+            case 'stroke':
+              {
+                final strokeElement = node;
+                late XppStrokeTool tool;
+                switch (strokeElement.getAttribute('tool')) {
+                  case "pen":
+                    tool = XppStrokeTool.PEN;
+                    break;
+                  case "eraser":
+                    warn('Cancellatura whiteout non supportata');
+                    continue;
+                  case "highlighter":
+                    tool = XppStrokeTool.HIGHLIGHTER;
+                    break;
+                  default:
+                    warn('Strumento del tratto non supportato');
+                    continue;
+                }
+                Color color = parseColor(strokeElement.getAttribute('color'));
+                List<XppStrokePoint> points = [];
+                final tokens = RegExp(r'\S+');
+                final widths = <double>[];
+                for (final token in tokens.allMatches(
+                  strokeElement.getAttribute('width') ?? '',
+                )) {
+                  if (widths.length >= limits.points - budget.pointCount + 1) {
+                    throw const FormatException('Troppi spessori nel tratto');
+                  }
+                  widths.add(
+                    documentNumber(
+                      token.group(0),
+                      min: 0,
+                      max: DocumentLimits.maxWidth,
+                    ),
+                  );
+                }
+                if (widths.isEmpty) {
+                  throw const FormatException('Spessore del tratto mancante');
+                }
+                final coordinates = tokens
+                    .allMatches(strokeElement.innerText)
+                    .iterator;
+                while (coordinates.moveNext()) {
+                  final x = documentNumber(coordinates.current.group(0));
+                  if (!coordinates.moveNext()) {
+                    throw const FormatException('Coordinate incomplete');
+                  }
+                  final y = documentNumber(coordinates.current.group(0));
+                  budget.points(1); // Check before allocating another point.
+                  final index = points.length;
+                  if (index % 1024 == 0) budget.checkTime();
+                  points.add(
+                    XppStrokePoint(
+                      width: index < widths.length
+                          ? widths[index]
+                          : widths.first,
+                      x: x,
+                      y: y,
+                    ),
+                  );
+                }
+                if (points.isEmpty) {
                   throw const FormatException('Coordinate incomplete');
                 }
-                final y = documentNumber(coordinates.current.group(0));
-                budget.points(1); // Check before allocating another point.
-                final index = points.length;
-                if (index % 1024 == 0) budget.checkTime();
-                points.add(
-                  XppStrokePoint(
-                    width: index < widths.length ? widths[index] : widths.first,
-                    x: x,
-                    y: y,
-                  ),
-                );
-              }
-              if (points.isEmpty) {
-                throw const FormatException('Coordinate incomplete');
-              }
-              if (widths.length > points.length + 1) {
-                throw const FormatException('Troppi spessori nel tratto');
-              }
-              final stroke = XppStroke.byTool(
-                    tool: tool,
-                    color: color,
-                    points: points,
-                    isShape: strokeElement.getAttribute('osipp-shape') == 'true',
-                    smooth: strokeElement.getAttribute('osipp-smooth') == 'true',
-                  )
-                  ..audioLink = StrokeAudioLink.decode(
-                    strokeElement,
-                    points.length,
-                  )
-                  ..erasures = StrokeErasure.decode(
-                    strokeElement.getAttribute('osipp-erasures'),
+                if (widths.length > points.length + 1) {
+                  throw const FormatException('Troppi spessori nel tratto');
+                }
+                final stroke =
+                    XppStroke.byTool(
+                        tool: tool,
+                        color: color,
+                        points: points,
+                        isShape:
+                            strokeElement.getAttribute('osipp-shape') == 'true',
+                        smooth:
+                            strokeElement.getAttribute('osipp-smooth') ==
+                            'true',
+                      )
+                      ..audioLink = StrokeAudioLink.decode(
+                        strokeElement,
+                        points.length,
+                      )
+                      ..erasures = StrokeErasure.decode(
+                        strokeElement.getAttribute('osipp-erasures'),
+                      );
+                budget.points(stroke.erasures.length);
+                for (final erasure in stroke.erasures) {
+                  documentNumber('${erasure.start.dx}');
+                  documentNumber('${erasure.start.dy}');
+                  documentNumber('${erasure.end.dx}');
+                  documentNumber('${erasure.end.dy}');
+                  documentNumber(
+                    '${erasure.radius}',
+                    min: 0.001,
+                    max: DocumentLimits.maxWidth,
                   );
-              budget.points(stroke.erasures.length);
-              for (final erasure in stroke.erasures) {
-                documentNumber('${erasure.start.dx}');
-                documentNumber('${erasure.start.dy}');
-                documentNumber('${erasure.end.dx}');
-                documentNumber('${erasure.end.dy}');
-                documentNumber(
-                  '${erasure.radius}',
-                  min: 0.001,
-                  max: DocumentLimits.maxWidth,
-                );
+                }
+                content.add(stroke);
+                break;
               }
-              content.add(stroke);
-              break;
-            }
           }
         }
 
@@ -689,12 +731,23 @@ class XppFile {
     }
 
     if (pages.isEmpty) throw const FormatException('Documento senza pagine');
+    PaperSettings? defaultPaper;
+    final storedPaper = documentTree.getAttribute('osipp-default-paper');
+    if (storedPaper != null) {
+      try {
+        if (storedPaper.length <= 1024) {
+          defaultPaper = PaperSettings.fromMap(jsonDecode(storedPaper));
+        }
+      } catch (_) {}
+      if (defaultPaper == null) warn('Modello pagina predefinito non valido');
+    }
     final cards = NoteFlashcard.decode(cardElements, warnings: warnings);
     final recordings = NoteRecording.decode(audioElements);
     if (recordings.length != audioElements.length)
       warn('Audio recuperato solo parzialmente');
     return XppFile(
         documentId: documentTree.getAttribute('osipp-id'),
+        defaultPaper: defaultPaper,
         tag: documentTree.getAttribute('osipp-tag'),
         autoGeneratePages:
             documentTree.getAttribute('osipp-auto-pages') == 'true' ||
@@ -780,6 +833,10 @@ class XppFile {
       XmlAttribute(XmlName('fileversion'), '4'),
       XmlAttribute(XmlName('osipp-id'), documentId),
       XmlAttribute(XmlName('osipp-auto-pages'), '$autoGeneratePages'),
+      XmlAttribute(
+        XmlName('osipp-default-paper'),
+        jsonEncode(defaultPaper.toMap()),
+      ),
       if (tag != null) XmlAttribute(XmlName('osipp-tag'), tag!),
       if (modifiedAt != null)
         XmlAttribute(
@@ -855,7 +912,9 @@ class XppFile {
         yield page.background!.toXmlElement().toXmlString();
       }
       for (final layer in page.layers!) {
-        final layerTag = layer.toXmlElement(includeChildren: false).toXmlString();
+        final layerTag = layer
+            .toXmlElement(includeChildren: false)
+            .toXmlString();
         final contents = (layer.content ?? []).whereType<XppContent>();
         if (contents.isEmpty) {
           yield layerTag;
@@ -943,6 +1002,7 @@ class XppFile {
       modifiedAt: modifiedAt,
       tag: tag,
       autoGeneratePages: autoGeneratePages,
+      defaultPaper: defaultPaper,
       sourcePath: sourcePath,
       title: title,
       previewImage: previewImage,

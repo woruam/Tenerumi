@@ -674,6 +674,7 @@ class NoteBackup {
           tag: source.tag,
           modifiedAt: source.modifiedAt,
           autoGeneratePages: source.autoGeneratePages,
+          defaultPaper: source.defaultPaper,
           previewImage: source.previewImage,
           documentId: note.payloadPath == null ? null : source.documentId,
           pages: source.pages,

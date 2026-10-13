@@ -410,9 +410,14 @@ void main() {
       await capture(tester, key, 'osi-sidebar-layers');
       ctrl.file!.autoGeneratePages = false;
       ctrl.addNewContent(0, stroke());
-      await tester.tap(find.byTooltip('Aggiungi Pagina'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Pagina dopo questa'));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(DocumentNavigator),
+          matching: find.byTooltip(
+            'Aggiungi pagina · tieni premuto per scegliere',
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
       expect(ctrl.file!.pages, hasLength(2));
       expect(ctrl.activePageIndex, 1);

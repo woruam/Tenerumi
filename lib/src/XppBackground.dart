@@ -1,5 +1,7 @@
 import 'dart:typed_data';
+
 import 'package:xournalpp/widgets/bounded_image.dart';
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -10,6 +12,9 @@ import 'package:xournalpp/src/XppPageSize.dart';
 
 // Definizione unica
 typedef Future<FilePickerCross> FileNotAvailableCallback(String? path);
+
+/// Document geometry is measured in PDF points; squared paper uses 10 mm cells.
+const double graphPaperSpacing = 72.0 * 10.0 / 25.4;
 
 abstract class XppBackground {
   XppBackgroundType? type;
@@ -170,6 +175,23 @@ class XppBackgroundSolidGraph extends XppBackgroundSolid {
   XmlElement toXmlElement() => generateXmlElement('graph');
 }
 
+/// Normalized impedance Smith chart. Desktop readers retain a plain fallback.
+class XppBackgroundSmith extends XppBackgroundSolid {
+  XppBackgroundSmith({super.color, super.size});
+  @override
+  Widget render() => Container(
+    color: color,
+    child: CustomPaint(
+      painter: _SmithPainter(color: color),
+      size: size?.toSize() ?? Size.zero,
+    ),
+  );
+  @override
+  XmlElement toXmlElement() =>
+      generateXmlElement('plain')
+        ..attributes.add(XmlAttribute(XmlName('osipp-template'), 'smith'));
+}
+
 class XppBackgroundSolidDot extends XppBackgroundSolid {
   XppBackgroundSolidDot({super.color, super.size});
   @override
@@ -256,6 +278,7 @@ void paintPaperBackground(Canvas canvas, Size size, XppBackground? background) {
     XppBackgroundSolidLined() => _LinePainter(),
     XppBackgroundSolidRuled() => _RuledPainter(),
     XppBackgroundSolidGraph() => _GraphPainter(),
+    XppBackgroundSmith() => _SmithPainter(color: background.color),
     XppBackgroundSolidDot() => _DotPainter(),
     XppBackgroundNothingDark() => _NothingMatrixPainter(
       dotColor: Colors.white.withValues(alpha: .18),
@@ -340,25 +363,25 @@ class _GraphPainter extends CustomPainter {
     // 1 because no line at the top
     final clip = _paperClip(canvas, size);
     for (
-      int i = math.max(1, (clip.top / XppPageSize.pt2mm(5)).floor());
-      i < clip.bottom / XppPageSize.pt2mm(5);
+      int i = math.max(1, (clip.top / graphPaperSpacing).floor());
+      i < clip.bottom / graphPaperSpacing;
       i++
     ) {
       canvas.drawLine(
-        Offset(0, i * XppPageSize.pt2mm(5).toDouble()),
-        Offset(size.width, i * XppPageSize.pt2mm(5).toDouble()),
+        Offset(0, i * graphPaperSpacing),
+        Offset(size.width, i * graphPaperSpacing),
         paint,
       );
     }
     // 1 because no line at the beginning
     for (
-      int i = math.max(1, (clip.left / XppPageSize.pt2mm(5)).floor());
-      i < clip.right / XppPageSize.pt2mm(5);
+      int i = math.max(1, (clip.left / graphPaperSpacing).floor());
+      i < clip.right / graphPaperSpacing;
       i++
     ) {
       canvas.drawLine(
-        Offset(i * XppPageSize.pt2mm(5).toDouble(), 0),
-        Offset(i * XppPageSize.pt2mm(5).toDouble(), size.height),
+        Offset(i * graphPaperSpacing, 0),
+        Offset(i * graphPaperSpacing, size.height),
         paint,
       );
     }
@@ -477,3 +500,165 @@ double _paperSpacing(Rect clip, double spacing) => math.max(
   spacing,
   math.sqrt(math.max(0, clip.width * clip.height) / 180000),
 );
+
+const smithChartCurveValues = [.2, .5, 1.0, 2.0, 5.0];
+const smithChartNormalizationLegend = 'z = Z/Z0 = r + jx';
+
+/// Labels sit at the real-axis/rim intercept of their normalized curve.
+class SmithChartLabel {
+  final String text;
+  final Offset normalizedPoint;
+  final double value;
+  final bool reactance;
+  const SmithChartLabel(
+    this.text,
+    this.normalizedPoint,
+    this.value, {
+    this.reactance = false,
+  });
+}
+
+List<SmithChartLabel> smithChartLabels() {
+  String number(double value) => value == value.roundToDouble()
+      ? value.toInt().toString()
+      : value.toString();
+  return [
+    const SmithChartLabel('0', Offset(-1, 0), 0),
+    for (final r in smithChartCurveValues)
+      SmithChartLabel(number(r), Offset((r - 1) / (r + 1), 0), r),
+    const SmithChartLabel('∞', Offset(1, 0), double.infinity),
+    for (final magnitude in smithChartCurveValues)
+      for (final sign in [-1, 1])
+        SmithChartLabel(
+          '${sign > 0 ? '+' : '−'}j${number(magnitude)}',
+          Offset(
+            (magnitude * magnitude - 1) / (magnitude * magnitude + 1),
+            -sign * 2 * magnitude / (magnitude * magnitude + 1),
+          ),
+          sign * magnitude,
+          reactance: true,
+        ),
+  ];
+}
+
+class _SmithPainter extends CustomPainter {
+  final Color? color;
+  _SmithPainter({this.color});
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (!size.isFinite || size.isEmpty) return;
+    final minimumSide = math.min(size.width, size.height);
+    final fontSize = math.min(
+      (minimumSide * .0192).clamp(6.0, 14.0),
+      minimumSide * .08,
+    );
+    // Reserve two legend rows and a gap below the chart, including square pages.
+    final chartHeight = math.max(1.0, size.height - fontSize * 4);
+    final radius = math.min(size.width, chartHeight) * .40;
+    final center = Offset(size.width / 2, chartHeight / 2);
+    final dark = (color ?? Colors.white).computeLuminance() < .4;
+    final inkColor = dark ? const Color(0xffd1e5ff) : const Color(0xff314a65);
+    final paint = Paint()
+      ..color = inkColor.withValues(alpha: .6)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = math.max(.4, radius / 500);
+    canvas.save();
+    canvas.clipPath(
+      Path()..addOval(Rect.fromCircle(center: center, radius: radius)),
+    );
+    // Gamma=(z-1)/(z+1): constant resistance circles and reactance arcs.
+    for (final r in smithChartCurveValues) {
+      canvas.drawCircle(
+        center + Offset(radius * r / (1 + r), 0),
+        radius / (1 + r),
+        paint,
+      );
+    }
+    for (final x in smithChartCurveValues) {
+      for (final sign in [-1, 1]) {
+        canvas.drawCircle(
+          center + Offset(radius, -sign * radius / x),
+          radius / x,
+          paint,
+        );
+      }
+    }
+    canvas.drawLine(
+      center - Offset(radius, 0),
+      center + Offset(radius, 0),
+      paint,
+    );
+    canvas.restore();
+    canvas.drawCircle(center, radius, paint..strokeWidth *= 1.8);
+    void label(
+      String text,
+      Offset position, {
+      double? font,
+      bool backing = true,
+    }) {
+      final painter = TextPainter(
+        text: TextSpan(
+          text: text,
+          style: TextStyle(
+            color: inkColor,
+            fontFamily: 'Open Sans',
+            fontSize: font ?? fontSize,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      );
+      try {
+        painter.layout(maxWidth: math.max(1, size.width - 8));
+        final offset = Offset(
+          (position.dx - painter.width / 2).clamp(
+            2,
+            math.max(2, size.width - painter.width - 2),
+          ),
+          (position.dy - painter.height / 2).clamp(
+            2,
+            math.max(2, size.height - painter.height - 2),
+          ),
+        );
+        if (backing) {
+          canvas.drawRect(
+            (offset & painter.size).inflate(1),
+            Paint()..color = (color ?? Colors.white).withValues(alpha: .94),
+          );
+        }
+        painter.paint(canvas, offset);
+      } finally {
+        painter.dispose();
+      }
+    }
+
+    canvas.save();
+    canvas.clipRect(Offset.zero & size);
+    for (final value in smithChartLabels()) {
+      final position = value.reactance
+          ? center + value.normalizedPoint * (radius + fontSize * 1.4)
+          : center + value.normalizedPoint * radius + Offset(0, fontSize * 1.1);
+      label(value.text, position);
+    }
+    final legendFont = math.min(fontSize * .85, 12.0);
+    final legendY = math.min(
+      size.height - legendFont * 2.5,
+      center.dy + radius + fontSize * 3.3,
+    );
+    label(
+      smithChartNormalizationLegend,
+      Offset(center.dx, legendY),
+      font: legendFont,
+    );
+    label(
+      'r = R/Z0  ·  x = X/Z0',
+      Offset(center.dx, legendY + legendFont * 1.5),
+      font: legendFont,
+    );
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant _SmithPainter oldDelegate) =>
+      oldDelegate.color != color;
+}

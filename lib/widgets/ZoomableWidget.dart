@@ -10,9 +10,54 @@ class CanvasTouchSession {
   int cancellationEpoch = 0;
   final Set<int> stylusPointers = {};
   final Set<int> rejectedPointers = {};
+  final Set<int> _cancelledGestureContacts = {};
+  Timer? _proximityTimer;
+  bool _penNear = false;
+  final Set<int> _hoverDevices = {};
+  bool get penNear =>
+      _penNear || _hoverDevices.isNotEmpty || stylusPointers.isNotEmpty;
+  void enterProximity(PointerEnterEvent event) {
+    if (isPen(event)) _hoverDevices.add(event.device);
+  }
+  void leaveProximity(PointerExitEvent event) {
+    _hoverDevices.remove(event.device);
+    if (isPen(event)) {
+      _proximityTimer?.cancel();
+      _penNear = false;
+    }
+  }
+  static bool isPen(PointerEvent event) =>
+      event.kind == PointerDeviceKind.stylus ||
+      event.kind == PointerDeviceKind.invertedStylus;
+  void observePen(PointerEvent event, Iterable<int> touches) {
+    if (!isPen(event)) return;
+    // Contact replaces the hover grant. Some Android pens never send a hover
+    // exit after lifting from the screen; that old grant must not survive.
+    if (event is PointerDownEvent) _hoverDevices.remove(event.device);
+    _refreshPenGrace();
+    _cancelledGestureContacts.addAll(touches);
+    rejectedPointers.addAll(touches);
+    pointers = 0;
+    cancellationEpoch++;
+  }
+  void _refreshPenGrace() {
+    _penNear = true;
+    _proximityTimer?.cancel();
+    _proximityTimer = Timer(const Duration(milliseconds: 300), () {
+      _penNear = false;
+    });
+  }
+  void endPointer(PointerEvent event) {
+    stylusPointers.remove(event.pointer);
+    rejectedPointers.remove(event.pointer);
+    _cancelledGestureContacts.remove(event.pointer);
+    if (isPen(event)) _refreshPenGrace();
+  }
+  void dispose() => _proximityTimer?.cancel();
   bool rejects(PointerEvent event) =>
       event.kind == PointerDeviceKind.touch &&
-      (stylusPointers.isNotEmpty ||
+      (penNear ||
+          _cancelledGestureContacts.isNotEmpty ||
           rejectedPointers.contains(event.pointer) ||
           event.radiusMajor > 28);
 }
@@ -104,7 +149,6 @@ class ZoomableWidgetState extends State<ZoomableWidget>
   bool _gestureTouch = false, _gestureRejected = false;
   bool _wasPinch = false, _suppressPan = false, _startedAtEnd = false;
   double _upwardDrag = 0;
-  DateTime? _lastStylusHover;
   Size _viewport = Size.zero;
 
   late final AnimationController _zoomAnimController;
@@ -131,6 +175,7 @@ class ZoomableWidgetState extends State<ZoomableWidget>
 
   @override
   void dispose() {
+    _touchSession.dispose();
     _badgeTimer?.cancel();
     _zoomAnimController.dispose();
     _internalController?.dispose();
@@ -145,9 +190,6 @@ class ZoomableWidgetState extends State<ZoomableWidget>
     if (_isPen(event)) return widget.stylusPanEnabled;
     if (event.kind == PointerDeviceKind.touch) {
       return !_touchSession.rejects(event) &&
-          (_lastStylusHover == null ||
-              DateTime.now().difference(_lastStylusHover!).inMilliseconds >
-                  300) &&
           (_touchIds.length < 2 || _touchIds.contains(event.pointer));
     }
     return true;
@@ -156,23 +198,19 @@ class ZoomableWidgetState extends State<ZoomableWidget>
   void _onPointerDown(PointerDownEvent event) {
     if (_isPen(event)) {
       _touchSession.stylusPointers.add(event.pointer);
-      _touchSession.cancellationEpoch++;
-      _suppressPan = true;
-      _gestureRejected = true;
+      _observePen(event);
       return;
     }
     if (event.kind != PointerDeviceKind.touch) return;
     if (_touchSession.rejects(event) ||
-        _touchIds.length >= 2 ||
-        (_lastStylusHover != null &&
-            DateTime.now().difference(_lastStylusHover!).inMilliseconds <=
-                300)) {
+        _touchIds.length >= 2) {
       _touchSession.rejectedPointers.add(event.pointer);
       return;
     }
     if (_touchIds.isEmpty) {
       _wasPinch = false;
       _gestureRejected = false;
+      _suppressPan = false;
     }
     _touchIds.add(event.pointer);
     _touchPointers = _touchIds.length;
@@ -181,9 +219,21 @@ class ZoomableWidgetState extends State<ZoomableWidget>
     if (widget.touchDrawingEnabled) setState(() {});
   }
 
+  void _observePen(PointerEvent event) {
+    if (!_isPen(event)) return;
+    final hadTouches = _touchIds.isNotEmpty;
+    _touchSession.observePen(event, _touchIds);
+    _touchIds.clear();
+    _touchPointers = 0;
+    if (hadTouches || _gestureTouch) {
+      _gestureRejected = true;
+      _suppressPan = true;
+    }
+    _zoomAnimController.stop();
+  }
+
   void _onPointerEnd(PointerEvent event) {
-    _touchSession.stylusPointers.remove(event.pointer);
-    _touchSession.rejectedPointers.remove(event.pointer);
+    _touchSession.endPointer(event);
     _touchIds.remove(event.pointer);
     _touchPointers = _touchIds.length;
     _touchSession.pointers = _touchPointers;
@@ -203,7 +253,8 @@ class ZoomableWidgetState extends State<ZoomableWidget>
     _gesturePointers = details.pointerCount;
     _gestureTouch = _touchIds.isNotEmpty;
     _gestureRejected =
-        _touchSession.stylusPointers.isNotEmpty && !widget.stylusPanEnabled;
+        (_touchSession.penNear &&
+            (_gestureTouch || !widget.stylusPanEnabled));
     _wasPinch |= details.pointerCount >= 2;
     _upwardDrag = 0;
     _startFocal = details.localFocalPoint;
@@ -217,6 +268,8 @@ class ZoomableWidgetState extends State<ZoomableWidget>
 
   void _updateGesture(ScaleUpdateDetails details) {
     if (!widget.interactionsEnabled ||
+        _gestureRejected ||
+        (_gestureTouch && _touchSession.penNear) ||
         (_suppressPan && !widget.stylusPanEnabled))
       return;
     if (details.pointerCount != _gesturePointers) {
@@ -292,6 +345,8 @@ class ZoomableWidgetState extends State<ZoomableWidget>
   }
 
   void _handleDoubleTapDown(TapDownDetails details) {
+    if (_touchSession.penNear)
+      return;
     if (_scale > 1.2) {
       _animateTo(Matrix4.identity());
     } else {
@@ -309,12 +364,18 @@ class ZoomableWidgetState extends State<ZoomableWidget>
   Widget build(BuildContext context) {
     final Color accent = Theme.of(context).colorScheme.primary;
 
-    return Listener(
+    return MouseRegion(
+      opaque: false,
+      onEnter: (event) {
+        _touchSession.enterProximity(event);
+        _observePen(event);
+      },
+      onExit: _touchSession.leaveProximity,
+      child: Listener(
       behavior: HitTestBehavior.translucent,
       onPointerDown: _onPointerDown,
-      onPointerHover: (event) {
-        if (_isPen(event)) _lastStylusHover = DateTime.now();
-      },
+      onPointerHover: _observePen,
+      onPointerMove: _observePen,
       onPointerSignal: (event) {
         if (event is PointerScrollEvent &&
             widget.interactionsEnabled &&
@@ -449,6 +510,7 @@ class ZoomableWidgetState extends State<ZoomableWidget>
           ],
         ),
       ),
+    ),
     );
   }
 }

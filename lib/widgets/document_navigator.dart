@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:xournalpp/controllers/canvas_controller.dart';
 
 import 'layers_panel.dart';
+import 'add_page_button.dart';
 
 class DocumentNavigator extends StatelessWidget {
   final CanvasController controller;
@@ -37,6 +38,7 @@ class DocumentNavigator extends StatelessWidget {
                 onPressed: onClose,
                 icon: const Icon(Icons.close),
               ),
+              AddPageButton(controller: controller),
             ],
           ),
           Expanded(

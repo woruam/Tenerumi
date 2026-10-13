@@ -14,6 +14,10 @@ import 'compat/file_picker_cross.dart';
 import 'document_limits.dart';
 import 'note_audio.dart';
 import 'note_flashcards.dart';
+import 'paper_template.dart';
+
+Uint8List _encodeStrokeFragment(XppStroke stroke) =>
+    Uint8List.fromList(utf8.encode(stroke.toXmlElement().toXmlString()));
 
 class _StrokeFragment {
   _StrokeFragment(this.hash, this.bytes, XppStroke stroke)
@@ -44,6 +48,8 @@ class _StrokeFragment {
 abstract final class RecoveryJournal {
   static final _strokes = Expando<Map<String, _StrokeFragment>>();
   static int writtenFragments = 0, reusedFragments = 0;
+  @visibleForTesting
+  static int offloadedStrokeFragments = 0;
   static int _xmlBytes = 0;
   static Future<String> _fragment(XppContent content, String localId) async {
     if (content is XppStroke && content.points != null) {
@@ -58,20 +64,28 @@ abstract final class RecoveryJournal {
         return cached.hash;
       }
     }
-    XmlElement xml;
+    late Uint8List bytes;
     if (content is XppImage) {
       if (content.data == null) throw StateError('Immagine senza dati');
       final blob = await CriticalData.putBlob(content.data!);
-      xml = XppImage(
+      final xml = XppImage(
         data: Uint8List(0),
         topLeft: content.topLeft,
         bottomRight: content.bottomRight,
       ).toXmlElement();
       xml.setAttribute('osipp-blob', blob);
+      bytes = Uint8List.fromList(utf8.encode(xml.toXmlString()));
+    } else if (content is XppStroke && (content.points?.length ?? 0) >= 4096) {
+      // Reopened notes have cold immutable-point identities. Serialize dense
+      // uncached ink away from input/rendering; cache and blob verification stay
+      // in the owning isolate and reuse the same content-addressed fragment.
+      bytes = await compute(_encodeStrokeFragment, content);
+      offloadedStrokeFragments++;
     } else {
-      xml = content.toXmlElement();
+      bytes = Uint8List.fromList(
+        utf8.encode(content.toXmlElement().toXmlString()),
+      );
     }
-    final bytes = Uint8List.fromList(utf8.encode(xml.toXmlString()));
     if (bytes.length > 32 * 1024 * 1024)
       throw StateError('Frammento di recupero troppo grande');
     _xmlBytes += bytes.length;
@@ -161,6 +175,7 @@ abstract final class RecoveryJournal {
       'baseHash': snapshot.originHash,
       'modifiedAt': snapshot.modifiedAt?.toIso8601String(),
       'auto': snapshot.autoGeneratePages,
+      'defaultPaper': snapshot.defaultPaper.toMap(),
       'warnings': snapshot.importWarnings,
       'pages': pages,
       'pdfs': pdfs,
@@ -302,6 +317,7 @@ abstract final class RecoveryJournal {
       originHash: v['baseHash'] as String?,
       modifiedAt: DateTime.tryParse(v['modifiedAt'] as String? ?? ''),
       autoGeneratePages: v['auto'] == true,
+      defaultPaper: PaperSettings.fromMap(v['defaultPaper']),
       importWarnings: (v['warnings'] as List).cast<String>(),
       pages: pages,
       pdfAttachments: attachments,

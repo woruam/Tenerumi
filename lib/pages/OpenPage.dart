@@ -300,6 +300,7 @@ class _OpenPageState extends State<OpenPage> {
         'Puntini',
         (s) => XppBackgroundSolidDot(color: Colors.white, size: s),
       ),
+      _NoteTemplate('Carta di Smith', (s) => XppBackgroundSmith(size: s)),
       _NoteTemplate('Nothing Dark', (s) => XppBackgroundNothingDark(size: s)),
       _NoteTemplate('Nothing Light', (s) => XppBackgroundNothingLight(size: s)),
     ];

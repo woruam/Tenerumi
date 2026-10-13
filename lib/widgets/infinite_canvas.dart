@@ -40,6 +40,7 @@ class _InfiniteCanvasState extends State<InfiniteCanvas> {
 
   @override
   void dispose() {
+    _touch.dispose();
     DecodedImageCache.shared.release(this);
     super.dispose();
   }
@@ -53,8 +54,8 @@ class _InfiniteCanvasState extends State<InfiniteCanvas> {
   double _initialScale = 1, _gestureScale = 1;
   int _gesturePointers = 0;
   bool _pinched = false, _suppressed = false;
+  bool _gesturePen = false;
   final Set<int> _touchIds = {};
-  DateTime? _hover;
   Offset _anchor = Offset.zero;
   void _zoom(double scale, Offset local, Offset world) {
     final z = scale.clamp(0.1, 10.0);
@@ -64,196 +65,221 @@ class _InfiniteCanvasState extends State<InfiniteCanvas> {
   }
 
   @override
-  Widget build(BuildContext context) => Listener(
-    onPointerHover: (event) {
-      if (event.kind == PointerDeviceKind.stylus) _hover = DateTime.now();
+  Widget build(BuildContext context) => MouseRegion(
+    opaque: false,
+    onEnter: (event) {
+      _touch.enterProximity(event);
+      _observePen(event);
     },
-    onPointerDown: (event) {
-      if (event.kind == PointerDeviceKind.stylus ||
-          event.kind == PointerDeviceKind.invertedStylus) {
-        _touch.stylusPointers.add(event.pointer);
-        _touch.cancellationEpoch++;
-        _suppressed = true;
-      }
-      if (event.kind == PointerDeviceKind.touch) {
-        if (_touch.rejects(event) ||
-            _touchIds.length >= 2 ||
-            (_hover != null &&
-                DateTime.now().difference(_hover!).inMilliseconds <= 300)) {
-          _touch.rejectedPointers.add(event.pointer);
-          return;
+    onExit: _touch.leaveProximity,
+    child: Listener(
+      onPointerHover: _observePen,
+      onPointerMove: _observePen,
+      onPointerDown: (event) {
+        if (event.kind == PointerDeviceKind.stylus ||
+            event.kind == PointerDeviceKind.invertedStylus) {
+          _touch.stylusPointers.add(event.pointer);
+          _observePen(event);
         }
-        if (_touchIds.isEmpty) _pinched = false;
-        _touchIds.add(event.pointer);
-        _touch.pointers = _touchIds.length;
-        if (_touch.pointers == 2) _touch.cancellationEpoch++;
-      }
-    },
-    onPointerUp: _endTouch,
-    onPointerCancel: _endTouch,
-    onPointerSignal: (event) {
-      if (event is PointerScrollEvent) {
-        GestureBinding.instance.pointerSignalResolver.register(event, (_) {
-          _zoom(
-            widget.transform.value.getMaxScaleOnAxis() *
-                math.exp(-event.scrollDelta.dy / 500),
-            event.localPosition,
-            widget.transform.toScene(event.localPosition),
-          );
-        });
-      }
-    },
-    child: RawGestureDetector(
-      behavior: HitTestBehavior.opaque,
-      gestures: {
-        CanvasScaleRecognizer:
-            GestureRecognizerFactoryWithHandlers<CanvasScaleRecognizer>(
-              () => CanvasScaleRecognizer(),
-              (instance) {
-                instance.allow = (event) =>
-                    event.kind != PointerDeviceKind.stylus &&
-                    event.kind != PointerDeviceKind.invertedStylus &&
-                    !_touch.rejects(event) &&
-                    (event.kind != PointerDeviceKind.touch ||
-                        _touchIds.length < 2 ||
-                        _touchIds.contains(event.pointer)) &&
-                    (_hover == null ||
-                        DateTime.now().difference(_hover!).inMilliseconds >
-                            300);
-                instance.onStart = (details) {
-                  _initialScale = widget.transform.value.getMaxScaleOnAxis();
-                  _gestureScale = 1;
-                  _gesturePointers = details.pointerCount;
-                  _pinched |= details.pointerCount >= 2;
-                  _anchor = widget.transform.toScene(details.localFocalPoint);
-                };
-                instance.onUpdate = (details) {
-                  if (_suppressed) return;
-                  if (details.pointerCount != _gesturePointers) {
+        if (event.kind == PointerDeviceKind.touch) {
+          if (_touch.rejects(event) || _touchIds.length >= 2) {
+            _touch.rejectedPointers.add(event.pointer);
+            return;
+          }
+          if (_touchIds.isEmpty) {
+            _pinched = false;
+            _suppressed = false;
+          }
+          _touchIds.add(event.pointer);
+          _touch.pointers = _touchIds.length;
+          if (_touch.pointers == 2) _touch.cancellationEpoch++;
+        }
+      },
+      onPointerUp: _endTouch,
+      onPointerCancel: _endTouch,
+      onPointerSignal: (event) {
+        if (event is PointerScrollEvent) {
+          GestureBinding.instance.pointerSignalResolver.register(event, (_) {
+            _zoom(
+              widget.transform.value.getMaxScaleOnAxis() *
+                  math.exp(-event.scrollDelta.dy / 500),
+              event.localPosition,
+              widget.transform.toScene(event.localPosition),
+            );
+          });
+        }
+      },
+      child: RawGestureDetector(
+        behavior: HitTestBehavior.opaque,
+        gestures: {
+          CanvasScaleRecognizer:
+              GestureRecognizerFactoryWithHandlers<CanvasScaleRecognizer>(
+                () => CanvasScaleRecognizer(),
+                (instance) {
+                  instance.allow = (event) =>
+                      (!CanvasTouchSession.isPen(event) ||
+                          widget.canvas.isPanEnabled) &&
+                      !_touch.rejects(event) &&
+                      (event.kind != PointerDeviceKind.touch ||
+                          _touchIds.length < 2 ||
+                          _touchIds.contains(event.pointer));
+                  instance.onStart = (details) {
+                    _gesturePen =
+                        widget.canvas.isPanEnabled &&
+                        _touch.stylusPointers.isNotEmpty;
+                    if (_gesturePen) _suppressed = false;
+                    _initialScale = widget.transform.value.getMaxScaleOnAxis();
+                    _gestureScale = 1;
                     _gesturePointers = details.pointerCount;
                     _pinched |= details.pointerCount >= 2;
-                    _initialScale = widget.transform.value.getMaxScaleOnAxis();
-                    _gestureScale = details.scale;
                     _anchor = widget.transform.toScene(details.localFocalPoint);
-                    return;
-                  }
-                  if (_pinched && details.pointerCount < 2) return;
-                  if (widget.canvas.touchDrawingEnabled &&
-                      !widget.canvas.isPanEnabled &&
-                      details.pointerCount < 2)
-                    return;
-                  _zoom(
-                    _initialScale * details.scale / _gestureScale,
-                    details.localFocalPoint,
-                    _anchor,
-                  );
-                };
-              },
-            ),
-      },
-      child: LayoutBuilder(
-        builder: (context, constraints) => ClipRect(
-          child: AnimatedBuilder(
-            animation: widget.transform,
-            builder: (context, _) {
-              final ctrl = widget.canvas;
-              final scale = widget.transform.value.getMaxScaleOnAxis();
-              final origin = widget.transform.toScene(Offset.zero);
-              final size = constraints.biggest / scale;
-              final viewport = (origin & size).inflate(64);
-              DecodedImageCache.shared.retain(this, [
-                for (final layer in ctrl.file!.pages!.first.layers!)
-                  if (layer.visible) ...[
-                    for (final image
-                        in (layer.content ?? []).whereType<XppImage>())
-                      if (image.data != null &&
-                          image.bounds()?.overlaps(viewport) == true)
-                        image.data!,
-                  ],
-              ]);
-              return OverflowBox(
-                alignment: Alignment.topLeft,
-                minWidth: size.width,
-                maxWidth: size.width,
-                minHeight: size.height,
-                maxHeight: size.height,
-                child: Transform.scale(
-                  scale: scale,
+                  };
+                  instance.onUpdate = (details) {
+                    if (_suppressed ||
+                        (_touch.penNear && !_gesturePen))
+                      return;
+                    if (details.pointerCount != _gesturePointers) {
+                      _gesturePointers = details.pointerCount;
+                      _pinched |= details.pointerCount >= 2;
+                      _initialScale = widget.transform.value
+                          .getMaxScaleOnAxis();
+                      _gestureScale = details.scale;
+                      _anchor = widget.transform.toScene(
+                        details.localFocalPoint,
+                      );
+                      return;
+                    }
+                    if (_pinched && details.pointerCount < 2) return;
+                    if (widget.canvas.touchDrawingEnabled &&
+                        !widget.canvas.isPanEnabled &&
+                        details.pointerCount < 2)
+                      return;
+                    _zoom(
+                      _initialScale * details.scale / _gestureScale,
+                      details.localFocalPoint,
+                      _anchor,
+                    );
+                  };
+                },
+              ),
+        },
+        child: LayoutBuilder(
+          builder: (context, constraints) => ClipRect(
+            child: AnimatedBuilder(
+              animation: widget.transform,
+              builder: (context, _) {
+                final ctrl = widget.canvas;
+                final scale = widget.transform.value.getMaxScaleOnAxis();
+                final origin = widget.transform.toScene(Offset.zero);
+                final size = constraints.biggest / scale;
+                final viewport = (origin & size).inflate(64);
+                DecodedImageCache.shared.retain(this, [
+                  for (final layer in ctrl.file!.pages!.first.layers!)
+                    if (layer.visible) ...[
+                      for (final image
+                          in (layer.content ?? []).whereType<XppImage>())
+                        if (image.data != null &&
+                            image.bounds()?.overlaps(viewport) == true)
+                          image.data!,
+                    ],
+                ]);
+                return OverflowBox(
                   alignment: Alignment.topLeft,
-                  child: SizedBox.fromSize(
-                    size: size,
-                    child: CanvasTouchScope(
-                      session: _touch,
-                      child: PointerListener(
-                        audio: ctrl.audio,
-                        onListenAt: (p) => ctrl.listenAt(0, p),
-                        key: ObjectKey(ctrl.activeLayer(0)),
-                        readOnly: !ctrl.canEditLayer(0),
-                        canvasOrigin: origin,
-                        toolData: ctrl.toolData,
-                        translationMatrix: widget.transform.value,
-                        strokeWidth: ctrl.getCurrentToolWidth(),
-                        color: ctrl.getCurrentToolColor(),
-                        highlighterWidth: ctrl.highlighterWidth,
-                        highlighterColor: ctrl.highlighterColor,
-                        eraserWidth: ctrl.eraserWidth,
-                        shapeRecognition: ctrl.shapeRecognition,
-                        buttonDownAction: ctrl.buttonDownAction,
-                        buttonUpAction: ctrl.buttonUpAction,
-                        onFlashcardSelection: (region) =>
-                            captureFlashcardSelection(context, ctrl, 0, region),
-                        clipboard: ctrl.clipboard,
-                        onPasteContent: (p) => ctrl.pasteSelection(0, p),
-                        getPageContent: () => ctrl.activeLayer(0).content ?? [],
-                        onNewContent: (c) => ctrl.addNewContent(0, c),
-                        onDeleteContent: (c) => ctrl.deleteContent(0, c),
-                        onBeforeContentChanged: () => ctrl.saveSnapshot(0),
-                        onContentChanged: () => ctrl.markContentChanged(0),
-                        removeLastContent: () => ctrl.removeLastContent(0),
-                        filterEraser:
-                            ({coordinates, previousCoordinates, radius}) =>
-                                ctrl.filterEraser(
-                                  pageIndex: 0,
-                                  coordinates: coordinates,
-                                  previousCoordinates: previousCoordinates,
-                                  radius: radius,
-                                ),
-                        onEraserStart: ctrl.beginEraserGesture,
-                        onEraserEnd: ctrl.endEraserGesture,
-                        onToolChanged: ctrl.setTool,
-                        child: Stack(
-                          children: [
-                            CustomPaint(
-                              size: size,
-                              painter: _InfinitePainter(
+                  minWidth: size.width,
+                  maxWidth: size.width,
+                  minHeight: size.height,
+                  maxHeight: size.height,
+                  child: Transform.scale(
+                    scale: scale,
+                    alignment: Alignment.topLeft,
+                    child: SizedBox.fromSize(
+                      size: size,
+                      child: CanvasTouchScope(
+                        session: _touch,
+                        child: PointerListener(
+                          audio: ctrl.audio,
+                          onListenAt: (p) => ctrl.listenAt(0, p),
+                          key: ObjectKey(ctrl.activeLayer(0)),
+                          readOnly: !ctrl.canEditLayer(0),
+                          canvasOrigin: origin,
+                          toolData: ctrl.toolData,
+                          translationMatrix: widget.transform.value,
+                          strokeWidth: ctrl.getCurrentToolWidth(),
+                          color: ctrl.getCurrentToolColor(),
+                          highlighterWidth: ctrl.highlighterWidth,
+                          highlighterColor: ctrl.highlighterColor,
+                          eraserWidth: ctrl.eraserWidth,
+                          shapeRecognition: ctrl.shapeRecognition,
+                          buttonDownAction: ctrl.buttonDownAction,
+                          buttonUpAction: ctrl.buttonUpAction,
+                          onFlashcardSelection: (region) =>
+                              captureFlashcardSelection(
+                                context,
                                 ctrl,
-                                origin,
-                                _geometry,
+                                0,
+                                region,
                               ),
-                            ),
-                            Positioned.fill(
-                              child: AudioTimelineOverlay(
-                                page: ctrl.file!.pages![0],
-                                audio: ctrl.audio,
-                                origin: origin,
+                          clipboard: ctrl.clipboard,
+                          onPasteContent: (p) => ctrl.pasteSelection(0, p),
+                          getPageContent: () =>
+                              ctrl.activeLayer(0).content ?? [],
+                          onNewContent: (c) => ctrl.addNewContent(0, c),
+                          onDeleteContent: (c) => ctrl.deleteContent(0, c),
+                          onBeforeContentChanged: () => ctrl.saveSnapshot(0),
+                          onContentChanged: () => ctrl.markContentChanged(0),
+                          removeLastContent: () => ctrl.removeLastContent(0),
+                          filterEraser:
+                              ({coordinates, previousCoordinates, radius}) =>
+                                  ctrl.filterEraser(
+                                    pageIndex: 0,
+                                    coordinates: coordinates,
+                                    previousCoordinates: previousCoordinates,
+                                    radius: radius,
+                                  ),
+                          onEraserStart: ctrl.beginEraserGesture,
+                          onEraserEnd: ctrl.endEraserGesture,
+                          onToolChanged: ctrl.setTool,
+                          child: Stack(
+                            children: [
+                              CustomPaint(
+                                size: size,
+                                painter: _InfinitePainter(
+                                  ctrl,
+                                  origin,
+                                  _geometry,
+                                ),
                               ),
-                            ),
-                          ],
+                              Positioned.fill(
+                                child: AudioTimelineOverlay(
+                                  page: ctrl.file!.pages![0],
+                                  audio: ctrl.audio,
+                                  origin: origin,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       ),
     ),
   );
+  void _observePen(PointerEvent event) {
+    if (!CanvasTouchSession.isPen(event)) return;
+    final hadTouches = _touchIds.isNotEmpty;
+    _touch.observePen(event, _touchIds);
+    _touchIds.clear();
+    if (hadTouches || !_gesturePen) _suppressed = true;
+  }
+
   void _endTouch(PointerEvent event) {
-    _touch.stylusPointers.remove(event.pointer);
-    _touch.rejectedPointers.remove(event.pointer);
+    _touch.endPointer(event);
     _touchIds.remove(event.pointer);
     _touch.pointers = _touchIds.length;
     if (_touchIds.isEmpty && _touch.stylusPointers.isEmpty) _suppressed = false;
@@ -279,7 +305,9 @@ class _InfinitePainter extends CustomPainter {
     final grid = Paint()
       ..color = dark ? Colors.white12 : const Color(0xffdbe1ea)
       ..strokeWidth = 0.5;
-    const spacing = 24.0;
+    final spacing = background is XppBackgroundSolidGraph
+        ? graphPaperSpacing
+        : 24.0;
     final startX = (-origin.dx) % spacing;
     final startY = (-origin.dy) % spacing;
     final dotted =
@@ -289,7 +317,14 @@ class _InfinitePainter extends CustomPainter {
     final ruled =
         background is XppBackgroundSolidLined ||
         background is XppBackgroundSolidRuled;
-    if (dotted) {
+    if (background is XppBackgroundSmith) {
+      // A Smith chart is a finite reference diagram anchored at world (0, 0).
+      // Pan moves the diagram with the ink instead of repeating its circles.
+      canvas.save();
+      canvas.translate(-origin.dx, -origin.dy);
+      paintPaperBackground(canvas, page.pageSize!.toSize(), background);
+      canvas.restore();
+    } else if (dotted) {
       for (var x = startX; x < size.width; x += spacing) {
         for (var y = startY; y < size.height; y += spacing) {
           canvas.drawCircle(Offset(x, y), 0.8, grid);
