@@ -144,6 +144,51 @@ List<XppContent?> contents(CanvasController ctrl) =>
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  testWidgets('fine pen width survives pressure, commit, and ink geometry', (
+    tester,
+  ) async {
+    final ctrl = controller(empty: true);
+    addTearDown(ctrl.dispose);
+    ctrl.setPenProps(null, .1);
+    await mount(tester, ctrl, tool: EditingTool.STYLUS);
+    await tester.sendEventToBinding(
+      PointerDownEvent(
+        position: screen(tester, const Offset(30, 100)),
+        pointer: 710,
+        kind: ui.PointerDeviceKind.stylus,
+        pressure: .5,
+        pressureMax: 1,
+      ),
+    );
+    await tester.sendEventToBinding(
+      PointerMoveEvent(
+        pointer: 710,
+        kind: ui.PointerDeviceKind.stylus,
+        position: screen(tester, const Offset(160, 100)),
+        pressure: .5,
+        pressureMax: 1,
+      ),
+    );
+    final input = tester.state<PointerListenerState>(find.byKey(inputKey));
+    expect(input.points.map((p) => p.width), everyElement(closeTo(.1, .0001)));
+    await tester.sendEventToBinding(
+      PointerUpEvent(
+        pointer: 710,
+        kind: ui.PointerDeviceKind.stylus,
+        position: screen(tester, const Offset(160, 100)),
+        pressure: .5,
+        pressureMax: 1,
+      ),
+    );
+    await tester.pump();
+    final saved = contents(ctrl).single! as XppStroke;
+    expect(saved.points!.map((p) => p.width), everyElement(closeTo(.1, .0001)));
+    // A same-pressure .5 pen used to produce a 2.2-unit outline. Fine ink
+    // must stay thinner in the shared live/committed/export path as well.
+    expect(saved.inkPath.getBounds().height, lessThan(.5));
+    await tester.pumpWidget(const SizedBox());
+  });
+
   testWidgets('highlighter width changes committed ink and ignores pressure', (
     tester,
   ) async {
@@ -229,7 +274,7 @@ void main() {
     },
   );
 
-  for (final scale in [1.0, 2.5]) {
+  for (final scale in [0.75, 1.0, 2.5]) {
     testWidgets(
       'move selected ink at zoom $scale is visible and one undo step',
       (tester) async {
@@ -300,6 +345,15 @@ void main() {
         expect(find.text('Incolla'), findsNothing);
         await tester.pump(const Duration(milliseconds: 600));
         expect(find.text('Incolla'), findsOneWidget);
+        final pasteBox = tester.renderObject<RenderBox>(
+          find.byKey(const ValueKey('selection-paste')),
+        );
+        final screenRect = MatrixUtils.transformRect(
+          pasteBox.getTransformTo(null),
+          Offset.zero & pasteBox.size,
+        );
+        expect(screenRect.width, closeTo(120, .01));
+        expect(screenRect.height, closeTo(48, .01));
         await gesture.up();
         await tester.pump();
         expect(contents(ctrl).length, 1);

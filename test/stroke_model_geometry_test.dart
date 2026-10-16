@@ -60,6 +60,21 @@ Rect _previousBounds(XppStroke stroke) {
 }
 
 void main() {
+  test('fine pen radii extend legacy curve continuously below .5', () {
+    expect(inkRadius(.1, pressureSensitive: true), closeTo(.22, 1e-9));
+    expect(
+      inkRadius(.499999, pressureSensitive: true),
+      closeTo(inkRadius(.5, pressureSensitive: true), .00001),
+    );
+    for (final width in [.5, 1.0, 2.5, 5.0, 10.0]) {
+      final legacyPressure = (width / 5).clamp(.1, 1.0);
+      expect(
+        inkRadius(width, pressureSensitive: true),
+        5 * (.5 - .7 * (.5 - legacyPressure)),
+      );
+    }
+    expect(inkRadius(.1, pressureSensitive: false), .05);
+  });
   test('stroke subclasses retain mutable state and independent snapshots', () {
     for (final tool in XppStrokeTool.values) {
       final stroke = XppStroke.byTool(

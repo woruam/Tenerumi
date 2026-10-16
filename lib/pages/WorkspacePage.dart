@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:xournalpp/plugins/plugin_controller.dart';
+import 'package:xournalpp/src/app_features.dart';
 
 import 'dart:convert';
 import 'dart:async';
@@ -62,6 +63,7 @@ class _WorkspacePageState extends State<WorkspacePage>
   // Ora il timer e' UNICO per tutta la workspace: sopravvive al cambio di
   // scheda e allo split-screen, e il pannello si puo' trascinare.
   bool _showPomodoro = false;
+  final _pomodoroProgress = ValueNotifier<double>(0);
   bool _showNavigator = false;
   Offset _pomodoroPos = const Offset(12, 12); // distanza da (destra, alto)
 
@@ -327,6 +329,7 @@ class _WorkspacePageState extends State<WorkspacePage>
 
   @override
   void dispose() {
+    _pomodoroProgress.dispose();
     WidgetsBinding.instance.removeObserver(this);
     _sessionTimer?.cancel();
     _ws.removeListener(_workspaceChanged);
@@ -344,6 +347,7 @@ class _WorkspacePageState extends State<WorkspacePage>
   @override
   Widget build(BuildContext context) {
     final pomodoroEnabled =
+        AppFeatures.plugins &&
         context.watch<PluginController?>()?.pomodoroEnabled == true;
     if (!pomodoroEnabled) _showPomodoro = false;
     return ChangeNotifierProvider<WorkspaceController>.value(
@@ -375,6 +379,7 @@ class _WorkspacePageState extends State<WorkspacePage>
                 onPomodoroTap: () =>
                     setState(() => _showPomodoro = !_showPomodoro),
                 pomodoroActive: _showPomodoro,
+                pomodoroProgress: _pomodoroProgress,
                 onOpenPdfInNewTab: _openPdfInNewTab,
                 onOpenFile: _openFile,
                 openingFile: _openingFile,
@@ -418,7 +423,8 @@ class _WorkspacePageState extends State<WorkspacePage>
                       ),
                     ),
                   // ---- Pannello Pomodoro (globale, trascinabile, sempre vivo) ----
-                  if (pomodoroEnabled) _buildPomodoroOverlay(context),
+                  if (AppFeatures.plugins && pomodoroEnabled)
+                    _buildPomodoroOverlay(context),
                 ],
               ),
             ),
@@ -452,6 +458,7 @@ class _WorkspacePageState extends State<WorkspacePage>
             });
           },
           child: PomodoroTimer(
+            progress: _pomodoroProgress,
             onClose: () => setState(() => _showPomodoro = false),
             onPhaseComplete: (finished, next) {
               if (!mounted) return;

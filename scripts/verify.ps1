@@ -20,6 +20,10 @@ try {
   if ($Quick) { $testArgs += @('test/document_storage_test.dart', 'test/rendering_memory_test.dart', 'test/undo_snapshot_test.dart') }
   & $dartRuntime $flutterTools @testArgs 2>&1 | ForEach-Object { $_.ToString() } | Tee-Object (Join-Path $proofDir 'tests.txt')
   if ($LASTEXITCODE -ne 0) { throw 'Tests failed' }
+  if (-not $Quick) {
+    & $dartRuntime $flutterTools test --no-pub --reporter expanded --dart-define=OSI_ENABLE_PLUGINS=true --dart-define=OSI_ENABLE_BACKUP=true 2>&1 | ForEach-Object { $_.ToString() } | Tee-Object (Join-Path $proofDir 'tests-experimental.txt')
+    if ($LASTEXITCODE -ne 0) { throw 'Experimental profile tests failed' }
+  }
   if (-not $SkipWeb -and -not $Quick) {
     & $dartRuntime $flutterTools build web --no-pub 2>&1 | ForEach-Object { $_.ToString() } | Tee-Object (Join-Path $proofDir 'web-build.txt')
     if ($LASTEXITCODE -ne 0) { throw 'Web build failed' }

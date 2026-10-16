@@ -15,7 +15,7 @@ try {
   New-Item -ItemType Directory -Force $proofDir | Out-Null
   & $dartRuntime $flutterTools pub get 2>&1 | ForEach-Object { if ($_ -is [System.Management.Automation.ErrorRecord]) { $_.Exception.Message } else { $_.ToString() } } | Tee-Object (Join-Path $proofDir 'android-dependencies.txt')
   if ($LASTEXITCODE -ne 0) { throw 'Android dependency resolution failed' }
-  & $dartRuntime $flutterTools build apk --release --no-pub 2>&1 | ForEach-Object { if ($_ -is [System.Management.Automation.ErrorRecord]) { $_.Exception.Message } else { $_.ToString() } } | Tee-Object (Join-Path $proofDir 'android-build.txt')
+  & $dartRuntime $flutterTools build apk --release --no-pub --dart-define=OSI_ENABLE_PLUGINS=false --dart-define=OSI_ENABLE_BACKUP=false 2>&1 | ForEach-Object { if ($_ -is [System.Management.Automation.ErrorRecord]) { $_.Exception.Message } else { $_.ToString() } } | Tee-Object (Join-Path $proofDir 'android-build.txt')
   if ($LASTEXITCODE -ne 0) { throw 'Android release build failed' }
   Push-Location android
   try {

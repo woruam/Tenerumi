@@ -76,18 +76,6 @@ class CanvasTouchScope extends InheritedWidget {
       session != oldWidget.session;
 }
 
-/// Riconoscitore di doppio tocco limitato al SOLO dito: il doppio tap con la
-/// penna non deve mai zoomare (con lo stilo si disegnano i puntini!).
-class _TouchOnlyDoubleTapRecognizer extends DoubleTapGestureRecognizer {
-  bool Function(PointerDownEvent)? allow;
-  @override
-  bool isPointerAllowed(PointerDownEvent event) =>
-      event.kind == PointerDeviceKind.touch &&
-      (allow?.call(event) ?? true) &&
-      event.radiusMajor <= 28 &&
-      super.isPointerAllowed(event);
-}
-
 class CanvasScaleRecognizer extends ScaleGestureRecognizer {
   bool Function(PointerDownEvent)? allow;
   @override
@@ -126,15 +114,13 @@ class ZoomableWidget extends StatefulWidget {
   ZoomableWidgetState createState() => ZoomableWidgetState();
 }
 
-class ZoomableWidgetState extends State<ZoomableWidget>
-    with SingleTickerProviderStateMixin {
+class ZoomableWidgetState extends State<ZoomableWidget> {
   // Mantenuto per compatibilita' con il codice esistente che lo imposta.
   bool enabled = true;
 
   static const double _kMinScale = 0.1;
   static const double _kMaxScale = 10.0;
   static const double _kFreePanThreshold = 1.05;
-  static const double _kDoubleTapScale = 2.5;
 
   TransformationController? _internalController;
   TransformationController get _controller =>
@@ -151,9 +137,6 @@ class ZoomableWidgetState extends State<ZoomableWidget>
   double _upwardDrag = 0;
   Size _viewport = Size.zero;
 
-  late final AnimationController _zoomAnimController;
-  Animation<Matrix4>? _zoomAnimation;
-
   // Badge percentuale zoom
   bool _badgeVisible = false;
   Timer? _badgeTimer;
@@ -161,23 +144,9 @@ class ZoomableWidgetState extends State<ZoomableWidget>
   double get _scale => _controller.value.getMaxScaleOnAxis();
 
   @override
-  void initState() {
-    super.initState();
-    _zoomAnimController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 260),
-    );
-    _zoomAnimController.addListener(() {
-      final anim = _zoomAnimation;
-      if (anim != null) _controller.value = anim.value;
-    });
-  }
-
-  @override
   void dispose() {
     _touchSession.dispose();
     _badgeTimer?.cancel();
-    _zoomAnimController.dispose();
     _internalController?.dispose();
     super.dispose();
   }
@@ -229,7 +198,6 @@ class ZoomableWidgetState extends State<ZoomableWidget>
       _gestureRejected = true;
       _suppressPan = true;
     }
-    _zoomAnimController.stop();
   }
 
   void _onPointerEnd(PointerEvent event) {
@@ -249,7 +217,6 @@ class ZoomableWidgetState extends State<ZoomableWidget>
   }
 
   void _startGesture(ScaleStartDetails details) {
-    _zoomAnimController.stop();
     _gesturePointers = details.pointerCount;
     _gestureTouch = _touchIds.isNotEmpty;
     _gestureRejected =
@@ -331,35 +298,6 @@ class ZoomableWidgetState extends State<ZoomableWidget>
     });
   }
 
-  void _animateTo(Matrix4 target) {
-    _zoomAnimation = Matrix4Tween(begin: _controller.value, end: target)
-        .animate(
-          CurvedAnimation(
-            parent: _zoomAnimController,
-            curve: Curves.easeOutCubic,
-          ),
-        );
-    _zoomAnimController
-      ..reset()
-      ..forward();
-  }
-
-  void _handleDoubleTapDown(TapDownDetails details) {
-    if (_touchSession.penNear)
-      return;
-    if (_scale > 1.2) {
-      _animateTo(Matrix4.identity());
-    } else {
-      const double z = _kDoubleTapScale;
-      final Offset p = details.localPosition;
-      final Matrix4 target = Matrix4.identity()
-        ..translate(-p.dx * (z - 1), -p.dy * (z - 1))
-        ..scale(z);
-      _animateTo(target);
-    }
-    _showBadge();
-  }
-
   @override
   Widget build(BuildContext context) {
     final Color accent = Theme.of(context).colorScheme.primary;
@@ -381,7 +319,6 @@ class ZoomableWidgetState extends State<ZoomableWidget>
             widget.interactionsEnabled &&
             _touchSession.stylusPointers.isEmpty) {
           GestureBinding.instance.pointerSignalResolver.register(event, (_) {
-            _zoomAnimController.stop();
             final anchor = _controller.toScene(event.localPosition);
             final z = (_scale * math.exp(-event.scrollDelta.dy / 500)).clamp(
               .1,
@@ -412,16 +349,6 @@ class ZoomableWidgetState extends State<ZoomableWidget>
                   instance.onEnd = _endGesture;
                 },
               ),
-          _TouchOnlyDoubleTapRecognizer:
-              GestureRecognizerFactoryWithHandlers<
-                _TouchOnlyDoubleTapRecognizer
-              >(() => _TouchOnlyDoubleTapRecognizer(), (instance) {
-                instance.allow = _allowPointer;
-                instance.onDoubleTapDown =
-                    widget.touchDrawingEnabled || !widget.interactionsEnabled
-                    ? null
-                    : _handleDoubleTapDown;
-              }),
         },
         child: Stack(
           children: [

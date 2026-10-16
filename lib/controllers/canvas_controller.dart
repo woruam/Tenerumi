@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'note_audio_controller.dart';
 
@@ -22,6 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:xournalpp/src/decoded_image_cache.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import 'package:pdfx/pdfx.dart' as pdfx;
@@ -243,6 +245,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     _compactDeferred = true;
     _autosaveDeadline ??= Timer(const Duration(seconds: 10), _scheduledCompact);
   }
+
   Future<void>? _autosaveQueue;
   int _checkpointRevision = -1;
   Uint8List? _checkpointPreview;
@@ -256,10 +259,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
       const Duration(seconds: 2),
       () => unawaited(flushAutosave(compact: false)),
     );
-    _autosaveDeadline ??= Timer(
-      const Duration(seconds: 10),
-      _scheduledCompact,
-    );
+    _autosaveDeadline ??= Timer(const Duration(seconds: 10), _scheduledCompact);
   }
 
   Future<bool> _originChanged(XppFile document) async {
@@ -272,7 +272,10 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   Future<void> flushAutosave({bool compact = true}) =>
       _flushAutosave(compact: compact);
 
-  Future<void> _flushAutosave({required bool compact, bool scheduledOnly = false}) {
+  Future<void> _flushAutosave({
+    required bool compact,
+    bool scheduledOnly = false,
+  }) {
     _autosaveTimer?.cancel();
     if (compact) {
       _compactDeferred = false;
@@ -297,7 +300,9 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
       autosaving = true;
       notifyListeners();
       try {
-        final deferCompact = compact && scheduledOnly &&
+        final deferCompact =
+            compact &&
+            scheduledOnly &&
             (_activeInputPointers.isNotEmpty || _inputInGrace);
         if (deferCompact) _deferScheduledCompaction();
         final snapshot = document.snapshot();
@@ -307,13 +312,15 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
           lastAutosave = DateTime.now();
           autosaveError = null;
         }
+
         if (!compact || deferCompact) {
           await secureJournal();
           return;
         }
         await _preparePreview(snapshot);
         // Input can also begin while an asynchronous PDF preview is rendering.
-        if (scheduledOnly && (_activeInputPointers.isNotEmpty || _inputInGrace)) {
+        if (scheduledOnly &&
+            (_activeInputPointers.isNotEmpty || _inputInGrace)) {
           _deferScheduledCompaction();
           await secureJournal();
           return;
@@ -470,6 +477,10 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
 
   // --- MEMORIA PDF ---
   final PdfRasterCache pdfBackgrounds = PdfRasterCache(maxPages: 32);
+  // Only compressed viewport snapshots survive a tab switch. Native documents
+  // are still closed, and inactive tabs share one application-wide budget.
+  static final _suspendedPdfCaches = LinkedHashSet<CanvasController>();
+  static const _inactivePdfCacheBytes = 32 * 1024 * 1024;
   bool _disposed = false;
   Set<int> _visiblePdfPages = {};
   bool _pdfImportPending = false;
@@ -535,6 +546,8 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    if (_suspendedPdfCaches.remove(this))
+      DecodedImageCache.shared.release(this);
     _autosaveTimer?.cancel();
     _autosaveDeadline?.cancel();
     _compactIdleTimer?.cancel();
@@ -559,6 +572,10 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
 
   void setVisiblePdfPages(Set<int> indices) {
     if (_disposed) return;
+    if (indices.isNotEmpty && _suspendedPdfCaches.remove(this)) {
+      // Visibility arrives after the returning canvas has retained its images.
+      DecodedImageCache.shared.release(this);
+    }
     if (_pdfImportPending) {
       // Retain viewport changes while the recovery copy is being committed.
       _visiblePdfPages = Set.of(indices);
@@ -603,11 +620,41 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     );
   }
 
-  void suspendPdfRendering() {
+  void suspendPdfRendering({bool retainRasterCache = false}) {
+    final wasSuspended = _suspendedPdfCaches.remove(this);
+    final retained = retainRasterCache
+        ? ([activePageIndex, ..._visiblePdfPages]
+              .where((page) => _visiblePdfPages.contains(page))
+              .toSet()
+              .take(4)
+              .toSet())
+        : const <int>{};
+    for (final page in pdfBackgrounds.keys.toList()) {
+      if (!retained.contains(page)) pdfBackgrounds.remove(page);
+    }
     _releaseViewPdf();
     _pdfEpoch++;
     _visiblePdfPages = {};
-    pdfBackgrounds.clear();
+    if (pdfBackgrounds.isNotEmpty) {
+      _suspendedPdfCaches.add(this);
+      // Preserve the decoded first frame too, under the shared native budget.
+      DecodedImageCache.shared.retain(this, [
+        for (final page in pdfBackgrounds.keys.toList()) pdfBackgrounds[page]!,
+      ]);
+    } else if (wasSuspended) {
+      DecodedImageCache.shared.release(this);
+    }
+    var bytes = _suspendedPdfCaches.fold<int>(
+      0,
+      (sum, controller) => sum + controller.pdfBackgrounds.byteCount,
+    );
+    while (bytes > _inactivePdfCacheBytes || _suspendedPdfCaches.length > 2) {
+      final oldest = _suspendedPdfCaches.first;
+      bytes -= oldest.pdfBackgrounds.byteCount;
+      oldest.pdfBackgrounds.clear();
+      _suspendedPdfCaches.remove(oldest);
+      DecodedImageCache.shared.release(oldest);
+    }
   }
 
   Future<pdfx.PdfDocument> _openPdf(String name) async {
@@ -718,28 +765,36 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   Future<XppImage?> copyPdfRegion(int index, List<Offset> polygon) async {
-    if (_disposed || index < 0 || index >= (file?.pages?.length ?? 0)) return null;
+    if (_disposed || index < 0 || index >= (file?.pages?.length ?? 0))
+      return null;
     final document = file;
     final page = document!.pages![index];
     final background = page.background;
-    if (background is! XppBackgroundPdf || background.filename == null) return null;
-    if (polygon.length < 3 || polygon.length > 20000 ||
-        polygon.any((p) => !p.dx.isFinite || !p.dy.isFinite)) return null;
+    if (background is! XppBackgroundPdf || background.filename == null)
+      return null;
+    if (polygon.length < 3 ||
+        polygon.length > 20000 ||
+        polygon.any((p) => !p.dx.isFinite || !p.dy.isFinite))
+      return null;
     final pageSize = page.pageSize;
     if (pageSize == null) return null;
     final filename = background.filename;
     final sourcePage = background.page;
     final epoch = _pdfEpoch;
     final selection = List<Offset>.of(polygon);
-    bool current() => !_disposed && identical(file, document) &&
-        epoch == _pdfEpoch && index < document.pages!.length &&
-        identical(document.pages![index], page) && identical(page.background, background) &&
-        identical(page.pageSize, pageSize) && background.filename == filename &&
+    bool current() =>
+        !_disposed &&
+        identical(file, document) &&
+        epoch == _pdfEpoch &&
+        index < document.pages!.length &&
+        identical(document.pages![index], page) &&
+        identical(page.background, background) &&
+        identical(page.pageSize, pageSize) &&
+        background.filename == filename &&
         background.page == sourcePage;
     final raster = await _rasterPdfBackground(background, pixelBudget: 4000000);
     if (!current() || raster == null) return null;
-    final image = await cropPdfSelection(
-      raster, pageSize.toSize(), selection);
+    final image = await cropPdfSelection(raster, pageSize.toSize(), selection);
     return current() ? image : null;
   }
 
@@ -827,7 +882,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   Future<void> importPdf(
     BuildContext context, {
     void Function(String pdfPath, String title, Uint8List pickedBytes)?
-        onOpenInNewTab,
+    onOpenInNewTab,
   }) async {
     try {
       final fileData = await FilePickerCross.importFromStorage(
@@ -1659,12 +1714,13 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   void addPage() => insertPage(after: true);
-  void insertPage({required bool after, PaperSettings? paper}) => insertBlankPage(
-    activePageIndex + (after ? 1 : 0),
-    reference: activePageIndex,
-    navigate: true,
-    paper: paper,
-  );
+  void insertPage({required bool after, PaperSettings? paper}) =>
+      insertBlankPage(
+        activePageIndex + (after ? 1 : 0),
+        reference: activePageIndex,
+        navigate: true,
+        paper: paper,
+      );
 
   void insertBlankPage(
     int at, {
@@ -1681,10 +1737,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
       return;
     final chosen = paper ?? file!.defaultPaper;
     final size = chosen.size;
-    final page = XppPage.empty(
-      pageSize: size,
-      template: chosen.build(),
-    );
+    final page = XppPage.empty(pageSize: size, template: chosen.build());
     at = at.clamp(0, pages.length);
     // Index changes preserve layer selection and existing ink undo history.
     void shift<T>(Map<int, T> map) {

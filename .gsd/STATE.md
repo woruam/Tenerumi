@@ -1,5 +1,42 @@
 # Stato della correzione operativa — 2026-10-06
 
+## Profili di compilazione e XOPP — 2026-10-16
+
+- Sul ramo attuale, flag compile-time OSI_ENABLE_PLUGINS/OSI_ENABLE_BACKUP
+  entrambi false di default; profilo pubblico senza runtime/UI plugin e backup
+  manuale. Pomodoro resta plugin ed è escluso dal profilo pubblico.
+- Android seleziona sorgenti OCR e MLKit solo nel profilo sperimentale.
+  Autosave, recupero, esportazioni ordinarie e dati esistenti preservati.
+- Corretto doppio escaping XppText/XppTexImage: il serializer XML riceve testo
+  grezzo; test DOM/stream/Unicode/entità letterali e salvataggi ripetuti.
+- Suite pubblica completa: 336 pass/4 skip; sperimentale: 341 pass. Nuovo
+  contratto flag verificato nella successiva passata mirata del profilo pubblico.
+- APK ARM64 release compilato e firmato; verificati certificato atteso,
+  assenza dei moduli sperimentali nel report AOT e assenza MLKit/PluginOcr.
+- CI, istruzioni di compilazione, README e guida plugin allineati. Revisione
+  indipendente approvata. Dettagli in docs/validation/release-profile-status.md.
+- Analisi finale senza errori/warning (316 info); build Android sperimentale
+  verificata con canale OCR presente. Smoke dei due profili 2/2 ciascuno.
+- Nessun nuovo ramo, commit o pubblicazione GitHub effettuato.
+
+## Esperienza di scrittura e navigazione — 2026-10-16
+
+- Completate le otto richieste: penna minima realmente sottile, doppio tocco
+  senza zoom, Incolla compatto, barra pagine opzionale, bordo sottile con
+  colore configurabile, ritorno PDF con immagine nel primo fotogramma,
+  apertura PDF dal sistema, icona Pomodoro con riempimento progressivo.
+- Cache inattive limitate a due schede/quattro raster ciascuna/32 MiB;
+  immagini decodificate entro il budget condiviso. Geometria vecchie penne
+  preservata per spessori >=0,5.
+- Revisione indipendente approvata. 47 regressioni mirate superate;
+  analisi senza errori o warning; APK debug finale compilato.
+- Suite completa: rimane l'errore preesistente di doppio escaping nel test
+  streamed XOPP, documentato in docs/validation/experience-status.md.
+- Windows build bloccata dal requisito locale link simbolici/Modalità
+  sviluppatore. Apri con/stilo vanno confermati sul dispositivo fisico.
+- Prove, log e schermate in docs/validation/experience-*; guida apertura
+  dal sistema in docs/pdf-open-with.md. Nessun commit effettuato.
+
 ## Revisione sicurezza plugin — 2026-10-10
 
 - Riprodotto con un file temporaneo innocuo il caricamento di moduli esterni in FJS 3.2.0. Motore/bridge rimossi dalle dipendenze dell'app; JavaScript rifiutato nel controller e nei runner, senza preferenze, flag o interruttori di riattivazione.

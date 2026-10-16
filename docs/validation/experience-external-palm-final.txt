@@ -1,0 +1,10 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/external_documents_test.dart
+00:00 +0: C:/Users/aless/Documents/GitHub/OSIpp/test/external_documents_test.dart: Android drains pending PDF activations and enables warm intents
+00:00 +1: C:/Users/aless/Documents/GitHub/OSIpp/test/external_documents_test.dart: Denied external URI propagates without creating an empty note
+00:00 +2: C:/Users/aless/Documents/GitHub/OSIpp/test/palm_toolbar_regression_test.dart: pen proximity cancels pinch and fresh pinch recovers false PointerDeviceKind.stylus
+00:01 +3: C:/Users/aless/Documents/GitHub/OSIpp/test/palm_toolbar_regression_test.dart: pen proximity cancels pinch and fresh pinch recovers false PointerDeviceKind.invertedStylus
+00:01 +4: C:/Users/aless/Documents/GitHub/OSIpp/test/palm_toolbar_regression_test.dart: pen proximity cancels pinch and fresh pinch recovers true PointerDeviceKind.stylus
+00:01 +5: C:/Users/aless/Documents/GitHub/OSIpp/test/palm_toolbar_regression_test.dart: pen proximity cancels pinch and fresh pinch recovers true PointerDeviceKind.invertedStylus
+00:01 +6: C:/Users/aless/Documents/GitHub/OSIpp/test/palm_toolbar_regression_test.dart: selected tool is independent of ink Color(alpha: 1.0000, red: 0.0000, green: 0.0000, blue: 0.0000, colorSpace: ColorSpace.sRGB)
+00:01 +7: C:/Users/aless/Documents/GitHub/OSIpp/test/palm_toolbar_regression_test.dart: selected tool is independent of ink MaterialColor(primary value: Color(alpha: 1.0000, red: 0.6118, green: 0.1529, blue: 0.6902, colorSpace: ColorSpace.sRGB))
+00:01 +8: All tests passed!

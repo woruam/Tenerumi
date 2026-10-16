@@ -23,6 +23,8 @@ class ThemeController extends ChangeNotifier {
   bool useDynamicColor = true;
   bool pureBlack = true;
   AppIconStyle iconStyle = AppIconStyle.outlined;
+  bool showPageScrollbar = true;
+  Color currentPageBorderColor = kDefaultAccent;
 
   /// Set di icone coerente con lo stile scelto dall'utente.
   AppIcons get icons => AppIcons(iconStyle);
@@ -34,6 +36,10 @@ class ThemeController extends ChangeNotifier {
       if (colorValue != null) accent = Color(colorValue);
       useDynamicColor = prefs.getBool(_kDynamic) ?? true;
       pureBlack = prefs.getBool(_kPureBlack) ?? true;
+      showPageScrollbar = prefs.getBool('show_page_scrollbar') ?? true;
+      currentPageBorderColor = Color(
+        prefs.getInt('current_page_border_color') ?? kDefaultAccent.toARGB32(),
+      );
       final styleIndex = prefs.getInt(_kIconStyle);
       if (styleIndex != null &&
           styleIndex >= 0 &&
@@ -77,6 +83,23 @@ class ThemeController extends ChangeNotifier {
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_kIconStyle, style.index);
+  }
+
+  Future<void> setPageScrollbar(bool value) async {
+    showPageScrollbar = value;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('show_page_scrollbar', value);
+  }
+
+  Future<void> setCurrentPageBorderColor(Color color) async {
+    currentPageBorderColor = color.withValues(alpha: 1);
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(
+      'current_page_border_color',
+      currentPageBorderColor.toARGB32(),
+    );
   }
 }
 

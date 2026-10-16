@@ -93,3 +93,28 @@ G/H/A: fasi 1–4 completate nell’ordine richiesto. Regressioni complete, misu
 4. Regressioni, analisi, compilazione native se necessaria e confronto Poppler; commit.
 
 Nitidezza PDF/README: fasi 1–4 completate; export e viewport verificati, risorse native testate e limitazioni documentate.
+
+## Esperienza di scrittura e navigazione — 2026-10-16
+1. Analizzare gesti, geometria inchiostro, lifecycle schede e integrazione sistema.
+2. Correggere penna minima, doppio tocco e dimensioni del menu incolla.
+3. Aggiungere scorrimento rapido opzionale e contorno configurabile.
+4. Conservare raster e immagini decodificate delle schede recenti con budget limitato.
+5. Integrare apertura PDF dal sistema e progresso nell'icona Pomodoro.
+6. Verificare regressioni, analisi, build Android e revisione indipendente.
+
+Esperienza scrittura/navigazione: fasi 1–6 completate; 47 test mirati passati,
+analisi senza errori/warning, APK Android finale compilato e revisione approvata.
+Errore di serializzazione preesistente e limiti delle prove native documentati
+in docs/validation/experience-status.md.
+
+## Distribuzione essenziale e correzione testo XOPP — 2026-10-16
+1. Esplorare raggiungibilità startup/UI e dipendenze native sperimentali.
+2. Introdurre flag compile-time disattivati di default, mantenendo Pomodoro
+   come plugin escluso dalla versione pubblica.
+3. Escludere sorgenti/dipendenze OCR native, preservando dati e servizi base.
+4. Correggere serializzazione testo/formule XOPP e testare i round-trip.
+5. Allineare CI, test nei due profili, README e istruzioni.
+6. Compilare release firmata e verificare codice incluso, firma e revisione.
+
+Fasi 1–6 completate; suite pubblica e sperimentale superate, release ARM64
+firmata con audit AOT/nativo. Risultati in docs/validation/release-profile-status.md.

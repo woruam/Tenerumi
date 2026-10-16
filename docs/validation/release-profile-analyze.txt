@@ -1,0 +1,320 @@
+Analyzing 2 items...                                            
+
+   info - The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/foundation.dart'. Try removing the import directive - lib\controllers\canvas_controller.dart:20:8 - unnecessary_import
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\canvas_controller.dart:352:13 - curly_braces_in_flow_control_structures
+   info - Unnecessary constructor invocation. Try using a collection literal - lib\controllers\canvas_controller.dart:482:38 - prefer_collection_literals
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\canvas_controller.dart:550:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\canvas_controller.dart:593:11 - curly_braces_in_flow_control_structures
+   info - Unnecessary use of multiple underscores. Try using '_' - lib\controllers\canvas_controller.dart:613:38 - unnecessary_underscores
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\canvas_controller.dart:744:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\canvas_controller.dart:769:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\canvas_controller.dart:774:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\canvas_controller.dart:778:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\canvas_controller.dart:806:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\canvas_controller.dart:1170:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\canvas_controller.dart:1207:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\canvas_controller.dart:1261:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\canvas_controller.dart:1288:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\canvas_controller.dart:1308:9 - curly_braces_in_flow_control_structures
+   info - Unnecessary use of multiple underscores. Try using '_' - lib\controllers\canvas_controller.dart:1313:38 - unnecessary_underscores
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\canvas_controller.dart:1334:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\canvas_controller.dart:1423:13 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\canvas_controller.dart:1439:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\canvas_controller.dart:1459:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\canvas_controller.dart:1737:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\canvas_controller.dart:1757:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\canvas_controller.dart:1795:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\note_audio_controller.dart:23:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\note_audio_controller.dart:25:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\note_audio_controller.dart:168:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\note_audio_controller.dart:224:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\note_audio_controller.dart:283:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\note_audio_controller.dart:290:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\note_audio_controller.dart:337:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\note_audio_controller.dart:339:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\note_audio_controller.dart:372:11 - curly_braces_in_flow_control_structures
+   info - Unnecessary 'const' keyword. Try removing the keyword - lib\controllers\theme_controller.dart:13:39 - unnecessary_const
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\workspace_controller.dart:68:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\controllers\workspace_controller.dart:112:7 - curly_braces_in_flow_control_structures
+   info - Unnecessary escape in string literal. Remove the '\' escape - lib\generated\intl\messages_en.dart:63:19 - unnecessary_string_escapes
+   info - Unnecessary escape in string literal. Remove the '\' escape - lib\generated\intl\messages_en.dart:63:47 - unnecessary_string_escapes
+   info - Unnecessary escape in string literal. Remove the '\' escape - lib\generated\intl\messages_en.dart:139:21 - unnecessary_string_escapes
+   info - The file name 'XppImage.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\layer_contents\XppImage.dart:1:1 - file_names
+   info - The file name 'XppStroke.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\layer_contents\XppStroke.dart:1:1 - file_names
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\layer_contents\XppStroke.dart:81:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\layer_contents\XppStroke.dart:87:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\layer_contents\XppStroke.dart:117:13 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\layer_contents\XppStroke.dart:128:9 - curly_braces_in_flow_control_structures
+   info - Use interpolation to compose strings and values. Try using string interpolation to build the composite string - lib\layer_contents\XppStroke.dart:267:30 - prefer_interpolation_to_compose_strings
+   info - Parameters ''points' and 'color'' could be super parameters. Trying converting ''points' and 'color'' to super parameters - lib\layer_contents\XppStroke.dart:394:3 - use_super_parameters
+   info - Parameters ''points' and 'color'' could be super parameters. Trying converting ''points' and 'color'' to super parameters - lib\layer_contents\XppStroke.dart:404:3 - use_super_parameters
+   info - Parameters ''points' and 'color'' could be super parameters. Trying converting ''points' and 'color'' to super parameters - lib\layer_contents\XppStroke.dart:414:3 - use_super_parameters
+   info - The constant name 'PEN' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\layer_contents\XppStroke.dart:543:22 - constant_identifier_names
+   info - The constant name 'HIGHLIGHTER' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\layer_contents\XppStroke.dart:543:27 - constant_identifier_names
+   info - The constant name 'ERASER' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\layer_contents\XppStroke.dart:543:40 - constant_identifier_names
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\layer_contents\XppStroke.dart:570:7 - curly_braces_in_flow_control_structures
+   info - The file name 'XppTexImage.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\layer_contents\XppTexImage.dart:1:1 - file_names
+   info - The file name 'XppText.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\layer_contents\XppText.dart:1:1 - file_names
+   info - Unnecessary 'this.' qualifier. Try removing 'this.' - lib\layer_contents\XppText.dart:56:37 - unnecessary_this
+   info - Invalid use of a private type in a public API. Try making the private type public, or making the API that uses the private type also be private - lib\main.dart:47:10 - library_private_types_in_public_api
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\main.dart:75:11 - curly_braces_in_flow_control_structures
+   info - The file name 'CanvasPage.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\pages\CanvasPage.dart:1:1 - file_names
+   info - The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/foundation.dart'. Try removing the import directive - lib\pages\CanvasPage.dart:1:8 - unnecessary_import
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\pages\CanvasPage.dart:65:7 - curly_braces_in_flow_control_structures
+   info - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter - lib\pages\CanvasPage.dart:88:9 - use_super_parameters
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\pages\CanvasPage.dart:134:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\pages\CanvasPage.dart:406:35 - curly_braces_in_flow_control_structures
+   info - The file name 'OpenPage.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\pages\OpenPage.dart:1:1 - file_names
+   info - The import of 'package:flutter/services.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart'. Try removing the import directive - lib\pages\OpenPage.dart:11:8 - unnecessary_import
+   info - Invalid use of a private type in a public API. Try making the private type public, or making the API that uses the private type also be private - lib\pages\OpenPage.dart:35:3 - library_private_types_in_public_api
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\pages\OpenPage.dart:113:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\pages\OpenPage.dart:117:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\pages\OpenPage.dart:149:7 - curly_braces_in_flow_control_structures
+   info - Unnecessary use of multiple underscores. Try using '_' - lib\pages\OpenPage.dart:384:49 - unnecessary_underscores
+   info - Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check - lib\pages\OpenPage.dart:506:16 - use_build_context_synchronously
+   info - Unnecessary use of 'toList' in a spread. Try removing the invocation of 'toList' - lib\pages\OpenPage.dart:704:34 - unnecessary_to_list_in_spreads
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\pages\OpenPage.dart:1097:31 - curly_braces_in_flow_control_structures
+   info - Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check. Guard a 'State.context' use with a 'mounted' check on the State, and other BuildContext use with a 'mounted' check on the BuildContext - lib\pages\OpenPage.dart:1097:52 - use_build_context_synchronously
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\pages\OpenPage.dart:1231:35 - curly_braces_in_flow_control_structures
+   info - Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check - lib\pages\OpenPage.dart:1238:54 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check - lib\pages\OpenPage.dart:1247:52 - use_build_context_synchronously
+   info - The file name 'WorkspacePage.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\pages\WorkspacePage.dart:1:1 - file_names
+   info - Constructors for public widgets should have a named 'key' parameter. Try adding a named parameter to the constructor - lib\pages\WorkspacePage.dart:33:3 - use_key_in_widget_constructors
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\pages\WorkspacePage.dart:33:3 - prefer_const_constructors_in_immutables
+   info - Invalid use of a private type in a public API. Try making the private type public, or making the API that uses the private type also be private - lib\pages\WorkspacePage.dart:41:3 - library_private_types_in_public_api
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\pages\WorkspacePage.dart:93:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\pages\WorkspacePage.dart:154:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\pages\WorkspacePage.dart:211:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\pages\WorkspacePage.dart:286:7 - curly_braces_in_flow_control_structures
+   info - The file name 'HexColor.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\src\HexColor.dart:1:1 - file_names
+   info - Use interpolation to compose strings and values. Try using string interpolation to build the composite string - lib\src\HexColor.dart:9:18 - prefer_interpolation_to_compose_strings
+   info - The file name 'PdfImage.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\src\PdfImage.dart:1:1 - file_names
+   info - The file name 'ShapeRecognizer.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\src\ShapeRecognizer.dart:1:1 - file_names
+   info - The file name 'XppBackground.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\src\XppBackground.dart:1:1 - file_names
+   info - Use the generic function type syntax in 'typedef's. Try using the generic function type syntax ('Future<FilePickerCross> Function(String? path)') - lib\src\XppBackground.dart:14:33 - prefer_generic_function_type_aliases
+   info - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter - lib\src\XppBackground.dart:42:9 - use_super_parameters
+   info - Invalid use of a private type in a public API. Try making the private type public, or making the API that uses the private type also be private - lib\src\XppBackground.dart:45:3 - library_private_types_in_public_api
+   info - Field overrides a field inherited from 'XppBackground'. Try removing the field, overriding the getter and setter if necessary - lib\src\XppBackground.dart:73:22 - overridden_fields
+   info - The member 'type' overrides an inherited member but isn't annotated with '@override'. Try adding the '@override' annotation - lib\src\XppBackground.dart:73:22 - annotate_overrides
+   info - Unnecessary 'this.' qualifier. Try removing 'this.' - lib\src\XppBackground.dart:121:5 - unnecessary_this
+   info - Parameter 'size' could be a super parameter. Trying converting 'size' to a super parameter - lib\src\XppBackground.dart:223:3 - use_super_parameters
+   info - Parameter 'size' could be a super parameter. Trying converting 'size' to a super parameter - lib\src\XppBackground.dart:243:3 - use_super_parameters
+   info - The constant name 'ABSOLUTE' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\XppBackground.dart:430:33 - constant_identifier_names
+   info - The constant name 'ATTACH' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\XppBackground.dart:430:43 - constant_identifier_names
+   info - The constant name 'CLONE' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\XppBackground.dart:430:51 - constant_identifier_names
+   info - The constant name 'NONE' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\XppBackground.dart:432:26 - constant_identifier_names
+   info - The constant name 'SOLID' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\XppBackground.dart:432:32 - constant_identifier_names
+   info - The constant name 'PIXMAP' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\XppBackground.dart:432:39 - constant_identifier_names
+   info - The file name 'XppFile.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\src\XppFile.dart:1:1 - file_names
+   info - The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/foundation.dart'. Try removing the import directive - lib\src\XppFile.dart:15:8 - unnecessary_import
+   info - The import of 'dart:ui' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart'. Try removing the import directive - lib\src\XppFile.dart:16:8 - unnecessary_import
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\XppFile.dart:92:7 - curly_braces_in_flow_control_structures
+   info - Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check - lib\src\XppFile.dart:187:20 - use_build_context_synchronously
+   info - Don't use 'BuildContext's across async gaps. Try rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check - lib\src\XppFile.dart:195:18 - use_build_context_synchronously
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\XppFile.dart:313:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\XppFile.dart:315:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\XppFile.dart:320:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\XppFile.dart:334:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\XppFile.dart:386:13 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\XppFile.dart:504:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\XppFile.dart:537:13 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\XppFile.dart:747:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\XppFile.dart:938:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\XppFile.dart:960:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\XppFile.dart:963:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\XppFile.dart:971:7 - curly_braces_in_flow_control_structures
+   info - Use interpolation to compose strings and values. Try using string interpolation to build the composite string - lib\src\XppFile.dart:977:12 - prefer_interpolation_to_compose_strings
+   info - The file name 'XppLayer.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\src\XppLayer.dart:1:1 - file_names
+   info - The file name 'XppPage.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\src\XppPage.dart:1:1 - file_names
+   info - The file name 'XppPageSize.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\src\XppPageSize.dart:1:1 - file_names
+   info - Unnecessary use of multiple underscores. Try using '_' - lib\src\autosave_store.dart:28:38 - unnecessary_underscores
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\autosave_store.dart:60:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\autosave_store.dart:133:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\autosave_store.dart:136:7 - curly_braces_in_flow_control_structures
+   info - The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/foundation.dart'. Try removing the import directive - lib\src\compat\backup_staging_io.dart:3:8 - unnecessary_import
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\backup_staging_io.dart:21:5 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\backup_staging_io.dart:38:5 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\backup_staging_io.dart:52:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\backup_staging_io.dart:96:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\backup_staging_io.dart:102:11 - curly_braces_in_flow_control_structures
+   info - Unnecessary use of string interpolation. Try replacing the string literal with the variable name - lib\src\compat\backup_staging_io.dart:105:15 - unnecessary_string_interpolations
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\backup_staging_io.dart:130:5 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\backup_staging_io.dart:148:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\critical_backend_io.dart:44:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\critical_backend_io.dart:69:5 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\critical_backend_io.dart:118:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\critical_backend_io.dart:129:5 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\critical_backend_io.dart:132:5 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\critical_backend_io.dart:163:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\critical_backend_io.dart:182:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\critical_backend_io.dart:237:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\critical_backend_web.dart:97:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\critical_backend_web.dart:114:5 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\critical_backend_web.dart:128:5 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\critical_backend_web.dart:133:5 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\critical_backend_web.dart:159:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\critical_backend_web.dart:184:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\file_picker_cross.dart:61:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\file_picker_cross.dart:87:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\internal_storage_generic.dart:44:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\internal_storage_io.dart:43:5 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\internal_storage_io.dart:50:13 - curly_braces_in_flow_control_structures
+   info - Don't invoke 'print' in production code. Try using a logging framework - lib\src\compat\internal_storage_io.dart:69:5 - avoid_print
+   info - Don't invoke 'print' in production code. Try using a logging framework - lib\src\compat\internal_storage_io.dart:73:5 - avoid_print
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\pdf_staging_io.dart:35:5 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\pdf_staging_io.dart:49:5 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\pdf_staging_io.dart:57:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\pdf_staging_io.dart:65:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\pdf_staging_io.dart:76:5 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\pdf_staging_io.dart:82:5 - curly_braces_in_flow_control_structures
+   info - The parameter name 'byte' doesn't match the name 's' in the overridden method. Try changing the name to 's' - lib\src\compat\pdf_staging_io.dart:104:20 - avoid_renaming_method_parameters
+   info - The parameter name 'bytes' doesn't match the name 's' in the overridden method. Try changing the name to 's' - lib\src\compat\pdf_staging_io.dart:112:27 - avoid_renaming_method_parameters
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\compat\pdf_staging_io.dart:114:7 - curly_braces_in_flow_control_structures
+   info - The parameter name 'bytes' doesn't match the name 'iterable' in the overridden method. Try changing the name to 'iterable' - lib\src\compat\pdf_staging_io.dart:127:43 - avoid_renaming_method_parameters
+   info - The parameter name 'stream' doesn't match the name 's' in the overridden method. Try changing the name to 's' - lib\src\compat\pdf_staging_io.dart:136:28 - avoid_renaming_method_parameters
+   info - The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/foundation.dart'. Try removing the import directive - lib\src\critical_data.dart:3:8 - unnecessary_import
+   info - Unnecessary use of multiple underscores. Try using '_' - lib\src\critical_data.dart:66:38 - unnecessary_underscores
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\critical_data.dart:79:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\critical_data.dart:91:11 - curly_braces_in_flow_control_structures
+   info - Unnecessary use of multiple underscores. Try using '_' - lib\src\critical_data.dart:214:38 - unnecessary_underscores
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\critical_data.dart:239:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\critical_data.dart:259:13 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\critical_data.dart:261:13 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\critical_data.dart:310:17 - curly_braces_in_flow_control_structures
+   info - The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/foundation.dart'. Try removing the import directive - lib\src\decoded_image_cache.dart:2:8 - unnecessary_import
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\decoded_image_cache.dart:111:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\decoded_image_cache.dart:126:13 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\decoded_image_cache.dart:147:15 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\decoded_image_cache.dart:152:15 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\decoded_image_cache.dart:171:11 - curly_braces_in_flow_control_structures
+   info - Unnecessary use of multiple underscores. Try using '_' - lib\src\decoded_image_cache.dart:185:38 - unnecessary_underscores
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\decoded_image_cache.dart:206:9 - curly_braces_in_flow_control_structures
+   info - The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/foundation.dart'. Try removing the import directive - lib\src\document_export.dart:9:8 - unnecessary_import
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\document_export.dart:130:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\document_export.dart:331:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\document_export.dart:459:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\document_export.dart:465:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\document_export.dart:467:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\document_export.dart:835:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\document_export.dart:853:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\document_export.dart:855:11 - curly_braces_in_flow_control_structures
+   info - The constant name 'STYLUS' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\editing_tool.dart:3:3 - constant_identifier_names
+   info - The constant name 'HIGHLIGHT' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\editing_tool.dart:4:3 - constant_identifier_names
+   info - The constant name 'TEXT' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\editing_tool.dart:5:3 - constant_identifier_names
+   info - The constant name 'LATEX' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\editing_tool.dart:6:3 - constant_identifier_names
+   info - The constant name 'IMAGE' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\editing_tool.dart:7:3 - constant_identifier_names
+   info - The constant name 'MOVE' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\editing_tool.dart:8:3 - constant_identifier_names
+   info - The constant name 'SELECT' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\editing_tool.dart:9:3 - constant_identifier_names
+   info - The constant name 'FLASHCARD' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\editing_tool.dart:10:3 - constant_identifier_names
+   info - The constant name 'ERASER' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\editing_tool.dart:11:3 - constant_identifier_names
+   info - The constant name 'WHITEOUT' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\editing_tool.dart:12:3 - constant_identifier_names
+   info - The constant name 'SHAPE_LINE' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\editing_tool.dart:13:3 - constant_identifier_names
+   info - The constant name 'SHAPE_RECT' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\editing_tool.dart:14:3 - constant_identifier_names
+   info - The constant name 'SHAPE_CIRCLE' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\editing_tool.dart:15:3 - constant_identifier_names
+   info - The constant name 'SHAPE_SQUARE' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\editing_tool.dart:16:3 - constant_identifier_names
+   info - The constant name 'SHAPE_DASHED_LINE' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\editing_tool.dart:17:3 - constant_identifier_names
+   info - The constant name 'SHAPE_CUBE' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\editing_tool.dart:18:3 - constant_identifier_names
+   info - The constant name 'SHAPE_CYLINDER' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\editing_tool.dart:19:3 - constant_identifier_names
+   info - The constant name 'SHAPE_SPHERE' isn't a lowerCamelCase identifier. Try changing the name to follow the lowerCamelCase style - lib\src\editing_tool.dart:20:3 - constant_identifier_names
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\note_audio.dart:38:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\note_audio.dart:45:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\note_audio.dart:83:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\note_backup.dart:127:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\note_backup.dart:141:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\note_backup.dart:216:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\note_backup.dart:258:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\note_backup.dart:300:13 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\note_backup.dart:312:13 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\note_backup.dart:335:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\note_backup.dart:346:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\note_backup.dart:383:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\note_backup.dart:395:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\note_backup.dart:478:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\note_flashcards.dart:22:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\note_flashcards.dart:27:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\note_flashcards.dart:33:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\note_flashcards.dart:37:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\note_flashcards.dart:61:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\note_flashcards.dart:96:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\note_flashcards.dart:99:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\note_flashcards.dart:104:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\note_tags.dart:72:11 - curly_braces_in_flow_control_structures
+   info - Unnecessary constructor invocation. Try using a collection literal - lib\src\pdf_raster_cache.dart:8:20 - prefer_collection_literals
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\recent_documents.dart:16:5 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\recent_documents.dart:197:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\recent_documents.dart:199:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\recovery_journal.dart:63:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\recovery_journal.dart:90:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\recovery_journal.dart:93:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\recovery_journal.dart:115:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\recovery_journal.dart:122:13 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\recovery_journal.dart:189:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\recovery_journal.dart:196:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\recovery_journal.dart:204:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\recovery_journal.dart:226:13 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\recovery_journal.dart:268:15 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\recovery_journal.dart:291:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\recovery_journal.dart:307:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\workspace_session.dart:30:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\workspace_session.dart:32:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\workspace_session.dart:58:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\workspace_session.dart:62:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\workspace_session.dart:115:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\src\workspace_session.dart:145:7 - curly_braces_in_flow_control_structures
+   info - The file name 'PointerListener.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\widgets\PointerListener.dart:1:1 - file_names
+   info - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter - lib\widgets\PointerListener.dart:63:9 - use_super_parameters
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\PointerListener.dart:658:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\PointerListener.dart:684:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\PointerListener.dart:691:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\PointerListener.dart:794:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\PointerListener.dart:1067:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\PointerListener.dart:1415:7 - curly_braces_in_flow_control_structures
+   info - The file name 'PomodoroTimer.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\widgets\PomodoroTimer.dart:1:1 - file_names
+   info - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter - lib\widgets\PomodoroTimer.dart:35:9 - use_super_parameters
+   info - The file name 'XppPageStack.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\widgets\XppPageStack.dart:1:1 - file_names
+   info - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter - lib\widgets\XppPageStack.dart:20:9 - use_super_parameters
+   info - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter - lib\widgets\XppPageStack.dart:140:9 - use_super_parameters
+   info - The file name 'ZoomableWidget.dart' isn't a lower_case_with_underscores identifier. Try changing the name to follow the lower_case_with_underscores style - lib\widgets\ZoomableWidget.dart:1:1 - file_names
+   info - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter - lib\widgets\ZoomableWidget.dart:100:9 - use_super_parameters
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\ZoomableWidget.dart:209:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\ZoomableWidget.dart:241:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\ZoomableWidget.dart:252:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\ZoomableWidget.dart:261:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\ZoomableWidget.dart:288:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\audio_timeline_overlay.dart:54:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\audio_timeline_overlay.dart:58:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\audio_timeline_overlay.dart:65:15 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\audio_timeline_overlay.dart:67:15 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\audio_timeline_overlay.dart:101:13 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\bounded_image.dart:40:7 - curly_braces_in_flow_control_structures
+   info - The import of 'package:flutter/gestures.dart' is unnecessary because all of the used elements are also provided by the import of 'dart:ui'. Try removing the import directive - lib\widgets\canvas_toolbar.dart:6:8 - unnecessary_import
+   info - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter - lib\widgets\canvas_toolbar.dart:41:9 - use_super_parameters
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\document_library_card.dart:40:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\document_navigator.dart:116:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\document_navigator.dart:132:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\infinite_canvas.dart:155:23 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\note_backup_dialog.dart:86:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\note_backup_dialog.dart:88:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\note_backup_dialog.dart:96:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\note_backup_dialog.dart:98:11 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\page_scrollbar.dart:59:17 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\page_scrollbar.dart:63:17 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\saved_notes_dialog.dart:46:5 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\saved_notes_dialog.dart:65:5 - curly_braces_in_flow_control_structures
+   info - Parameter 'key' could be a super parameter. Trying converting 'key' to a super parameter - lib\widgets\split_screen_view.dart:18:9 - use_super_parameters
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\virtual_page_column.dart:98:9 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - lib\widgets\virtual_page_column.dart:108:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - test\astra_recovery_performance_test.dart:56:7 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - test\astra_recovery_performance_test.dart:62:7 - curly_braces_in_flow_control_structures
+   info - The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/services.dart'. Try removing the import directive - test\document_export_test.dart:3:8 - unnecessary_import
+   info - The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/services.dart'. Try removing the import directive - test\note_audio_test.dart:2:8 - unnecessary_import
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - test\note_audio_test.dart:41:11 - curly_braces_in_flow_control_structures
+   info - The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/foundation.dart'. Try removing the import directive - test\open_file_home_test.dart:2:8 - unnecessary_import
+   info - Statements in an if should be enclosed in a block. Try wrapping the statement in a block - test\open_file_home_test.dart:121:11 - curly_braces_in_flow_control_structures
+   info - The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/services.dart'. Try removing the import directive - test\paper_templates_test.dart:3:8 - unnecessary_import
+   info - The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/services.dart'. Try removing the import directive - test\performance_resources_test.dart:11:8 - unnecessary_import
+   info - Statements in a for should be enclosed in a block. Try wrapping the statement in a block - test\performance_resources_test.dart:647:11 - curly_braces_in_flow_control_structures
+   info - Don't invoke 'print' in production code. Try using a logging framework - test\reopened_autosave_performance_test.dart:114:9 - avoid_print
+   info - The import of 'dart:typed_data' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/services.dart'. Try removing the import directive - test\workspace_navigation_test.dart:3:8 - unnecessary_import
+
+316 issues found. (ran in 135.8s)

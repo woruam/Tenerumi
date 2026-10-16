@@ -14,6 +14,7 @@ import 'package:xournalpp/layer_contents/XppText.dart';
 import 'package:xournalpp/plugins/plugin_controller.dart';
 import 'package:xournalpp/plugins/plugin_manager_page.dart';
 import 'package:xournalpp/src/XppFile.dart';
+import 'package:xournalpp/src/app_features.dart';
 import 'package:xournalpp/src/compat/file_picker_cross.dart';
 import 'package:xournalpp/src/editing_tool.dart';
 import 'package:xournalpp/src/note_flashcards.dart';
@@ -209,11 +210,20 @@ void main() {
     await p.setBuiltInEnabled('pomodoro', true);
     await p.setBuiltInEnabled('anki', true);
     await tester.pumpAndSettle();
-    expect(find.byTooltip('Pomodoro'), findsOneWidget);
-    expect(find.byTooltip('Flashcard: doppia selezione'), findsOneWidget);
+    expect(
+      find.byTooltip('Pomodoro'),
+      AppFeatures.plugins ? findsOneWidget : findsNothing,
+    );
+    expect(
+      find.byTooltip('Flashcard: doppia selezione'),
+      AppFeatures.plugins ? findsOneWidget : findsNothing,
+    );
     c.beginFlashcard();
     await tester.pumpAndSettle();
-    expect(find.text('1 · Titolo'), findsOneWidget);
+    expect(
+      find.text('1 · Titolo'),
+      AppFeatures.plugins ? findsOneWidget : findsNothing,
+    );
     await p.setBuiltInEnabled('pomodoro', false);
     await tester.pumpAndSettle();
     expect(find.byTooltip('Pomodoro'), findsNothing);
@@ -252,7 +262,7 @@ void main() {
     await tester.tap(find.byTooltip('Elimina flashcard'));
     await tester.pumpAndSettle();
     expect(c.file!.flashcards, isEmpty);
-  });
+  }, skip: !AppFeatures.plugins);
 
   testWidgets('native plugins are listed without installation', (tester) async {
     final p = PluginController();
@@ -332,5 +342,6 @@ void main() {
       );
       expect(c.flashcardFront, isNull);
     },
+    skip: !AppFeatures.plugins,
   );
 }

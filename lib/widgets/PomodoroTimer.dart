@@ -26,12 +26,19 @@ enum PomodoroPhase { work, shortBreak, longBreak }
 /// - Estetica "Nothing OS": anello a matrice di punti, tempo in font
 ///   dot-matrix, pannello nero con bordo sottile.
 class PomodoroTimer extends StatefulWidget {
+  final DateTime Function()? now;
+  final ValueNotifier<double>? progress;
   final VoidCallback? onClose;
   final void Function(PomodoroPhase finished, PomodoroPhase next)?
   onPhaseComplete;
 
-  const PomodoroTimer({Key? key, this.onClose, this.onPhaseComplete})
-    : super(key: key);
+  const PomodoroTimer({
+    Key? key,
+    this.onClose,
+    this.onPhaseComplete,
+    this.progress,
+    this.now,
+  }) : super(key: key);
 
   @override
   State<PomodoroTimer> createState() => _PomodoroTimerState();
@@ -39,6 +46,7 @@ class PomodoroTimer extends StatefulWidget {
 
 class _PomodoroTimerState extends State<PomodoroTimer>
     with WidgetsBindingObserver {
+  DateTime _now() => widget.now?.call() ?? DateTime.now();
   // Impostazioni (persistite)
   int workMinutes = 25;
   int shortBreakMinutes = 5;
@@ -64,6 +72,16 @@ class _PomodoroTimerState extends State<PomodoroTimer>
 
   bool get _running => _endAt != null;
 
+  // Only the small toolbar icon listens to this; canvas widgets stay untouched.
+  void _publishProgress({bool completed = false}) {
+    final total = _phaseDuration(_phase).inMilliseconds;
+    widget.progress?.value = completed
+        ? 1
+        : total <= 0
+        ? 0
+        : (1 - _remaining.inMilliseconds / total).clamp(0.0, 1.0);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -83,11 +101,12 @@ class _PomodoroTimerState extends State<PomodoroTimer>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed && _running) {
-      final left = _endAt!.difference(DateTime.now());
+      final left = _endAt!.difference(_now());
       if (left <= Duration.zero) {
         _completePhase();
       } else {
         setState(() => _remaining = left);
+        _publishProgress();
       }
     }
   }
@@ -104,6 +123,7 @@ class _PomodoroTimerState extends State<PomodoroTimer>
         autoStartNext = prefs.getBool(_kAuto) ?? autoStartNext;
         if (!_running) _remaining = _phaseDuration(_phase);
       });
+      _publishProgress();
     } catch (_) {}
   }
 
@@ -133,18 +153,20 @@ class _PomodoroTimerState extends State<PomodoroTimer>
     _ticker?.cancel();
     _ticker = Timer.periodic(const Duration(milliseconds: 250), (_) {
       if (!_running) return;
-      final left = _endAt!.difference(DateTime.now());
+      final left = _endAt!.difference(_now());
       if (left <= Duration.zero) {
         _completePhase();
       } else if (left.inSeconds != _remaining.inSeconds) {
         setState(() => _remaining = left);
+        _publishProgress();
       }
     });
   }
 
   void _start() {
     if (_running) return;
-    setState(() => _endAt = DateTime.now().add(_remaining));
+    setState(() => _endAt = _now().add(_remaining));
+    _publishProgress();
     _startTicker();
   }
 
@@ -152,10 +174,11 @@ class _PomodoroTimerState extends State<PomodoroTimer>
     if (!_running) return;
     _ticker?.cancel();
     setState(() {
-      _remaining = _endAt!.difference(DateTime.now());
+      _remaining = _endAt!.difference(_now());
       if (_remaining < Duration.zero) _remaining = Duration.zero;
       _endAt = null;
     });
+    _publishProgress();
   }
 
   void _reset() {
@@ -164,6 +187,7 @@ class _PomodoroTimerState extends State<PomodoroTimer>
       _endAt = null;
       _remaining = _phaseDuration(_phase);
     });
+    _publishProgress();
   }
 
   /// Avanza alla fase successiva. [manual] = premuto "salta": niente suoni.
@@ -186,8 +210,9 @@ class _PomodoroTimerState extends State<PomodoroTimer>
       _completedWorkSessions = completed;
       _phase = next;
       _remaining = _phaseDuration(next);
-      _endAt = startNow ? DateTime.now().add(_remaining) : null;
+      _endAt = startNow ? _now().add(_remaining) : null;
     });
+    _publishProgress(completed: !manual && !startNow);
     if (startNow) _startTicker();
 
     if (!manual) {
@@ -200,6 +225,7 @@ class _PomodoroTimerState extends State<PomodoroTimer>
   void _applyDurations() {
     if (!_running) {
       setState(() => _remaining = _phaseDuration(_phase));
+      _publishProgress();
     }
     _persistSettings();
   }

@@ -11,6 +11,7 @@ class VirtualPageColumn extends StatefulWidget {
   final Widget Function(int) pageBuilder;
   final ValueChanged<Set<int>>? onVisiblePages;
   final ValueChanged<int>? onCurrentPage;
+  final Color? currentPageBorderColor;
   const VirtualPageColumn({
     super.key,
     required this.transform,
@@ -20,6 +21,7 @@ class VirtualPageColumn extends StatefulWidget {
     required this.pageBuilder,
     this.onVisiblePages,
     this.onCurrentPage,
+    this.currentPageBorderColor,
   });
   @override
   State<VirtualPageColumn> createState() => _VirtualPageColumnState();
@@ -107,7 +109,7 @@ class _VirtualPageColumnState extends State<VirtualPageColumn> {
     final changed = !listEquals(_visible, next);
     final currentChanged = current != _current;
     _current = current;
-    if (changed) {
+    if (changed || currentChanged) {
       _visible = next;
       if (mounted) setState(() {});
     }
@@ -144,7 +146,31 @@ class _VirtualPageColumnState extends State<VirtualPageColumn> {
             left: 16,
             width: widget.width,
             height: widget.heights[i],
-            child: widget.pageBuilder(i),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                widget.pageBuilder(i),
+                if (i == _current && widget.currentPageBorderColor != null)
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: ListenableBuilder(
+                        listenable: widget.transform,
+                        builder: (context, _) => DecoratedBox(
+                          key: const ValueKey('current-page-border'),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: widget.currentPageBorderColor!,
+                              width:
+                                  1 /
+                                  widget.transform.value.getMaxScaleOnAxis(),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
       ],
     ),

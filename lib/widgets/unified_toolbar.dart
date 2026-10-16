@@ -22,6 +22,7 @@ import 'package:xournalpp/src/editing_tool.dart'; // EditingTool
 class UnifiedToolbar extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback? onPomodoroTap;
   final bool pomodoroActive;
+  final ValueNotifier<double>? pomodoroProgress;
   final VoidCallback? onOpenFile;
   final VoidCallback? onNavigationTap;
   final bool openingFile;
@@ -36,6 +37,7 @@ class UnifiedToolbar extends StatefulWidget implements PreferredSizeWidget {
     super.key,
     this.onPomodoroTap,
     this.pomodoroActive = false,
+    this.pomodoroProgress,
     this.onOpenFile,
     this.onNavigationTap,
     this.openingFile = false,
@@ -114,6 +116,7 @@ class _UnifiedToolbarState extends State<UnifiedToolbar> {
             ctrl.importPdf(context, onOpenInNewTab: widget.onOpenPdfInNewTab),
         onPomodoroTap: widget.onPomodoroTap ?? () {},
         pomodoroActive: widget.pomodoroActive,
+        pomodoroProgress: widget.pomodoroProgress,
         onOpenFile: widget.onOpenFile,
         onNavigationTap: widget.onNavigationTap,
         openingFile: widget.openingFile,
@@ -217,7 +220,7 @@ class _UnifiedToolbarState extends State<UnifiedToolbar> {
             ),
             Slider(
               value: curW,
-              min: 0.5,
+              min: title == 'Penna' ? 0.1 : 0.5,
               max: 30.0,
               onChanged: (val) {
                 onUpdate(null, val);

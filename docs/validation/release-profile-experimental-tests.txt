@@ -1,0 +1,37 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/release_profile_test.dart
+00:00 +0: C:/Users/aless/Documents/GitHub/OSIpp/test/release_profile_test.dart: release profile gates plugin startup, settings and saved Pomodoro
+00:02 +1: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: complete backup transfers portable notes, latest recovery and metadata to another device
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-f2254d48\xournalpp\backup-1792153643356880-4228196221.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-f2254d48\xournalpp\backup-1792153643434882-3936179268.xopp
+00:03 +2: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: complete backup transfers portable notes, latest recovery and metadata to another device
+00:03 +3: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: complete backup transfers portable notes, latest recovery and metadata to another device
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-f2254d48\xournalpp\backup-1792153643541433-2390443936.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-f2254d48\xournalpp\backup-1792153643640982-831723731.xopp
+00:03 +4: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: complete backup transfers portable notes, latest recovery and metadata to another device
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-f2254d48\xournalpp\backup-1792153643759749-3969076037.xopp
+00:03 +5: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: complete backup transfers portable notes, latest recovery and metadata to another device
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-f2254d48\xournalpp\backup-1792153643838449-1672263122.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-f2254d48\xournalpp\backup-1792153643925570-3640055102.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-f2254d48\xournalpp\backup-1792153644018356-2181051959.xopp
+00:04 +6: C:/Users/aless/Documents/GitHub/OSIpp/test/study_plugins_test.dart: double-selection tool emits rectangles and never ink
+00:04 +7: C:/Users/aless/Documents/GitHub/OSIpp/test/study_plugins_test.dart: double-selection tool emits rectangles and never ink
+00:04 +8: C:/Users/aless/Documents/GitHub/OSIpp/test/study_plugins_test.dart: double-selection tool emits rectangles and never ink
+00:04 +9: C:/Users/aless/Documents/GitHub/OSIpp/test/study_plugins_test.dart: double-selection tool emits rectangles and never ink
+00:04 +10: C:/Users/aless/Documents/GitHub/OSIpp/test/study_plugins_test.dart: double-selection tool emits rectangles and never ink
+00:04 +11: C:/Users/aless/Documents/GitHub/OSIpp/test/study_plugins_test.dart: double-selection tool emits rectangles and never ink
+00:04 +12: C:/Users/aless/Documents/GitHub/OSIpp/test/study_plugins_test.dart: double-selection tool emits rectangles and never ink
+00:04 +13: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: app settings expose Ripristina Backup and Crea Backup on a phone
+00:05 +14: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: app settings expose Ripristina Backup and Crea Backup on a phone
+00:06 +15: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: app settings expose Ripristina Backup and Crea Backup on a phone
+00:06 +16: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: app settings expose Ripristina Backup and Crea Backup on a phone
+00:07 +17: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: app settings expose Ripristina Backup and Crea Backup on a phone
+00:07 +18: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: app settings expose Ripristina Backup and Crea Backup on a phone
+00:07 +19: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+00:07 +20: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+00:07 +21: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+00:07 +22: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+00:07 +23: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+00:07 +24: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+00:07 +25: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_appearance_test.dart: Pomodoro theme fits phone library and settings without backdrop filtering
+dynamic_color: Dynamic color not detected on this device.
+00:09 +26: All tests passed!

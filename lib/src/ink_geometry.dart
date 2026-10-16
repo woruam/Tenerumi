@@ -6,6 +6,11 @@ double inkRadius(double? width, {required bool pressureSensitive}) {
     final diameter = width != null && width.isFinite && width > 0 ? width : 5.0;
     return diameter / 2;
   }
+  // Extend the legacy pen curve below its old minimum continuously. Existing
+  // strokes keep their geometry while newly selectable fine widths stay fine.
+  if (width != null && width.isFinite && width > 0 && width < 0.5) {
+    return width * 2.2;
+  }
   final pressure = ((width ?? 2.5) / 5).clamp(0.1, 1.0);
   return 5 * (0.5 - 0.7 * (0.5 - pressure));
 }

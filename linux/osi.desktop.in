@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=OSI
+Comment=Appunti e annotazioni PDF
+Exec="@CMAKE_INSTALL_PREFIX@/xournalpp" %f
+Terminal=false
+Categories=Office;
+MimeType=application/pdf;
+StartupNotify=true

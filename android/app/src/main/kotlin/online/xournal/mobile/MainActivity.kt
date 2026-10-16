@@ -1,6 +1,7 @@
 package online.xournal.mobile
 
 import android.hardware.display.DisplayManager
+import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import android.view.KeyEvent
@@ -16,6 +17,7 @@ class MainActivity: FlutterActivity() {
     private val CHANNEL = "online.xournal.mobile/pen"
     private var methodChannel: MethodChannel? = null
     private var noteAudio: NoteAudio? = null
+    private var externalDocuments: ExternalDocuments? = null
     private val displayManager by lazy { getSystemService(DisplayManager::class.java) }
     private val displayListener = object : DisplayManager.DisplayListener {
         override fun onDisplayAdded(displayId: Int) = requestHighRefreshRate()
@@ -88,7 +90,15 @@ class MainActivity: FlutterActivity() {
         methodChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)
         noteAudio = NoteAudio(this, flutterEngine.dartExecutor.binaryMessenger)
         DocumentStorage.register(flutterEngine.dartExecutor.binaryMessenger, contentResolver, this)
-        PluginOcr.register(flutterEngine.dartExecutor.binaryMessenger)
+        OptionalFeatures.register(flutterEngine.dartExecutor.binaryMessenger)
+        externalDocuments = ExternalDocuments(flutterEngine.dartExecutor.binaryMessenger, contentResolver)
+        externalDocuments?.accept(intent)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        externalDocuments?.accept(intent)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

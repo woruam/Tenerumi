@@ -1,0 +1,99 @@
+Running Gradle task 'assembleRelease'...                        
+Warning: Flutter support for your project's Gradle version (8.14.0) will soon be dropped. Please upgrade your Gradle version to a version of at least 9.1.0 soon.
+Alternatively, use the flag "--android-skip-build-dependency-validation" to bypass this check.
+
+Potential fix: Your project's gradle version is typically defined in the gradle wrapper file. By default, this can be found at C:\Users\aless\Documents\GitHub\OSIpp\android/gradle/wrapper/gradle-wrapper.properties. 
+For more information, see https://docs.gradle.org/current/userguide/gradle_wrapper.html.
+
+Warning: Flutter support for your project's Android Gradle Plugin version (Android Gradle Plugin version 8.12.1) will soon be dropped. Please upgrade your Android Gradle Plugin version to a version of at least Android Gradle Plugin version 9.0.1 soon.
+Alternatively, use the flag "--android-skip-build-dependency-validation" to bypass this check.
+
+Potential fix: Your project's AGP version is typically defined in the plugins block of the `settings.gradle` file (C:\Users\aless\Documents\GitHub\OSIpp\android/settings.gradle), by a plugin with the id of com.android.application. 
+If you don't see a plugins block, your project was likely created with an older template version. In this case it is most likely defined in the top-level build.gradle file (C:\Users\aless\Documents\GitHub\OSIpp\android/build.gradle) by the following line in the dependencies block of the buildscript: "classpath 'com.android.tools.build:gradle:<version>'".
+
+Warning: Flutter support for your project's Kotlin version (2.2.20) will soon be dropped. Please upgrade your Kotlin version to a version of at least 2.3.20 soon.
+Alternatively, use the flag "--android-skip-build-dependency-validation" to bypass this check.
+
+Potential fix: Your project's KGP version is typically defined in the plugins block of the `settings.gradle` file (C:\Users\aless\Documents\GitHub\OSIpp\android/settings.gradle), by a plugin with the id of org.jetbrains.kotlin.android. 
+If you don't see a plugins block, your project was likely created with an older template version, in which case it is most likely defined in the top-level build.gradle file (C:\Users\aless\Documents\GitHub\OSIpp\android/build.gradle) by the ext.kotlin_version property.
+
+Font asset "Font-Awesome-7-Free-Solid-900.otf" was tree-shaken, reducing it from 414664 to 1388 bytes (99.7% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
+Font asset "MaterialIcons-Regular.otf" was tree-shaken, reducing it from 1645184 to 13444 bytes (99.2% reduction). Tree-shaking can be disabled by providing the --no-tree-shake-icons flag when building your app.
+Running Gradle task 'assembleRelease'...                          199,0s
+√ Built build\app\outputs\flutter-apk\app-release.apk (23.0MB)
+▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+app-release.apk (total compressed)                                         23 MB
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  META-INF/
+    androidx                                                               10 KB
+  assets/
+    dexopt                                                                  1 KB
+    flutter_assets                                                          2 MB
+  classes.dex                                                             729 KB
+  lib/
+    arm64-v8a                                                              20 MB
+    Dart AOT symbols accounted decompressed size                            8 MB
+      package:flutter                                                       3 MB
+      package:xournalpp                                                   839 KB
+      package:image                                                       760 KB
+      dart:mixin_deduplication                                            343 KB
+      dart:core                                                           289 KB
+      dart:ui                                                             251 KB
+      dart:typed_data                                                     220 KB
+      package:pdf                                                         188 KB
+      dart:async                                                          115 KB
+      dart:io                                                              86 KB
+      package:xml                                                          79 KB
+      dart:collection                                                      79 KB
+      package:material_color_utilities                                     75 KB
+      package:petitparser                                                  64 KB
+      dart:convert                                                         53 KB
+      package:flutter_colorpicker/
+        src                                                                45 KB
+      package:vector_math/
+        vector_math_64.dart                                                40 KB
+      package:pdfx                                                         39 KB
+      package:jni                                                          38 KB
+      package:characters                                                   35 KB
+    armeabi-v7a                                                            84 KB
+    x86_64                                                                120 KB
+  kotlin/
+    collections                                                             2 KB
+    concurrent                                                              1 KB
+    kotlin.kotlin_builtins                                                  5 KB
+    ranges                                                                  1 KB
+    reflect                                                                 1 KB
+  AndroidManifest.xml                                                       2 KB
+  res/
+    1I.9.png                                                                2 KB
+    1J.9.png                                                                2 KB
+    9w.png                                                                  2 KB
+    BM.png                                                                  4 KB
+    CH.png                                                                  6 KB
+    FS.png                                                                  5 KB
+    G2.9.png                                                                1 KB
+    IX.9.png                                                                2 KB
+    Li.9.png                                                                2 KB
+    MF.9.png                                                                3 KB
+    NA.9.png                                                                2 KB
+    RJ.png                                                                  9 KB
+    bB.png                                                                  1 KB
+    color-v23                                                               2 KB
+    color                                                                  18 KB
+    dO.xml                                                                  1 KB
+    h7.9.png                                                                1 KB
+    io.9.png                                                                1 KB
+    nf.png                                                                  1 KB
+    o-.png                                                                 13 KB
+    qD.9.png                                                                3 KB
+    rj.9.png                                                                1 KB
+    tP.png                                                                  3 KB
+    yi.png                                                                  2 KB
+    yn.png                                                                  4 KB
+    zV.9.png                                                                2 KB
+  resources.arsc                                                          536 KB
+▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+A summary of your APK analysis can be found at: C:\Users\aless\.flutter-devtools\apk-code-size-analysis_01.json
+
+To analyze your app size in Dart DevTools, run the following command:
+dart devtools --appSizeBase=C:\Users\aless\.flutter-devtools\apk-code-size-analysis_01.json

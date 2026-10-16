@@ -1,5 +1,10 @@
 # Creare plugin per OSIpp
 
+Questa guida riguarda il **profilo sperimentale**, compilato con
+`--dart-define=OSI_ENABLE_PLUGINS=true`. Il sistema plugin, compreso il
+Pomodoro, è escluso dalla compilazione pubblica. Vedi i [profili di
+compilazione](docs/EXPERIMENTAL_FEATURES.md).
+
 Il sistema plugin permette di aggiungere comandi, moduli di inserimento, generatori di contenuti, strumenti preimpostati e automazioni eseguite su richiesta. Puoi iniziare con il creatore guidato oppure combinare azioni, cicli ed espressioni in un workflow JSON. I plugin operativi si distribuiscono come file `.osiplugin.json`, senza ricompilare l'app. JavaScript è sospeso per sicurezza e non può essere riattivato dall'utente.
 
 L'API comprende formule LaTeX, file generici, export Anki, OCR locale Android, richieste HTTPS su Android/desktop e interfacce a più passaggi. Le funzioni native ulteriori si integrano tramite l'SDK, nel codice verificato dell'app. I workflow funzionano anche sul Web; le capacità del dispositivo passano attraverso API host con permessi e limiti.

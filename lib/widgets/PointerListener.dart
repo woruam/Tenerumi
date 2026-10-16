@@ -610,32 +610,42 @@ class PointerListenerState extends State<PointerListener> {
   }
 
   Widget _buildPasteMenu(BuildContext context) {
+    // Keep the control the same size on screen at every page zoom.
+    final box = context.findRenderObject() as RenderBox;
+    final scale = box.getTransformTo(null).getMaxScaleOnAxis();
+    final menuScale = scale.isFinite && scale > 0 ? scale : 1.0;
+    final menuSize = Size(120 / menuScale, 48 / menuScale);
     final position = _menuPosition(
       _pastePosition! - widget.canvasOrigin,
-      const Size(160, 48),
+      menuSize,
     );
     return Positioned(
       left: position.dx,
       top: position.dy,
-      child: Material(
-        elevation: 4,
-        borderRadius: BorderRadius.circular(20),
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        child: _CanvasActionButton(
-          actionKey: const ValueKey('selection-paste'),
-          icon: Icons.content_paste,
-          label: 'Incolla',
-          showLabel: true,
-          onPressed: () {
-            final pasted = widget.onPasteContent?.call(_pastePosition!) ?? [];
-            setState(() {
-              _pastePosition = null;
-              if (pasted.isNotEmpty) {
-                _selectContent(pasted);
-                _moveSelectionArmed = true;
-              }
-            });
-          },
+      width: menuSize.width,
+      height: menuSize.height,
+      child: FittedBox(
+        child: Material(
+          elevation: 4,
+          borderRadius: BorderRadius.circular(20),
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          child: _CanvasActionButton(
+            actionKey: const ValueKey('selection-paste'),
+            icon: Icons.content_paste,
+            label: 'Incolla',
+            showLabel: true,
+            labelWidth: 120,
+            onPressed: () {
+              final pasted = widget.onPasteContent?.call(_pastePosition!) ?? [];
+              setState(() {
+                _pastePosition = null;
+                if (pasted.isNotEmpty) {
+                  _selectContent(pasted);
+                  _moveSelectionArmed = true;
+                }
+              });
+            },
+          ),
         ),
       ),
     );
@@ -976,7 +986,10 @@ class PointerListenerState extends State<PointerListener> {
     double multiplier = 0.1 + ((pressure * pressure) * 3.5);
     double dynamicThickness = baseWidth * multiplier;
 
-    if (dynamicThickness < 0.5) dynamicThickness = 0.5;
+    final minimumThickness = min(baseWidth, 0.5);
+    if (dynamicThickness < minimumThickness) {
+      dynamicThickness = minimumThickness;
+    }
 
     if (currentTool == XppStrokeTool.HIGHLIGHTER) {
       dynamicThickness = baseWidth;

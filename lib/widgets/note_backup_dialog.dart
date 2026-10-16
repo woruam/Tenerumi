@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:xournalpp/src/compat/file_picker_cross.dart';
 import 'package:xournalpp/src/note_backup.dart';
+import 'package:xournalpp/src/app_features.dart';
 
 import 'dart:async';
 
@@ -9,11 +10,13 @@ import 'package:flutter/foundation.dart';
 Future<void> showNoteBackupDialog(
   BuildContext context, {
   required bool restore,
-}) => showDialog<void>(
-  context: context,
-  barrierDismissible: false,
-  builder: (_) => _NoteBackupDialog(restore: restore),
-);
+}) => !AppFeatures.manualBackup
+    ? Future<void>.value()
+    : showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => _NoteBackupDialog(restore: restore),
+      );
 
 class _NoteBackupDialog extends StatefulWidget {
   final bool restore;

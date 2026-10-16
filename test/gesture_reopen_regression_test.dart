@@ -10,6 +10,45 @@ import 'package:xournalpp/widgets/infinite_canvas.dart';
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
+  for (final scale in [1.0, 2.5]) {
+    testWidgets(
+      'double touch leaves zoom and page position unchanged at $scale',
+      (tester) async {
+        final transform = TransformationController(
+          Matrix4.identity()
+            ..translate(-80.0, -120.0)
+            ..scale(scale),
+        );
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: ZoomableWidget(
+                controller: transform,
+                sceneSize: const Size(800, 3000),
+                child: const SizedBox(width: 800, height: 3000),
+              ),
+            ),
+          ),
+        );
+        final before = transform.value.clone();
+        await tester.tapAt(const Offset(200, 200));
+        await tester.pump(const Duration(milliseconds: 80));
+        await tester.tapAt(const Offset(200, 200));
+        await tester.pumpAndSettle();
+        expect(transform.value.storage, orderedEquals(before.storage));
+        // A rapid next gesture must still scroll, without a double-tap arena delay.
+        final finger = await tester.startGesture(const Offset(200, 350));
+        await finger.moveBy(const Offset(0, -35));
+        await finger.moveBy(const Offset(0, -100));
+        await finger.up();
+        await tester.pumpAndSettle();
+        expect(transform.value.entry(1, 3), lessThan(before.entry(1, 3)));
+        expect(transform.value.getMaxScaleOnAxis(), scale);
+        await tester.pumpWidget(const SizedBox());
+        transform.dispose();
+      },
+    );
+  }
   for (final infinite in [false, true]) {
     for (final keepPalm in [false, true]) {
       testWidgets(

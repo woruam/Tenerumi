@@ -21,6 +21,7 @@ import 'package:xournalpp/pages/WorkspacePage.dart';
 import 'package:xournalpp/src/XppPageSize.dart';
 import 'package:xournalpp/src/compat/file_picker_cross.dart';
 import 'package:xournalpp/plugins/plugin_controller.dart';
+import 'package:xournalpp/src/app_features.dart';
 import 'package:xournalpp/plugins/plugin_manager_page.dart';
 import 'package:xournalpp/src/autosave_store.dart';
 import 'package:xournalpp/src/compat/audio_platform_stub.dart'
@@ -28,6 +29,8 @@ import 'package:xournalpp/src/compat/audio_platform_stub.dart'
 import 'package:xournalpp/widgets/document_library_card.dart';
 
 class OpenPage extends StatefulWidget {
+  final bool restoreWorkspace;
+  const OpenPage({super.key, this.restoreWorkspace = true});
   @override
   _OpenPageState createState() => _OpenPageState();
 }
@@ -126,7 +129,9 @@ class _OpenPageState extends State<OpenPage> {
   void initState() {
     super.initState();
     _loadRecentFiles();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _restoreWorkspace());
+    if (widget.restoreWorkspace) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _restoreWorkspace());
+    }
   }
 
   Future<void> _restoreWorkspace() async {
@@ -518,40 +523,42 @@ class _OpenPageState extends State<OpenPage> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: const Icon(Icons.backup_outlined),
-                        title: const Text('Crea Backup'),
-                        subtitle: const Text(
-                          'Esporta gli appunti per un altro dispositivo',
+                      if (AppFeatures.manualBackup) ...[
+                        ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: const Icon(Icons.backup_outlined),
+                          title: const Text('Crea Backup'),
+                          subtitle: const Text(
+                            'Esporta gli appunti per un altro dispositivo',
+                          ),
+                          onTap: () async {
+                            Navigator.pop(context);
+                            await showNoteBackupDialog(
+                              this.context,
+                              restore: false,
+                            );
+                            if (mounted) await _loadRecentFiles();
+                          },
                         ),
-                        onTap: () async {
-                          Navigator.pop(context);
-                          await showNoteBackupDialog(
-                            this.context,
-                            restore: false,
-                          );
-                          if (mounted) await _loadRecentFiles();
-                        },
-                      ),
-                      ListTile(
-                        key: const ValueKey('restore-backup'),
-                        contentPadding: EdgeInsets.zero,
-                        leading: const Icon(Icons.restore_outlined),
-                        title: const Text('Ripristina Backup'),
-                        subtitle: const Text(
-                          'Carica gli appunti da un backup OSI',
+                        ListTile(
+                          key: const ValueKey('restore-backup'),
+                          contentPadding: EdgeInsets.zero,
+                          leading: const Icon(Icons.restore_outlined),
+                          title: const Text('Ripristina Backup'),
+                          subtitle: const Text(
+                            'Carica gli appunti da un backup OSI',
+                          ),
+                          onTap: () async {
+                            Navigator.pop(context);
+                            await showNoteBackupDialog(
+                              this.context,
+                              restore: true,
+                            );
+                            if (mounted) await _loadRecentFiles();
+                          },
                         ),
-                        onTap: () async {
-                          Navigator.pop(context);
-                          await showNoteBackupDialog(
-                            this.context,
-                            restore: true,
-                          );
-                          if (mounted) await _loadRecentFiles();
-                        },
-                      ),
-                      const Divider(),
+                        const Divider(),
+                      ],
                       SwitchListTile(
                         contentPadding: EdgeInsets.zero,
                         title: const Text('Disegna con le dita'),
@@ -570,6 +577,60 @@ class _OpenPageState extends State<OpenPage> {
                       // ==========================================
                       // SEZIONE TEMA
                       // ==========================================
+                      SwitchListTile(
+                        key: const ValueKey('page-scrollbar-setting'),
+                        contentPadding: EdgeInsets.zero,
+                        title: const Text('Barra di scorrimento pagine'),
+                        subtitle: const Text(
+                          'Trascina la barra laterale per scorrere velocemente la nota.',
+                        ),
+                        value: theme.showPageScrollbar,
+                        onChanged: (value) {
+                          theme.setPageScrollbar(value);
+                          setDialogState(() {});
+                        },
+                      ),
+                      ListTile(
+                        key: const ValueKey('page-border-color-setting'),
+                        contentPadding: EdgeInsets.zero,
+                        title: const Text('Colore contorno pagina corrente'),
+                        trailing: Icon(
+                          Icons.circle,
+                          color: theme.currentPageBorderColor,
+                        ),
+                        onTap: () async {
+                          Color picked = theme.currentPageBorderColor;
+                          final apply = await showDialog<bool>(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('Contorno pagina corrente'),
+                              content: SingleChildScrollView(
+                                child: ColorPicker(
+                                  pickerColor: picked,
+                                  onColorChanged: (color) => picked = color,
+                                  enableAlpha: false,
+                                  labelTypes: const [],
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.pop(context, false),
+                                  child: const Text('Annulla'),
+                                ),
+                                FilledButton(
+                                  onPressed: () => Navigator.pop(context, true),
+                                  child: const Text('Applica'),
+                                ),
+                              ],
+                            ),
+                          );
+                          if (apply == true) {
+                            await theme.setCurrentPageBorderColor(picked);
+                            if (context.mounted) setDialogState(() {});
+                          }
+                        },
+                      ),
                       const Text(
                         'TEMA',
                         style: TextStyle(
@@ -871,18 +932,19 @@ class _OpenPageState extends State<OpenPage> {
         title: const Text('OSI', style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: false,
         actions: [
-          if (context.watch<PluginController?>()
-              case final PluginController plugins)
-            IconButton(
-              tooltip: 'Plugin',
-              icon: const Icon(Icons.extension_outlined),
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => PluginManagerPage(plugins: plugins),
+          if (AppFeatures.plugins)
+            if (context.watch<PluginController?>()
+                case final PluginController plugins)
+              IconButton(
+                tooltip: 'Plugin',
+                icon: const Icon(Icons.extension_outlined),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => PluginManagerPage(plugins: plugins),
+                  ),
                 ),
               ),
-            ),
           IconButton(icon: Icon(icons.search), onPressed: () {}),
           // --- COLLEGAMENTO AL TASTO IMPOSTAZIONI ---
           IconButton(

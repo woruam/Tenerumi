@@ -1,5 +1,25 @@
 Status: FINALIZED
 
+## Distribuzione essenziale e testo XOPP — 2026-10-16
+Status: FINALIZED
+Sul ramo attuale, escludere per impostazione predefinita dalla compilazione
+pubblica backup manuale/ripristino e sistema plugin non ultimati. Conservare
+salvataggio automatico e recupero. Il Pomodoro resta un plugin ed è escluso
+dal profilo pubblico insieme agli altri plugin. Le funzioni
+sperimentali restano nel sorgente e si compilano solo con opzioni esplicite di
+sviluppo. Allineare CI, istruzioni e test ai due profili. Correggere il doppio
+escaping del testo XOPP senza reinterpretare il testo letterale dei documenti.
+
+## Richieste esperienza di scrittura — 2026-10-16
+Status: FINALIZED
+Ridurre lo spessore minimo della penna; eliminare lo zoom da doppio tocco;
+rendere il menu incolla indipendente dalla scala della pagina; aggiungere una
+barra laterale di scorrimento rapido disattivabile dalle impostazioni; mostrare
+un bordo sottile sulla pagina corrente con colore configurabile; conservare
+il canvas fra cambi di scheda per evitare ricaricamenti e sfarfallii; registrare
+l'apertura di PDF dal sistema; mostrare nell'icona Pomodoro il progresso rosso
+anche quando il pannello è minimizzato.
+
 Correggere le criticità operative richieste: culling canvas, PDF su richiesta con cache limitata e associazioni persistenti, salvataggi sicuri, protezione di tutte le schede, input touch configurabile, compatibilità Web, griglia responsive, serializzazione asincrona. Test di regressione e istruzioni ripetibili per gli agent.
 
 Status: FINALIZED

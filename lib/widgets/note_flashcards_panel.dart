@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:xournalpp/controllers/canvas_controller.dart';
 import 'package:xournalpp/layer_contents/XppText.dart';
 import 'package:xournalpp/plugins/plugin_controller.dart';
+import 'package:xournalpp/src/app_features.dart';
 import 'package:xournalpp/src/compat/file_picker_cross.dart';
 import 'package:xournalpp/src/document_export.dart';
 import 'package:xournalpp/src/editing_tool.dart';
@@ -25,6 +26,7 @@ Future<void> captureFlashcardSelection(
   int pageIndex,
   Rect region,
 ) async {
+  if (!AppFeatures.plugins) return;
   final plugins = context.read<PluginController?>();
   if (plugins?.ankiEnabled != true ||
       ctrl.capturingFlashcard ||
@@ -127,10 +129,12 @@ Future<void> captureFlashcardSelection(
 Future<NoteFlashcard?> editFlashcard(
   BuildContext context,
   NoteFlashcard card,
-) => showDialog<NoteFlashcard>(
-  context: context,
-  builder: (_) => _FlashcardEditor(card: card),
-);
+) => !AppFeatures.plugins
+    ? Future<NoteFlashcard?>.value(null)
+    : showDialog<NoteFlashcard>(
+        context: context,
+        builder: (_) => _FlashcardEditor(card: card),
+      );
 
 class _FlashcardEditor extends StatefulWidget {
   final NoteFlashcard card;
@@ -254,13 +258,15 @@ class _FlashcardEditorState extends State<_FlashcardEditor> {
 }
 
 Future<void> showNoteFlashcards(BuildContext context, CanvasController ctrl) =>
-    showDialog<void>(
-      context: context,
-      builder: (_) => _FlashcardSet(
-        canvas: ctrl,
-        plugins: context.read<PluginController?>(),
-      ),
-    );
+    !AppFeatures.plugins
+    ? Future<void>.value()
+    : showDialog<void>(
+        context: context,
+        builder: (_) => _FlashcardSet(
+          canvas: ctrl,
+          plugins: context.read<PluginController?>(),
+        ),
+      );
 
 class _FlashcardSet extends StatelessWidget {
   final CanvasController canvas;

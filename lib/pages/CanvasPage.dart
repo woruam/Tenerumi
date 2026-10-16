@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:xournalpp/plugins/plugin_controller.dart';
+import 'package:xournalpp/src/app_features.dart';
 import 'package:xournalpp/widgets/bounded_image.dart';
 import 'package:xournalpp/widgets/note_flashcards_panel.dart';
 
@@ -23,6 +24,8 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:xournalpp/controllers/theme_controller.dart';
+import 'package:xournalpp/widgets/page_scrollbar.dart';
 import 'package:provider/provider.dart';
 
 import 'package:xournalpp/src/XppFile.dart';
@@ -144,6 +147,7 @@ class CanvasPageState extends State<CanvasPage> {
       _shapeBtn = GlobalKey(),
       _eraserBtn = GlobalKey();
   bool _showPomodoro = false;
+  final _pomodoroProgress = ValueNotifier<double>(0);
 
   @override
   void initState() {
@@ -183,13 +187,22 @@ class CanvasPageState extends State<CanvasPage> {
       confirmDocumentClose(context, _controller);
 
   @override
+  void deactivate() {
+    // Pin decoded backgrounds before the child image widgets release them.
+    _controller.suspendPdfRendering(
+      retainRasterCache: widget.controller != null,
+    );
+    super.deactivate();
+  }
+
+  @override
   void dispose() {
+    _pomodoroProgress.dispose();
     for (final pointer in _activeInputs) {
       _controller.endInput(pointer);
     }
     _activeInputs.clear();
     _controller.pageNavigation.removeListener(_navigateToPage);
-    _controller.suspendPdfRendering();
     if (widget.zoomController == null) _zoomController.dispose();
     if (widget.controller == null) _controller.dispose();
     super.dispose();
@@ -198,8 +211,12 @@ class CanvasPageState extends State<CanvasPage> {
   @override
   Widget build(BuildContext context) {
     final resizing = SplitResizeScope.isResizing(context);
-    final plugins = context.watch<PluginController?>();
-    final pomodoroEnabled = plugins?.pomodoroEnabled == true;
+    final appearance = context.watch<ThemeController?>();
+    final plugins = AppFeatures.plugins
+        ? context.watch<PluginController?>()
+        : null;
+    final pomodoroEnabled =
+        AppFeatures.plugins && plugins?.pomodoroEnabled == true;
     if (!pomodoroEnabled) _showPomodoro = false;
     if (plugins?.ankiEnabled != true &&
         _controller.toolData[PointerDeviceKind.stylus] ==
@@ -268,6 +285,7 @@ class CanvasPageState extends State<CanvasPage> {
                     onPomodoroTap: () =>
                         setState(() => _showPomodoro = !_showPomodoro),
                     pomodoroActive: _showPomodoro,
+                    pomodoroProgress: _pomodoroProgress,
                     onToolSelect: (tool) {
                       ctrl.setTool(tool);
                       _zoomableKey.currentState?.setState(
@@ -404,6 +422,9 @@ class CanvasPageState extends State<CanvasPage> {
                                 ],
                                 onVisiblePages: ctrl.setVisiblePdfPages,
                                 onCurrentPage: ctrl.setActivePage,
+                                currentPageBorderColor:
+                                    appearance?.currentPageBorderColor ??
+                                    ThemeController.kDefaultAccent,
                                 pageBuilder: (pageIndex) {
                                   ctrl.pageStackKeys.putIfAbsent(
                                     pageIndex,
@@ -455,13 +476,16 @@ class CanvasPageState extends State<CanvasPage> {
                                                 ctrl.highlighterWidth,
                                             highlighterColor:
                                                 ctrl.highlighterColor,
-                                            onFlashcardSelection: (region) =>
-                                                captureFlashcardSelection(
-                                                  context,
-                                                  ctrl,
-                                                  pageIndex,
-                                                  region,
-                                                ),
+                                            onFlashcardSelection:
+                                                AppFeatures.plugins
+                                                ? (region) =>
+                                                      captureFlashcardSelection(
+                                                        context,
+                                                        ctrl,
+                                                        pageIndex,
+                                                        region,
+                                                      )
+                                                : null,
                                             clipboard: ctrl.clipboard,
                                             selectionIdentity:
                                                 ctrl.file!.pages![pageIndex],
@@ -656,14 +680,49 @@ class CanvasPageState extends State<CanvasPage> {
                       },
                     ),
                   ),
+                  if ((appearance?.showPageScrollbar ?? true) &&
+                      ctrl.file?.pages?.firstOrNull?.infinite != true)
+                    Positioned.fill(
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final width =
+                              _pageDisplayWidth ??
+                              max(1.0, constraints.maxWidth - 32);
+                          return Align(
+                            alignment: Alignment.centerRight,
+                            child: IgnorePointer(
+                              ignoring: resizing,
+                              child: PageScrollbar(
+                                transform: _zoomController,
+                                viewport: constraints.biggest,
+                                sceneHeight:
+                                    24 +
+                                    (ctrl.file?.pages ?? []).fold<double>(
+                                      0,
+                                      (height, page) =>
+                                          height +
+                                          width / page.pageSize!.ratio +
+                                          24,
+                                    ),
+                                currentPage: ctrl.activePageIndex,
+                                pageCount: ctrl.file?.pages?.length ?? 0,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   // Pannello Pomodoro a comparsa (resta attivo anche se nascosto)
-                  if (widget.showInternalToolbar && pomodoroEnabled)
+                  if (AppFeatures.plugins &&
+                      widget.showInternalToolbar &&
+                      pomodoroEnabled)
                     Positioned(
                       top: 12,
                       right: 12,
                       child: Offstage(
                         offstage: !_showPomodoro,
                         child: PomodoroTimer(
+                          progress: _pomodoroProgress,
                           onClose: () => setState(() => _showPomodoro = false),
                           onPhaseComplete: (finished, next) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -1078,7 +1137,7 @@ class CanvasPageState extends State<CanvasPage> {
                         ),
                         Slider(
                           value: curW,
-                          min: 0.5,
+                          min: title == 'Penna' ? 0.1 : 0.5,
                           max: 30.0,
                           onChanged: (val) {
                             onUpdate(null, val);

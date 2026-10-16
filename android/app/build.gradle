@@ -14,6 +14,16 @@ if (localPropertiesFile.exists()) {
 
 def flutterVersionCode = localProperties.getProperty("flutter.versionCode") ?: "30"
 def flutterVersionName = localProperties.getProperty("flutter.versionName") ?: "2.0.0"
+// Use the same compile-time switch as Dart, including --dart-define-from-file.
+def dartDefines = [:]
+if (project.hasProperty('dart-defines')) {
+    project.property('dart-defines').split(',').findAll { it }.each { encoded ->
+        def entry = new String(encoded.decodeBase64(), java.nio.charset.StandardCharsets.UTF_8)
+        def separator = entry.indexOf('=')
+        if (separator >= 0) dartDefines[entry.substring(0, separator)] = entry.substring(separator + 1)
+    }
+}
+def includeExperimentalPlugins = dartDefines['OSI_ENABLE_PLUGINS'] == 'true'
 def releaseKeys = new Properties()
 def releaseKeysFile = rootProject.file('key.properties')
 if (releaseKeysFile.exists()) releaseKeysFile.withInputStream { releaseKeys.load(it) }
@@ -49,6 +59,10 @@ android {
         jvmTarget = "17"
     }
 
+    sourceSets {
+        main.java.srcDirs += includeExperimentalPlugins ? 'src/experimental/kotlin' : 'src/stable/kotlin'
+    }
+
     defaultConfig {
         applicationId "online.xournal.mobile"
         minSdk 24
@@ -79,6 +93,6 @@ flutter {
 }
 
 dependencies {
-    implementation "com.google.mlkit:text-recognition:16.0.1"
+    if (includeExperimentalPlugins) implementation "com.google.mlkit:text-recognition:16.0.1"
     testImplementation "junit:junit:4.13.2"
 }

@@ -1,0 +1,48 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_progress_icon_test.dart
+00:00 +0: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_progress_icon_test.dart: running minimized timer fills icon and retains natural completion
+00:01 +1: C:/Users/aless/Documents/GitHub/OSIpp/test/pomodoro_progress_icon_test.dart: Minimized tomato follows elapsed time and holds completion
+00:02 +2: C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart: fine pen width survives pressure, commit, and ink geometry
+00:03 +3: C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart: fine pen width survives pressure, commit, and ink geometry
+00:03 +4: C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart: fine pen width survives pressure, commit, and ink geometry
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: a value less than <0.5>
+  Actual: <1.5839996337890625>
+   Which: is not a value less than <0.5>
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart:176:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart line 176
+The test description was:
+  fine pen width survives pressure, commit, and ink geometry
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:03 +4 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/stroke_model_geometry_test.dart: single pass bounds match legacy geometry for all tools and mutations
+00:03 +4 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart: fine pen width survives pressure, commit, and ink geometry [E]
+  Test failed. See exception logs above.
+  The test description was: fine pen width survives pressure, commit, and ink geometry
+  
+00:04 +5 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart: highlighter width changes committed ink and ignores pressure
+00:04 +6 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart: highlighter width changes committed ink and ignores pressure
+00:04 +7 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart: highlighter width changes committed ink and ignores pressure
+00:04 +8 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart: stylus can finish and delete a lasso under the pan interceptor
+00:04 +9 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart: move selected ink at zoom 0.75 is visible and one undo step
+00:04 +10 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart: move selected ink at zoom 1.0 is visible and one undo step
+00:04 +11 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart: move selected ink at zoom 2.5 is visible and one undo step
+00:04 +12 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart: copy and stylus paste at zoom 1.0 without committing a dot
+00:05 +13 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart: copy and stylus paste at zoom 2.5 without committing a dot
+00:05 +14 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart: paste in navigation mode can move without drawing extra ink
+00:05 +15 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart: moving pen cancels paste hold; hold without a copy draws normally
+00:05 +16 -1: C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart: clipboard snapshots mixed content and repeated pastes across documents
+00:05 +17 -1: Some tests failed.
+
+Failing tests:
+  C:/Users/aless/Documents/GitHub/OSIpp/test/selection_tools_test.dart: fine pen width survives pressure, commit, and ink geometry

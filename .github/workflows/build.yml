@@ -29,7 +29,10 @@ jobs:
           cache: true
       - run: flutter pub get --enforce-lockfile
       - run: flutter analyze --no-fatal-infos
-      - run: flutter test --reporter expanded
+      - name: Test public profile
+        run: flutter test --reporter expanded --dart-define=OSI_ENABLE_PLUGINS=false --dart-define=OSI_ENABLE_BACKUP=false
+      - name: Test experimental profile
+        run: flutter test --reporter expanded --dart-define=OSI_ENABLE_PLUGINS=true --dart-define=OSI_ENABLE_BACKUP=true
       - run: python3 scripts/check_distribution.py
       - run: python3 scripts/check_web_vendor.py
   android:
@@ -48,7 +51,7 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
       - run: flutter pub get --enforce-lockfile
-      - run: flutter build apk --debug
+      - run: flutter build apk --debug --dart-define=OSI_ENABLE_PLUGINS=false --dart-define=OSI_ENABLE_BACKUP=false
       - run: python3 scripts/check_distribution.py --apk build/app/outputs/flutter-apk/app-debug.apk
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
@@ -86,7 +89,7 @@ jobs:
           printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$OSIPP_RELEASE_STOREFILE"
           chmod 600 "$OSIPP_RELEASE_STOREFILE"
       - run: flutter pub get --enforce-lockfile
-      - run: flutter build apk --release
+      - run: flutter build apk --release --dart-define=OSI_ENABLE_PLUGINS=false --dart-define=OSI_ENABLE_BACKUP=false
       - name: Verify production signer
         run: |
           signer=$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -1)
@@ -107,7 +110,7 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
       - run: flutter pub get --enforce-lockfile
-      - run: flutter build web --release --no-web-resources-cdn
+      - run: flutter build web --release --no-web-resources-cdn --dart-define=OSI_ENABLE_PLUGINS=false --dart-define=OSI_ENABLE_BACKUP=false
       - run: npm install --global pnpm@11.25.0 --ignore-scripts
       - run: pnpm install --dir tool/web_smoke --frozen-lockfile --ignore-scripts
       - run: pnpm --dir tool/web_smoke exec playwright install --with-deps chromium
@@ -139,7 +142,7 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
       - run: flutter pub get --enforce-lockfile
-      - run: flutter build ${{ matrix.platform }} --release
+      - run: flutter build ${{ matrix.platform }} --release --dart-define=OSI_ENABLE_PLUGINS=false --dart-define=OSI_ENABLE_BACKUP=false
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: osi-${{ matrix.platform }}

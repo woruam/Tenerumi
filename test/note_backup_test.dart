@@ -20,6 +20,7 @@ import 'package:xournalpp/src/compat/internal_storage_generic.dart'
 import 'package:xournalpp/src/globals.dart';
 import 'package:xournalpp/src/note_audio.dart';
 import 'package:xournalpp/src/note_backup.dart';
+import 'package:xournalpp/src/app_features.dart';
 import 'package:xournalpp/src/note_flashcards.dart';
 import 'package:xournalpp/src/note_tags.dart';
 import 'package:xournalpp/src/critical_data.dart';
@@ -340,5 +341,6 @@ void main() {
       expect(find.text('Prepara backup'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
+    skip: !AppFeatures.manualBackup,
   );
 }

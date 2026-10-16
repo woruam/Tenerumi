@@ -1,0 +1,4 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/release_profile_test.dart
+00:00 +0: unfinished features require an explicit compile-time opt in
+00:00 +1: release profile gates plugin startup, settings and saved Pomodoro
+00:01 +2: All tests passed!

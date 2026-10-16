@@ -58,15 +58,9 @@ class XppText extends XppContent {
       XmlAttribute(XmlName('y'), offset!.dy.toString()),
       XmlAttribute(XmlName('color'), color!.toHexTriplet()),
     ],
-    [XmlText(encodeText(text ?? ''))],
+    // XmlText escapes XML characters when the element is serialized.
+    [XmlText(text ?? '')],
   );
-
-  static String encodeText(String text) {
-    return text
-        .replaceAll(r'&', r'&amp;')
-        .replaceAll(r'<', r'&lt;')
-        .replaceAll(r'>', r'&gt;');
-  }
 
   @override
   Rect? bounds() {

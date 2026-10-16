@@ -10,6 +10,7 @@ import 'dart:math' as math;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:xournalpp/controllers/canvas_controller.dart';
+import 'package:xournalpp/src/app_features.dart';
 import 'package:xournalpp/src/XppBackground.dart';
 import 'package:xournalpp/src/canvas_geometry_cache.dart';
 
@@ -135,9 +136,7 @@ class _InfiniteCanvasState extends State<InfiniteCanvas> {
                     _anchor = widget.transform.toScene(details.localFocalPoint);
                   };
                   instance.onUpdate = (details) {
-                    if (_suppressed ||
-                        (_touch.penNear && !_gesturePen))
-                      return;
+                    if (_suppressed || (_touch.penNear && !_gesturePen)) return;
                     if (details.pointerCount != _gesturePointers) {
                       _gesturePointers = details.pointerCount;
                       _pinched |= details.pointerCount >= 2;
@@ -212,13 +211,14 @@ class _InfiniteCanvasState extends State<InfiniteCanvas> {
                           shapeRecognition: ctrl.shapeRecognition,
                           buttonDownAction: ctrl.buttonDownAction,
                           buttonUpAction: ctrl.buttonUpAction,
-                          onFlashcardSelection: (region) =>
-                              captureFlashcardSelection(
-                                context,
-                                ctrl,
-                                0,
-                                region,
-                              ),
+                          onFlashcardSelection: AppFeatures.plugins
+                              ? (region) => captureFlashcardSelection(
+                                  context,
+                                  ctrl,
+                                  0,
+                                  region,
+                                )
+                              : null,
                           clipboard: ctrl.clipboard,
                           onPasteContent: (p) => ctrl.pasteSelection(0, p),
                           getPageContent: () =>

@@ -13,10 +13,12 @@ import 'package:xournalpp/src/editing_tool.dart';
 import 'package:xournalpp/controllers/canvas_controller.dart';
 import 'package:xournalpp/controllers/theme_controller.dart';
 import 'package:xournalpp/plugins/plugin_controller.dart';
+import 'package:xournalpp/src/app_features.dart';
 import 'package:xournalpp/plugins/plugin_manager_page.dart';
 
 import 'layers_panel.dart';
 import 'add_page_button.dart';
+import 'pomodoro_progress_icon.dart';
 
 class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
   final GlobalKey penKey;
@@ -31,6 +33,7 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
   final Function(EditingTool) onToolSelect;
   final VoidCallback onPomodoroTap;
   final bool pomodoroActive;
+  final ValueNotifier<double>? pomodoroProgress;
   final VoidCallback? onOpenFile;
   final VoidCallback? onNavigationTap;
   final bool openingFile;
@@ -49,6 +52,7 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
     required this.onToolSelect,
     required this.onPomodoroTap,
     this.pomodoroActive = false,
+    this.pomodoroProgress,
     this.onOpenFile,
     this.onNavigationTap,
     this.openingFile = false,
@@ -60,7 +64,9 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
     final stylusTool = ctrl.toolData[PointerDeviceKind.stylus];
     // Set di icone scelto dall'utente nelle impostazioni (outlined/rounded/sharp).
     final AppIcons icons = context.watch<ThemeController>().icons;
-    final plugins = context.watch<PluginController?>();
+    final plugins = AppFeatures.plugins
+        ? context.watch<PluginController?>()
+        : null;
 
     return AppBar(
       automaticallyImplyLeading: false,
@@ -103,7 +109,7 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
             );
           },
         ),
-        if (plugins != null)
+        if (AppFeatures.plugins && plugins != null)
           IconButton(
             key: const ValueKey('plugin-manager'),
             tooltip: 'Plugin',
@@ -266,7 +272,7 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
               onPressed: onImportPdf,
             ),
 
-            if (plugins?.ankiEnabled == true) ...[
+            if (AppFeatures.plugins && plugins?.ankiEnabled == true) ...[
               _ToolButton(
                 selected: stylusTool == EditingTool.FLASHCARD,
                 name: ctrl.capturingFlashcard
@@ -300,9 +306,9 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                 ),
             ],
-            if (plugins?.pomodoroEnabled == true)
+            if (AppFeatures.plugins && plugins?.pomodoroEnabled == true)
               IconButton(
-                icon: Icon(icons.timer),
+                icon: PomodoroProgressIcon(progress: pomodoroProgress),
                 tooltip: 'Pomodoro',
                 color: pomodoroActive
                     ? Theme.of(context).colorScheme.primary

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
-import 'package:xournalpp/layer_contents/XppText.dart';
 import 'package:xournalpp/src/HexColor.dart';
 import 'package:xournalpp/src/XppLayer.dart';
 import 'package:xournalpp/src/editing_tool.dart';
@@ -124,7 +123,7 @@ class XppTexImage extends XppContent {
       XmlAttribute(XmlName('top'), topLeft!.dy.toString()),
       XmlAttribute(XmlName('bottom'), bottomRight?.dy.toString() ?? '0'),
     ],
-    [XmlText(XppText.encodeText(text!))],
+    [XmlText(text!)],
   );
 
   @override

@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xournalpp/main.dart';
 import 'package:xournalpp/pages/OpenPage.dart';
 import 'package:xournalpp/src/app_appearance.dart';
+import 'package:xournalpp/src/app_features.dart';
 import 'package:xournalpp/src/globals.dart';
 import 'package:xournalpp/widgets/PomodoroTimer.dart';
 
@@ -20,7 +21,14 @@ Future<void> capture(WidgetTester tester, GlobalKey key, String name) async {
     final image = await boundary.toImage();
     final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
     image.dispose();
-    await File('docs/validation/$name.png')
+    const artifactPrefix = String.fromEnvironment(
+      'OSI_TEST_ARTIFACT_PREFIX',
+      defaultValue: 'experience-',
+    );
+    final filename = name.startsWith('experience-')
+        ? '$artifactPrefix${name.substring('experience-'.length)}'
+        : '$artifactPrefix$name';
+    await File('docs/validation/$filename.png')
         .writeAsBytes(bytes!.buffer.asUint8List());
   });
 }
@@ -117,5 +125,6 @@ void main() {
       await capture(tester, key, 'pomodoro-style-desktop');
       await tester.pumpWidget(const SizedBox());
     },
+    skip: !AppFeatures.plugins,
   );
 }

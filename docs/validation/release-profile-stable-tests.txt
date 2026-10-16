@@ -1,0 +1,780 @@
+00:00 +0: loading C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart
+00:00 +0: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: script modules and handlers validated; traversal rejected
+00:00 +1: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: zip package loads multiple modules and refuses unexpected files
+00:00 +2: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: Anki export escapes newlines, tabs, HTML and header injection
+00:00 +3: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: file exports stay staged and disappear on error
+00:00 +4: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: new host actions enforce permissions at dynamic invocation
+00:00 +5: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: async OCR and forms compose and late completions cannot edit canvas
+00:00 +6: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: network calls reject undeclared hosts before contacting server
+00:00 +7: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: page render includes staged content and produces an image for OCR providers
+00:00 +8: C:/Users/aless/Documents/GitHub/OSIpp/test/advanced_plugin_test.dart: LaTeX renderer produces actual fraction PNG and rejects invalid syntax
+00:01 +9: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A15 wrong preference types and damaged tag/recovery catalogs are isolated
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-a3532746\xournalpp\state-v2/1792153491326305-2359906677.quarantine
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-a3532746\xournalpp\state-v2/00000000000000000001-2720350471.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-a3532746\xournalpp\state-v2/00000000000000000002-2894975032.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-a3532746\xournalpp\state-v2/1792153491552773-3465566152.quarantine
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-a3532746\xournalpp\state-v2/00000000000000000003-1994892187.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-a3532746\xournalpp\state-v2/00000000000000000004-2731957248.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-a3532746\xournalpp\state-v2/1792153491658959-3793936001.quarantine
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-a3532746\xournalpp\state-v2/00000000000000000005-3042377959.commit
+00:02 +10: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A06 duplicate portable IDs keep separate checkpoints and specific deletion
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-f36a8c9a\xournalpp\state-v2/36ae74767596588bcef4d5a8475f174bdbc75eeba5201ec2873c33d4852bb1d2.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-f36a8c9a\xournalpp\state-v2/00000000000000000001-3340448933.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-f36a8c9a\xournalpp\state-v2/1792153492240497-1339762521.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-f36a8c9a\xournalpp\state-v2/00000000000000000002-3181601924.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-f36a8c9a\xournalpp\state-v2/b71acce3d9bfccb1c87ad5df0f13c2a42ef8157f99f6ae061a2348b6f980a93b.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-f36a8c9a\xournalpp\state-v2/1792153492682372-519569097.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-f36a8c9a\xournalpp\state-v2/00000000000000000003-169281662.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-f36a8c9a\xournalpp\state-v2/00000000000000000004-1865118115.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-f36a8c9a\xournalpp\state-v2/00000000000000000005-3202914868.commit
+00:03 +11: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A07 complete orphan checkpoint reconstructs its missing index
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-ab08ad1c\xournalpp\state-v2/de1322f7b030775ddccc478283dab135da9a9fde55969852452a2278d3a2cc45.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-ab08ad1c\xournalpp\state-v2/00000000000000000001-3915049378.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-ab08ad1c\xournalpp\state-v2/1792153493411002-2219933750.recovery
+00:03 +11: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A06 simultaneous instances of the same origin remain independent
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-61626ffd\xournalpp\state-v2/314769c7a098b6eb26aae6a850d17245d41fa65dd0d3b2cd21fbdd355a17c596.blob
+00:03 +11: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A07 complete orphan checkpoint reconstructs its missing index
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-ab08ad1c\xournalpp\state-v2/00000000000000000002-1424645556.commit
+00:04 +11: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A06 simultaneous instances of the same origin remain independent
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-61626ffd\xournalpp\state-v2/00000000000000000001-3537312607.commit
+00:04 +11: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A07 complete orphan checkpoint reconstructs its missing index
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-ab08ad1c\xournalpp\state-v2/00000000000000000003-3007615331.commit
+00:04 +11: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A06 simultaneous instances of the same origin remain independent
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-61626ffd\xournalpp\state-v2/1792153493651983-3493850805.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-61626ffd\xournalpp\state-v2/00000000000000000002-1799833045.commit
+00:04 +12: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A06 simultaneous instances of the same origin remain independent
+00:04 +12: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A07 corrupted latest commit falls back and preserves evidence
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-c92868b\xournalpp\state-v2/00000000000000000001-2637061838.commit
+00:04 +12: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A06 simultaneous instances of the same origin remain independent
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-61626ffd\xournalpp\state-v2/1792153493769986-3044303633.recovery
+00:04 +12: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A07 corrupted latest commit falls back and preserves evidence
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-c92868b\xournalpp\state-v2/00000000000000000002-2473502937.commit
+00:04 +12: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A06 simultaneous instances of the same origin remain independent
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-61626ffd\xournalpp\state-v2/00000000000000000003-1814018924.commit
+00:04 +13: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A06 simultaneous instances of the same origin remain independent
+00:04 +13: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A15 a damaged record does not hide good records and is quarantined
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-703dbb35\xournalpp\state-v2/1792153493872666-3715135590.quarantine
+00:04 +13: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A06 simultaneous instances of the same origin remain independent
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-61626ffd\xournalpp\state-v2/00000000000000000004-1004300594.commit
+00:04 +14: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A15 a damaged record does not hide good records and is quarantined
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-703dbb35\xournalpp\state-v2/00000000000000000001-390460691.commit
+00:04 +14: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: incremental journal round trip retains ink, masks, media, audio and cards
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-968b9ef7\xournalpp\state-v2/6198db1e278a5867f71b24d3baccf8ba1fc7a86e3d8de05ffb60370038f903c4.blob
+00:04 +14: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A15 a damaged record does not hide good records and is quarantined
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-703dbb35\xournalpp\state-v2/00000000000000000002-3681250866.commit
+00:04 +15: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: incremental journal round trip retains ink, masks, media, audio and cards
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-968b9ef7\xournalpp\state-v2/039058c6f2c0cb492c533b0a4d14ef77cc0f78abccced5287d84a1a2011cfb81.blob
+00:05 +15: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A15 truncated JSON stays intact in quarantine
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-110a2aae\xournalpp\state-v2/1792153494562313-2603291915.quarantine
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-110a2aae\xournalpp\state-v2/00000000000000000001-3586193227.commit
+00:05 +16: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: incremental journal round trip retains ink, masks, media, audio and cards
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-968b9ef7\xournalpp\state-v2/2e24fb147e880c54602d2c7a566d118b79bc7bef8fb07c6d21c922e2aa542f03.blob
+00:05 +17: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: incremental journal round trip retains ink, masks, media, audio and cards
+00:05 +18: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: incremental journal round trip retains ink, masks, media, audio and cards
+00:05 +19: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: incremental journal round trip retains ink, masks, media, audio and cards
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-968b9ef7\xournalpp\state-v2/bb8a7787aa399d6ca070c9255a0f6b9ea92654cb863bd5a9ad82006041b955c5.blob
+00:06 +19: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A12 changed original and old recovery both survive workspace restore
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-6c6b0d6b\xournalpp\state-v2/9fdb82a66e54b3fd1fcdfc085ad099c5b76a18b4454f9bead357039b5ae7e84c.blob
+00:06 +19: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: incremental journal round trip retains ink, masks, media, audio and cards
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-968b9ef7\xournalpp\state-v2/00000000000000000001-3716648794.commit
+00:06 +19: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A12 changed original and old recovery both survive workspace restore
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-6c6b0d6b\xournalpp\state-v2/00000000000000000001-3815803928.commit
+00:06 +19: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: incremental journal round trip retains ink, masks, media, audio and cards
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-968b9ef7\xournalpp\state-v2/1792153496062313-3773584740.recovery
+00:06 +19: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A12 changed original and old recovery both survive workspace restore
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-6c6b0d6b\xournalpp\state-v2/1792153496075332-3126524468.recovery
+00:06 +19: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: incremental journal round trip retains ink, masks, media, audio and cards
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-968b9ef7\xournalpp\state-v2/00000000000000000002-2664379023.commit
+00:06 +19: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A12 changed original and old recovery both survive workspace restore
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-6c6b0d6b\xournalpp\state-v2/00000000000000000002-2909777941.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-6c6b0d6b\xournalpp\state-v2/00000000000000000003-2563664490.commit
+00:06 +20: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: incremental journal round trip retains ink, masks, media, audio and cards
+00:06 +20: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A12 malformed tab does not abandon valid tabs
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-749cab78\xournalpp\state-v2/00000000000000000001-4002614651.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-749cab78\xournalpp\state-v2/00000000000000000002-3699084216.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-749cab78\xournalpp\state-v2/1792153496369794-2222363241.quarantine
+00:06 +20: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: incremental journal round trip retains ink, masks, media, audio and cards
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-968b9ef7\xournalpp\state-v2/1792153496379965-2302736541.recovery
+00:06 +21: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: incremental journal round trip retains ink, masks, media, audio and cards
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-968b9ef7\xournalpp\state-v2/00000000000000000003-1710429063.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-968b9ef7\xournalpp\state-v2/fe9e3841664de21bd450ff51e25509eda9903ba41484caad2fd090a524ef79c0.blob
+00:06 +21: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A10 protected import autosaves privately without rewriting origin
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-6e160a19\xournalpp\state-v2/ca55195b37bb92d5739f467a3372747533782071902fb948f51f5f58d0f8d2b6.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-6e160a19\xournalpp\state-v2/00000000000000000001-1201269182.commit
+00:07 +21: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: incremental journal round trip retains ink, masks, media, audio and cards
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-968b9ef7\xournalpp\state-v2/f2f98894159b16830daf8e336f0cfec17eaef7b13e4de91d3dfd460ac492701c.blob
+00:07 +21: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A10 protected import autosaves privately without rewriting origin
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-6e160a19\xournalpp\state-v2/1792153496614103-2077771905.recovery
+00:07 +21: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: incremental journal round trip retains ink, masks, media, audio and cards
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-968b9ef7\xournalpp\state-v2/1792153496643099-4234538313.recovery
+00:07 +22: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: incremental journal round trip retains ink, masks, media, audio and cards
+00:07 +23: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: incremental journal round trip retains ink, masks, media, audio and cards
+00:07 +24: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: incremental journal round trip retains ink, masks, media, audio and cards
+00:07 +25: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: incremental journal round trip retains ink, masks, media, audio and cards
+00:07 +25: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A10 protected import autosaves privately without rewriting origin
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-6e160a19\xournalpp\state-v2/00000000000000000002-713090948.commit
+00:07 +26: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: incremental journal round trip retains ink, masks, media, audio and cards
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-968b9ef7\xournalpp\state-v2/00000000000000000004-2202335641.commit
+00:07 +27: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A10 protected import autosaves privately without rewriting origin
+00:07 +28: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A10 protected import autosaves privately without rewriting origin
+00:07 +29: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A10 protected import autosaves privately without rewriting origin
+00:07 +30: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A10 protected import autosaves privately without rewriting origin
+00:07 +31: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A10 protected import autosaves privately without rewriting origin
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-6e160a19\xournalpp\state-v2/00000000000000000003-3272517869.commit
+00:07 +31: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-dbc11f74\xournalpp\state-v2/7c15aaad784764c52bd643d2405aaaf3766854f5fc54728b0ad7def929d5ce7b.blob
+00:07 +32: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+00:07 +33: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+00:07 +34: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+00:07 +35: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-dbc11f74\xournalpp\state-v2/7bddeb16e1502b868637001ac1f9c62abefa32ccac220c70081aebe455772dbd.blob
+00:07 +36: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+00:07 +37: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+00:07 +38: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+00:07 +39: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+00:07 +40: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+00:07 +41: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-dbc11f74\xournalpp\state-v2/00000000000000000001-4243107983.commit
+00:07 +42: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+00:07 +43: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-dbc11f74\xournalpp\state-v2/1792153497559346-1865385131.recovery
+00:08 +44: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-dbc11f74\xournalpp\state-v2/00000000000000000002-2056485578.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-dbc11f74\xournalpp\state-v2/83ae9d4108e3ff8c707c670f6ecd7495c8135a1cec98e58f71d14a55d8bce903.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-dbc11f74\xournalpp\state-v2/7306a84585c29443e067bb4e026b2681948f29b319fa628ec6ba7a7e78c10612.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-dbc11f74\xournalpp\state-v2/1792153497846643-3098253624.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-dbc11f74\xournalpp\state-v2/00000000000000000003-3754812490.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-dbc11f74\xournalpp\state-v2/2f07a756b0cb622c2cb1fe2ab4c7755d7f32063d39bba4c6e5dba24f29d25da6.blob
+00:08 +44: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A05 manual save failure first secures a complete checkpoint even without autosave
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-3a1706d4\xournalpp\state-v2/07d45143e43189d6276d9c3bfc28f5fc1c62e05eb17e24dba3176d9eceff33b7.blob
+00:08 +44: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-dbc11f74\xournalpp\state-v2/0f6845c79c77167536b88396c1356214e3b56ba4544fb70f83de87dceb13802c.blob
+00:08 +44: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A05 manual save failure first secures a complete checkpoint even without autosave
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-3a1706d4\xournalpp\state-v2/00000000000000000001-160779639.commit
+00:08 +44: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-dbc11f74\xournalpp\state-v2/1792153498174275-4067457915.recovery
+00:08 +44: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A05 manual save failure first secures a complete checkpoint even without autosave
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-3a1706d4\xournalpp\state-v2/1792153498186797-32531547.recovery
+00:08 +44: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-dbc11f74\xournalpp\state-v2/00000000000000000004-3424517684.commit
+00:08 +44: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A05 manual save failure first secures a complete checkpoint even without autosave
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-3a1706d4\xournalpp\state-v2/00000000000000000002-3911409006.commit
+00:08 +44: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-dbc11f74\xournalpp\state-v2/22fee15fb66bac19244c2a09f333e4f8818940e5e27983980175a7db635a33b2.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-dbc11f74\xournalpp\state-v2/26eb837bc124c23764fd86768a8c0ea90ca15400d4c55952bf6bffcc8e85d0cf.blob
+00:08 +44: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_data_fixes_test.dart: A05 manual save failure first secures a complete checkpoint even without autosave
+❌ ERRORE DI SALVATAGGIO IMPREVISTO: PathAccessException: Cannot rename file to 'C:\Users\aless\AppData\Local\Temp\osipp-test-3a1706d4\xournalpp\blocked', path = 'C:\Users\aless\AppData\Local\Temp\osipp-test-3a1706d4\xournalpp\blocked.1792153498302343.tmp' (OS Error: Accesso negato, errno = 5)
+00:08 +44: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-dbc11f74\xournalpp\state-v2/1792153498313344-492854231.recovery
+00:08 +45: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-dbc11f74\xournalpp\state-v2/00000000000000000005-1901008676.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-dbc11f74\xournalpp\state-v2/749a94ffa93cd76c70aa98ec885e5b7fce9e3050eb6678155e845e5783c61d07.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-dbc11f74\xournalpp\state-v2/a86d930797e80d7e00eb9e6a730e281cca47f4b203c6884caaed57dac8bc1827.blob
+00:09 +46: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+00:09 +47: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+00:09 +48: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-dbc11f74\xournalpp\state-v2/1792153498721094-1853224408.recovery
+00:09 +49: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-dbc11f74\xournalpp\state-v2/00000000000000000006-141521663.commit
+00:09 +50: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 garbage collection retains previous generation and journal dependencies
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-dbc11f74\xournalpp\state-v2/2e7d2c03a9507ae265ecf5b5356885a53393a2029d241394997265a1a25aefc6.blob
+00:09 +51: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:09 +51: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A07 library sidecar reconstructs an index after all metadata commits are lost
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-b470290a\xournalpp\owned.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-b470290a\xournalpp\state-v2/00000000000000000001-1244500456.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-b470290a\xournalpp\state-v2/00000000000000000002-3416484478.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-b470290a\xournalpp\state-v2/c2aedfffc5216356b80e34bfcddd3c03ed9ca95af46e71c2f70e2fda0ee7cd77.library
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-b470290a\xournalpp\state-v2/00000000000000000003-3719948254.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-b470290a\xournalpp\state-v2/00000000000000000001-130094473.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-b470290a\xournalpp\state-v2/00000000000000000002-1087778718.commit
+00:10 +52: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:10 +53: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:10 +54: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:10 +54: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A18 staged backup preserves conflicting originals, validates lazily and cleans on cancel
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e8a5ebb2\xournalpp\source.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e8a5ebb2\xournalpp\state-v2/00000000000000000001-2397935814.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e8a5ebb2\xournalpp\state-v2/00000000000000000002-1566509562.commit
+00:11 +55: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: autosave debounce runs without a manual save request
+00:11 +55: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A18 staged backup preserves conflicting originals, validates lazily and cleans on cancel
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e8a5ebb2\xournalpp\state-v2/49bdc7974f694a70e666dd1e3147b49afb6387bdab1aff5abc8eea34a9b7d518.library
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e8a5ebb2\xournalpp\state-v2/00000000000000000003-3371481447.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e8a5ebb2\xournalpp\state-v2/fd09e6225fa409ca5095d09ba51d35d7a39524143df5b7ff0bc3ef7e2d28fcb3.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e8a5ebb2\xournalpp\state-v2/00000000000000000004-188924579.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e8a5ebb2\xournalpp\state-v2/1792153500940688-2417255068.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-e8a5ebb2\xournalpp\state-v2/00000000000000000005-4120970492.commit
+00:11 +56: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A18 staged backup preserves conflicting originals, validates lazily and cleans on cancel
+00:11 +57: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A18 staged backup preserves conflicting originals, validates lazily and cleans on cancel
+00:11 +58: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A18 staged backup preserves conflicting originals, validates lazily and cleans on cancel
+00:11 +59: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A18 staged backup preserves conflicting originals, validates lazily and cleans on cancel
+00:11 +60: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A18 staged backup preserves conflicting originals, validates lazily and cleans on cancel
+00:11 +61: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A18 staged backup preserves conflicting originals, validates lazily and cleans on cancel
+00:11 +62: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A18 staged backup preserves conflicting originals, validates lazily and cleans on cancel
+00:11 +63: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A18 staged backup preserves conflicting originals, validates lazily and cleans on cancel
+00:11 +64: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A18 staged backup preserves conflicting originals, validates lazily and cleans on cancel
+00:12 +65: C:/Users/aless/Documents/GitHub/OSIpp/test/astra_recovery_performance_test.dart: A18 staged backup preserves conflicting originals, validates lazily and cleans on cancel
+00:12 +66: C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: Android document URI can be saved again and reopened from the library
+00:12 +67: C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: Android document URI can be saved again and reopened from the library
+00:12 +67: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: named document autosaves original; failure keeps the recovery and dirty state
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-auto-original-148fdbfd/notes.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-auto-original-148fdbfd/notes.xopp
+00:12 +68: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: named document autosaves original; failure keeps the recovery and dirty state
+❌ ERRORE DI SALVATAGGIO IMPREVISTO: PathAccessException: Cannot rename file to 'C:\Users\aless\AppData\Local\Temp\osipp-auto-original-148fdbfd', path = 'C:\Users\aless\AppData\Local\Temp\osipp-auto-original-148fdbfd.1792153502164319.tmp' (OS Error: Accesso negato, errno = 5)
+00:12 +69: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: named document autosaves original; failure keeps the recovery and dirty state
+00:12 +70: C:/Users/aless/Documents/GitHub/OSIpp/test/document_export_test.dart: PDF raster keeps paper, all layers, text, formulas, image and erased ink
+00:12 +71: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: infinite viewport writes at negative and far-away coordinates at different zooms
+00:13 +72: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: infinite viewport writes at negative and far-away coordinates at different zooms
+00:13 +73: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: infinite viewport writes at negative and far-away coordinates at different zooms
+00:13 +74: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: infinite viewport writes at negative and far-away coordinates at different zooms
+00:13 +75: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: infinite viewport writes at negative and far-away coordinates at different zooms
+00:14 +76: C:/Users/aless/Documents/GitHub/OSIpp/test/canvas_workspace_test.dart: infinite viewport writes at negative and far-away coordinates at different zooms
+00:14 +77: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:14 +78: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:14 +79: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:14 +80: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:14 +81: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:14 +82: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:14 +82: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: saved files reopen at the same path and overwrite existing bytes
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-storage-b7121d0\note.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-storage-b7121d0\note.xopp
+00:14 +83: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:14 +84: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:14 +84: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: failed replacement does not truncate the original file
+❌ ERRORE DI SALVATAGGIO IMPREVISTO: PathAccessException: Cannot rename file to 'C:\Users\aless\AppData\Local\Temp\osipp-failure-b38d0e6e\folder', path = 'C:\Users\aless\AppData\Local\Temp\osipp-failure-b38d0e6e\folder.1792153504358685.tmp' (OS Error: Accesso negato, errno = 5)
+00:14 +85: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:15 +86: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:15 +87: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:15 +88: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:15 +89: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:15 +90: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:15 +91: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:16 +91: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: failed save keeps dirty state and resets saving state
+❌ ERRORE DI SALVATAGGIO IMPREVISTO: PathAccessException: Cannot rename file to 'C:\Users\aless\AppData\Local\Temp\osipp-save-error-6d726f31', path = 'C:\Users\aless\AppData\Local\Temp\osipp-save-error-6d726f31.1792153505612102.tmp' (OS Error: Accesso negato, errno = 5)
+00:16 +92: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:16 +92: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: changes made during save remain dirty and are not in saved snapshot
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-save-race-9080eecd\notes.xopp
+00:16 +93: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:16 +93: C:/Users/aless/Documents/GitHub/OSIpp/test/document_storage_test.dart: new notes with duplicate titles get distinct files
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-duplicate-315ae61a\xournalpp\notes.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-duplicate-315ae61a\xournalpp\notes (2).xopp
+00:16 +94: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:17 +95: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:17 +96: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: settings stay visible on phone; save follows focused panel
+00:17 +97: C:/Users/aless/Documents/GitHub/OSIpp/test/eraser_zoom_repaint_test.dart: eraser repaints at fixed 1.0x before any pan or zoom
+00:18 +97: C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart: save is disabled while document is being saved
+
+Warning: A call to tap() with finder "Found 1 widget with text "Salva": [
+  Text("Salva", dependencies: [DefaultSelectionStyle, DefaultTextStyle, MediaQuery]),
+]" derived an Offset (Offset(672.0, 44.0)) that would not hit test on the specified widget.
+Maybe the widget is actually off-screen, or another widget is obscuring it, or the widget cannot receive pointer events.
+The finder corresponds to this RenderBox: RenderParagraph#b580f relayoutBoundary=up39 NEEDS-PAINT
+The hit test result at that offset is: HitTestResult(RenderMouseRegion#6ff13@Offset(672.0, 44.0), RenderSemanticsAnnotations#b7219@Offset(672.0, 44.0), RenderPointerListener#08b02@Offset(672.0, 44.0), RenderSemanticsGestureHandler#91db0@Offset(672.0, 44.0), RenderExcludeSemantics#484ec@Offset(672.0, 44.0), RenderBlockSemantics#dcba7@Offset(672.0, 44.0), RenderIgnorePointer#54a00@Offset(672.0, 44.0), RenderSemanticsAnnotations#8db34@Offset(672.0, 44.0), _RenderTheater#58ccd@Offset(672.0, 44.0), RenderAbsorbPointer#71ba8@Offset(672.0, 44.0), RenderPointerListener#c8986@Offset(672.0, 44.0), RenderSemanticsAnnotations#6f7ba@Offset(672.0, 44.0), RenderCustomPaint#3dc90@Offset(672.0, 44.0), RenderSemanticsAnnotations#3422b@Offset(672.0, 44.0), RenderSemanticsAnnotations#f4235@Offset(672.0, 44.0), RenderSemanticsAnnotations#e4991@Offset(672.0, 44.0), RenderTapRegionSurface#74277@Offset(672.0, 44.0), RenderSemanticsAnnotations#d383c@Offset(672.0, 44.0), RenderSemanticsAnnotations#d7ad8@Offset(672.0, 44.0), HitTestEntry<HitTestTarget>#dfa22(_ReusableRenderView#28f2b), HitTestEntry<HitTestTarget>#21f82(<AutomatedTestWidgetsFlutterBinding>))
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2165:25)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1947:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1080:7)
+#3      main.<anonymous closure> (file:///C:/Users/aless/Documents/GitHub/OSIpp/test/document_toolbar_test.dart:150:18)
+<asynchronous suspension>
+#4      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#5      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1953:5)
+<asynchronous suspension>
+#6      StackZoneSpecification._registerCallback.<anonymous closure> (package:stack_trace/src/stack_zone_specification.dart:114:42)
+<asynchronous suspension>
+To silence this warning, pass "warnIfMissed: false" to "tap()".
+To make this warning fatal, set WidgetController.hitTestWarningShouldBeFatal to true.
+
+00:18 +98: C:/Users/aless/Documents/GitHub/OSIpp/test/eraser_zoom_repaint_test.dart: eraser repaints at fixed 1.0x before any pan or zoom
+00:18 +99: C:/Users/aless/Documents/GitHub/OSIpp/test/gesture_reopen_regression_test.dart: double touch leaves zoom and page position unchanged at 1.0
+00:18 +100: C:/Users/aless/Documents/GitHub/OSIpp/test/gesture_reopen_regression_test.dart: double touch leaves zoom and page position unchanged at 1.0
+00:18 +101: C:/Users/aless/Documents/GitHub/OSIpp/test/gesture_reopen_regression_test.dart: double touch leaves zoom and page position unchanged at 1.0
+00:19 +102: C:/Users/aless/Documents/GitHub/OSIpp/test/gesture_reopen_regression_test.dart: double touch leaves zoom and page position unchanged at 1.0
+00:19 +103: C:/Users/aless/Documents/GitHub/OSIpp/test/gesture_reopen_regression_test.dart: double touch leaves zoom and page position unchanged at 1.0
+00:19 +104: C:/Users/aless/Documents/GitHub/OSIpp/test/gesture_reopen_regression_test.dart: double touch leaves zoom and page position unchanged at 1.0
+00:19 +105: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:20 +106: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:20 +107: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:20 +108: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:20 +109: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:20 +110: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:20 +111: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:20 +112: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:20 +113: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:21 +114: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:21 +115: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:22 +116: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+00:22 +117: C:/Users/aless/Documents/GitHub/OSIpp/test/home_delete_test.dart: home long press shows actions; cancel preserves note; confirmation deletes it
+dynamic_color: Dynamic color not detected on this device.
+00:23 +118: C:/Users/aless/Documents/GitHub/OSIpp/test/ink_round_continuity_test.dart: isolated pen contact has a round cap, not a square
+00:23 +119: C:/Users/aless/Documents/GitHub/OSIpp/test/ink_round_continuity_test.dart: round preview stays identical after release: pen
+00:23 +120: C:/Users/aless/Documents/GitHub/OSIpp/test/ink_round_continuity_test.dart: round preview stays identical after release: pen
+00:23 +121: C:/Users/aless/Documents/GitHub/OSIpp/test/ink_round_continuity_test.dart: round preview stays identical after release: pen
+00:24 +122: C:/Users/aless/Documents/GitHub/OSIpp/test/ink_round_continuity_test.dart: round preview stays identical after release: pen
+00:24 +123: C:/Users/aless/Documents/GitHub/OSIpp/test/ink_round_continuity_test.dart: round preview stays identical after release: pen
+00:24 +124: C:/Users/aless/Documents/GitHub/OSIpp/test/ink_round_continuity_test.dart: round preview stays identical after release: pen
+00:24 +124: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: named autosave updates the home thumbnail, date and existing user metadata
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-home-auto-58c81cd4/notes.xopp
+00:24 +125: C:/Users/aless/Documents/GitHub/OSIpp/test/ink_round_continuity_test.dart: round preview stays identical after release: pen
+00:24 +126: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: legacy metadata is generated lazily once and persisted without opening an editor
+00:24 +127: C:/Users/aless/Documents/GitHub/OSIpp/test/ink_round_continuity_test.dart: round preview stays identical after release: highlighter
+00:24 +128: C:/Users/aless/Documents/GitHub/OSIpp/test/ink_round_continuity_test.dart: round preview stays identical after release: highlighter
+00:24 +129: C:/Users/aless/Documents/GitHub/OSIpp/test/ink_round_continuity_test.dart: round preview stays identical after release: highlighter
+00:24 +130: C:/Users/aless/Documents/GitHub/OSIpp/test/ink_round_continuity_test.dart: round preview stays identical after release: highlighter
+00:24 +131: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: home cards show an image and readable last-modified date on a phone
+00:24 +132: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: home cards show an image and readable last-modified date on a phone
+00:25 +133: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: missing and transparent previews fall back and use a lazy loader
+00:25 +134: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: invalid preview and missing date do not break home cards
+00:25 +135: C:/Users/aless/Documents/GitHub/OSIpp/test/library_preview_test.dart: panning reuses geometry; an edited stroke invalidates the cache
+00:26 +136: C:/Users/aless/Documents/GitHub/OSIpp/test/library_responsive_test.dart: library fits a 380dp phone and preserves readable cards
+00:27 +137: C:/Users/aless/Documents/GitHub/OSIpp/test/library_responsive_test.dart: library fits a 380dp phone and preserves readable cards
+00:27 +138: C:/Users/aless/Documents/GitHub/OSIpp/test/library_responsive_test.dart: library fits a 380dp phone and preserves readable cards
+00:27 +139: C:/Users/aless/Documents/GitHub/OSIpp/test/library_responsive_test.dart: library fits a 380dp phone and preserves readable cards
+00:27 +140: C:/Users/aless/Documents/GitHub/OSIpp/test/library_responsive_test.dart: library fits a 380dp phone and preserves readable cards
+00:27 +141: C:/Users/aless/Documents/GitHub/OSIpp/test/library_responsive_test.dart: library fits a 380dp phone and preserves readable cards
+00:28 +142: C:/Users/aless/Documents/GitHub/OSIpp/test/note_audio_test.dart: recorded stylus preserves samples/pressure; canceled strokes never associate audio
+00:28 +143: C:/Users/aless/Documents/GitHub/OSIpp/test/note_audio_test.dart: listen mode seeks a stroke without creating ink or invoking eraser buttons
+00:28 +144: C:/Users/aless/Documents/GitHub/OSIpp/test/note_audio_test.dart: cross-document paste carries immutable recording without copying bytes
+00:28 +145: C:/Users/aless/Documents/GitHub/OSIpp/test/note_audio_test.dart: overlay advances sample cursor without modifying ink and panel fits phone
+00:29 +146: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: complete backup transfers portable notes, latest recovery and metadata to another device
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-c925997a\xournalpp\backup-1792153518392389-3259840151.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-c925997a\xournalpp\backup-1792153518622082-1040169299.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-c925997a\xournalpp\backup-1792153518652082-2854623822.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-c925997a\xournalpp\backup-1792153518676299-319598441.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-c925997a\xournalpp\backup-1792153518729832-1004705079.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-c925997a\xournalpp\backup-1792153518749844-4058703223.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-c925997a\xournalpp\backup-1792153518768831-3824585156.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-backup-target-c925997a\xournalpp\backup-1792153518793229-719176910.xopp
+00:29 +147: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: missing documents and missing backgrounds are explicitly reported
+00:29 +148: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: invalid archives and path traversal are rejected before any import
+00:29 +149: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: CRC verification rejects a damaged payload without importing anything
+00:29 +150: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: a malformed note makes the entire archive fail validation
+00:29 +151: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: failure during restoration removes staged files and preserves existing library
+00:29 +152: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: browser storage persists restored notes and deletion removes them
+00:29 +153: C:/Users/aless/Documents/GitHub/OSIpp/test/note_backup_test.dart: app settings expose Ripristina Backup and Crea Backup on a phone
+00:30 +153 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: custom tags persist, include legacy categories and avoid duplicates
+00:30 +154 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: chosen tags cross snapshots, isolates and subsequent saves
+00:30 +155 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:31 +156 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:31 +157 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:31 +158 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:31 +159 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:33 +160 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:33 +161 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:33 +162 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:34 +163 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/note_tags_test.dart: phone creates and selects custom tags and opens OSI app info
+00:35 +164 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart: measure XOPP opening and preserve large attachments and pressure ink
+00:35 +165 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart: measure XOPP opening and preserve large attachments and pressure ink
+00:36 +166 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart: measure XOPP opening and preserve large attachments and pressure ink
+00:36 +167 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart: measure XOPP opening and preserve large attachments and pressure ink
+00:37 +168 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart: measure XOPP opening and preserve large attachments and pressure ink
+00:37 +169 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart: measure XOPP opening and preserve large attachments and pressure ink
+00:37 +170 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart: measure XOPP opening and preserve large attachments and pressure ink
+00:37 +171 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart: measure XOPP opening and preserve large attachments and pressure ink
+00:37 +172 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart: measure XOPP opening and preserve large attachments and pressure ink
+00:37 +173 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart: measure XOPP opening and preserve large attachments and pressure ink
+00:38 +174 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart: measure XOPP opening and preserve large attachments and pressure ink
+00:38 +175 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart: measure XOPP opening and preserve large attachments and pressure ink
+00:38 +176 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart: measure XOPP opening and preserve large attachments and pressure ink
+00:38 +177 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart: measure XOPP opening and preserve large attachments and pressure ink
+00:38 +178 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart: measure XOPP opening and preserve large attachments and pressure ink
+00:38 +179 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart: measure XOPP opening and preserve large attachments and pressure ink
+00:38 +180 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart: measure XOPP opening and preserve large attachments and pressure ink
+00:38 +181 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart: measure XOPP opening and preserve large attachments and pressure ink
+00:39 +182 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart: measure XOPP opening and preserve large attachments and pressure ink
+00:40 +183 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart: measure XOPP opening and preserve large attachments and pressure ink
+00:40 +184 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart: measure XOPP opening and preserve large attachments and pressure ink
+00:41 +185 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart: measure XOPP opening and preserve large attachments and pressure ink
+00:41 +186 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/opening_performance_test.dart: measure XOPP opening and preserve large attachments and pressure ink
+00:41 +187 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/paper_templates_test.dart: long press chooses paper and size; next short press restores original
+00:41 +188 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/paper_templates_test.dart: long press chooses paper and size; next short press restores original
+00:41 +189 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/paper_templates_test.dart: long press chooses paper and size; next short press restores original
+00:41 +190 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/paper_templates_test.dart: Smith chart is painted in thumbnails and embedded in PDF
+00:41 +191 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/paper_templates_test.dart: Smith chart is painted in thumbnails and embedded in PDF
+00:41 +192 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/paper_templates_test.dart: Smith chart is painted in thumbnails and embedded in PDF
+00:42 +193 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/pdf_zoom_detail_test.dart: zoom is debounced; detail uses a crop and releases on background
+00:42 +194 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/pdf_zoom_detail_test.dart: zoom is debounced; detail uses a crop and releases on background
+00:42 +195 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/pdf_zoom_detail_test.dart: closing during render disposes stale texture and closes document even on release failure
+00:42 +196 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: opening PDF content imports pages and attachments without a save grant
+Helvetica has no Unicode support see https://github.com/DavBfr/dart_pdf/wiki/Fonts-Management
+00:42 +197 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: content routing keeps renamed gzip notes and rejects invalid gzip without PDF fallback
+00:43 +198 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: PDF imports honor byte and page budgets before enumerating pages
+Helvetica has no Unicode support see https://github.com/DavBfr/dart_pdf/wiki/Fonts-Management
+00:43 +199 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: opening an old PDF from saved notes preserves title and requires a new save
+Helvetica has no Unicode support see https://github.com/DavBfr/dart_pdf/wiki/Fonts-Management
+00:44 +200 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: opening an old PDF from saved notes preserves title and requires a new save
+00:44 +201 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: opening an old PDF from saved notes preserves title and requires a new save
+00:44 +202 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: opening an old PDF from saved notes preserves title and requires a new save
+00:44 +203 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: opening an old PDF from saved notes preserves title and requires a new save
+00:44 +204 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: opening an old PDF from saved notes preserves title and requires a new save
+00:44 +205 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: opening an old PDF from saved notes preserves title and requires a new save
+00:44 +206 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: opening an old PDF from saved notes preserves title and requires a new save
+00:45 +207 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/pixel_eraser_test.dart: pen eraser gesture creates one undo step, uses diameter and resets on cancel
+00:45 +208 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/pixel_eraser_test.dart: pen eraser gesture creates one undo step, uses diameter and resets on cancel
+00:45 +209 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/pixel_eraser_test.dart: pen eraser gesture creates one undo step, uses diameter and resets on cancel
+00:45 +210 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/pixel_eraser_test.dart: pen eraser gesture creates one undo step, uses diameter and resets on cancel
+00:45 +211 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/pixel_eraser_test.dart: pen eraser gesture creates one undo step, uses diameter and resets on cancel
+00:45 +212 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/pixel_eraser_test.dart: pen eraser gesture creates one undo step, uses diameter and resets on cancel
+00:45 +213 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/pixel_eraser_test.dart: pen eraser gesture creates one undo step, uses diameter and resets on cancel
+00:45 +214 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/pixel_eraser_test.dart: pen eraser gesture creates one undo step, uses diameter and resets on cancel
+00:45 +215 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: streamed save preserves legacy XML, large PDF bytes and metadata
+00:45 +216 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: large attachment hashes yield to the event loop and retain SHA-256
+00:45 +217 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: PDF imported into a tab keeps its workspace identity and is immediately recoverable
+00:45 +218 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: PDF size import opens and closes one source for all pages
+00:45 +219 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: visible pages requested during import render after recovery is committed
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-62c0f55f\xournalpp\queued-import-test.pdf
+00:46 +220 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: 10000 pages: pixel pans reuse page widgets and coalesce range notifications
+00:46 +221 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: XOPP fast gzip is lossless and benchmarks compression separately from XML
+00:46 +222 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: decoded image resources are released with owners and late decode cannot resurrect them
+00:46 +223 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: image completion repaints a stationary page and unmount releases its native cache
+00:46 +224 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: manual save reuses current checkpoint and reserializes after edits
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-checkpoint-90672958\xournalpp\Reuse.xopp
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osi-checkpoint-90672958\xournalpp\Reuse.xopp
+00:47 +225 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: checkpoint reader rejects mismatched timestamps
+00:47 +226 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: PDF export snapshots are complete and retain page order through background worker
+00:47 +227 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: PDF export snapshots are complete and retain page order through background worker
+00:47 +228 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: validated manifests and registered permissions cannot be mutated
+00:47 +229 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: PDF viewing/export open the source once and close every native resource
+00:47 +230 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: PDF viewing/export open the source once and close every native resource
+00:47 +231 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: PDF viewing/export open the source once and close every native resource
+00:47 +232 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: PDF viewing/export open the source once and close every native resource
+00:47 +233 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: PDF viewing/export open the source once and close every native resource
+00:47 +234 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/performance_resources_test.dart: PDF viewing/export open the source once and close every native resource
+00:47 +235 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: text.update applies its own text limit and leaves original unchanged
+00:47 +236 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: cancellation immediately releases a pending provider and ignores late result
+00:47 +237 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: no HTTP access to local literals, reserved hosts or overridden routing
+00:47 +238 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: DNS rejects all private/reserved answers including IPv6 and mixed answers
+00:47 +239 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: invalid plugin form is rejected without a Flutter build failure
+00:48 +240 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: invalid plugin form is rejected without a Flutter build failure
+00:48 +241 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: invalid plugin form is rejected without a Flutter build failure
+00:48 +242 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: invalid plugin form is rejected without a Flutter build failure
+00:48 +243 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: invalid plugin form is rejected without a Flutter build failure
+00:48 +244 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: invalid plugin form is rejected without a Flutter build failure
+00:48 +245 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: instruction budget interrupts nested loops without committing partial edits
+00:48 +246 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: plugin host closes only its own form on cancellation
+00:48 +247 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: plugin host closes only its own form on cancellation
+00:48 +248 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: plugin host closes only its own form on cancellation
+00:48 +249 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: plugin host closes only its own form on cancellation
+00:48 +250 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: plugin host closes only its own form on cancellation
+00:48 +251 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: plugin host closes only its own form on cancellation
+00:48 +252 ~1: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: plugin host closes only its own form on cancellation
+00:49 +252 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_security_test.dart: plugin host closes only its own form on cancellation
+00:49 +253 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/pointer_input_test.dart: hardware pen routes to interacted or hovered listener and clears disposed owner
+00:50 +254 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:50 +255 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:51 +256 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:51 +257 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:51 +258 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:51 +259 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:52 +260 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:52 +261 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:52 +262 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:52 +263 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:52 +264 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/plugin_system_test.dart: guided creator and command form work on a 380dp phone
+00:53 +265 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/release_profile_test.dart: release profile gates plugin startup, settings and saved Pomodoro
+00:54 +266 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/release_profile_test.dart: release profile gates plugin startup, settings and saved Pomodoro
+00:54 +266 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/c84ec2f9ca1e2ccfe71ccc86e52e00d968a3b19fee8150368403dd38b0b7acf8.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/a36ba4d0f9d6b7ff3ca85f815ddf3d7276856da641f0eeefaba00fd64179102e.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/e847e522ae8687a7df668a789141f0c1112e1a198c6d3812f827a86f7a4f2771.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/81e342c9fe30a5140909b15978fe48983f604f5e69eb5c995a800f6586ee6bf3.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/80ec03fbb9e5128a893eb52613ccb747be509661aaa68683b886347252c8a2a4.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/905be1b1e588e2b44af3dd5287e8f5818420ccaa3adae41b2b5da4c224b8e79a.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/271f469dd879a3a73b2ea1e3cce9b776e984d2bfa1f1a71bd93144240ca7d64f.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/4d2b20664955b6d778f890105770820c71a8bb645e08f35dfae38e348d45ee05.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/f1933ffd32588e6110f395dfbde56fcecb4b60d07b7ff4c507435c02406cfc25.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/9d2ec2e25c5402b6b95df0b9c36930097d422f2983e296395575ac85b360f3fe.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/e08aac5f3fac3520c67a39757f2193be7b34dfa023bf698b5eeecbdd9a8773e8.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/6b121c46baa6ec8f1b5e1465101a89df8c15045f3c9ece7614d902783257dd14.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/e096878e70176cb2cb47641d907cbe43e6863e8665a5ba1fedb933c736bfd1ad.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/3655a3a049b0116952eba28a942e452ddf692f39e0a744fdde01810c0239406b.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/f620c5b2876ee6c7bae5a22aef3eac92ef54cd55bff1b8090bc37ac26ce4e0cf.blob
+00:55 +267 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/f52d7e1d438a1197b6bd0f330d00a4a44996186662560b5a0714655dc07e57a3.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/8e5d31be7bb8d9be1ef26f4a0cbab542c7de7f691cc176ebc63c11c13eae4fd4.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/290ec372a91920f4c2b0a60faceb50d3697e7474606e9276d506e6eed5383aab.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/8b548bcf2672db383bddfbcf03f73324dd1b74b4a9727cfc0bc9300b420a3092.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/eee0b5994b8c5a72f765671b2aa7f7b3bc49bb73672fdbe55d3f044f913f12e0.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/a0ee82ac89410ecd6f9874a5c4c6241424f4e615a0780ce43814e4d7ed39b865.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/4a5553822b7e4c86327ed684c83622d064680715a0ced2621c4f81f675598bf0.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/cec15500731f48b5108577946688dbe5bde7f928b98a1973f9c9843e63962eb5.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/d4a9613e36fae3f5e82307d94fedc3db47d30f37982230f1015ec70aaa4b3f06.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/f2947cce0b37c0797d695b596307a0c7b3ee7ed7d5ef0a82d86d5a3aee86dfd7.blob
+00:56 +267 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_ink_rendering_test.dart: 200 original and reopened strokes reuse geometry across repaints
+ink geometry: cold=200, 3 warm frames=61 (previous 64-stroke cache: 600 warm builds), warm bounds scans=0
+00:56 +267 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/00b4f22c2194b6c7f0a8a8ea3527ef15b965c8a662a2c497b1896801951fcaa3.blob
+00:56 +267 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_ink_rendering_test.dart: 200 original and reopened strokes reuse geometry across repaints
+ink geometry: cold=200, 3 warm frames=55 (previous 64-stroke cache: 600 warm builds), warm bounds scans=0
+00:56 +268 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/22f0a43b51733497e5e47d581a9e133d24ba46cc3b9d053ea58195ada1ebd239.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/b5d7cfacfb7f5f514b5b6a7ab92d79107e4cdf56d1e52bb628ecd281e74df85c.blob
+00:56 +269 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/ab3629fe7d44c061a5c06ee50c314ac6b753969686e99946206398532e7d55a5.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/73dac096c7d8ea1fef8afba6f3f16f8af46b9a09b1b0c7d9d24104f3de113f77.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/86ab3672ac493084a962c47e8b0c1b9ea0998592176cca83a3213ccf1cec1668.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/39727bd0dc220422f36324b1bd7cd1160c4bf362d891a134ba7a82c3b92f7ede.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/ceb64633850692ce73e12c32869e17646b1ebcede08f52a15e436634788f5a9c.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/fb655d6faabb195acfb6aef76bcf8933571f65c9e379d720e345e887cabed0f9.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/ddc819123c905d82dc939b9454675378c9c252251bd59822013efae71fa5b6fd.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/ba57839b1d62e1c2211d7faf7360d108804bb2563d3201f2a64928df427b5b4e.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/a898935904cf219d31adc62ea7996346507fc610439d70bdbe614e1014b64bb0.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/f46f67a5c58e049713d3bbe49c72c3d76fb507914357c57a4924074a95f2c576.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/e3af491d0e25e27be8938317c25b7f9ac2ade2f1011ca52d365f4dbecdd2ce7b.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/10811f74dce67c73ad14b37a5d07c6e52e89b4a52ff7e7370da639a1a2a322fb.blob
+00:57 +270 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+00:57 +271 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/d9e31bb1ffbbced0d9dabb482131698912656f81b92a89b7348902841c860ead.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/508377aedce457a151727f90d4445e1aa1e1ba23aeae1463fd40e2c453a1e454.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/ea94b38247b2ae825f419e504008ef118302dc9c4d9de7e94bcc5b29d2733026.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/b6dd62f9d826a3cd9b0a8f2b295e2a126599cee6a5217c68ffadfe54465c7219.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/29a9e13a847fc15adbd15f0944847ce75f4e2a96d02be181489e0b3ba2a2ea50.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/cf70c14591af897526eace0cace4f9721d6716690f9994c24f49ba03eef79a36.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/f0e8c052ebd133ad8e45486cdbb3f890f65723482655d3dc147c294a2f3a7496.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/e5b6df0377e500fbfd16a7d3d7dc094a091c6706235f35ede0c59e4b3d45e72b.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/f476321580e183adec13f8286a94a9af0469f9e9ead45fbf16d667b2ac43a512.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/364f09a3509c83c1e8bb543be9359c3d30eb33cdde4892ceb7d44e6c0e263120.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/5b72ac41950a29ae8b9649e338ed85525f0a1c6d78cfc9ba363947100a879f5b.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/6217c55ac5d509e768b95454c00c622c7cd0ae153f592007a0c6b9db349ff9ff.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/860a6306ead2a368aeb3ac4448262c243e19eaff735fbef5c5c46700cf06d45d.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/6960439aff99dc17433dd26b95d3b06b469e625871a4f1aeea328dfd8fe59f6f.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/b05de10d9cbd96f6d62244cd3c21b8ac352469f7c0e15f2d32a1315655cdf8b9.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/dfcb4b196ee96890c1d5766e420a18c274c3b62408c32a7a1d569a1fbff14108.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/5a0dd168087f4eca2799a288df1a048c9645461fda28a90ea0e7ee7045b1e9cb.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/0224d52216d6f2f9f198a980bde3aeab67e6eba9320be2e8510dd6d8a45d29b3.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/e75c1cfe94fc5b39af80a304166000220d05fb5ff3a2503022b7d023f4a4c1ba.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/26670b20489d4ab577112304014d9dcfe4a4b8f312132859ca5e719ba707db9e.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/f6625bc2994b96ca160f1871adccbf361137406a7175cbfb3f69add33c155e63.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/817007b626cf802336701fb01c410d6991ebc27c0f4eefefcea323eb67aae047.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/b7c4c6d91378f0a8b8840d495c2fe87db8149cca87edf0342e4b3befe3083e2d.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/f6e0e93a73eca9084c5c708810667ad8e3da660b1ef4acbe36860fbbfe50f017.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/b9b9d4da612e80944e82077962434c866454dab51ca8a4cb6d0b44f1fe524ba1.blob
+00:58 +271 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+dynamic_color: Dynamic color not detected on this device.
+00:58 +271 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/47534bf8f389a2193d0655cf28b4414d8a555b0bd3305bc81dbf34cdb36302bf.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/776e6ba0edbff0526b92b8b14e62130ad8d1ec383cb6842818e47b678a0138e2.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/7969f73890dfe1ee96278b016111d7a95948d5552b774e584833e2def7352a6e.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/f1ec6f1d2574d3e17f5a97a16bfb1354d8b3db655e5dbbd8f559834f9c93a5c0.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/64f7d1cafec7533188fc3367a8a6290ff89acd9a7086b83658009fc2a6053488.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/977c80a4d639f97d00f5138aedab784f7d08eb48a788abe2c8cddb4b3206010c.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/7a2b61266bf886ec38eb75936b599b500104642b0990de22cf8a931b0958f530.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/8402e415c82d8f79a9bf98fe467e283c0eba93db791c80434fb8d2df6298eec8.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/8863826804b7f2c0555581763ee69402d788f5501b6664b454db7e6e0a7bbdb1.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/113d48313f548524f13540319fd3508aa75b56984c542a05d291ecb00370b79a.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/95deb0a307e9b7bca28571738aa00375a8199481974aeac2444391a72e9780be.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/659ada86e2637fdef67dd73a3e686ea449abd3f6b4bad8a128414776fe2c5eaf.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/b94256ed455d8589f61f29cc895137e8efb0a3923e685cc88ece34bf54c6470f.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/defd1ee453b1aa2a6ac7cdc5477d9031471e218d862f42afae02231c2ad4ec15.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/78b1c36f150f3afacde6a4346f8255fcae7746d5a3cc8be48b180d53fa227680.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/06a3a37c556ddbbdbac3a3baa3834eb527652716c7f55a472391690f01b7d1a8.blob
+00:59 +272 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/c0c30ac74f6013a994f69404f2f9ca50f21d670a469b8c21eb5bc8420287055c.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/2e4e4c309443c0fe1b8411300c1c306fa03f5e2208ba15bf994481669c186ec1.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/5940a35357d5c996bed97bb26d81ecf73e21627f10881b6c06097bc68c273092.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/a7f3308f6391a414c73b4d60cf5f5ab0c93482cc76d7ef5e670125f59f58d8e3.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/223c88312865bed5dde193ded06095326e3bcf9bce544704454c11577ccb959f.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/427d368a55e5f46a6f02ddf73ffe1ccb6d1683daaaae001674ce42784b63980b.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/c1d3a73f4ef06d41c051ea41e7925dbed25563bc58f2cdf38ef921b94dbb0526.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/812c3cc6615ce17c6271f49ed7807497fab4ad2415702a498d1ebc9e534a5984.blob
+00:59 +273 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/d08c5c298cd8bb1d464cfdb3f75ee2e35361af8209d16e4a23ead5fa01943912.blob
+01:00 +274 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/2360d4f2bb73ea5cf66f8fc2b2756c9d933732647d906522fc712c16c1c4e3ff.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/f0256b1c7dac35e19a3cf7e2abd2a92ac39caeba72ce9a32899964facd456d62.blob
+01:00 +275 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+01:00 +276 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+01:00 +277 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/5654e425e76d2882652127043bb08e58898aeaf1d11a9b1770c1ea42718b29c3.blob
+01:00 +278 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/c18e1c5032e31ae5beeb0fde108a78e372f0540cd904112366a7b7bb709c5a16.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/68fb2ba0d78db97a1791916492e163898e44e1c5fb29951075868dffc884873b.blob
+01:00 +279 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/8da82e80602f0dd682e1ab15889c5f632396e9d639f8c14303d21cce32af0f49.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/8f9d9879982e1371fc81c87d886623046f9bbba90822f2b5264cccbb3e33f901.blob
+01:01 +280 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/868c86b5afb9fa22f9dd60e1bdeebe6162f65cc756418e4d15d58bb594301628.blob
+01:01 +281 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/7874e3e085d42381678f954343545006e9c89fbe15742ba38717279e102c5c27.blob
+01:01 +282 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/72e10528d48abf7f450d73e458b2cc4273bda5df08f5c4aa23ba85efaf629c97.blob
+01:01 +283 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/3daf05fdcf3f70f42bdbfae41d8e4b8d594b36ec3639339d5f9a10a6e93b3c15.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/9df9aeb70c7f21fa7d96416ed01565b01ba5f1220506cb9ca6a49342bcbcb31f.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/81c180e2ff9b3d96b4de2c67d4ac4643d0dac98029376afb425b83fc081d2980.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/906b345ac0f515e6e116a6331434282ebed04a5ce5a8dfae9f2533cf24f9d6ab.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/785cbd7e3396d5675909b23ccd7e7c3a6037547a1dd35a28d816cc58dc8aaa2b.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/4a6f675ea2b11ea11fbfd569d3b6435a801a0cfc9fe9edd90ae840f142e9bef2.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/e6c6c56cdab4ba6f0654922a4c0c5a7e0e5738b0a7e76ea0385c3755d31ff7b4.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/bdcf88e5a5541ced61700d750607c7864720a108e2fb1404d0b5900c5fa40733.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/b789e2797021124c497edcbaa34acfb773baeb38236ab583823ecd03d5f392e4.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/d11ef30f4d0d63ef9e14a8e9a5c9d28cb8811a7c195f7056477013c93f42e9b3.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/72474765963d52fa3eb040b53b557b7293567ba356fe926a6d2dd606a2d846dd.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/28843818a3c5c5b3ab27c92182702ae8e4281ab03a54685d7ac1f11decd11bb1.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/40e2be7b2159742f36b233a449e6508fb3b3ad9742b951c21cfabe031e456261.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/9de2b300625976e7053688a5736244bb34edac0e00cc58fd419ee088dc5e22ea.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/8887c76cd0bf39f01ee4b660d018984be3cc152277344aa0ee10581048c88d17.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/23ec3785b7d637442c834e9dec63d41b2b8c7095966c6100a5074f39473f3e2d.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/dffc1b5725a74972f284bca7512bc2ddb5f69f9aab4c6ab08d63c075ab2c82a6.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/17ff2650830e28cd6f85ab3f14ec6f0c8cea7fcc8e5a4083250f1e4f55ea4369.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/ecfbbe63fa403d5fc4f9ae123dd459b42fae9e17f7ad82bd52bf42aa57715573.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/aeb3cbc1f5294d405d8f245e6dd11bed338135f1d2494ee8de8c78d298d034de.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/e5395c8b61c847d97cd925b2f1b0173916467b8774963e4442a8ef1ae49d1d2a.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/4ec151edd0cf7d466bb1dbcb4138c4e43d6138f33690520ba042a0c02f9728a7.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/bbdf9f5013454e30e4d70995909a3fc53be8440d0d3f0f902d850f91335b9320.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/7906321a15400135919364a1c883c9214bf2d406089f7ea8601249b60f5f0966.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/87626e52d452a6e91aa72e1c6dfdb46d5b9460f8232405ef1a181c886596e5fd.blob
+01:02 +283 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-home-reopen-a7ecfda0\xournalpp\Appunto appena salvato.xopp
+01:02 +283 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/6941644ece51cce1cccc6e677f00b0ea712a4185bf74cedbe4c73c480105fb9a.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/52efcd735417e4d5bdd1c80d6412c266bc34dc7754f965ef0b30598071daf4d5.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/bfe9795c800e5106d61ea7ac96b6b172aeaa165a4389194305817fd53eaa5a87.blob
+01:02 +284 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/c83cb7b5e55c84ede4224d9d69a6fe2ea3e225c0d46080af9648570207da14c3.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/22e84f5718b950ffa4f5e95adc9e1f0fa69f85602e95c771d979b02816a5e2e6.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/224603de728c19249fa05435ee61019f3b0521c6954dea966d50ff6b7fa4345e.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/e5f47059c81996906631f3d7f2559adffda54d2ff876544e53ce42b23e8874a5.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/3bf1b423d21291cf4524497488de6438c7660033277be678c19f7cfa83f791bf.blob
+01:02 +285 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/a9230ff40177aa6d484397d5e83a423b0bd9ccde4b3be39d11393d1a480f2baf.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/66455b883f0abc82a68b4ea08120ee30d335f257c9654f2882b7356b6ed28592.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/c34da6680a775c4c754ad243feeaefb56212fe090445ca458b036e5c358fb860.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/626bf9601be363c8cd938603710f1e35bce3a53b1cb8af859dd6e436c97c62de.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/f71e746acd65427533526a40b06bd098ab56031fa4edc78e2170c66c508668e8.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/c8e95ff40ec090db3898826c71fa05d81bd06a5670a76be0b8db2cd583681481.blob
+01:03 +285 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+dynamic_color: Dynamic color not detected on this device.
+01:03 +285 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/9cc4e93d83fe8df8b1e29c981ad06763d1ebc8c19c44c428ca07fed375cf366c.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/a2f3c381b2ddfd1533bfb803f029d151f111bf0b10a555bc6502128f6097281f.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/23f3bc604ff749033067dce54284aa9a010c2e9bc059e28f1d5c4b6ec6c1bbee.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/38041e4f231ece1850b5511f7d6c23df59fe85ca178af9b96fd5f9aa5b8b5db3.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/d62b78bb0767ab6b02cb7b9beeef29d346276102d4c5df133cbcec0354a6bb2e.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/7303d518aa470964d6717382a2f2c1bab0c0b0ea587cf741e720707349ea9cff.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/c58ece505a3f6d2cfa2e6ea7d284c7bccc165bfa2a80395e16d6a23932d24c69.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/40d02ef951b693fb76ae05d398eb2772a2a56b7737933aca84c32c961f0967b3.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/d37ad349c6c05f5bd2dc72dbad6ebe3e811dce95eeeb91c92906ef151d041265.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/5ec768696a76b84dfa132bede8d3c5ef2680419378a0b1b9c173945133457203.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/834568feaaec3f92f2785d722203b9694b22aa49dca12f6954cd7df62c2d726b.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/b4cea5646d59f2f1e37b59444d7d08c549e7b1b89121c0b039f658ee1f6a557e.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/9d92f071c090a4820a7313e734acd1b3c7888afa77728ff614ccfb5c9651993b.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/0d4818a5d3ce6843f26affef8b878738a2ca5aa525bcca24c94a1d920039aaa9.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/b951d395f5b3f537f841e64d207d54267f81e146ec2e4e3ea3d83c74ea403644.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/2e782b987008045fcc4b174855e912a5ab9494dd26c39951aabc09365d4a6c12.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/c972a3172bbb9e6d6f9e6d668889adc2ae41d1d26796ee45ac30b42bbe5b5bc3.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/cdeeaf290c203d3a2dcff4ac74ceafc331d89527d4f4ddad19458e84af87b3c2.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/e42fd8e78158e6ddb05a9cb013cb5a69156ba89cb3b611d12fe2c47121c0a249.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/036539bdd1001b76cda1876cfe921a63c6d92b226c31c05c3121c822e7e69bbd.blob
+01:04 +285 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/saved_document_home_test.dart: cold-start home previews and reopens old and newly saved files
+dynamic_color: Dynamic color not detected on this device.
+01:04 +285 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/ba21d9b6d283f831ccea2b27d4430737d13b0786c3f02c39e82c5a05434cc4b3.blob
+01:04 +286 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/d64848329bd6a0b38e6d0146fc4352fb227d8637aeb7eb3613be86772a38c7af.blob
+01:04 +287 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/b1d941ca013adff270688b79c9265bed6a3d9368ed119af46c7013bdeb0f6fae.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/ce6bb9d8a5931884a2a0d404596d1626f4e87e56f6e5cce57e14025df9fa5af4.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/5f2e77254818e6d6ddf4262d2f6d815c9a23df0e9975397f1df067757a64ad7a.blob
+01:04 +288 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/de968a0e013a780ee1c4c63a6a073e304b2fd5783e23d347ac0794f2fe2c79dc.blob
+01:04 +289 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/fcb278b88befd4d78e488871e836f7bfda91ca7bcbdd0c21f441700b5e18b6f9.blob
+01:04 +290 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/817771a12ad23b3899310973469f3d2e9553ba7242cb639a3ef7f156ed52fc7c.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/9a0cf53486d72a5f1187ac3fe4a3ac298d040ee7a31b62732d7054ddd18bec73.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/e4e1ad809ae9ba59ec4dd66f7b3eb2c4e190f72976017659c4fb7cba649aa6b5.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/f779fea4fe40b41119757545dd1eaf2578be25af621e29a6785d8bca536eb34f.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/ddad245fe51b4cd53608b798bf5f858c4f585db43ae1d76853ee48638bf3784f.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/66ca2fec4581f1807bbbff5233d77f08fbbde1365c75588505351f6d72cebfe7.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/7a9070a4f20060a4b1726c9138ee9e95437bc6b55be276e416ec976a3c0672c4.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/23e2c1b74a88e23df4fe35aac32388e124a1f8c1fe5c5e62c4fda6f2d5a354df.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/05c450fb52b7adba9c8346f531d8f3f1072d218514e3d55eb0978dd38ef7bed5.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/4f59508f3eda6ccc58684925d321e50e0857e721457cc0034de88f7a7f69331c.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/ea27b99f5058385d020acc6fd97ce0c5f6f098742ac88289ff334f30a22dbb1a.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/0f88946d375fa0045a74582b0752c0a3c9de819723b89b5200693327b94787f2.blob
+01:05 +291 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/6bb33e2a9e759e90df2a85fa05ddaedc419fbd0212dc4098b4bb4ea532818029.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/e94021597cc80514a0e6029a0dac98d6d350530d3ab5b33e2f446e87e357d588.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/48fbe50ba978c5ff298344e0a31230293c3034b972b34f77987110f483c8f4cf.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/bc929ebeb7b6d2046633842e96260c625f93d45513a446cfea5f6dcf371a7db1.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/c60a9c90c4a80284d0e228dc36012b40ed7d461ec26d41a7a2a541123b4c656a.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/3d1056a20ba3d2c03a07aab60d12739a849f530f27928a1b822a5621f662ac5e.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/20f3bec00af4c22bc0f694f96ba1eef83591e839fb6c1a3ccaa454f7e23a1733.blob
+01:05 +292 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/e3a5cbf4a948e808993c35445871717617b323c1e6f01d75357a3905ae666e6b.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/8d1f3afde7f0ce1421c4d2ae7af60a5e68d1e45b6b511b1c9474a8c304eda771.blob
+01:05 +293 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/1388c5dce814446664b32252f30e445b4ca5216e70ab6dff9e696d9e813de46b.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/7b647b8b638416c70312a14600a99e993becfaf73a10bdf125e670a76cb1334d.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/3a5f7d8584ef43ecd15869bc0211d18c984d146baf21f55f98efb24dab9cc00e.blob
+01:06 +294 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/be7a2d1976819f037489e42d2fae5e5ae49392d70b36782f4df2ee3509648082.blob
+01:06 +295 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+01:06 +296 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/6fc624d697e9bc0179a1e71d4d50c1ccaec48d8a2bc165678249bb21e3c9bac3.blob
+01:06 +297 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/0861c131a786b72eaef59621127f130ac6c5501c4466923dd4ff13e979046f3f.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/76d3e5ed998b3a6e1fb48ec432c07a5b07a2a14c5d12a4090c18f289184dd0f2.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/cfce9bdec1e9196dbb2846cf5abb07ef078923e9a8daa3f9a7d92cade1949921.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/7bb23cfa0a7371aededd316a43a2d8020120229186ab617c2a7f7d240ba53eaa.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/9794b155cb0aae150333b2158a52ae0d894e2d0cd0cfcf62c19f08ac227c7578.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/4b467a85c877aa989fdca1453f228c27d6cdf43781b16ff7bf9bbd298f931add.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/4334fa399517f4532db028c6beaae7f32b6cf7a70141fb03d55f63c2c7a736bf.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/111766f2815d4f209667b9f123a2971ed64ec90d5751b983839c7f2712cb7e1f.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/f988685a874116832074f6056a61120b42d30688743ce3c16c81ccbdc33d6551.blob
+01:06 +298 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+01:06 +299 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+01:07 +300 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+01:07 +301 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+01:07 +302 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+01:07 +303 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+01:08 +304 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+01:09 +305 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/ebf4f635a17d10d6eb46ba680b70142419aa3220f228001a036d311a22ee9d2a.blob
+01:09 +306 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+01:09 +307 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-d6bed00c\xournalpp\state-v2/80549654b46cdf60069ba46007399622290cd16e4430315fa9b43284c79e1eb7.blob
+01:09 +308 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 200 strokes x 1000 points
+AUTOSAVE_MEASUREMENT {"strokes":200,"pointsPerStroke":1000,"cold":{"elapsedUs":11943494,"maxEventGapUs":73116,"ticks":2850},"warm":{"elapsedUs":262223,"maxEventGapUs":7128,"ticks":65},"reopened":{"elapsedUs":1238658,"maxEventGapUs":14213,"ticks":286},"snapshot":{"elapsedUs":757,"maxEventGapUs":753,"ticks":0},"serializeCompact":{"elapsedUs":711329,"maxEventGapUs":87952,"ticks":140}}
+01:10 +309 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/widget_test.dart: App opens the document hub with an empty library
+01:10 +310 ~2: C:/Users/aless/Documents/GitHub/OSIpp/test/widget_test.dart: App opens the document hub with an empty library
+01:10 +310 ~3: C:/Users/aless/Documents/GitHub/OSIpp/test/widget_test.dart: App opens the document hub with an empty library
+01:10 +311 ~3: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: pinch pointer drop remains stable and palm is rejected, infinite=false
+01:10 +311 ~3: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 1 strokes x 200000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-4156b58\xournalpp\state-v2/24903884388808a3d75b8adee5f1c9397a5fb1c537c26515dc717555eb8b895c.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-4156b58\xournalpp\state-v2/28d8ac2c0bf8dd5c74f4696dcf81d55c17c8675ef2be8596775dfbdcc9862712.blob
+01:10 +312 ~3: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_safety_test.dart: system back protects an inactive unmounted dirty tab
+01:11 +313 ~3: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_safety_test.dart: system back protects an inactive unmounted dirty tab
+01:11 +313 ~4: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_safety_test.dart: system back protects an inactive unmounted dirty tab
+01:11 +314 ~4: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_safety_test.dart: system back protects an inactive unmounted dirty tab
+01:11 +315 ~4: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_safety_test.dart: system back protects an inactive unmounted dirty tab
+01:11 +316 ~4: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_safety_test.dart: system back protects an inactive unmounted dirty tab
+01:11 +317 ~4: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_safety_test.dart: system back protects an inactive unmounted dirty tab
+01:11 +318 ~4: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_safety_test.dart: system back protects an inactive unmounted dirty tab
+01:11 +319 ~4: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_safety_test.dart: system back protects an inactive unmounted dirty tab
+01:11 +320 ~4: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_safety_test.dart: system back protects an inactive unmounted dirty tab
+01:12 +321 ~4: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_safety_test.dart: system back protects an inactive unmounted dirty tab
+01:12 +321 ~4: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 1 strokes x 200000 points
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-4156b58\xournalpp\state-v2/ebf4f635a17d10d6eb46ba680b70142419aa3220f228001a036d311a22ee9d2a.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-4156b58\xournalpp\state-v2/fbd5539fca62363d9a420f8e4ea2946ffb1d56d313c3fa4aff7f29dc07762176.blob
+01:12 +322 ~4: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 1 strokes x 200000 points
+01:12 +323 ~4: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 1 strokes x 200000 points
+01:12 +324 ~4: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 1 strokes x 200000 points
+01:12 +325 ~4: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 1 strokes x 200000 points
+01:12 +326 ~4: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 1 strokes x 200000 points
+01:13 +327 ~4: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: cold reopened journal responsiveness 1 strokes x 200000 points
+AUTOSAVE_MEASUREMENT {"strokes":1,"pointsPerStroke":200000,"cold":{"elapsedUs":772053,"maxEventGapUs":108300,"ticks":132},"warm":{"elapsedUs":6053,"maxEventGapUs":6049,"ticks":0},"reopened":{"elapsedUs":525896,"maxEventGapUs":113654,"ticks":98},"snapshot":{"elapsedUs":271,"maxEventGapUs":268,"ticks":0},"serializeCompact":{"elapsedUs":479980,"maxEventGapUs":69850,"ticks":95}}
+01:13 +328 ~4: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: sidebar stays open for layer switching, page insertion and thumbnails; workspace survives background
+01:13 +329 ~4: C:/Users/aless/Documents/GitHub/OSIpp/test/workspace_navigation_test.dart: sidebar stays open for layer switching, page insertion and thumbnails; workspace survives background
+01:15 +330 ~4: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: scheduled compact waits for pointer idle; journal deadline remains
+01:16 +331 ~4: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: scheduled compact waits for pointer idle; journal deadline remains
+01:16 +332 ~4: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: scheduled compact waits for pointer idle; journal deadline remains
+01:23 +333 ~4: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: queued scheduled compact rechecks input when prior journal finishes
+01:34 +334 ~4: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: offloaded dense fragment remains byte-identical and cached after metadata edits
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-24bd68e9\xournalpp\state-v2/2223752d241d9927b207a2d215d73af980b25c9ac639b37366ed7de36d7adb57.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-24bd68e9\xournalpp\state-v2/4a3a4dae97017284944740c0fcb5332b65b5f20ca7087ed87748bd181bc97522.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-24bd68e9\xournalpp\state-v2/e9840c372866520b7afd4461d34e9ac4cb5d968d501acdf7401b1e0e9c744215.blob
+01:34 +335 ~4: C:/Users/aless/Documents/GitHub/OSIpp/test/reopened_autosave_performance_test.dart: explicit compact flush during active input still secures complete document
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-605a0ed8\xournalpp\state-v2/1170b8350aa91b94d4c0f6846cb1fcc830ee580ba2e1c12634dc640e3ca9e35b.blob
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-605a0ed8\xournalpp\state-v2/00000000000000000001-3239950200.commit
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-605a0ed8\xournalpp\state-v2/1792153584651935-303561658.recovery
+✅ File salvato con successo: C:\Users\aless\AppData\Local\Temp\osipp-test-605a0ed8\xournalpp\state-v2/00000000000000000002-2465630875.commit
+01:35 +336 ~4: All tests passed!
