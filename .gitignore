@@ -72,3 +72,7 @@ android/key.properties
 /android/keystore/
 *.jks
 *.keystore
+
+# Keep project documentation and local tooling exclusions off GitHub.
+*.[mM][dD]
+/.antigravityignore
