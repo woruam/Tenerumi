@@ -72,3 +72,10 @@ android/key.properties
 /android/keystore/
 *.jks
 *.keystore
+
+# Keep project documentation and local tooling exclusions off GitHub.
+*.[mM][dD]
+/.antigravityignore
+
+# Keep the build workflow local while automatic builds are disabled.
+/.github/workflows/build.yml
