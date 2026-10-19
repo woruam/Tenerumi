@@ -512,6 +512,7 @@ class CanvasPageState extends State<CanvasPage> {
                                             buttonDownAction:
                                                 ctrl.buttonDownAction,
                                             buttonUpAction: ctrl.buttonUpAction,
+                                            stylusProfile: ctrl.stylusProfile,
 
                                             // IL FIX DELLA SCRITTURA ANCHE QUI
                                             onToolChanged: (tool) {

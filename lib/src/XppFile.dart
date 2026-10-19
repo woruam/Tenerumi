@@ -517,6 +517,7 @@ class XppFile {
               'width',
               'osipp-shape',
               'osipp-smooth',
+              'osipp-width',
               'osipp-erasures',
               'osipp-audio-id',
               'osipp-audio-start',
@@ -685,6 +686,9 @@ class XppFile {
                         smooth:
                             strokeElement.getAttribute('osipp-smooth') ==
                             'true',
+                        widthIsDiameter:
+                            strokeElement.getAttribute('osipp-width') ==
+                            'diameter',
                       )
                       ..audioLink = StrokeAudioLink.decode(
                         strokeElement,

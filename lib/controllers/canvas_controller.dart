@@ -1,4 +1,7 @@
 import 'dart:async';
+
+import 'package:xournalpp/src/stylus_profile.dart';
+
 import 'dart:collection';
 
 import 'note_audio_controller.dart';
@@ -456,6 +459,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
 
   String buttonDownAction = 'eraser';
   String buttonUpAction = 'select';
+  StylusProfile stylusProfile = StylusProfile.automatic;
 
   bool eraserSnapshotTaken = false;
   // Points are unchanged while erasing, and replacement strokes share them.
@@ -531,6 +535,9 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
               prefs.getString('buttonDownAction') ??
               prefs.getString('stylusButtonAction');
           final bUp = prefs.getString('buttonUpAction');
+          stylusProfile = StylusProfile.fromPreference(
+            prefs.getString(StylusProfile.preferenceKey),
+          );
           if (bDown != null) buttonDownAction = bDown;
           if (bUp != null) buttonUpAction = bUp;
 

@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:xournalpp/src/stylus_profile.dart';
+import 'package:xournalpp/src/stylus_pressure.dart';
+
 import 'package:xournalpp/controllers/note_audio_controller.dart';
 import 'package:xournalpp/src/note_audio.dart';
 
@@ -52,6 +55,7 @@ class PointerListener extends StatefulWidget {
 
   final String buttonDownAction;
   final String buttonUpAction;
+  final StylusProfile stylusProfile;
 
   final bool shapeRecognition;
   final List<XppContent?> Function()? getPageContent;
@@ -87,6 +91,7 @@ class PointerListener extends StatefulWidget {
     this.removeLastContent,
     this.buttonDownAction = 'eraser',
     this.buttonUpAction = 'select',
+    this.stylusProfile = StylusProfile.automatic,
     this.shapeRecognition = false,
     this.getPageContent,
     this.onDeleteContent,
@@ -121,6 +126,8 @@ class PointerListenerState extends State<PointerListener> {
   AudioInput? _audioInput;
   StrokeAudioLink? _audioLink;
   List<XppStrokePoint> points = [];
+  bool _widthsAreDiameters = false;
+  List<double>? _legacyShapeWidths;
   final _InkPreview _inkPreview = _InkPreview();
   XppStrokeTool tool = XppStrokeTool.PEN;
   final Set<int> _touchPointers = {};
@@ -207,6 +214,7 @@ class PointerListenerState extends State<PointerListener> {
 
   /// Stato dei tasti durante l'hover, per rilevare i fronti di salita.
   int _hoverButtons = 0;
+  int _nativeButtons = 0;
 
   /// Strumento congelato per il tratto in corso: deciso al pointer-down, cosi'
   /// premere/rilasciare i tasti a meta' tratto non corrompe il disegno.
@@ -216,10 +224,39 @@ class PointerListenerState extends State<PointerListener> {
   static final Set<PointerListenerState> _hardwareListeners = {};
   static PointerListenerState? _hardwareOwner;
   static MethodChannel? _hardwareChannel;
+  static final Map<int, PointerListenerState> _hardwareButtonOwners = {};
 
   static Future<void> _dispatchHardwareCall(MethodCall call) async {
+    if (call.method == 'stylusButtonsReset') {
+      for (final listener in _hardwareListeners) {
+        listener._nativeButtons = 0;
+        listener._hoverButtons = 0;
+      }
+      _hardwareButtonOwners.clear();
+      return;
+    }
+    if (call.method == 'stylusButton') {
+      final args = call.arguments;
+      if (args is! Map || args['pressed'] is! bool) return;
+      final mask = switch (args['button']) {
+        1 => kPrimaryStylusButton,
+        2 => kSecondaryStylusButton,
+        _ => 0,
+      };
+      if (mask == 0) return;
+      final pressed = args['pressed'] as bool;
+      if (pressed && _hardwareButtonOwners.containsKey(mask)) return;
+      final owner = pressed
+          ? _hardwareOwner
+          : _hardwareButtonOwners.remove(mask) ?? _hardwareOwner;
+      if (owner == null || !owner.mounted) return;
+      if (pressed) _hardwareButtonOwners.putIfAbsent(mask, () => owner);
+      owner._handleNativeButton(mask, pressed);
+      return;
+    }
     final owner = _hardwareOwner;
     if (owner == null || !owner.mounted) return;
+    if (owner.widget.stylusProfile.usesTemporaryButton) return;
     if (call.method == 'redmiPenPageDown') {
       owner._toggleOverride(owner.widget.buttonDownAction);
     } else if (call.method == 'redmiPenPageUp') {
@@ -235,8 +272,32 @@ class PointerListenerState extends State<PointerListener> {
   ///   coincide col tasto CENTRALE del mouse.
   String? _actionFromButtons(int buttons) {
     if (buttons & kPrimaryStylusButton != 0) return widget.buttonDownAction;
-    if (buttons & kSecondaryStylusButton != 0) return widget.buttonUpAction;
+    if (widget.stylusProfile.supportsSecondaryButton &&
+        buttons & kSecondaryStylusButton != 0)
+      return widget.buttonUpAction;
     return null;
+  }
+
+  int _buttonsForEvent(PointerEvent event) =>
+      event.kind == PointerDeviceKind.stylus ||
+          event.kind == PointerDeviceKind.invertedStylus
+      ? event.buttons | _nativeButtons
+      : 0;
+
+  void _handleNativeButton(int mask, bool pressed) {
+    final previous = _nativeButtons | _hoverButtons;
+    if (pressed) {
+      _nativeButtons |= mask;
+    } else {
+      _nativeButtons &= ~mask;
+      _hoverButtons &= ~mask;
+    }
+    if (!pressed ||
+        previous & mask != 0 ||
+        widget.stylusProfile.usesTemporaryButton)
+      return;
+    final action = _actionFromButtons(mask);
+    if (action != null) _toggleOverride(action);
   }
 
   /// L'azione effettiva: il tasto tenuto premuto vince sul toggle fisso.
@@ -251,20 +312,18 @@ class PointerListenerState extends State<PointerListener> {
 
   /// Click del tasto della penna MENTRE SI E' IN HOVER (senza toccare lo
   /// schermo): commuta lo strumento in modo fisso, come su Samsung Notes.
-  void _handleHoverButtons(PointerHoverEvent event) {
+  void _handleHoverButtons(PointerEvent event) {
     if (event.kind != PointerDeviceKind.stylus &&
         event.kind != PointerDeviceKind.invertedStylus) {
-      _hoverButtons = event.buttons;
+      _hoverButtons = 0;
       return;
     }
     _hardwareOwner = this;
-    final int pressed = event.buttons & ~_hoverButtons; // fronti di salita
-    if (pressed & kPrimaryStylusButton != 0) {
-      _toggleOverride(widget.buttonDownAction);
-    } else if (pressed & kSecondaryStylusButton != 0) {
-      _toggleOverride(widget.buttonUpAction);
-    }
+    final int pressed = event.buttons & ~(_hoverButtons | _nativeButtons);
     _hoverButtons = event.buttons;
+    if (widget.stylusProfile.usesTemporaryButton) return;
+    final action = _actionFromButtons(pressed);
+    if (action != null) _toggleOverride(action);
   }
 
   @override
@@ -287,6 +346,7 @@ class PointerListenerState extends State<PointerListener> {
     _inkPreview.dispose();
     if (identical(_hardwareOwner, this)) _hardwareOwner = null;
     _hardwareListeners.remove(this);
+    _hardwareButtonOwners.removeWhere((_, owner) => identical(owner, this));
     if (_hardwareListeners.isEmpty) {
       _hardwareChannel?.setMethodCallHandler(null);
       _hardwareChannel = null;
@@ -296,6 +356,13 @@ class PointerListenerState extends State<PointerListener> {
 
   @override
   void didUpdateWidget(covariant PointerListener oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.stylusProfile != widget.stylusProfile) {
+      _nativeButtons = 0;
+      _hoverButtons = 0;
+      _activeOverrideAction = null;
+      _hardwareButtonOwners.removeWhere((_, owner) => identical(owner, this));
+    }
     if (oldWidget.selectionIdentity != widget.selectionIdentity) {
       _clearSelection();
       _lassoPoints.clear();
@@ -370,6 +437,12 @@ class PointerListenerState extends State<PointerListener> {
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
+      onEnter: _handleHoverButtons,
+      onExit: (event) {
+        if (event.kind == PointerDeviceKind.stylus ||
+            event.kind == PointerDeviceKind.invertedStylus)
+          _hoverButtons = 0;
+      },
       onHover: (event) {
         widget.onDeviceChange?.call(device: event.device, kind: event.kind);
         _handleHoverButtons(event);
@@ -700,7 +773,7 @@ class PointerListenerState extends State<PointerListener> {
     // HOLD-TO-USE (stile Samsung): se il tasto della penna e' PREMUTO nel
     // momento in cui la punta tocca lo schermo, per tutto il tratto vale
     // l'azione mappata su quel tasto (gomma/lazo/evidenziatore).
-    _heldButtonAction = _actionFromButtons(data.buttons);
+    _heldButtonAction = _actionFromButtons(_buttonsForEvent(data));
     _startPasteHold(data);
     if (widget.toolData[data.kind] == EditingTool.MOVE &&
         !_moveSelectionArmed) {
@@ -958,38 +1031,47 @@ class PointerListenerState extends State<PointerListener> {
   Offset _canvasPoint(PointerEvent data) =>
       data.localPosition + widget.canvasOrigin;
 
+  bool _isShapeTool(EditingTool? editingTool) =>
+      editingTool == EditingTool.SHAPE_LINE ||
+      editingTool == EditingTool.SHAPE_RECT ||
+      editingTool == EditingTool.SHAPE_CIRCLE ||
+      editingTool == EditingTool.SHAPE_SQUARE ||
+      editingTool == EditingTool.SHAPE_DASHED_LINE ||
+      editingTool == EditingTool.SHAPE_CUBE ||
+      editingTool == EditingTool.SHAPE_CYLINDER ||
+      editingTool == EditingTool.SHAPE_SPHERE;
+
   void _addDrawingPoint(PointerEvent data, XppStrokeTool currentTool) {
     double baseWidth = currentTool == XppStrokeTool.HIGHLIGHTER
         ? widget.highlighterWidth ?? widget.strokeWidth ?? 15
         : widget.strokeWidth ?? 2.5;
-    double pressure = data.pressure;
-
-    // COMPATIBILITA' TAVOLETTE GRAFICHE: molte tavolette (Wacom, XP-Pen,
-    // Huion collegate ad Android) riportano la pressione su un intervallo
-    // diverso da 0..1. Normalizziamo usando pressureMin/pressureMax forniti
-    // dal driver, cosi' la curva di spessore resta identica su ogni hardware.
-    final double pMin = data.pressureMin;
-    final double pMax = data.pressureMax;
     final bool isStylusKind =
         data.kind == PointerDeviceKind.stylus ||
         data.kind == PointerDeviceKind.invertedStylus;
-    if (isStylusKind && pMax > pMin) {
-      pressure = ((pressure - pMin) / (pMax - pMin)).clamp(0.0, 1.0);
+    final pressure = normalizedStylusPressure(
+      isStylus: isStylusKind,
+      pressure: data.pressure,
+      minimum: data.pressureMin,
+      maximum: data.pressureMax,
+    );
+    if (points.isEmpty) {
+      _widthsAreDiameters =
+          currentTool == XppStrokeTool.PEN &&
+          !_isShapeTool(widget.toolData[PointerDeviceKind.stylus]);
+      // Keep recognition's existing shape widths without storing extra data in
+      // committed freehand strokes or documents.
+      _legacyShapeWidths = _widthsAreDiameters && widget.shapeRecognition
+          ? <double>[]
+          : null;
     }
-
-    // Sicurezza per dispositivi che non passano la pressione
-    if (pressure <= 0.0 || !isStylusKind) {
-      pressure = 0.5;
-    }
-
-    // Curva Esponenziale per lo spessore (la magia per la tua Redmi Pen)
-    double multiplier = 0.1 + ((pressure * pressure) * 3.5);
-    double dynamicThickness = baseWidth * multiplier;
-
-    final minimumThickness = min(baseWidth, 0.5);
-    if (dynamicThickness < minimumThickness) {
-      dynamicThickness = minimumThickness;
-    }
+    final legacyWidth = max(
+      min(baseWidth, 0.5),
+      baseWidth * (0.1 + 3.5 * pressure * pressure),
+    );
+    _legacyShapeWidths?.add(legacyWidth);
+    double dynamicThickness = _widthsAreDiameters
+        ? pressurePenDiameter(baseWidth, pressure)
+        : legacyWidth;
 
     if (currentTool == XppStrokeTool.HIGHLIGHTER) {
       dynamicThickness = baseWidth;
@@ -1004,7 +1086,8 @@ class PointerListenerState extends State<PointerListener> {
     widget.audio?.sampleInput(_audioInput);
     _inkPreview.append(
       point,
-      pressureSensitive: currentTool == XppStrokeTool.PEN,
+      pressureSensitive:
+          currentTool == XppStrokeTool.PEN && !_widthsAreDiameters,
     );
   }
 
@@ -1153,6 +1236,8 @@ class PointerListenerState extends State<PointerListener> {
     _audioLink = null;
     _lastEraserPosition = null;
     points.clear();
+    _widthsAreDiameters = false;
+    _legacyShapeWidths = null;
     _inkPreview.clear();
   }
 
@@ -1174,15 +1259,7 @@ class PointerListenerState extends State<PointerListener> {
       bool renderSmooth = false;
 
       final currentStylusTool = widget.toolData[PointerDeviceKind.stylus];
-      final isShapeTool =
-          currentStylusTool == EditingTool.SHAPE_LINE ||
-          currentStylusTool == EditingTool.SHAPE_RECT ||
-          currentStylusTool == EditingTool.SHAPE_CIRCLE ||
-          currentStylusTool == EditingTool.SHAPE_SQUARE ||
-          currentStylusTool == EditingTool.SHAPE_DASHED_LINE ||
-          currentStylusTool == EditingTool.SHAPE_CUBE ||
-          currentStylusTool == EditingTool.SHAPE_CYLINDER ||
-          currentStylusTool == EditingTool.SHAPE_SPHERE;
+      final isShapeTool = _isShapeTool(currentStylusTool);
 
       if ((widget.shapeRecognition || isShapeTool) &&
           currentTool == XppStrokeTool.PEN) {
@@ -1246,7 +1323,19 @@ class PointerListenerState extends State<PointerListener> {
             });
           }
         } else {
-          recognized = ShapeRecognizer.recognize(strokePoints);
+          final legacyWidths = _legacyShapeWidths;
+          recognized = ShapeRecognizer.recognize(
+            legacyWidths != null && legacyWidths.length == strokePoints.length
+                ? [
+                    for (var i = 0; i < strokePoints.length; i++)
+                      XppStrokePoint(
+                        x: strokePoints[i].x,
+                        y: strokePoints[i].y,
+                        width: legacyWidths[i],
+                      ),
+                  ]
+                : strokePoints,
+          );
         }
 
         if (recognized != null) {
@@ -1261,6 +1350,7 @@ class PointerListenerState extends State<PointerListener> {
           color: _getToolColor(currentTool),
           isShape: renderAsShape,
           smooth: renderSmooth,
+          widthIsDiameter: _widthsAreDiameters && !renderAsShape,
         ),
       );
     }
@@ -1404,14 +1494,16 @@ class PointerListenerState extends State<PointerListener> {
 
   bool _isActionActive(String targetAction, PointerEvent data) {
     // Azione dai tasti tenuti premuti in questo istante (down/move)...
-    final String? held = _heldButtonAction ?? _actionFromButtons(data.buttons);
+    final String? held =
+        _heldButtonAction ?? _actionFromButtons(_buttonsForEvent(data));
     if (held == targetAction) return true;
     // ...oppure toggle fisso (click in hover / canale nativo Redmi).
     return _activeOverrideAction == targetAction;
   }
 
   bool isPen(PointerEvent data) {
-    if (_effectiveOverride != null || _actionFromButtons(data.buttons) != null)
+    if (_effectiveOverride != null ||
+        _actionFromButtons(_buttonsForEvent(data)) != null)
       return false;
     final hasKind = widget.toolData.containsKey(data.kind);
     final currentTool = widget.toolData[data.kind];

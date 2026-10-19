@@ -210,6 +210,7 @@ class _InfiniteCanvasState extends State<InfiniteCanvas> {
                           eraserWidth: ctrl.eraserWidth,
                           shapeRecognition: ctrl.shapeRecognition,
                           buttonDownAction: ctrl.buttonDownAction,
+                          stylusProfile: ctrl.stylusProfile,
                           buttonUpAction: ctrl.buttonUpAction,
                           onFlashcardSelection: AppFeatures.plugins
                               ? (region) => captureFlashcardSelection(

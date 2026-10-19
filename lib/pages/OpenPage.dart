@@ -7,6 +7,7 @@ import 'package:xournalpp/widgets/note_backup_dialog.dart';
 import 'package:xournalpp/src/app_appearance.dart';
 
 import 'package:flutter/material.dart';
+import 'package:xournalpp/src/stylus_profile.dart';
 import 'package:xournalpp/src/critical_data.dart';
 import 'package:flutter/services.dart';
 import 'package:xournalpp/controllers/note_audio_controller.dart';
@@ -488,6 +489,9 @@ class _OpenPageState extends State<OpenPage> {
     final prefs = await SharedPreferences.getInstance();
     String buttonDown = prefs.getString('buttonDownAction') ?? 'eraser';
     String buttonUp = prefs.getString('buttonUpAction') ?? 'select';
+    var stylusProfile = StylusProfile.fromPreference(
+      prefs.getString(StylusProfile.preferenceKey),
+    );
     bool touchDrawing = prefs.getBool(PreferencesKeys.kTouchDrawing) ?? false;
 
     // Colori predefiniti in stile Nothing (accesi su fondo nero).
@@ -825,8 +829,39 @@ class _OpenPageState extends State<OpenPage> {
                       ),
                       const SizedBox(height: 12),
 
-                      const Text(
-                        'Tasto 1 (Vicino alla punta)',
+                      DropdownButton<StylusProfile>(
+                        key: const ValueKey('stylus-profile-setting'),
+                        isExpanded: true,
+                        value: stylusProfile,
+                        items: const [
+                          DropdownMenuItem(
+                            value: StylusProfile.automatic,
+                            child: Text('Automatica (1 o 2 tasti)'),
+                          ),
+                          DropdownMenuItem(
+                            value: StylusProfile.singleButton,
+                            child: Text('Un tasto (S Pen e simili)'),
+                          ),
+                          DropdownMenuItem(
+                            value: StylusProfile.twoButtons,
+                            child: Text('Due tasti (Redmi Pen e simili)'),
+                          ),
+                        ],
+                        onChanged: (value) async {
+                          if (value == null) return;
+                          await prefs.setString(
+                            StylusProfile.preferenceKey,
+                            value.name,
+                          );
+                          if (context.mounted)
+                            setDialogState(() => stylusProfile = value);
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        stylusProfile == StylusProfile.singleButton
+                            ? 'Tasto laterale'
+                            : 'Tasto 1 (principale / vicino alla punta)',
                         style: TextStyle(fontSize: 14),
                       ),
                       DropdownButton<String>(
@@ -857,45 +892,51 @@ class _OpenPageState extends State<OpenPage> {
                         },
                       ),
 
-                      const SizedBox(height: 16),
+                      if (stylusProfile.supportsSecondaryButton) ...[
+                        const SizedBox(height: 16),
 
-                      const Text(
-                        'Tasto 2 (Superiore)',
-                        style: TextStyle(fontSize: 14),
-                      ),
-                      DropdownButton<String>(
-                        isExpanded: true,
-                        value: buttonUp,
-                        items: const [
-                          DropdownMenuItem(
-                            value: 'eraser',
-                            child: Text('Gomma'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'select',
-                            child: Text('Lazo'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'highlighter',
-                            child: Text('Evidenziatore'),
-                          ),
-                        ],
-                        onChanged: (v) {
-                          if (v != null) {
-                            setDialogState(() => buttonUp = v);
-                            prefs.setString(
-                              'buttonUpAction',
-                              v,
-                            ); // Salva in memoria!
-                          }
-                        },
-                      ),
+                        const Text(
+                          'Tasto 2 (secondario / superiore)',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                        DropdownButton<String>(
+                          isExpanded: true,
+                          value: buttonUp,
+                          items: const [
+                            DropdownMenuItem(
+                              value: 'eraser',
+                              child: Text('Gomma'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'select',
+                              child: Text('Lazo'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'highlighter',
+                              child: Text('Evidenziatore'),
+                            ),
+                          ],
+                          onChanged: (v) {
+                            if (v != null) {
+                              setDialogState(() => buttonUp = v);
+                              prefs.setString(
+                                'buttonUpAction',
+                                v,
+                              ); // Salva in memoria!
+                            }
+                          },
+                        ),
+                      ],
                       const SizedBox(height: 8),
                       Text(
-                        'Suggerimento: tieni premuto il tasto mentre scrivi per usare '
-                        'l\'azione solo in quel tratto, oppure premilo mentre la penna '
-                        'e\' sollevata (in hover) per attivare/disattivare l\'azione, '
-                        'come su Samsung Notes.',
+                        stylusProfile.usesTemporaryButton
+                            ? 'Tieni premuto il tasto prima di toccare il foglio per usare '
+                                  'l’azione nel tratto. Rilascialo per tornare allo strumento scelto '
+                                  'dal tratto successivo. Le funzioni a distanza e Air Actions non sono incluse.'
+                            : 'Suggerimento: tieni premuto il tasto mentre scrivi per usare '
+                                  'l\'azione solo in quel tratto, oppure premilo mentre la penna '
+                                  'e\' sollevata (in hover) per attivare/disattivare l\'azione. '
+                                  'Il secondo tasto viene usato solo se la penna lo possiede.',
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey.shade500,

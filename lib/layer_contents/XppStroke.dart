@@ -30,10 +30,14 @@ abstract class XppStroke extends XppContent {
     .._points = _points
     ..audioLink = audioLink
     ..editingTool = editingTool
+    ..widthIsDiameter = widthIsDiameter
     ..isShape = isShape
     ..smooth = smooth
     ..erasures = List.of(erasures);
   Color? color;
+
+  /// Old documents store the legacy pressure proxy; new ink stores diameters.
+  bool widthIsDiameter = false;
   EditingTool? editingTool;
   StrokeAudioLink? audioLink;
   bool isShape = false; // forma geometrica: linea netta a spessore uniforme
@@ -55,7 +59,7 @@ abstract class XppStroke extends XppContent {
     if (!isShape) {
       return inkStrokePath(
         samples.map((p) => (position: p.offset, width: p.width)),
-        pressureSensitive: tool == XppStrokeTool.PEN,
+        pressureSensitive: tool == XppStrokeTool.PEN && !widthIsDiameter,
       );
     }
     if (samples.isEmpty) return Path();
@@ -97,7 +101,10 @@ abstract class XppStroke extends XppContent {
     if (samples == null || samples.isEmpty) return false;
     double radius(XppStrokePoint p) => isShape
         ? (p.width ?? 2.5).clamp(1.0, double.infinity) / 2
-        : inkRadius(p.width, pressureSensitive: tool == XppStrokeTool.PEN);
+        : inkRadius(
+            p.width,
+            pressureSensitive: tool == XppStrokeTool.PEN && !widthIsDiameter,
+          );
     if (isShape && smooth && samples.length >= 4) {
       final positions = samples.map((p) => p.offset).toList();
       final curve = _smoothPath(
@@ -210,7 +217,7 @@ abstract class XppStroke extends XppContent {
         points: points,
         color: colorToUse,
         topLeft: offset, // Reuse the origin already calculated for this paint.
-        smoothPressure: tool == XppStrokeTool.PEN,
+        smoothPressure: tool == XppStrokeTool.PEN && !widthIsDiameter,
       );
 
       painter.paint(canvas, size);
@@ -252,6 +259,7 @@ abstract class XppStroke extends XppContent {
         XmlAttribute(XmlName('color'), color!.toHexTriplet()),
         if (isShape) XmlAttribute(XmlName('osipp-shape'), 'true'),
         if (smooth) XmlAttribute(XmlName('osipp-smooth'), 'true'),
+        if (widthIsDiameter) XmlAttribute(XmlName('osipp-width'), 'diameter'),
         if (erasures.isNotEmpty)
           XmlAttribute(
             XmlName('osipp-erasures'),
@@ -301,6 +309,7 @@ abstract class XppStroke extends XppContent {
       ..isShape = isShape
       ..smooth = smooth
       ..editingTool = editingTool
+      ..widthIsDiameter = widthIsDiameter
       ..erasures = cuts;
 
     return XppContentEraseData(affected: true, newContent: [replacement]);
@@ -335,7 +344,7 @@ abstract class XppStroke extends XppContent {
     final extrema = _sampleExtrema(points!);
     final radius = isShape
         ? extrema.shapeRadius
-        : tool == XppStrokeTool.PEN
+        : tool == XppStrokeTool.PEN && !widthIsDiameter
         ? extrema.penRadius
         : extrema.flatRadius;
     return extrema.rect.inflate(radius);
@@ -371,6 +380,7 @@ abstract class XppStroke extends XppContent {
     Color? color,
     bool isShape = false,
     bool smooth = false,
+    bool widthIsDiameter = false,
   }) {
     XppStroke? stroke;
     switch (tool) {
@@ -386,6 +396,7 @@ abstract class XppStroke extends XppContent {
     }
     stroke.isShape = isShape;
     stroke.smooth = smooth;
+    stroke.widthIsDiameter = widthIsDiameter;
     return stroke;
   }
 }
