@@ -31,10 +31,28 @@ class DecodedImageCache extends ChangeNotifier {
   Future<void>? _queue;
   int _epoch = 0;
   final Map<Object, List<WeakReference<Uint8List>>> _owners = {};
+  bool _needsRetainMaintenance = false;
   int get byteCount => _entries.fold(0, (sum, e) => sum + e.bytes);
   int get entryCount => _entries.length;
   void retain(Object owner, Iterable<Uint8List> sources) {
-    _owners[owner] = sources.map(WeakReference<Uint8List>.new).toList();
+    final next = sources is List<Uint8List>
+        ? sources
+        : sources.toList(growable: false);
+    final previous = _owners[owner];
+    var unchanged = previous != null && previous.length == next.length;
+    if (unchanged) {
+      for (var i = 0; i < next.length; i++) {
+        if (!identical(previous[i].target, next[i])) {
+          unchanged = false;
+          break;
+        }
+      }
+    }
+    if (unchanged && !_needsRetainMaintenance) return;
+    if (!unchanged) {
+      _owners[owner] = next.map(WeakReference<Uint8List>.new).toList();
+    }
+    _needsRetainMaintenance = false;
     _trim();
     final fairShare = maxBytes ~/ math.max(1, _activeSourceCount);
     if (_entries.any((e) => e.bytes > fairShare)) {
@@ -170,6 +188,9 @@ class DecodedImageCache extends ChangeNotifier {
         if (result.width * result.height * 4 + byteCount > maxBytes)
           throw StateError('Decoder oltre il budget');
         entry.image = result;
+        // A decode can finish after the visible sources changed its budget.
+        // The next retain must check it even if that owner's sources match.
+        _needsRetainMaintenance = true;
         _trim();
         notifyListeners();
       } catch (_) {

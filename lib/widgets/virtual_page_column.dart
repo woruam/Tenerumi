@@ -80,11 +80,11 @@ class _VirtualPageColumnState extends State<VirtualPageColumn> {
   }
 
   void _viewportChanged() {
-    final a = widget.transform.toScene(Offset.zero);
-    final b = widget.transform.toScene(
-      Offset(widget.viewport.width, widget.viewport.height),
+    final sceneViewport = MatrixUtils.inverseTransformRect(
+      widget.transform.value,
+      Offset.zero & widget.viewport,
     );
-    final visible = Rect.fromPoints(a, b).inflate(300);
+    final visible = sceneViewport.inflate(300);
     final next = <int>[];
     final start = (_lowerBound(_tops, visible.top) - 1).clamp(0, _tops.length);
     final end = _lowerBound(_tops, visible.bottom);
@@ -97,7 +97,7 @@ class _VirtualPageColumnState extends State<VirtualPageColumn> {
       ).overlaps(visible))
         next.add(i);
     }
-    final center = (a.dy + b.dy) / 2;
+    final center = sceneViewport.center.dy;
     int current = _lowerBound(
       _centers,
       center,

@@ -25,13 +25,14 @@ class _StrokeFragment {
       tool = stroke.tool,
       shape = stroke.isShape,
       smooth = stroke.smooth,
+      widthIsDiameter = stroke.widthIsDiameter,
       audio = stroke.audioLink,
       cuts = List.of(stroke.erasures);
   final String hash;
   final int bytes;
   final Object? color;
   final XppStrokeTool tool;
-  final bool shape, smooth;
+  final bool shape, smooth, widthIsDiameter;
   final StrokeAudioLink? audio;
   final List<StrokeErasure> cuts;
   bool matches(XppStroke stroke) =>
@@ -39,6 +40,7 @@ class _StrokeFragment {
       tool == stroke.tool &&
       shape == stroke.isShape &&
       smooth == stroke.smooth &&
+      widthIsDiameter == stroke.widthIsDiameter &&
       identical(audio, stroke.audioLink) &&
       listEquals(cuts, stroke.erasures);
 }

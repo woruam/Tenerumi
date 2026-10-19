@@ -35,6 +35,7 @@ class MainActivity: FlutterActivity() {
     }
 
     override fun onPause() {
+        methodChannel?.invokeMethod("stylusButtonsReset", null)
         noteAudio?.interrupt(leaving = true)
         displayManager.unregisterDisplayListener(displayListener)
         super.onPause()
@@ -42,6 +43,7 @@ class MainActivity: FlutterActivity() {
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
+        if (!hasFocus) methodChannel?.invokeMethod("stylusButtonsReset", null)
         if (hasFocus) requestHighRefreshRate()
     }
 
@@ -111,20 +113,19 @@ class MainActivity: FlutterActivity() {
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        // repeatCount == 0: reagiamo solo alla PRIMA pressione, NON alle ripetizioni
-        // automatiche del tasto tenuto premuto (che causavano toggle multipli ed erratici).
-        if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
-            // Tasto 1: Page Down (di solito quello vicino alla punta)
-            if (event.keyCode == KeyEvent.KEYCODE_PAGE_DOWN) {
-                methodChannel?.invokeMethod("redmiPenPageDown", null)
-                return true
-            } 
-            // Tasto 2: Page Up (di solito quello superiore)
-            else if (event.keyCode == KeyEvent.KEYCODE_PAGE_UP) {
-                methodChannel?.invokeMethod("redmiPenPageUp", null)
-                return true
+        val button = StylusKeyPolicy.button(event.keyCode) ?: return super.dispatchKeyEvent(event)
+        if (StylusKeyPolicy.shouldDispatch(event.keyCode, event.action, event.repeatCount)) {
+            if (StylusKeyPolicy.isLegacy(event.keyCode)) {
+                // Keep the working Redmi-specific path and its toggle behavior.
+                methodChannel?.invokeMethod(if (button == 1) "redmiPenPageDown" else "redmiPenPageUp", null)
+            } else {
+                methodChannel?.invokeMethod("stylusButton", mapOf(
+                    "button" to button,
+                    "pressed" to (event.action == KeyEvent.ACTION_DOWN && !event.isCanceled)
+                ))
             }
         }
-        return super.dispatchKeyEvent(event)
+        // Consume repeats and releases too, without toggling a tool again.
+        return true
     }
 }

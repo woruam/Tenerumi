@@ -279,7 +279,9 @@ Future<PreparedPdf> prepareNotesPdf(
                     p.y!,
                     inkRadius(
                       p.width,
-                      pressureSensitive: content.tool == XppStrokeTool.PEN,
+                      pressureSensitive:
+                          content.tool == XppStrokeTool.PEN &&
+                          !content.widthIsDiameter,
                     ),
                   ],
               ],
