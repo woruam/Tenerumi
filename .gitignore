@@ -75,6 +75,8 @@ android/key.properties
 
 # Keep project documentation and local tooling exclusions off GitHub.
 *.[mM][dD]
+!/README.md
+!/README.MD
 /.antigravityignore
 
 # Keep the build workflow local while automatic builds are disabled.
