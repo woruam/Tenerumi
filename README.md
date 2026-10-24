@@ -1,6 +1,6 @@
-# OSI
+# Tenerumi
 
-**OSI** è un'applicazione open source per prendere appunti a mano libera, disegnare e annotare documenti PDF. Sviluppata in **Flutter**, è progettata con particolare attenzione all'esperienza d'uso su tablet e smartphone Android dotati di stilo o penna attiva, mantenendo piena compatibilità con il formato di file `.xopp` di [Xournal++](https://github.com/xournalpp/xournalpp).
+**Tenerumi** è un'applicazione open source per prendere appunti a mano libera, disegnare e annotare documenti PDF. Sviluppata in **Flutter**, è progettata con particolare attenzione all'esperienza d'uso su tablet e smartphone Android dotati di stilo o penna attiva, mantenendo piena compatibilità con il formato di file `.xopp` di [Xournal++](https://github.com/xournalpp/xournalpp).
 
 ---
 
