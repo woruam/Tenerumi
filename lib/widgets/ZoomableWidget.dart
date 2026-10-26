@@ -309,7 +309,6 @@ class ZoomableWidgetState extends State<ZoomableWidget> {
 
   static const double _kMinScale = 0.1;
   static const double _kMaxScale = 10.0;
-  static const double _kFreePanThreshold = 1.05;
 
   TransformationController? _internalController;
   TransformationController get _controller =>
@@ -437,6 +436,21 @@ class ZoomableWidgetState extends State<ZoomableWidget> {
     _anchor = _controller.toScene(focal);
   }
 
+  // Center a scene that fits; otherwise keep its edges inside the viewport.
+  // Pinch and wheel zoom must use the same bounds and focal-point rules.
+  void _applyTransform(double scale, Offset translation) {
+    double x = translation.dx, y = translation.dy;
+    if (widget.sceneSize case final Size size) {
+      final remainingX = _viewport.width - size.width * scale;
+      final remainingY = _viewport.height - size.height * scale;
+      x = remainingX >= 0 ? remainingX / 2 : x.clamp(remainingX, 0);
+      y = remainingY >= 0 ? remainingY / 2 : y.clamp(remainingY, 0);
+    }
+    _controller.value = Matrix4.identity()
+      ..translate(x, y)
+      ..scale(scale);
+  }
+
   void _startGesture(ScaleStartDetails details) {
     _gesturePointers = details.pointerCount;
     _gestureTouch = _touchIds.isNotEmpty;
@@ -459,6 +473,8 @@ class ZoomableWidgetState extends State<ZoomableWidget> {
         (_gestureTouch && _touchSession.penNear) ||
         (_suppressPan && !widget.stylusPanEnabled))
       return;
+    // Coincident fingers have zero span; do not use it as the next divisor.
+    if (!details.scale.isFinite || details.scale <= 0) return;
     if (details.pointerCount != _gesturePointers) {
       _wasPinch |= details.pointerCount >= 2;
       _gesturePointers = details.pointerCount;
@@ -474,24 +490,10 @@ class ZoomableWidgetState extends State<ZoomableWidget> {
       _kMinScale,
       _kMaxScale,
     );
-    final current = _controller.value;
-    double x = details.localFocalPoint.dx - _anchor.dx * z;
-    double y = details.localFocalPoint.dy - _anchor.dy * z;
-    if (details.pointerCount < 2 && z <= _kFreePanThreshold)
-      x = current.entry(0, 3);
-    if (widget.sceneSize case final Size size) {
-      x = x.clamp(
-        (_viewport.width - size.width * z).clamp(-double.infinity, 0) - 120,
-        120,
-      );
-      y = y.clamp(
-        (_viewport.height - size.height * z).clamp(-double.infinity, 0) - 80,
-        80,
-      );
-    }
-    _controller.value = Matrix4.identity()
-      ..translate(x, y)
-      ..scale(z);
+    _applyTransform(z, details.localFocalPoint - _anchor * z);
+    // Use the applied position, not an out-of-bounds target: reversing at an
+    // edge or scale limit must respond immediately, without retracing the drag.
+    _rebase(details.localFocalPoint, details.scale);
     _upwardDrag = _startFocal.dy - details.localFocalPoint.dy;
     widget.onInteractionUpdate?.call(details);
     if (details.pointerCount >= 2) _showBadge();
@@ -541,15 +543,10 @@ class ZoomableWidgetState extends State<ZoomableWidget> {
             GestureBinding.instance.pointerSignalResolver.register(event, (_) {
               final anchor = _controller.toScene(event.localPosition);
               final z = (_scale * math.exp(-event.scrollDelta.dy / 500)).clamp(
-                .1,
-                10.0,
+                _kMinScale,
+                _kMaxScale,
               );
-              _controller.value = Matrix4.identity()
-                ..translate(
-                  event.localPosition.dx - anchor.dx * z,
-                  event.localPosition.dy - anchor.dy * z,
-                )
-                ..scale(z);
+              _applyTransform(z, event.localPosition - anchor * z);
               _showBadge();
             });
           }
