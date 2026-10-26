@@ -227,7 +227,14 @@ class PointerListenerState extends State<PointerListener> {
   static final Map<int, PointerListenerState> _hardwareButtonOwners = {};
 
   static Future<void> _dispatchHardwareCall(MethodCall call) async {
+    if (call.method == 'stylusProximityExit') {
+      CanvasTouchSession.nativeProximityExit(
+        call.arguments is int ? call.arguments as int : null,
+      );
+      return;
+    }
     if (call.method == 'stylusButtonsReset') {
+      CanvasTouchSession.resetAll();
       for (final listener in _hardwareListeners) {
         listener._nativeButtons = 0;
         listener._hoverButtons = 0;
@@ -342,6 +349,7 @@ class PointerListenerState extends State<PointerListener> {
 
   @override
   void dispose() {
+    _canvasTouchSession?.removeListener(_resetInput);
     _pasteHoldTimer?.cancel();
     _inkPreview.dispose();
     if (identical(_hardwareOwner, this)) _hardwareOwner = null;
@@ -352,6 +360,42 @@ class PointerListenerState extends State<PointerListener> {
       _hardwareChannel = null;
     }
     super.dispose();
+  }
+
+  CanvasTouchSession? _canvasTouchSession;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final session = context
+        .dependOnInheritedWidgetOfExactType<CanvasTouchScope>()
+        ?.session;
+    if (identical(session, _canvasTouchSession)) return;
+    _canvasTouchSession?.removeListener(_resetInput);
+    _canvasTouchSession = session;
+    session?.addListener(_resetInput);
+  }
+
+  void _resetInput() {
+    _pasteHoldTimer?.cancel();
+    if (_strokeTool == XppStrokeTool.ERASER) widget.onEraserEnd?.call();
+    _drawingPointer = null;
+    _touchPointers.clear();
+    _multipleTouches = false;
+    _heldButtonAction = null;
+    _strokeTool = null;
+    _nativeButtons = 0;
+    _hoverButtons = 0;
+    _dragMode = _SelectionDragMode.none;
+    _lastDragPosition = null;
+    _longPressConsumed = false;
+    poppedContentForCurrentPointer = false;
+    clearPoints();
+    _lassoPoints.clear();
+    if (mounted)
+      setState(() {
+        _flashcardStart = null;
+        _flashcardRect = null;
+      });
   }
 
   @override
@@ -725,9 +769,10 @@ class PointerListenerState extends State<PointerListener> {
   }
 
   void _onPointerDown(PointerDownEvent data) {
+    CanvasTouchScope.of(context)?.observeTouch(data);
     if (data.kind == PointerDeviceKind.touch &&
         ((CanvasTouchScope.of(context)?.rejects(data) ?? false) ||
-            data.radiusMajor > 28))
+            data.radiusMajor > CanvasTouchSession.palmRadiusThreshold))
       return;
     if (widget.readOnly &&
         (widget.onCopyPdfRegion == null || !isSelect(data))) {
@@ -852,15 +897,36 @@ class PointerListenerState extends State<PointerListener> {
     }
   }
 
-  void _onPointerMove(PointerMoveEvent data) {
-    if (data.kind == PointerDeviceKind.touch &&
-        (CanvasTouchScope.of(context)?.cancellationEpoch ?? 0) != _touchEpoch) {
-      clearPoints();
-      _lassoPoints.clear();
+  void _cancelTouchInput(int pointer) {
+    // A rejected finger's MOVE/UP must never discard a simultaneous pen stroke.
+    if (_drawingPointer != pointer) return;
+    if (_strokeTool == XppStrokeTool.ERASER) widget.onEraserEnd?.call();
+    _pasteHoldTimer?.cancel();
+    _drawingPointer = null;
+    _strokeTool = null;
+    _heldButtonAction = null;
+    _dragMode = _SelectionDragMode.none;
+    _lastDragPosition = null;
+    _longPressConsumed = false;
+    poppedContentForCurrentPointer = false;
+    clearPoints();
+    _lassoPoints.clear();
+    setState(() {
       _flashcardStart = null;
       _flashcardRect = null;
-      _drawingPointer = null;
-      return;
+    });
+  }
+
+  void _onPointerMove(PointerMoveEvent data) {
+    if (data.kind == PointerDeviceKind.touch) {
+      final session = CanvasTouchScope.of(context);
+      session?.observeTouch(data);
+      if ((session?.rejects(data) ?? false) ||
+          data.radiusMajor > CanvasTouchSession.palmRadiusThreshold ||
+          (session?.cancellationEpoch ?? 0) != _touchEpoch) {
+        _cancelTouchInput(data.pointer);
+        return;
+      }
     }
     if (_drawingPointer != data.pointer ||
         (data.kind == PointerDeviceKind.touch && _multipleTouches))
@@ -950,13 +1016,7 @@ class PointerListenerState extends State<PointerListener> {
   void _onPointerUp(PointerUpEvent data) {
     if (data.kind == PointerDeviceKind.touch &&
         (CanvasTouchScope.of(context)?.cancellationEpoch ?? 0) != _touchEpoch) {
-      clearPoints();
-      _lassoPoints.clear();
-      setState(() {
-        _flashcardStart = null;
-        _flashcardRect = null;
-      });
-      _drawingPointer = null;
+      _cancelTouchInput(data.pointer);
     }
     if (data.kind == PointerDeviceKind.touch) {
       _touchPointers.remove(data.pointer);

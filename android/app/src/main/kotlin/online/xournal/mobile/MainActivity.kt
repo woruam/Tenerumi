@@ -77,6 +77,19 @@ class MainActivity: FlutterActivity() {
         return super.dispatchTouchEvent(event)
     }
 
+    override fun dispatchGenericMotionEvent(event: MotionEvent): Boolean {
+        if (event.actionMasked == MotionEvent.ACTION_HOVER_EXIT &&
+            (0 until event.pointerCount).any {
+                event.getToolType(it) == MotionEvent.TOOL_TYPE_STYLUS ||
+                    event.getToolType(it) == MotionEvent.TOOL_TYPE_ERASER
+            }) {
+            // Flutter forwards hover moves but not Android's hover exit. Do not
+            // leave a stationary-hover palm-rejection grant behind indefinitely.
+            methodChannel?.invokeMethod("stylusProximityExit", event.eventTime * 1000)
+        }
+        return super.dispatchGenericMotionEvent(event)
+    }
+
     private fun findFlutterView(view: View): FlutterView? {
         if (view is FlutterView) return view
         if (view is ViewGroup) {

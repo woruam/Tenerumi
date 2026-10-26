@@ -33,10 +33,21 @@ class InfiniteCanvas extends StatefulWidget {
 
 class _InfiniteCanvasState extends State<InfiniteCanvas> {
   final _touch = CanvasTouchSession();
+  CanvasScaleRecognizer? _recognizer;
   CanvasGeometryCache _geometry = CanvasGeometryCache();
   @override
   void initState() {
     super.initState();
+    _touch.addListener(_resetInput);
+  }
+
+  void _resetInput() {
+    _touchIds.clear();
+    _gesturePointers = 0;
+    _gesturePen = false;
+    _pinched = false;
+    _suppressed = true;
+    _recognizer?.cancelActivePointers();
   }
 
   @override
@@ -75,7 +86,7 @@ class _InfiniteCanvasState extends State<InfiniteCanvas> {
     onExit: _touch.leaveProximity,
     child: Listener(
       onPointerHover: _observePen,
-      onPointerMove: _observePen,
+      onPointerMove: _onPointerMove,
       onPointerDown: (event) {
         if (event.kind == PointerDeviceKind.stylus ||
             event.kind == PointerDeviceKind.invertedStylus) {
@@ -83,6 +94,7 @@ class _InfiniteCanvasState extends State<InfiniteCanvas> {
           _observePen(event);
         }
         if (event.kind == PointerDeviceKind.touch) {
+          _touch.observeTouch(event);
           if (_touch.rejects(event) || _touchIds.length >= 2) {
             _touch.rejectedPointers.add(event.pointer);
             return;
@@ -117,6 +129,7 @@ class _InfiniteCanvasState extends State<InfiniteCanvas> {
               GestureRecognizerFactoryWithHandlers<CanvasScaleRecognizer>(
                 () => CanvasScaleRecognizer(),
                 (instance) {
+                  _recognizer = instance;
                   instance.allow = (event) =>
                       (!CanvasTouchSession.isPen(event) ||
                           widget.canvas.isPanEnabled) &&
@@ -277,6 +290,18 @@ class _InfiniteCanvasState extends State<InfiniteCanvas> {
     _touch.observePen(event, _touchIds);
     _touchIds.clear();
     if (hadTouches || !_gesturePen) _suppressed = true;
+  }
+
+  void _onPointerMove(PointerMoveEvent event) {
+    if (CanvasTouchSession.isPen(event)) {
+      _observePen(event);
+      return;
+    }
+    _touch.observeTouch(event);
+    if (_touchIds.contains(event.pointer) && _touch.rejects(event)) {
+      _suppressed = true;
+      _recognizer?.cancelActivePointers();
+    }
   }
 
   void _endTouch(PointerEvent event) {

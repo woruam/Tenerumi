@@ -101,7 +101,7 @@ class CanvasPage extends StatefulWidget {
   CanvasPageState createState() => CanvasPageState();
 }
 
-class CanvasPageState extends State<CanvasPage> {
+class CanvasPageState extends State<CanvasPage> with WidgetsBindingObserver {
   double? _pageDisplayWidth;
   final Set<int> _activeInputs = {};
 
@@ -109,6 +109,18 @@ class CanvasPageState extends State<CanvasPage> {
     if (_activeInputs.remove(event.pointer)) {
       _controller.endInput(event.pointer);
     }
+  }
+
+  void _releaseInputs() {
+    for (final pointer in _activeInputs) {
+      _controller.endInput(pointer);
+    }
+    _activeInputs.clear();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) _releaseInputs();
   }
 
   double _layoutPageWidth(
@@ -157,6 +169,7 @@ class CanvasPageState extends State<CanvasPage> {
     // Usa il controller esterno se fornito (split: lo possiede il WorkspaceController),
     // altrimenti la pagina ne crea uno proprio (uso a tab singola).
     _controller = widget.controller ?? (CanvasController()..init(widget.file));
+    WidgetsBinding.instance.addObserver(this);
     _controller.pageNavigation.addListener(_navigateToPage);
     // Scheda nuova creata per un PDF: importiamolo appena pronta la UI.
     if (widget.pdfToImportPath != null) {
@@ -197,11 +210,9 @@ class CanvasPageState extends State<CanvasPage> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _pomodoroProgress.dispose();
-    for (final pointer in _activeInputs) {
-      _controller.endInput(pointer);
-    }
-    _activeInputs.clear();
+    _releaseInputs();
     _controller.pageNavigation.removeListener(_navigateToPage);
     if (widget.zoomController == null) _zoomController.dispose();
     if (widget.controller == null) _controller.dispose();
