@@ -133,11 +133,11 @@ class _NoteBackupDialogState extends State<_NoteBackupDialog> {
         final path = prepared!.stagedPath != null
             ? await FilePickerCross.exportStagedFile(
                 prepared!.stagedPath!,
-                'OSI-backup-$day.zip',
+                'Tenerumi-backup-$day.zip',
               )
             : await FilePickerCross(
                 prepared!.bytes,
-                path: 'OSI-backup-$day.zip',
+                path: 'Tenerumi-backup-$day.zip',
               ).exportToStorage();
         if (path != null) await prepared!.dispose();
         if (mounted && path != null) {
@@ -170,10 +170,10 @@ class _NoteBackupDialogState extends State<_NoteBackupDialog> {
             children: [
               Text(
                 widget.restore
-                    ? 'Scegli un backup ZIP creato da OSI. Gli appunti saranno aggiunti '
-                          'come nuove copie, con tag, preferiti e allegati. Gli appunti esistenti vengono conservati.'
+                    ? 'Scegli un backup ZIP creato da Tenerumi o OSI. Gli appunti saranno aggiunti '
+                          'come nuove copie, con tag, preferiti, registrazioni e collegamenti audio ai tratti. Gli appunti esistenti vengono conservati.'
                     : 'Crea un file ZIP con gli appunti della libreria e i recuperi automatici. '
-                          'Sono inclusi PDF, immagini, registrazioni audio e flashcard.',
+                          'Sono inclusi tag, preferiti, PDF, immagini, registrazioni audio, collegamenti ai tratti e flashcard.',
               ),
               if (busy) ...[
                 const SizedBox(height: 16),

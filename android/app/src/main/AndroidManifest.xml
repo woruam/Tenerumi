@@ -4,7 +4,7 @@
     <uses-feature android:name="android.hardware.microphone" android:required="false" />
     <application
         android:name="${applicationName}"
-        android:label="OSI"
+        android:label="Tenerumi"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

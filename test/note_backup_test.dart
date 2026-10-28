@@ -294,7 +294,10 @@ void main() {
     PathProviderPlatform.instance = TestDocumentsProvider(dir.path);
     expect(await RecentDocuments.list(), before);
     expect(await File(existing.sourcePath!).exists(), isTrue);
-    final staged = await Directory('${dir.path}/xournalpp').list().toList();
+    final directory = Directory('${dir.path}/xournalpp');
+    final staged = await directory.exists()
+        ? await directory.list().toList()
+        : [];
     expect(staged, isEmpty);
   });
 
@@ -326,8 +329,12 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(Icons.settings_outlined));
       await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Backup e ripristino'));
+      await tester.tap(find.text('Backup e ripristino'));
+      await tester.pumpAndSettle();
       expect(find.text('Crea Backup'), findsOneWidget);
       expect(find.text('Ripristina Backup'), findsOneWidget);
+      await tester.ensureVisible(find.byKey(const ValueKey('restore-backup')));
       await tester.tap(find.byKey(const ValueKey('restore-backup')));
       await tester.pumpAndSettle();
       expect(find.text('Scegli backup'), findsOneWidget);
@@ -336,6 +343,10 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(Icons.settings_outlined));
       await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Backup e ripristino'));
+      await tester.tap(find.text('Backup e ripristino'));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Crea Backup'));
       await tester.tap(find.text('Crea Backup'));
       await tester.pumpAndSettle();
       expect(find.text('Prepara backup'), findsOneWidget);

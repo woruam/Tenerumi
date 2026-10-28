@@ -69,6 +69,7 @@ class MainActivity: FlutterActivity() {
             event.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
             val tool = event.getToolType(event.actionIndex)
             if (tool == MotionEvent.TOOL_TYPE_STYLUS || tool == MotionEvent.TOOL_TYPE_ERASER) {
+                noteAudio?.stylusContact(event.eventTime)
                 // Request on the actual Flutter input target, before it receives DOWN.
                 // Keep Flutter's normal pointer path: no duplicate/custom event stream.
                 findFlutterView(window.decorView)?.requestUnbufferedDispatch(event)

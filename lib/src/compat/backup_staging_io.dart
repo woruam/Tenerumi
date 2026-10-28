@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:crypto/crypto.dart';
 
 import '../bounded_archive.dart';
+import '../document_limits.dart';
 import 'internal_storage_io.dart' as storage;
 
 const supportsDiskStaging = true;
@@ -93,7 +94,7 @@ Map<String, dynamic> _extract(Map<String, String> args) {
       entryLimit: (name) {
         if (name == 'manifest.json') return 8 * 1024 * 1024;
         if (RegExp(r'^notes/[0-9]+\.xopp$').hasMatch(name))
-          return 32 * 1024 * 1024;
+          return DocumentLimits.standard.compressedBytes;
         throw const FormatException('Percorso backup non valido');
       },
       onEntry: (name, bytes) {
@@ -121,7 +122,7 @@ Map<String, dynamic> _extract(Map<String, String> args) {
 }
 
 Future<Uint8List> readStaged(String path) =>
-    storage.readFile(path, maxBytes: 32 * 1024 * 1024);
+    storage.readFile(path, maxBytes: DocumentLimits.standard.compressedBytes);
 Future<void> disposeStaging(String root) async {
   final base = Directory(await storage.resolve('backup-staging')).absolute.path;
   final dir = Directory(root).absolute;

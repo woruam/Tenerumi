@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
+
+import 'package:xournalpp/src/stylus_shortcut.dart';
 
 import 'package:xournalpp/src/stylus_profile.dart';
 
@@ -81,7 +84,37 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     this.pdfRasterizer,
     this.documentExporter,
     SelectionClipboard? clipboard,
-  }) : clipboard = clipboard ?? SelectionClipboard();
+  }) : clipboard = clipboard ?? SelectionClipboard() {
+    if (autosaveEnabled) _backupSources.add(WeakReference(this));
+  }
+
+  static final _backupSources = <WeakReference<CanvasController>>[];
+  static final _closingDocuments = <Future<void>>{};
+
+  /// Secure current strokes and completed audio before collecting backup files.
+  static Future<void> prepareForBackup() async {
+    await Future.wait(_closingDocuments.toList());
+    _backupSources.removeWhere(
+      (reference) => reference.target == null || reference.target!._disposed,
+    );
+    for (final reference in _backupSources.toList()) {
+      final controller = reference.target;
+      if (controller == null ||
+          controller._disposed ||
+          controller._discardRecovery ||
+          controller.file == null) {
+        continue;
+      }
+      await controller.audio.stop();
+      await controller.flushAutosave();
+      if (controller.autosaveError != null) {
+        throw StateError(
+          'Salvataggio prima del backup non riuscito: ${controller.autosaveError}',
+        );
+      }
+    }
+  }
+
   final SelectionClipboard clipboard;
   final bool autosaveEnabled;
   Future<String?> _exportDocument(FilePickerCross data) =>
@@ -119,6 +152,44 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
 
   Color penColor = Colors.black;
   double penWidth = 2.5;
+  bool penPressureEnabled = true;
+  static const penPressurePreference = 'pen_pressure_enabled';
+  List<StylusShortcut> stylusShortcuts = List.of(StylusShortcut.defaults);
+
+  Future<void> setPenPressureEnabled(bool value) async {
+    penPressureEnabled = value;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(penPressurePreference, value);
+  }
+
+  Future<void> setStylusShortcuts(List<StylusShortcut> shortcuts) async {
+    if (shortcuts.length != 5) return;
+    stylusShortcuts = List.unmodifiable(shortcuts);
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      StylusShortcut.preferenceKey,
+      jsonEncode(shortcuts.map((s) => s.toJson()).toList()),
+    );
+  }
+
+  void applyStylusShortcut(StylusShortcut shortcut) {
+    if (shortcut.tool == EditingTool.STYLUS) {
+      penColor = shortcut.color;
+      penWidth = shortcut.width;
+    } else if (shortcut.tool == EditingTool.HIGHLIGHT) {
+      highlighterColor = shortcut.color;
+      highlighterWidth = shortcut.width;
+    } else if (shortcut.tool == EditingTool.ERASER) {
+      eraserWidth = shortcut.width;
+    } else if (shortcut.tool.isShape) {
+      shapeColor = shortcut.color;
+      shapeWidth = shortcut.width;
+    }
+    setTool(shortcut.tool);
+  }
+
   Color shapeColor = Colors.black;
   double shapeWidth = 2.5;
   FlashcardSide? flashcardFront;
@@ -498,14 +569,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
       toolData[PointerDeviceKind.stylus] == EditingTool.MOVE;
   bool get isShapeTool {
     final tool = toolData[PointerDeviceKind.stylus];
-    return tool == EditingTool.SHAPE_LINE ||
-        tool == EditingTool.SHAPE_RECT ||
-        tool == EditingTool.SHAPE_CIRCLE ||
-        tool == EditingTool.SHAPE_SQUARE ||
-        tool == EditingTool.SHAPE_DASHED_LINE ||
-        tool == EditingTool.SHAPE_CUBE ||
-        tool == EditingTool.SHAPE_CYLINDER ||
-        tool == EditingTool.SHAPE_SPHERE;
+    return tool?.isShape ?? false;
   }
 
   // RIPRISTINATO AD UN SOLO PARAMETRO (Così non rompe il routing della tua Home)
@@ -524,6 +588,19 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     SharedPreferences.getInstance()
         .then((prefs) {
           if (_disposed) return;
+          penPressureEnabled = prefs.getBool(penPressurePreference) ?? true;
+          try {
+            final stored = prefs.getString(StylusShortcut.preferenceKey);
+            if (stored != null) {
+              final values = (jsonDecode(stored) as List)
+                  .map(StylusShortcut.fromJson)
+                  .toList();
+              if (values.length == 5)
+                stylusShortcuts = List.unmodifiable(values);
+            }
+          } catch (_) {
+            /* Keep usable defaults for obsolete preferences. */
+          }
           final enabled = prefs.getBool(PreferencesKeys.kShapeRecognition);
           if (enabled != null) shapeRecognition = enabled;
           touchDrawingEnabled =
@@ -553,6 +630,10 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    _backupSources.removeWhere(
+      (reference) =>
+          reference.target == null || identical(reference.target, this),
+    );
     if (_suspendedPdfCaches.remove(this))
       DecodedImageCache.shared.release(this);
     _autosaveTimer?.cancel();
@@ -561,9 +642,12 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     _eraserBounds.clear();
     WidgetsBinding.instance.removeObserver(this);
     if (file != null) {
-      unawaited(
-        audio.stop().then((_) => flushAutosave()).whenComplete(audio.dispose),
-      );
+      final closing = audio
+          .stop()
+          .then((_) => flushAutosave())
+          .whenComplete(audio.dispose);
+      _closingDocuments.add(closing);
+      unawaited(closing.whenComplete(() => _closingDocuments.remove(closing)));
     }
     _disposed = true;
     _releaseViewPdf();
@@ -1166,7 +1250,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     savingFile = true;
     notifyListeners();
     try {
-      if (audio.recording || audio.busy) await audio.stop();
+      if (audio.recording || audio.busy || audio.cleaning) await audio.stop();
       if (!context.mounted || _disposed) return false;
       if (_autosaveQueue != null) await _autosaveQueue;
       final savedRevision = _revision;
@@ -1721,6 +1805,61 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   void addPage() => insertPage(after: true);
+
+  bool get canDeletePage =>
+      !_disposed &&
+      !savingFile &&
+      (file?.pages?.length ?? 0) > 1 &&
+      file!.pages!.every((p) => !p.infinite);
+
+  bool pageHasAnnotations(int index) =>
+      file!.pages![index].layers?.any(
+        (layer) => layer.content?.any((c) => c != null) ?? false,
+      ) ??
+      false;
+
+  bool deletePage(int index) {
+    if (!canDeletePage || index < 0 || index >= file!.pages!.length)
+      return false;
+    final pages = file!.pages!;
+    final removed = pages.removeAt(index);
+    void shift<T>(Map<int, T> map) {
+      final old = Map<int, T>.of(map);
+      map.clear();
+      for (final e in old.entries) {
+        if (e.key != index) map[e.key > index ? e.key - 1 : e.key] = e.value;
+      }
+    }
+
+    shift(_activeLayers);
+    shift(pageStackKeys);
+    for (final stack in [undoStack, redoStack]) {
+      stack.removeWhere((s) => s.pageIndex == index);
+      for (var i = 0; i < stack.length; i++) {
+        final s = stack[i];
+        if (s.pageIndex > index)
+          stack[i] = PageSnapshot(s.pageIndex - 1, s.layers, s.activeIndex);
+      }
+    }
+    if (identical(removed, _lastAutomaticBlank)) _lastAutomaticBlank = null;
+    activePageIndex =
+        (activePageIndex > index ? activePageIndex - 1 : activePageIndex).clamp(
+          0,
+          pages.length - 1,
+        );
+    _pdfEpoch++;
+    _visiblePdfPages = {};
+    pdfBackgrounds.clear();
+    pdfErrors.clear();
+    hasUnsavedChanges = true;
+    notifyListeners();
+    // Wait until the shorter column has laid out before navigating to its page.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_disposed) pageNavigation.value++;
+    });
+    return true;
+  }
+
   void insertPage({required bool after, PaperSettings? paper}) =>
       insertBlankPage(
         activePageIndex + (after ? 1 : 0),

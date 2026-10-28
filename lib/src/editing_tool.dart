@@ -18,4 +18,9 @@ enum EditingTool {
   SHAPE_CUBE,
   SHAPE_CYLINDER,
   SHAPE_SPHERE,
+  SHAPE_AXES,
+}
+
+extension ShapeTool on EditingTool {
+  bool get isShape => name.startsWith('SHAPE_');
 }

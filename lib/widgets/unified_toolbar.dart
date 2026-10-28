@@ -1,3 +1,5 @@
+import 'package:xournalpp/widgets/ink_options_panel.dart';
+
 import 'dart:typed_data';
 
 import 'package:xournalpp/src/app_appearance.dart';
@@ -11,7 +13,6 @@ import 'package:provider/provider.dart';
 import 'package:xournalpp/controllers/canvas_controller.dart';
 import 'package:xournalpp/controllers/workspace_controller.dart';
 import 'package:xournalpp/widgets/canvas_toolbar.dart';
-import 'package:xournalpp/src/editing_tool.dart'; // EditingTool
 
 /// Toolbar UNICA e globale (split-screen).
 ///
@@ -31,7 +32,7 @@ class UnifiedToolbar extends StatefulWidget implements PreferredSizeWidget {
   /// serve a far funzionare l'opzione "In una nuova scheda" del dialogo di
   /// import anche dalla toolbar unificata (la logica PDF resta invariata).
   final void Function(String pdfPath, String title, Uint8List pickedBytes)?
-      onOpenPdfInNewTab;
+  onOpenPdfInNewTab;
 
   const UnifiedToolbar({
     super.key,
@@ -177,224 +178,20 @@ class _UnifiedToolbarState extends State<UnifiedToolbar> {
     double curW,
     Function(Color?, double?) onUpdate,
   ) {
-    _showPanel(
+    showInkOptionsPanel(
       context,
+      ctrl,
       key,
-      StatefulBuilder(
-        builder: (context, setDialogState) => Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: colors
-                  .map(
-                    (c) => InkWell(
-                      onTap: () {
-                        onUpdate(c, null);
-                        setDialogState(() => curC = c);
-                      },
-                      child: Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: c,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: curC == c ? Colors.black : Colors.black12,
-                            width: curC == c ? 3 : 1,
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-                  .toList(),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Spessore: ${(curW * 0.3528).toStringAsFixed(2)} mm',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            Slider(
-              value: curW,
-              min: title == 'Penna' ? 0.1 : 0.5,
-              max: 30.0,
-              onChanged: (val) {
-                onUpdate(null, val);
-                setDialogState(() => curW = val);
-              },
-            ),
-          ],
-        ),
-      ),
+      title,
+      colors,
+      curC,
+      curW,
+      onUpdate,
     );
   }
 
   void _openShapeSettings(BuildContext context, CanvasController ctrl) {
-    _showPanel(
-      context,
-      _shapeKey,
-      StatefulBuilder(
-        builder: (context, setDialogState) => Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Strumento Forma:',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            _shapeItem(
-              context,
-              'Linea',
-              Icons.horizontal_rule,
-              EditingTool.SHAPE_LINE,
-              ctrl,
-              setDialogState,
-            ),
-            _shapeItem(
-              context,
-              'Linea tratteggiata',
-              Icons.more_horiz,
-              EditingTool.SHAPE_DASHED_LINE,
-              ctrl,
-              setDialogState,
-            ),
-            _shapeItem(
-              context,
-              'Rettangolo',
-              Icons.rectangle_outlined,
-              EditingTool.SHAPE_RECT,
-              ctrl,
-              setDialogState,
-            ),
-            _shapeItem(
-              context,
-              'Cerchio',
-              Icons.circle_outlined,
-              EditingTool.SHAPE_CIRCLE,
-              ctrl,
-              setDialogState,
-            ),
-            _shapeItem(
-              context,
-              'Quadrato',
-              Icons.check_box_outline_blank,
-              EditingTool.SHAPE_SQUARE,
-              ctrl,
-              setDialogState,
-            ),
-            _shapeItem(
-              context,
-              'Cubo',
-              Icons.view_in_ar,
-              EditingTool.SHAPE_CUBE,
-              ctrl,
-              setDialogState,
-            ),
-            _shapeItem(
-              context,
-              'Cilindro',
-              Icons.album,
-              EditingTool.SHAPE_CYLINDER,
-              ctrl,
-              setDialogState,
-            ),
-            _shapeItem(
-              context,
-              'Sfera',
-              Icons.lens,
-              EditingTool.SHAPE_SPHERE,
-              ctrl,
-              setDialogState,
-            ),
-            const Divider(),
-            const Text(
-              'Proprietà figure:',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children:
-                  const [
-                        Colors.black,
-                        Colors.grey,
-                        Colors.red,
-                        Colors.blue,
-                        Colors.green,
-                      ]
-                      .map(
-                        (c) => InkWell(
-                          onTap: () {
-                            ctrl.setShapeProps(c, null);
-                            setDialogState(() {});
-                          },
-                          child: Container(
-                            width: 32,
-                            height: 32,
-                            decoration: BoxDecoration(
-                              color: c,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: ctrl.shapeColor == c
-                                    ? Colors.black
-                                    : Colors.black12,
-                                width: ctrl.shapeColor == c ? 3 : 1,
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
-                      .toList(),
-            ),
-            Slider(
-              value: ctrl.shapeWidth,
-              min: 0.5,
-              max: 20.0,
-              onChanged: (val) {
-                ctrl.setShapeProps(null, val);
-                setDialogState(() {});
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _shapeItem(
-    BuildContext context,
-    String title,
-    IconData icon,
-    EditingTool tool,
-    CanvasController ctrl,
-    StateSetter setDialogState,
-  ) {
-    final bool isSelected = ctrl.toolData[PointerDeviceKind.stylus] == tool;
-    return ListTile(
-      leading: Icon(
-        icon,
-        color: isSelected ? Theme.of(context).colorScheme.primary : null,
-      ),
-      title: Text(
-        title,
-        style: TextStyle(
-          color: isSelected ? Theme.of(context).colorScheme.primary : null,
-          fontWeight: isSelected ? FontWeight.bold : null,
-        ),
-      ),
-      onTap: () {
-        ctrl.setTool(tool);
-        setDialogState(() {});
-      },
-      contentPadding: EdgeInsets.zero,
-      dense: true,
-    );
+    showShapeOptionsPanel(context, ctrl);
   }
 
   void _openEraserSettings(BuildContext context, CanvasController ctrl) {

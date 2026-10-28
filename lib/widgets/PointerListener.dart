@@ -1,5 +1,9 @@
 import 'dart:async';
 
+import 'package:xournalpp/src/cartesian_axes.dart';
+import 'package:xournalpp/src/stylus_shortcut.dart';
+import 'package:xournalpp/widgets/stylus_radial_menu.dart';
+
 import 'package:xournalpp/src/stylus_profile.dart';
 import 'package:xournalpp/src/stylus_pressure.dart';
 
@@ -58,6 +62,10 @@ class PointerListener extends StatefulWidget {
   final StylusProfile stylusProfile;
 
   final bool shapeRecognition;
+  final bool penPressureEnabled;
+  final List<StylusShortcut>? stylusShortcuts;
+  final ValueChanged<StylusShortcut>? onStylusShortcut;
+  final Duration stylusMenuHoldDelay;
   final List<XppContent?> Function()? getPageContent;
   final Function(List<XppContent>)? onDeleteContent;
   final VoidCallback? onContentChanged;
@@ -93,6 +101,12 @@ class PointerListener extends StatefulWidget {
     this.buttonUpAction = 'select',
     this.stylusProfile = StylusProfile.automatic,
     this.shapeRecognition = false,
+    this.penPressureEnabled = true,
+    this.stylusShortcuts,
+    this.onStylusShortcut,
+    this.stylusMenuHoldDelay = const Duration(
+      milliseconds: StylusShortcut.defaultHoldDelayMs,
+    ),
     this.getPageContent,
     this.onDeleteContent,
     this.onContentChanged,
@@ -106,7 +120,8 @@ class PointerListener extends StatefulWidget {
 
 enum _SelectionDragMode { none, lasso, move, resize }
 
-class PointerListenerState extends State<PointerListener> {
+class PointerListenerState extends State<PointerListener>
+    with WidgetsBindingObserver {
   Offset? _flashcardStart;
   Rect? _flashcardRect;
   Offset? _lastEraserPosition;
@@ -127,6 +142,7 @@ class PointerListenerState extends State<PointerListener> {
   StrokeAudioLink? _audioLink;
   List<XppStrokePoint> points = [];
   bool _widthsAreDiameters = false;
+  bool _strokePressureEnabled = true;
   List<double>? _legacyShapeWidths;
   final _InkPreview _inkPreview = _InkPreview();
   XppStrokeTool tool = XppStrokeTool.PEN;
@@ -150,6 +166,14 @@ class PointerListenerState extends State<PointerListener> {
   Offset? _holdScreenPosition;
   Offset? _pastePosition;
   bool _longPressConsumed = false;
+  StylusRadialMenuController? _radialMenu;
+  bool _inputAttached = true;
+
+  void _dismissRadialMenu() {
+    if (_radialMenu != null) _canvasTouchSession?.stylusMenuActive = false;
+    _radialMenu?.dismiss();
+    _radialMenu = null;
+  }
 
   void _startPasteHold(PointerDownEvent event) {
     _pasteHoldTimer?.cancel();
@@ -157,8 +181,9 @@ class PointerListenerState extends State<PointerListener> {
     if (widget.readOnly ||
         event.kind != PointerDeviceKind.stylus ||
         widget.toolData[event.kind] == EditingTool.FLASHCARD ||
-        widget.clipboard?.hasContent != true ||
-        widget.onPasteContent == null ||
+        (widget.stylusShortcuts == null &&
+            (widget.clipboard?.hasContent != true ||
+                widget.onPasteContent == null)) ||
         isEraser(event) ||
         isText(event) ||
         isLaTeX(event)) {
@@ -166,15 +191,44 @@ class PointerListenerState extends State<PointerListener> {
     }
     _holdScreenPosition = event.position;
     final position = _canvasPoint(event);
-    _pasteHoldTimer = Timer(const Duration(milliseconds: 1100), () {
+    _pasteHoldTimer = Timer(widget.stylusMenuHoldDelay, () {
       if (!mounted || _drawingPointer != event.pointer) return;
       setState(() {
         _longPressConsumed = true;
         clearPoints();
         _lassoPoints.clear();
         _dragMode = _SelectionDragMode.none;
-        _pastePosition = position;
+        _pastePosition = widget.stylusShortcuts == null ? position : null;
       });
+      if (widget.stylusShortcuts case final shortcuts?) {
+        _radialMenu = StylusRadialMenuController.open(
+          context,
+          position: event.position,
+          shortcuts: shortcuts,
+          onPaste:
+              widget.clipboard?.hasContent == true &&
+                  widget.onPasteContent != null
+              ? () {
+                  if (mounted) _pasteAt(position);
+                }
+              : null,
+          onSelect: (shortcut) {
+            if (mounted) widget.onStylusShortcut?.call(shortcut);
+          },
+        );
+        _canvasTouchSession?.stylusMenuActive = true;
+      }
+    });
+  }
+
+  void _pasteAt(Offset position) {
+    final pasted = widget.onPasteContent?.call(position) ?? [];
+    setState(() {
+      _pastePosition = null;
+      if (pasted.isNotEmpty) {
+        _selectContent(pasted);
+        _moveSelectionArmed = true;
+      }
     });
   }
 
@@ -336,6 +390,7 @@ class PointerListenerState extends State<PointerListener> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     if (_hardwareListeners.isEmpty) {
       _hardwareChannel = MethodChannel(
         platform.name,
@@ -349,6 +404,8 @@ class PointerListenerState extends State<PointerListener> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _dismissRadialMenu();
     _canvasTouchSession?.removeListener(_resetInput);
     _pasteHoldTimer?.cancel();
     _inkPreview.dispose();
@@ -360,6 +417,31 @@ class PointerListenerState extends State<PointerListener> {
       _hardwareChannel = null;
     }
     super.dispose();
+  }
+
+  @override
+  void deactivate() {
+    _inputAttached = false;
+    _pasteHoldTimer?.cancel();
+    _dismissRadialMenu();
+    _drawingPointer = null;
+    super.deactivate();
+  }
+
+  @override
+  void activate() {
+    super.activate();
+    _inputAttached = true;
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) _resetInput();
+  }
+
+  @override
+  void didChangeMetrics() {
+    if (_radialMenu != null) _resetInput();
   }
 
   CanvasTouchSession? _canvasTouchSession;
@@ -376,6 +458,7 @@ class PointerListenerState extends State<PointerListener> {
   }
 
   void _resetInput() {
+    _dismissRadialMenu();
     _pasteHoldTimer?.cancel();
     if (_strokeTool == XppStrokeTool.ERASER) widget.onEraserEnd?.call();
     _drawingPointer = null;
@@ -408,6 +491,8 @@ class PointerListenerState extends State<PointerListener> {
       _hardwareButtonOwners.removeWhere((_, owner) => identical(owner, this));
     }
     if (oldWidget.selectionIdentity != widget.selectionIdentity) {
+      _pasteHoldTimer?.cancel();
+      _dismissRadialMenu();
       _clearSelection();
       _lassoPoints.clear();
       _dragMode = _SelectionDragMode.none;
@@ -424,6 +509,7 @@ class PointerListenerState extends State<PointerListener> {
       }
     }
     if (widget.readOnly && !oldWidget.readOnly) {
+      _dismissRadialMenu();
       _pasteHoldTimer?.cancel();
       _pastePosition = null;
       _drawingPointer = null;
@@ -501,10 +587,12 @@ class PointerListenerState extends State<PointerListener> {
             onPointerDown: _onPointerDown,
             onPointerUp: _onPointerUp,
             onPointerCancel: (data) {
+              if (!mounted || !_inputAttached) return;
               _pasteHoldTimer?.cancel();
               _touchPointers.remove(data.pointer);
               if (_touchPointers.isEmpty) _multipleTouches = false;
               if (_drawingPointer != data.pointer) return;
+              _dismissRadialMenu();
               if (_strokeTool == XppStrokeTool.ERASER) {
                 widget.onEraserEnd?.call();
               }
@@ -522,9 +610,6 @@ class PointerListenerState extends State<PointerListener> {
               _strokeTool = null;
             },
             onPointerSignal: (data) {
-              setState(() {
-                tool = getToolFromPointer(data);
-              });
               widget.onDeviceChange?.call(device: data.device, kind: data.kind);
             },
             child: Stack(
@@ -769,6 +854,8 @@ class PointerListenerState extends State<PointerListener> {
   }
 
   void _onPointerDown(PointerDownEvent data) {
+    if (!mounted || !_inputAttached) return;
+    if (_radialMenu != null && data.pointer != _drawingPointer) return;
     CanvasTouchScope.of(context)?.observeTouch(data);
     if (data.kind == PointerDeviceKind.touch &&
         ((CanvasTouchScope.of(context)?.rejects(data) ?? false) ||
@@ -918,6 +1005,7 @@ class PointerListenerState extends State<PointerListener> {
   }
 
   void _onPointerMove(PointerMoveEvent data) {
+    if (!mounted || !_inputAttached) return;
     if (data.kind == PointerDeviceKind.touch) {
       final session = CanvasTouchScope.of(context);
       session?.observeTouch(data);
@@ -935,7 +1023,10 @@ class PointerListenerState extends State<PointerListener> {
         (data.position - _holdScreenPosition!).distance > kTouchSlop) {
       _pasteHoldTimer?.cancel();
     }
-    if (_longPressConsumed) return;
+    if (_longPressConsumed) {
+      _radialMenu?.update(data.position);
+      return;
+    }
     widget.onDeviceChange?.call(device: data.device, kind: data.kind);
     if (!drawingEnabled) return;
 
@@ -1014,6 +1105,7 @@ class PointerListenerState extends State<PointerListener> {
   }
 
   void _onPointerUp(PointerUpEvent data) {
+    if (!mounted || !_inputAttached) return;
     if (data.kind == PointerDeviceKind.touch &&
         (CanvasTouchScope.of(context)?.cancellationEpoch ?? 0) != _touchEpoch) {
       _cancelTouchInput(data.pointer);
@@ -1043,6 +1135,10 @@ class PointerListenerState extends State<PointerListener> {
       clearPoints();
       _heldButtonAction = null;
       _strokeTool = null;
+      final menu = _radialMenu;
+      _radialMenu = null;
+      if (menu != null) _canvasTouchSession?.stylusMenuActive = false;
+      menu?.finish(data.position);
       return;
     }
 
@@ -1091,15 +1187,7 @@ class PointerListenerState extends State<PointerListener> {
   Offset _canvasPoint(PointerEvent data) =>
       data.localPosition + widget.canvasOrigin;
 
-  bool _isShapeTool(EditingTool? editingTool) =>
-      editingTool == EditingTool.SHAPE_LINE ||
-      editingTool == EditingTool.SHAPE_RECT ||
-      editingTool == EditingTool.SHAPE_CIRCLE ||
-      editingTool == EditingTool.SHAPE_SQUARE ||
-      editingTool == EditingTool.SHAPE_DASHED_LINE ||
-      editingTool == EditingTool.SHAPE_CUBE ||
-      editingTool == EditingTool.SHAPE_CYLINDER ||
-      editingTool == EditingTool.SHAPE_SPHERE;
+  bool _isShapeTool(EditingTool? editingTool) => editingTool?.isShape ?? false;
 
   void _addDrawingPoint(PointerEvent data, XppStrokeTool currentTool) {
     double baseWidth = currentTool == XppStrokeTool.HIGHLIGHTER
@@ -1115,6 +1203,7 @@ class PointerListenerState extends State<PointerListener> {
       maximum: data.pressureMax,
     );
     if (points.isEmpty) {
+      _strokePressureEnabled = widget.penPressureEnabled;
       _widthsAreDiameters =
           currentTool == XppStrokeTool.PEN &&
           !_isShapeTool(widget.toolData[PointerDeviceKind.stylus]);
@@ -1130,7 +1219,9 @@ class PointerListenerState extends State<PointerListener> {
     );
     _legacyShapeWidths?.add(legacyWidth);
     double dynamicThickness = _widthsAreDiameters
-        ? pressurePenDiameter(baseWidth, pressure)
+        ? (_strokePressureEnabled
+              ? pressurePenDiameter(baseWidth, pressure)
+              : baseWidth)
         : legacyWidth;
 
     if (currentTool == XppStrokeTool.HIGHLIGHTER) {
@@ -1333,6 +1424,13 @@ class PointerListenerState extends State<PointerListener> {
 
           if (currentStylusTool == EditingTool.SHAPE_DASHED_LINE) {
             _commitDashedLine(start, end, width, currentTool);
+            return;
+          }
+
+          if (currentStylusTool == EditingTool.SHAPE_AXES) {
+            for (final segment in cartesianAxes(start, end)) {
+              _emitPolyline(segment, width, currentTool);
+            }
             return;
           }
 
@@ -1569,14 +1667,7 @@ class PointerListenerState extends State<PointerListener> {
     final currentTool = widget.toolData[data.kind];
     return (hasKind &&
             (currentTool == EditingTool.STYLUS ||
-                currentTool == EditingTool.SHAPE_LINE ||
-                currentTool == EditingTool.SHAPE_RECT ||
-                currentTool == EditingTool.SHAPE_CIRCLE ||
-                currentTool == EditingTool.SHAPE_SQUARE ||
-                currentTool == EditingTool.SHAPE_DASHED_LINE ||
-                currentTool == EditingTool.SHAPE_CUBE ||
-                currentTool == EditingTool.SHAPE_CYLINDER ||
-                currentTool == EditingTool.SHAPE_SPHERE)) ||
+                (currentTool?.isShape ?? false))) ||
         (!hasKind && data.kind == PointerDeviceKind.stylus);
   }
 
@@ -1756,7 +1847,12 @@ class _ShapePreviewPainter extends CustomPainter {
     final start = Offset(points.first.x!, points.first.y!);
     final end = Offset(points.last.x!, points.last.y!);
 
-    if (tool == EditingTool.SHAPE_LINE) {
+    if (tool == EditingTool.SHAPE_AXES) {
+      for (final segment in cartesianAxes(start, end)) {
+        final path = Path()..addPolygon(segment, false);
+        canvas.drawPath(path, paint);
+      }
+    } else if (tool == EditingTool.SHAPE_LINE) {
       canvas.drawLine(start, end, paint);
     } else if (tool == EditingTool.SHAPE_RECT ||
         tool == EditingTool.SHAPE_SQUARE) {

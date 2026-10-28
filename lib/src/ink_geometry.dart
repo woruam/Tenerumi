@@ -44,6 +44,9 @@ class InkGeometry {
   }) {
     final radius = inkRadius(width, pressureSensitive: pressureSensitive);
     final previous = _previous;
+    // Keep input samples in the stroke, but do not tessellate identical discs
+    // repeatedly when a high-frequency pen is stationary or quantized.
+    if (position == previous && radius == _previousRadius) return;
     if (previous != null && position != previous) {
       final delta = position - previous;
       final normal = Offset(-delta.dy, delta.dx) / delta.distance;

@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
+
+import 'ZoomableWidget.dart';
+
 import 'package:provider/provider.dart';
 
 import 'package:xournalpp/controllers/workspace_controller.dart';
+
 import 'split_resize_scope.dart';
 
 /// Vista affiancata (split-screen) in stile "Nothing OS".
@@ -40,21 +45,24 @@ class _SplitScreenViewState extends State<SplitScreenView> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final bool horizontal = constraints.maxWidth >= constraints.maxHeight;
-        final double total =
-            horizontal ? constraints.maxWidth : constraints.maxHeight;
+        final double total = horizontal
+            ? constraints.maxWidth
+            : constraints.maxHeight;
         final double available = total - _thickness;
         final double primarySize = available <= 0 ? 0.0 : available * r;
 
         final Widget divider = _DragDivider(
-          onResize: (value) => setState(() => _resizing = value),
+          onResize: (value) {
+            if (_resizing != value) setState(() => _resizing = value);
+          },
           horizontal: horizontal,
           thickness: _thickness,
           onDelta: (delta) {
             if (available <= 0) return;
             // setDivider applica internamente il clamp 0.2..0.8
-            context
-                .read<WorkspaceController>()
-                .setDivider(ws.dividerRatio + delta / available);
+            context.read<WorkspaceController>().setDivider(
+              ws.dividerRatio + delta / available,
+            );
           },
           onDoubleTap: () =>
               context.read<WorkspaceController>().setDivider(0.5),
@@ -65,20 +73,26 @@ class _SplitScreenViewState extends State<SplitScreenView> {
 
         if (horizontal) {
           return SplitResizeScope(
-              resizing: _resizing,
-              child: Row(children: [
+            resizing: _resizing,
+            child: Row(
+              children: [
                 SizedBox(width: primarySize, child: primary),
                 divider,
                 Expanded(child: secondary),
-              ]));
+              ],
+            ),
+          );
         }
         return SplitResizeScope(
-            resizing: _resizing,
-            child: Column(children: [
+          resizing: _resizing,
+          child: Column(
+            children: [
               SizedBox(height: primarySize, child: primary),
               divider,
               Expanded(child: secondary),
-            ]));
+            ],
+          ),
+        );
       },
     );
   }
@@ -107,64 +121,143 @@ class _DragDivider extends StatefulWidget {
   State<_DragDivider> createState() => _DragDividerState();
 }
 
-class _DragDividerState extends State<_DragDivider> {
+class _DragDividerState extends State<_DragDivider>
+    with WidgetsBindingObserver {
   bool _active = false;
+  bool _gestureAccepted = false;
+  int? _pointer;
+  PointerEvent? _lastEvent;
+  final Set<int> _contacts = {};
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  void _cancelResize() {
+    _gestureAccepted = false;
+    _pointer = null;
+    if (_active) setState(() => _active = false);
+    widget.onResize(false);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) {
+      _contacts.clear();
+      _cancelResize();
+    }
+  }
+
+  void _down(PointerDownEvent event) {
+    _lastEvent = event;
+    _contacts.add(event.pointer);
+    if (_contacts.length != 1 || CanvasTouchSession.rejectsNavigation(event)) {
+      _cancelResize();
+      return;
+    }
+    _pointer = event.pointer;
+    _gestureAccepted = true;
+    widget.onResize(true);
+  }
+
+  void _move(PointerMoveEvent event) {
+    if (_pointer == event.pointer &&
+        CanvasTouchSession.rejectsNavigation(event)) {
+      _cancelResize();
+    }
+  }
+
+  void _end(PointerEvent event) {
+    _contacts.remove(event.pointer);
+    if (_pointer == event.pointer) {
+      _pointer = null;
+      if (_active) setState(() => _active = false);
+      widget.onResize(false);
+    }
+  }
+
+  void _startDrag() {
+    if (_gestureAccepted && _pointer != null) setState(() => _active = true);
+  }
+
+  void _delta(double delta) {
+    if (_gestureAccepted && _pointer != null) widget.onDelta(delta);
+  }
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final Color handleColor =
-        _active ? cs.primary : Colors.grey.withOpacity(0.45);
+    final Color handleColor = _active
+        ? cs.primary
+        : Colors.grey.withOpacity(0.45);
 
     return MouseRegion(
       cursor: widget.horizontal
           ? SystemMouseCursors.resizeColumn
           : SystemMouseCursors.resizeRow,
       child: Listener(
-          onPointerDown: (_) => widget.onResize(true),
-          onPointerUp: (_) => widget.onResize(false),
-          onPointerCancel: (_) => widget.onResize(false),
-          child: GestureDetector(
-            key: const ValueKey('split-divider'),
-            behavior: HitTestBehavior.opaque,
-            onDoubleTap: widget.onDoubleTap,
-            onHorizontalDragStart: widget.horizontal
-                ? (_) => setState(() => _active = true)
-                : null,
-            onHorizontalDragEnd: widget.horizontal
-                ? (_) => setState(() => _active = false)
-                : null,
-            onHorizontalDragCancel: widget.horizontal
-                ? () {
-                    setState(() => _active = false);
-                    widget.onResize(false);
-                  }
-                : null,
-            onHorizontalDragUpdate:
-                widget.horizontal ? (d) => widget.onDelta(d.delta.dx) : null,
-            onVerticalDragStart: widget.horizontal
-                ? null
-                : (_) => setState(() => _active = true),
-            onVerticalDragEnd: widget.horizontal
-                ? null
-                : (_) => setState(() => _active = false),
-            onVerticalDragCancel: widget.horizontal
-                ? null
-                : () {
-                    setState(() => _active = false);
-                    widget.onResize(false);
-                  },
-            onVerticalDragUpdate:
-                widget.horizontal ? null : (d) => widget.onDelta(d.delta.dy),
-            child: Container(
-              width: widget.horizontal ? widget.thickness : double.infinity,
-              height: widget.horizontal ? double.infinity : widget.thickness,
-              color: Colors.black,
-              alignment: Alignment.center,
-              child: _DotMatrixHandle(
-                  horizontal: widget.horizontal, color: handleColor),
+        onPointerDown: _down,
+        onPointerMove: _move,
+        onPointerUp: _end,
+        onPointerCancel: (event) {
+          _contacts.remove(event.pointer);
+          _cancelResize();
+        },
+        child: GestureDetector(
+          key: const ValueKey('split-divider'),
+          behavior: HitTestBehavior.opaque,
+          onDoubleTap: () {
+            if (_gestureAccepted &&
+                _lastEvent != null &&
+                !CanvasTouchSession.rejectsNavigation(_lastEvent!))
+              widget.onDoubleTap();
+          },
+          onHorizontalDragStart: widget.horizontal ? (_) => _startDrag() : null,
+          onHorizontalDragEnd: widget.horizontal
+              ? (_) => setState(() => _active = false)
+              : null,
+          onHorizontalDragCancel: widget.horizontal
+              ? () {
+                  setState(() => _active = false);
+                  widget.onResize(false);
+                }
+              : null,
+          onHorizontalDragUpdate: widget.horizontal
+              ? (d) => _delta(d.delta.dx)
+              : null,
+          onVerticalDragStart: widget.horizontal ? null : (_) => _startDrag(),
+          onVerticalDragEnd: widget.horizontal
+              ? null
+              : (_) => setState(() => _active = false),
+          onVerticalDragCancel: widget.horizontal
+              ? null
+              : () {
+                  setState(() => _active = false);
+                  widget.onResize(false);
+                },
+          onVerticalDragUpdate: widget.horizontal
+              ? null
+              : (d) => _delta(d.delta.dy),
+          child: Container(
+            width: widget.horizontal ? widget.thickness : double.infinity,
+            height: widget.horizontal ? double.infinity : widget.thickness,
+            color: Colors.black,
+            alignment: Alignment.center,
+            child: _DotMatrixHandle(
+              horizontal: widget.horizontal,
+              color: handleColor,
             ),
-          )),
+          ),
+        ),
+      ),
     );
   }
 }

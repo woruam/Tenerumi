@@ -1,3 +1,5 @@
+import 'stylus_menu_settings.dart';
+import 'delete_page_dialog.dart';
 import 'note_audio_panel.dart';
 import 'note_flashcards_panel.dart';
 
@@ -132,11 +134,32 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
               ctrl.exportToXopp(context);
             } else if (action == 'export-pdf') {
               ctrl.exportToPdf(context);
+            } else if (action == 'delete-page') {
+              requestDeleteCurrentPage(context, ctrl);
             } else if (action == 'open') {
               onOpenFile?.call();
+            } else if (action == 'stylus-menu') {
+              showStylusMenuSettings(context, context.read<ThemeController>());
             }
           },
           itemBuilder: (_) => [
+            const PopupMenuItem(
+              value: 'stylus-menu',
+              child: ListTile(
+                leading: Icon(Icons.touch_app_outlined),
+                title: Text('Menù circolare della penna'),
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
+            PopupMenuItem(
+              value: 'delete-page',
+              enabled: ctrl.canDeletePage,
+              child: const ListTile(
+                leading: Icon(Icons.delete_outline),
+                title: Text('Elimina pagina corrente'),
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
             PopupMenuItem(
               value: 'save',
               enabled: !ctrl.savingFile,

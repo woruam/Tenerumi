@@ -1,3 +1,5 @@
+import 'package:xournalpp/src/app_brand.dart';
+
 import 'dart:math' as math;
 
 import 'package:crypto/crypto.dart';
@@ -368,7 +370,10 @@ Future<PreparedPdf> prepareNotesPdf(
 /// PNG decoding, PDF image compression and final document encoding are CPU
 /// work and must not block gesture/input frames. Only portable data crosses.
 Future<Uint8List> _assemblePdf(Map<String, Object?> input) async {
-  final pdf = pw.Document(title: input['title'] as String?, creator: 'OSI');
+  final pdf = pw.Document(
+    title: input['title'] as String?,
+    creator: AppBrand.name,
+  );
   final fonts = {
     for (final entry in (input['fonts'] as Map<String, Uint8List>).entries)
       entry.key: pw.Font.ttf(ByteData.sublistView(entry.value)),

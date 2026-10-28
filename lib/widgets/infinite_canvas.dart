@@ -1,3 +1,6 @@
+import 'package:provider/provider.dart';
+import 'package:xournalpp/controllers/theme_controller.dart';
+
 import 'note_flashcards_panel.dart';
 
 import 'package:xournalpp/layer_contents/XppImage.dart';
@@ -149,7 +152,10 @@ class _InfiniteCanvasState extends State<InfiniteCanvas> {
                     _anchor = widget.transform.toScene(details.localFocalPoint);
                   };
                   instance.onUpdate = (details) {
-                    if (_suppressed || (_touch.penNear && !_gesturePen)) return;
+                    if (_suppressed ||
+                        _touch.stylusMenuActive ||
+                        (_touch.penNear && !_gesturePen))
+                      return;
                     if (details.pointerCount != _gesturePointers) {
                       _gesturePointers = details.pointerCount;
                       _pinched |= details.pointerCount >= 2;
@@ -181,6 +187,7 @@ class _InfiniteCanvasState extends State<InfiniteCanvas> {
               animation: widget.transform,
               builder: (context, _) {
                 final ctrl = widget.canvas;
+                final appearance = context.watch<ThemeController?>();
                 final scale = widget.transform.value.getMaxScaleOnAxis();
                 final origin = widget.transform.toScene(Offset.zero);
                 final size = constraints.biggest / scale;
@@ -221,6 +228,15 @@ class _InfiniteCanvasState extends State<InfiniteCanvas> {
                           highlighterWidth: ctrl.highlighterWidth,
                           highlighterColor: ctrl.highlighterColor,
                           eraserWidth: ctrl.eraserWidth,
+                          penPressureEnabled: ctrl.penPressureEnabled,
+                          stylusShortcuts:
+                              appearance?.stylusShortcuts ??
+                              ctrl.stylusShortcuts,
+                          stylusMenuHoldDelay: Duration(
+                            milliseconds:
+                                appearance?.stylusMenuHoldDelayMs ?? 1100,
+                          ),
+                          onStylusShortcut: ctrl.applyStylusShortcut,
                           shapeRecognition: ctrl.shapeRecognition,
                           buttonDownAction: ctrl.buttonDownAction,
                           stylusProfile: ctrl.stylusProfile,

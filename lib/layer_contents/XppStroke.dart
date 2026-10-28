@@ -154,6 +154,18 @@ abstract class XppStroke extends XppContent {
   @override
   void paintToCanvas(Canvas canvas, Size size) {
     if (points == null || points!.isEmpty) return;
+    // Cached sample bounds let dense pages skip offscreen ink before building
+    // or drawing its path. Smooth shapes keep their full spline bounds below.
+    if (!isShape || !smooth) {
+      final extrema = _sampleExtrema(points!);
+      final radius = isShape
+          ? extrema.shapeRadius
+          : tool == XppStrokeTool.PEN && !widthIsDiameter
+          ? extrema.penRadius
+          : extrema.flatRadius;
+      final localBounds = extrema.rect.inflate(radius).shift(-getOffset());
+      if (!localBounds.overlaps(canvas.getLocalClipBounds())) return;
+    }
     canvas.save();
     final offset = getOffset();
     final masked = erasures.isNotEmpty;

@@ -10,6 +10,7 @@ import 'globals.dart';
 import 'compat/file_picker_cross.dart';
 import 'autosave_store.dart';
 import 'critical_data.dart';
+import 'note_tags.dart';
 
 bool hasDocumentPreview(Object? value) {
   if (value is! String || value.isEmpty || value.length > 512 * 1024)
@@ -138,12 +139,17 @@ class RecentDocuments {
             ?.whereType<String>()
             .toList() ??
         prefs.getStringList(PreferencesKeys.kNoteTags);
-    final tags = [...?previousTags];
-    for (final value in backupTags) {
-      final tag = value.trim();
+    final tags = <String>[];
+    final seenTags = <String>{};
+    for (final value in [
+      ...?previousTags,
+      ...backupTags,
+      ...documents.map((d) => d.file.tag).whereType<String>(),
+    ]) {
+      final tag = NoteTags.normalize(value);
       if (tag.isNotEmpty &&
           tag.toLowerCase() != 'tutti' &&
-          !tags.any((t) => t.toLowerCase() == tag.toLowerCase())) {
+          seenTags.add(tag.toLowerCase())) {
         tags.add(tag);
       }
     }
@@ -164,9 +170,7 @@ class RecentDocuments {
         if (file.modifiedAt != null)
           'modifiedAt': file.modifiedAt!.toUtc().toIso8601String(),
       });
-    }
-    for (final entry in entries) {
-      await CriticalData.stageLibrary(entry);
+      await CriticalData.stageLibrary(entries.last);
     }
     await CriticalData.transaction((state) async {
       state[PreferencesKeys.kNoteTags] = {

@@ -1,3 +1,6 @@
+import 'package:xournalpp/src/app_brand.dart';
+import 'package:xournalpp/widgets/settings_section.dart';
+import 'package:xournalpp/widgets/stylus_menu_settings.dart';
 import 'package:xournalpp/src/workspace_session.dart';
 import 'package:xournalpp/src/note_tags.dart';
 import 'package:xournalpp/src/recent_documents.dart';
@@ -516,7 +519,7 @@ class _OpenPageState extends State<OpenPage> {
             return AlertDialog(
               backgroundColor: AppAppearance.panel,
               title: const Text(
-                'Settings',
+                'Impostazioni',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               content: SingleChildScrollView(
@@ -527,420 +530,459 @@ class _OpenPageState extends State<OpenPage> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (AppFeatures.manualBackup) ...[
-                        ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: const Icon(Icons.backup_outlined),
-                          title: const Text('Crea Backup'),
-                          subtitle: const Text(
-                            'Esporta gli appunti per un altro dispositivo',
-                          ),
-                          onTap: () async {
-                            Navigator.pop(context);
-                            await showNoteBackupDialog(
-                              this.context,
-                              restore: false,
-                            );
-                            if (mounted) await _loadRecentFiles();
-                          },
-                        ),
-                        ListTile(
-                          key: const ValueKey('restore-backup'),
-                          contentPadding: EdgeInsets.zero,
-                          leading: const Icon(Icons.restore_outlined),
-                          title: const Text('Ripristina Backup'),
-                          subtitle: const Text(
-                            'Carica gli appunti da un backup OSI',
-                          ),
-                          onTap: () async {
-                            Navigator.pop(context);
-                            await showNoteBackupDialog(
-                              this.context,
-                              restore: true,
-                            );
-                            if (mounted) await _loadRecentFiles();
-                          },
-                        ),
-                        const Divider(),
-                      ],
-                      SwitchListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: const Text('Disegna con le dita'),
-                        subtitle: const Text(
-                          'Un dito disegna; due dita spostano e ingrandiscono. Disattiva per ignorare il palmo.',
-                        ),
-                        value: touchDrawing,
-                        onChanged: (value) async {
-                          await prefs.setBool(
-                            PreferencesKeys.kTouchDrawing,
-                            value,
-                          );
-                          setDialogState(() => touchDrawing = value);
-                        },
-                      ),
-                      // ==========================================
-                      // SEZIONE TEMA
-                      // ==========================================
-                      SwitchListTile(
-                        key: const ValueKey('page-scrollbar-setting'),
-                        contentPadding: EdgeInsets.zero,
-                        title: const Text('Barra di scorrimento pagine'),
-                        subtitle: const Text(
-                          'Trascina la barra laterale per scorrere velocemente la nota.',
-                        ),
-                        value: theme.showPageScrollbar,
-                        onChanged: (value) {
-                          theme.setPageScrollbar(value);
-                          setDialogState(() {});
-                        },
-                      ),
-                      ListTile(
-                        key: const ValueKey('page-border-color-setting'),
-                        contentPadding: EdgeInsets.zero,
-                        title: const Text('Colore contorno pagina corrente'),
-                        trailing: Icon(
-                          Icons.circle,
-                          color: theme.currentPageBorderColor,
-                        ),
-                        onTap: () async {
-                          Color picked = theme.currentPageBorderColor;
-                          final apply = await showDialog<bool>(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: const Text('Contorno pagina corrente'),
-                              content: SingleChildScrollView(
-                                child: ColorPicker(
-                                  pickerColor: picked,
-                                  onColorChanged: (color) => picked = color,
-                                  enableAlpha: false,
-                                  labelTypes: const [],
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () =>
-                                      Navigator.pop(context, false),
-                                  child: const Text('Annulla'),
-                                ),
-                                FilledButton(
-                                  onPressed: () => Navigator.pop(context, true),
-                                  child: const Text('Applica'),
-                                ),
-                              ],
+                      SettingsSection(
+                        id: 'appearance',
+                        title: 'Aspetto',
+                        subtitle: 'Colori, sfondo e stile delle icone',
+                        icon: Icons.palette_outlined,
+                        children: [
+                          // Material You: usa i colori dello sfondo di Android.
+                          SwitchListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: const Text('Colori dinamici (Material You)'),
+                            subtitle: const Text(
+                              'Segue lo sfondo del telefono',
+                              style: TextStyle(fontSize: 12),
                             ),
-                          );
-                          if (apply == true) {
-                            await theme.setCurrentPageBorderColor(picked);
-                            if (context.mounted) setDialogState(() {});
-                          }
-                        },
-                      ),
-                      const Text(
-                        'TEMA',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      // Material You: usa i colori dello sfondo di Android.
-                      SwitchListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: const Text('Colori dinamici (Material You)'),
-                        subtitle: const Text(
-                          'Segue lo sfondo del telefono',
-                          style: TextStyle(fontSize: 12),
-                        ),
-                        value: theme.useDynamicColor,
-                        onChanged: (v) {
-                          theme.setDynamicColor(v);
-                          setDialogState(() {});
-                        },
-                      ),
-                      // Nero puro: sfondi #000 per schermi OLED.
-                      SwitchListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: const Text('Nero puro (OLED)'),
-                        subtitle: const Text(
-                          'Sfondi completamente neri',
-                          style: TextStyle(fontSize: 12),
-                        ),
-                        value: theme.pureBlack,
-                        onChanged: (v) {
-                          theme.setPureBlack(v);
-                          setDialogState(() {});
-                        },
-                      ),
-                      const SizedBox(height: 8),
-                      Opacity(
-                        opacity: theme.useDynamicColor ? 0.35 : 1,
-                        child: IgnorePointer(
-                          ignoring: theme.useDynamicColor,
-                          child: Wrap(
-                            spacing: 12,
-                            runSpacing: 12,
-                            children: [
-                              // Colori manuali predefiniti
-                              ...colors.map((color) {
-                                final bool sel =
-                                    !theme.useDynamicColor &&
-                                    theme.accent.value == color.value;
-                                return InkWell(
-                                  onTap: () {
-                                    theme.setAccent(color);
-                                    setDialogState(() {});
-                                  },
-                                  child: CircleAvatar(
-                                    backgroundColor: color,
-                                    radius: 22,
-                                    child: sel
-                                        ? Icon(
-                                            Icons.check,
-                                            color:
-                                                color.computeLuminance() > 0.5
-                                                ? Colors.black
-                                                : Colors.white,
-                                          )
-                                        : null,
-                                  ),
-                                );
-                              }).toList(),
-                              // Colore personalizzato: apre la ruota dei colori.
-                              InkWell(
-                                onTap: () async {
-                                  Color picked = theme.accent;
-                                  final bool? ok = await showDialog<bool>(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                      title: const Text(
-                                        'Colore personalizzato',
-                                      ),
-                                      content: SingleChildScrollView(
-                                        child: ColorPicker(
-                                          pickerColor: picked,
-                                          onColorChanged: (c) => picked = c,
-                                          enableAlpha: false,
-                                          labelTypes: const [],
-                                          pickerAreaBorderRadius:
-                                              BorderRadius.circular(12),
-                                        ),
-                                      ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context, false),
-                                          child: const Text('Annulla'),
-                                        ),
-                                        ElevatedButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context, true),
-                                          child: const Text('Applica'),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                  if (ok == true) {
-                                    theme.setAccent(picked);
-                                    setDialogState(() {});
-                                  }
-                                },
-                                child: Container(
-                                  width: 44,
-                                  height: 44,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    gradient: const SweepGradient(
-                                      colors: [
-                                        Colors.red,
-                                        Colors.orange,
-                                        Colors.yellow,
-                                        Colors.green,
-                                        Colors.cyan,
-                                        Colors.blue,
-                                        Colors.purple,
-                                        Colors.red,
-                                      ],
-                                    ),
-                                    border: Border.all(
-                                      color: cs.outline.withOpacity(0.4),
-                                    ),
-                                  ),
-                                  child: const Icon(
-                                    Icons.colorize,
-                                    size: 20,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16.0),
-                        child: Divider(),
-                      ),
-
-                      // ==========================================
-                      // SEZIONE ICONE
-                      // ==========================================
-                      const Text(
-                        'STILE ICONE',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: AppIconStyle.values.map((style) {
-                          final labels = ['Linea', 'Tonde', 'Nette'];
-                          return ChoiceChip(
-                            label: Text(labels[style.index]),
-                            selected: theme.iconStyle == style,
-                            onSelected: (_) {
-                              theme.setIconStyle(style);
+                            value: theme.useDynamicColor,
+                            onChanged: (v) {
+                              theme.setDynamicColor(v);
                               setDialogState(() {});
                             },
-                          );
-                        }).toList(),
-                      ),
-
-                      const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16.0),
-                        child: Divider(),
-                      ),
-
-                      // ==========================================
-                      // SEZIONE PENNA
-                      // ==========================================
-                      const Text(
-                        'PENNA (Tasti Fisici)',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-
-                      DropdownButton<StylusProfile>(
-                        key: const ValueKey('stylus-profile-setting'),
-                        isExpanded: true,
-                        value: stylusProfile,
-                        items: const [
-                          DropdownMenuItem(
-                            value: StylusProfile.automatic,
-                            child: Text('Automatica (1 o 2 tasti)'),
                           ),
-                          DropdownMenuItem(
-                            value: StylusProfile.singleButton,
-                            child: Text('Un tasto (S Pen e simili)'),
+                          // Nero puro: sfondi #000 per schermi OLED.
+                          SwitchListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: const Text('Nero puro (OLED)'),
+                            subtitle: const Text(
+                              'Sfondi completamente neri',
+                              style: TextStyle(fontSize: 12),
+                            ),
+                            value: theme.pureBlack,
+                            onChanged: (v) {
+                              theme.setPureBlack(v);
+                              setDialogState(() {});
+                            },
                           ),
-                          DropdownMenuItem(
-                            value: StylusProfile.twoButtons,
-                            child: Text('Due tasti (Redmi Pen e simili)'),
+                          const SizedBox(height: 8),
+                          Opacity(
+                            opacity: theme.useDynamicColor ? 0.35 : 1,
+                            child: IgnorePointer(
+                              ignoring: theme.useDynamicColor,
+                              child: Wrap(
+                                spacing: 12,
+                                runSpacing: 12,
+                                children: [
+                                  // Colori manuali predefiniti
+                                  ...colors.map((color) {
+                                    final bool sel =
+                                        !theme.useDynamicColor &&
+                                        theme.accent.value == color.value;
+                                    return InkWell(
+                                      onTap: () {
+                                        theme.setAccent(color);
+                                        setDialogState(() {});
+                                      },
+                                      child: CircleAvatar(
+                                        backgroundColor: color,
+                                        radius: 22,
+                                        child: sel
+                                            ? Icon(
+                                                Icons.check,
+                                                color:
+                                                    color.computeLuminance() >
+                                                        0.5
+                                                    ? Colors.black
+                                                    : Colors.white,
+                                              )
+                                            : null,
+                                      ),
+                                    );
+                                  }).toList(),
+                                  // Colore personalizzato: apre la ruota dei colori.
+                                  InkWell(
+                                    onTap: () async {
+                                      Color picked = theme.accent;
+                                      final bool? ok = await showDialog<bool>(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                          title: const Text(
+                                            'Colore personalizzato',
+                                          ),
+                                          content: SingleChildScrollView(
+                                            child: ColorPicker(
+                                              pickerColor: picked,
+                                              onColorChanged: (c) => picked = c,
+                                              enableAlpha: false,
+                                              labelTypes: const [],
+                                              pickerAreaBorderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(context, false),
+                                              child: const Text('Annulla'),
+                                            ),
+                                            ElevatedButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(context, true),
+                                              child: const Text('Applica'),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                      if (ok == true) {
+                                        theme.setAccent(picked);
+                                        setDialogState(() {});
+                                      }
+                                    },
+                                    child: Container(
+                                      width: 44,
+                                      height: 44,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        gradient: const SweepGradient(
+                                          colors: [
+                                            Colors.red,
+                                            Colors.orange,
+                                            Colors.yellow,
+                                            Colors.green,
+                                            Colors.cyan,
+                                            Colors.blue,
+                                            Colors.purple,
+                                            Colors.red,
+                                          ],
+                                        ),
+                                        border: Border.all(
+                                          color: cs.outline.withOpacity(0.4),
+                                        ),
+                                      ),
+                                      child: const Icon(
+                                        Icons.colorize,
+                                        size: 20,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          const Text(
+                            'Stile delle icone',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: AppIconStyle.values.map((style) {
+                              final labels = ['Linea', 'Tonde', 'Nette'];
+                              return ChoiceChip(
+                                label: Text(labels[style.index]),
+                                selected: theme.iconStyle == style,
+                                onSelected: (_) {
+                                  theme.setIconStyle(style);
+                                  setDialogState(() {});
+                                },
+                              );
+                            }).toList(),
                           ),
                         ],
-                        onChanged: (value) async {
-                          if (value == null) return;
-                          await prefs.setString(
-                            StylusProfile.preferenceKey,
-                            value.name,
-                          );
-                          if (context.mounted)
-                            setDialogState(() => stylusProfile = value);
-                        },
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        stylusProfile == StylusProfile.singleButton
-                            ? 'Tasto laterale'
-                            : 'Tasto 1 (principale / vicino alla punta)',
-                        style: TextStyle(fontSize: 14),
-                      ),
-                      DropdownButton<String>(
-                        isExpanded: true,
-                        value: buttonDown,
-                        items: const [
-                          DropdownMenuItem(
-                            value: 'eraser',
-                            child: Text('Gomma'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'select',
-                            child: Text('Lazo'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'highlighter',
-                            child: Text('Evidenziatore'),
-                          ),
-                        ],
-                        onChanged: (v) {
-                          if (v != null) {
-                            setDialogState(() => buttonDown = v);
-                            prefs.setString(
-                              'buttonDownAction',
-                              v,
-                            ); // Salva in memoria!
-                          }
-                        },
-                      ),
-
-                      if (stylusProfile.supportsSecondaryButton) ...[
-                        const SizedBox(height: 16),
-
-                        const Text(
-                          'Tasto 2 (secondario / superiore)',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        DropdownButton<String>(
-                          isExpanded: true,
-                          value: buttonUp,
-                          items: const [
-                            DropdownMenuItem(
-                              value: 'eraser',
-                              child: Text('Gomma'),
+                      SettingsSection(
+                        id: 'pen',
+                        title: 'Penna e gesti',
+                        subtitle: 'Menù circolare, tasti e disegno con le dita',
+                        icon: Icons.edit_outlined,
+                        children: [
+                          ListTile(
+                            key: const ValueKey('stylus-menu-settings'),
+                            contentPadding: EdgeInsets.zero,
+                            leading: const Icon(Icons.touch_app_outlined),
+                            title: const Text('Menù circolare della penna'),
+                            subtitle: const Text(
+                              'Tempo di apertura e cinque scorciatoie personalizzabili',
                             ),
-                            DropdownMenuItem(
-                              value: 'select',
-                              child: Text('Lazo'),
+                            onTap: () async {
+                              await showStylusMenuSettings(context, theme);
+                              if (context.mounted) setDialogState(() {});
+                            },
+                          ),
+                          SwitchListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: const Text('Disegna con le dita'),
+                            subtitle: const Text(
+                              'Un dito disegna; due dita spostano e ingrandiscono. Disattiva per ignorare il palmo.',
                             ),
-                            DropdownMenuItem(
-                              value: 'highlighter',
-                              child: Text('Evidenziatore'),
+                            value: touchDrawing,
+                            onChanged: (value) async {
+                              await prefs.setBool(
+                                PreferencesKeys.kTouchDrawing,
+                                value,
+                              );
+                              if (context.mounted)
+                                setDialogState(() => touchDrawing = value);
+                            },
+                          ),
+                          const Text(
+                            'Tasti della penna',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+
+                          DropdownButton<StylusProfile>(
+                            key: const ValueKey('stylus-profile-setting'),
+                            isExpanded: true,
+                            value: stylusProfile,
+                            items: const [
+                              DropdownMenuItem(
+                                value: StylusProfile.automatic,
+                                child: Text('Automatica (1 o 2 tasti)'),
+                              ),
+                              DropdownMenuItem(
+                                value: StylusProfile.singleButton,
+                                child: Text('Un tasto (S Pen e simili)'),
+                              ),
+                              DropdownMenuItem(
+                                value: StylusProfile.twoButtons,
+                                child: Text('Due tasti (Redmi Pen e simili)'),
+                              ),
+                            ],
+                            onChanged: (value) async {
+                              if (value == null) return;
+                              await prefs.setString(
+                                StylusProfile.preferenceKey,
+                                value.name,
+                              );
+                              if (context.mounted)
+                                setDialogState(() => stylusProfile = value);
+                            },
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            stylusProfile == StylusProfile.singleButton
+                                ? 'Tasto laterale'
+                                : 'Tasto 1 (principale / vicino alla punta)',
+                            style: TextStyle(fontSize: 14),
+                          ),
+                          DropdownButton<String>(
+                            isExpanded: true,
+                            value: buttonDown,
+                            items: const [
+                              DropdownMenuItem(
+                                value: 'eraser',
+                                child: Text('Gomma'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'select',
+                                child: Text('Lazo'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'highlighter',
+                                child: Text('Evidenziatore'),
+                              ),
+                            ],
+                            onChanged: (v) {
+                              if (v != null) {
+                                setDialogState(() => buttonDown = v);
+                                prefs.setString(
+                                  'buttonDownAction',
+                                  v,
+                                ); // Salva in memoria!
+                              }
+                            },
+                          ),
+
+                          if (stylusProfile.supportsSecondaryButton) ...[
+                            const SizedBox(height: 16),
+
+                            const Text(
+                              'Tasto 2 (secondario / superiore)',
+                              style: TextStyle(fontSize: 14),
+                            ),
+                            DropdownButton<String>(
+                              isExpanded: true,
+                              value: buttonUp,
+                              items: const [
+                                DropdownMenuItem(
+                                  value: 'eraser',
+                                  child: Text('Gomma'),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'select',
+                                  child: Text('Lazo'),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'highlighter',
+                                  child: Text('Evidenziatore'),
+                                ),
+                              ],
+                              onChanged: (v) {
+                                if (v != null) {
+                                  setDialogState(() => buttonUp = v);
+                                  prefs.setString(
+                                    'buttonUpAction',
+                                    v,
+                                  ); // Salva in memoria!
+                                }
+                              },
                             ),
                           ],
-                          onChanged: (v) {
-                            if (v != null) {
-                              setDialogState(() => buttonUp = v);
-                              prefs.setString(
-                                'buttonUpAction',
-                                v,
-                              ); // Salva in memoria!
-                            }
-                          },
+                          const SizedBox(height: 8),
+                          Text(
+                            stylusProfile.usesTemporaryButton
+                                ? 'Tieni premuto il tasto prima di toccare il foglio per usare '
+                                      'l’azione nel tratto. Rilascialo per tornare allo strumento scelto '
+                                      'dal tratto successivo. Le funzioni a distanza e Air Actions non sono incluse.'
+                                : 'Suggerimento: tieni premuto il tasto mentre scrivi per usare '
+                                      'l\'azione solo in quel tratto, oppure premilo mentre la penna '
+                                      'e\' sollevata (in hover) per attivare/disattivare l\'azione. '
+                                      'Il secondo tasto viene usato solo se la penna lo possiede.',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade500,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SettingsSection(
+                        id: 'pages',
+                        title: 'Pagine e navigazione',
+                        subtitle: 'Scorrimento e contorno del foglio',
+                        icon: Icons.description_outlined,
+                        children: [
+                          SwitchListTile(
+                            key: const ValueKey('page-scrollbar-setting'),
+                            contentPadding: EdgeInsets.zero,
+                            title: const Text('Barra di scorrimento pagine'),
+                            subtitle: const Text(
+                              'Trascina la barra laterale per scorrere velocemente la nota.',
+                            ),
+                            value: theme.showPageScrollbar,
+                            onChanged: (value) {
+                              theme.setPageScrollbar(value);
+                              setDialogState(() {});
+                            },
+                          ),
+                          ListTile(
+                            key: const ValueKey('page-border-color-setting'),
+                            contentPadding: EdgeInsets.zero,
+                            title: const Text(
+                              'Colore contorno pagina corrente',
+                            ),
+                            trailing: Icon(
+                              Icons.circle,
+                              color: theme.currentPageBorderColor,
+                            ),
+                            onTap: () async {
+                              Color picked = theme.currentPageBorderColor;
+                              final apply = await showDialog<bool>(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text('Contorno pagina corrente'),
+                                  content: SingleChildScrollView(
+                                    child: ColorPicker(
+                                      pickerColor: picked,
+                                      onColorChanged: (color) => picked = color,
+                                      enableAlpha: false,
+                                      labelTypes: const [],
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context, false),
+                                      child: const Text('Annulla'),
+                                    ),
+                                    FilledButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context, true),
+                                      child: const Text('Applica'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                              if (apply == true) {
+                                await theme.setCurrentPageBorderColor(picked);
+                                if (context.mounted) setDialogState(() {});
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                      if (AppFeatures.manualBackup)
+                        SettingsSection(
+                          id: 'backup',
+                          title: 'Backup e ripristino',
+                          subtitle: 'Esporta o importa gli appunti',
+                          icon: Icons.backup_outlined,
+                          children: [
+                            ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              leading: const Icon(Icons.backup_outlined),
+                              title: const Text('Crea Backup'),
+                              subtitle: const Text(
+                                'Esporta gli appunti per un altro dispositivo',
+                              ),
+                              onTap: () async {
+                                Navigator.pop(context);
+                                await showNoteBackupDialog(
+                                  this.context,
+                                  restore: false,
+                                );
+                                if (mounted) await _loadRecentFiles();
+                              },
+                            ),
+                            ListTile(
+                              key: const ValueKey('restore-backup'),
+                              contentPadding: EdgeInsets.zero,
+                              leading: const Icon(Icons.restore_outlined),
+                              title: const Text('Ripristina Backup'),
+                              subtitle: const Text(
+                                'Carica gli appunti da un backup Tenerumi o OSI',
+                              ),
+                              onTap: () async {
+                                Navigator.pop(context);
+                                await showNoteBackupDialog(
+                                  this.context,
+                                  restore: true,
+                                );
+                                if (mounted) await _loadRecentFiles();
+                              },
+                            ),
+                          ],
                         ),
-                      ],
-                      const SizedBox(height: 8),
-                      Text(
-                        stylusProfile.usesTemporaryButton
-                            ? 'Tieni premuto il tasto prima di toccare il foglio per usare '
-                                  'l’azione nel tratto. Rilascialo per tornare allo strumento scelto '
-                                  'dal tratto successivo. Le funzioni a distanza e Air Actions non sono incluse.'
-                            : 'Suggerimento: tieni premuto il tasto mentre scrivi per usare '
-                                  'l\'azione solo in quel tratto, oppure premilo mentre la penna '
-                                  'e\' sollevata (in hover) per attivare/disattivare l\'azione. '
-                                  'Il secondo tasto viene usato solo se la penna lo possiede.',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade500,
-                        ),
+                      SettingsSection(
+                        id: 'about',
+                        title: 'Informazioni',
+                        subtitle: 'Versione, licenze e progetto',
+                        icon: Icons.info_outline,
+                        children: [
+                          ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: Image.asset(
+                              AppBrand.logo,
+                              width: 40,
+                              height: 40,
+                              cacheWidth: 120,
+                            ),
+                            title: const Text('Informazioni su Tenerumi'),
+                            trailing: const Icon(Icons.chevron_right),
+                            onTap: () => showTenerumiAppInfo(context),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -970,7 +1012,20 @@ class _OpenPageState extends State<OpenPage> {
     return Scaffold(
       // --- 1. APPBAR ---
       appBar: AppBar(
-        title: const Text('OSI', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(AppBrand.logo, width: 32, height: 32, cacheWidth: 96),
+            const SizedBox(width: 8),
+            const Flexible(
+              child: Text(
+                AppBrand.name,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
         centerTitle: false,
         actions: [
           if (AppFeatures.plugins)
@@ -1012,14 +1067,15 @@ class _OpenPageState extends State<OpenPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Icon(
-                    Icons.book,
-                    size: 48,
-                    color: Theme.of(context).colorScheme.primary,
+                  Image.asset(
+                    AppBrand.logo,
+                    width: 56,
+                    height: 56,
+                    cacheWidth: 168,
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    'OSI',
+                    AppBrand.name,
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -1030,7 +1086,7 @@ class _OpenPageState extends State<OpenPage> {
               title: const Text('Info App'),
               onTap: () {
                 Navigator.pop(context);
-                showOsiAppInfo(context);
+                showTenerumiAppInfo(context);
               },
             ),
           ],

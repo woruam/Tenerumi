@@ -15,14 +15,20 @@ import io.flutter.plugin.common.MethodChannel
 import java.io.File
 import java.io.FileOutputStream
 import org.json.JSONObject
+import org.json.JSONArray
 import android.os.Handler
 import android.os.Looper
 import java.util.concurrent.Executors
 
-/** One microphone/player, disk-backed AAC, no PCM buffers or pointer-event hooks. */
+/** Disk-backed AAC capture; bounded cleanup runs separately from the next segment. */
 class NoteAudio(private val activity: MainActivity, messenger: BinaryMessenger) {
     private val channel = MethodChannel(messenger, "online.xournal.mobile/audio")
-    private val worker = Executors.newSingleThreadExecutor()
+    private val worker = Executors.newSingleThreadExecutor { task ->
+        Thread({ android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND); task.run() }, "osi-audio-files")
+    }
+    private val cleanupWorker = Executors.newSingleThreadExecutor { task ->
+        Thread({ android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND); task.run() }, "osi-audio-cleanup")
+    }
     private var recorder: MediaRecorder? = null
     private var player: MediaPlayer? = null
     private var playerPrepared = false
@@ -51,6 +57,16 @@ class NoteAudio(private val activity: MainActivity, messenger: BinaryMessenger) 
     private val segmentHandler = Handler(Looper.getMainLooper())
     private var noteId = ""
     private var recordingId = ""
+    private var reduceNoise = true
+    private var reduceTaps = true
+    private var startedUptime = 0L
+    private val tapTimes = mutableListOf<Int>()
+    fun stylusContact(eventUptime: Long) {
+        if (recorder == null || !reduceTaps || tapTimes.size >= 256) return
+        val elapsed = eventUptime - startedUptime
+        if (elapsed >= 0 && elapsed <= 120 * 60 * 1000 &&
+            (tapTimes.lastOrNull()?.let { elapsed - it >= 10 } ?: true)) tapTimes.add(elapsed.toInt())
+    }
     private fun safeId(value: String) = value.matches(Regex("^[a-zA-Z0-9_-]{1,100}$"))
     private fun noteDirectory(id: String): File {
         require(safeId(id)) { "Invalid note identity" }
@@ -60,6 +76,8 @@ class NoteAudio(private val activity: MainActivity, messenger: BinaryMessenger) 
     private fun writeManifest(file: File, state: String, duration: Int = 0) {
         val data = JSONObject().put("schema", 1).put("noteId", file.parentFile!!.name)
             .put("id", file.nameWithoutExtension).put("state", state).put("duration", duration)
+            .put("reduceNoise", reduceNoise).put("reduceTaps", reduceTaps)
+            .put("tapTimes", JSONArray(tapTimes))
         val target = manifest(file)
         val temporary = File(target.path + ".tmp")
         FileOutputStream(temporary).use { it.write(data.toString().toByteArray(Charsets.UTF_8)); it.fd.sync() }
@@ -81,7 +99,7 @@ class NoteAudio(private val activity: MainActivity, messenger: BinaryMessenger) 
     init {
         // Only playback cache is disposable. Unacknowledged microphone segments
         // are kept in filesDir, including evidence of unfinalized interruption.
-        activity.cacheDir.listFiles()?.filter { it.name.startsWith("osi-audio-play-") }?.forEach { it.delete() }
+        activity.cacheDir.listFiles()?.filter { it.name.startsWith("osi-audio-play-") || it.name.startsWith("osi-audio-clean-") }?.forEach { it.delete() }
         channel.setMethodCallHandler { call, result ->
             try {
                 when (call.method) {
@@ -91,6 +109,8 @@ class NoteAudio(private val activity: MainActivity, messenger: BinaryMessenger) 
                         } else {
                             noteId = requireNotNull(call.argument<String>("noteId"))
                             recordingId = requireNotNull(call.argument<String>("id"))
+                            reduceNoise = call.argument<Boolean>("reduceNoise") ?: true
+                            reduceTaps = call.argument<Boolean>("reduceStylusTaps") ?: true
                             require(safeId(noteId) && safeId(recordingId))
                             if (activity.checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
                             pending = result
@@ -106,7 +126,8 @@ class NoteAudio(private val activity: MainActivity, messenger: BinaryMessenger) 
                         worker.execute {
                             try {
                                 val bytes = if (file != null && file.length() in 1..limit && manifest(file).length() <= 4096 && JSONObject(manifest(file).readText()).optString("state") == "ready") file.readBytes() else null
-                                activity.runOnUiThread { result.success(if (bytes == null) null else mapOf("bytes" to bytes, "duration" to length)) }
+                                val cleanup = file != null && bytes != null && cleanupRequested(JSONObject(manifest(file).readText()))
+                                activity.runOnUiThread { result.success(if (bytes == null) null else mapOf("bytes" to bytes, "duration" to length, "cleanup" to cleanup)) }
                             } catch (e: Exception) {
                                 activity.runOnUiThread { result.error("audio", "Impossibile leggere la registrazione", null) }
                             } // No ACK yet: the durable segment remains on disk.
@@ -118,6 +139,24 @@ class NoteAudio(private val activity: MainActivity, messenger: BinaryMessenger) 
                             if (count == 0) null else mapOf("noteId" to dir.name, "count" to count)
                         } ?: emptyList()
                         result.success(notes)
+                    }
+                    "cleanSegment" -> {
+                        val dir = noteDirectory(requireNotNull(call.argument<String>("noteId")))
+                        val id = requireNotNull(call.argument<String>("id")); require(safeId(id))
+                        cleanupWorker.execute {
+                            try {
+                                val file = File(dir, "$id.m4a"); val meta = manifest(file)
+                                require(meta.length() in 1L..4096L && file.length() in 1..limit)
+                                val data = JSONObject(meta.readText()); require(data.optString("state") == "ready")
+                                val values = data.optJSONArray("tapTimes")
+                                val taps = IntArray(minOf(values?.length() ?: 0, 256)) { values!!.optInt(it, -1) }
+                                val cleaned = AudioSegmentCleaner.clean(file, activity.cacheDir,
+                                    data.optBoolean("reduceNoise", false), data.optBoolean("reduceTaps", false), taps)
+                                activity.runOnUiThread { result.success(mapOf("bytes" to cleaned.bytes, "applied" to cleaned.applied)) }
+                            } catch (e: Exception) {
+                                activity.runOnUiThread { result.error("audio", "Pulizia non disponibile: originale conservato", null) }
+                            }
+                        }
                     }
                     "recover" -> {
                         val dir = noteDirectory(requireNotNull(call.argument<String>("noteId")))
@@ -150,7 +189,8 @@ class NoteAudio(private val activity: MainActivity, messenger: BinaryMessenger) 
                                 require(meta.length() in 1L..4096L && file.length() in 1..limit)
                                 val value=JSONObject(meta.readText());require(value.optString("state")=="ready")
                                 val bytes=file.readBytes();val ms=value.getInt("duration")
-                                activity.runOnUiThread {result.success(mapOf("bytes" to bytes,"duration" to ms))}
+                                val cleanup = cleanupRequested(value)
+                                activity.runOnUiThread {result.success(mapOf("bytes" to bytes,"duration" to ms,"cleanup" to cleanup))}
                             } catch(e: Exception) {activity.runOnUiThread {result.error("audio","Segmento non disponibile",null)}}
                         }
                     }
@@ -234,6 +274,7 @@ class NoteAudio(private val activity: MainActivity, messenger: BinaryMessenger) 
         check(used + limit <= 256 * 1024 * 1024L) { "Staging audio pieno: recuperare i segmenti precedenti" }
         val file = File(dir, "$recordingId.m4a")
         check(file.createNewFile()) { "Audio identity already exists" }
+        tapTimes.clear()
         writeManifest(file, "recording")
         val media = MediaRecorder()
         recordingFile = file
@@ -255,6 +296,7 @@ class NoteAudio(private val activity: MainActivity, messenger: BinaryMessenger) 
             media.prepare(); media.start()
             segmentHandler.postDelayed(rotate, 30000)
             started = SystemClock.elapsedRealtime(); duration = 0
+            startedUptime = SystemClock.uptimeMillis()
             result.success(null)
         } catch (e: Exception) {
             recorder = null; try { media.release() } catch (_: Exception) {}
@@ -263,6 +305,9 @@ class NoteAudio(private val activity: MainActivity, messenger: BinaryMessenger) 
             result.error("audio", "Microfono non disponibile", null)
         }
     }
+    private fun cleanupRequested(data: JSONObject): Boolean =
+        data.optBoolean("reduceNoise", false) ||
+            (data.optBoolean("reduceTaps", false) && (data.optJSONArray("tapTimes")?.length() ?: 0) > 0)
     fun permissionResult(request: Int, grants: IntArray): Boolean {
         if (request != 7401) return false
         val result = pending ?: return true
@@ -315,6 +360,6 @@ class NoteAudio(private val activity: MainActivity, messenger: BinaryMessenger) 
         grantedPending?.error("cancelled", "Registrazione annullata", null); grantedPending = null
         pending?.error("cancelled", "Registrazione annullata", null); pending = null
         finishRecording(); recordingFile = null
-        releasePlayer(); channel.setMethodCallHandler(null); worker.shutdown()
+        releasePlayer(); channel.setMethodCallHandler(null); worker.shutdown(); cleanupWorker.shutdown()
     }
 }

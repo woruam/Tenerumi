@@ -74,6 +74,43 @@ class _NoteAudioPanelState extends State<NoteAudioPanel> {
                   'Registra mentre scrivi. Durante l’ascolto il tratto viene evidenziato nel momento in cui è stato scritto.',
                 ),
                 const SizedBox(height: 12),
+                SwitchListTile(
+                  key: const ValueKey('audio-noise-reduction'),
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Riduzione rumore delicata'),
+                  subtitle: const Text(
+                    'Attenua rimbombi e fruscio nelle pause, con un filtro leggero per la voce distante.',
+                  ),
+                  value: audio.reduceNoise,
+                  onChanged: !audio.supported || audio.recording || audio.busy
+                      ? null
+                      : (value) =>
+                            unawaited(audio.setCleanupSettings(noise: value)),
+                ),
+                SwitchListTile(
+                  key: const ValueKey('audio-stylus-tap-reduction'),
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Attenua i colpi della penna'),
+                  subtitle: const Text(
+                    'Riduce i brevi “tac” vicini ai contatti sullo schermo, senza tagliare intervalli audio.',
+                  ),
+                  value: audio.reduceStylusTaps,
+                  onChanged: !audio.supported || audio.recording || audio.busy
+                      ? null
+                      : (value) => unawaited(
+                          audio.setCleanupSettings(stylusTaps: value),
+                        ),
+                ),
+                const Text(
+                  'Le opzioni valgono per le nuove registrazioni.',
+                  style: TextStyle(fontSize: 12),
+                ),
+                if (audio.cleaning) const Text('Pulizia audio in background…'),
+                if (audio.cleanupNotice != null)
+                  Text(
+                    audio.cleanupNotice!,
+                    style: const TextStyle(fontSize: 12),
+                  ),
                 FilledButton.icon(
                   onPressed: !audio.supported || audio.busy
                       ? null

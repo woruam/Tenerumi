@@ -1,6 +1,10 @@
 import 'dart:convert';
 import 'dart:math';
 
+import '../layer_contents/XppStroke.dart';
+import '../controllers/canvas_controller.dart';
+import 'backup_document.dart';
+
 import 'package:archive/archive.dart';
 import 'package:flutter/foundation.dart';
 
@@ -24,17 +28,19 @@ class BackupNote {
   XppFile get file =>
       _file ?? (throw StateError('Caricare prima l’appunto dallo staging'));
   String? get title => _title ?? _file?.title;
-  Future<XppFile> load() async {
-    if (_file != null) return _file;
+  Future<XppFile> load() async => (await _loadWithPayload()).file;
+  Future<({XppFile file, Uint8List? payload})> _loadWithPayload() async {
+    if (_file != null) return (file: _file, payload: null);
+    final payload = await staging.readStaged(payloadPath!);
     final file = await XppFile.fromFilePickerCross(
-      FilePickerCross(await staging.readStaged(payloadPath!)),
+      FilePickerCross(payload),
       null,
       (_) async => throw StateError('Sfondo mancante'),
       limits: NoteBackup.workingLimits,
     );
     file.title = _title;
     file.tag = _tag;
-    return file;
+    return (file: file, payload: payload);
   }
 
   final bool favorite;
@@ -97,11 +103,7 @@ class NoteBackup {
   static const maxBytes = 512 * 1024 * 1024;
   static const maxNotes = 10000;
   static const inMemoryBytes = 32 * 1024 * 1024;
-  static const workingLimits = DocumentLimits(
-    compressedBytes: inMemoryBytes,
-    xmlBytes: 64 * 1024 * 1024,
-    mediaBytes: 32 * 1024 * 1024,
-  );
+  static const workingLimits = DocumentLimits.standard;
   static bool _restoring = false;
 
   static Future<XppFile> _read(
@@ -123,6 +125,9 @@ class NoteBackup {
     bool staged = false,
     BackupCancellation? cancellation,
   }) async {
+    cancellation?.check();
+    await CanvasController.prepareForBackup();
+    cancellation?.check();
     if (staged && staging.supportsDiskStaging)
       return _createStaged(onProgress, cancellation);
     final entries = await RecentDocuments.list();
@@ -192,13 +197,11 @@ class NoteBackup {
           unavailable.add('$title: recupero automatico non accessibile');
         }
       }
-      // Preserve both candidates unless their serialized content is identical.
+      // Imports already calculate the hash of the original payload.
       if (saved != null && recovered != null) {
-        if (!listEquals(
-          await saved.serializeSnapshotAsync(),
-          await recovered.serializeSnapshotAsync(),
-        )) {
+        if (saved.originHash != recovered.originHash) {
           recovered.title = '$title (recupero)';
+          recovered.tag = entry['tag'] as String? ?? recovered.tag;
           await _makePortable(recovered);
           notes.add(BackupNote(recovered));
         }
@@ -274,17 +277,23 @@ class NoteBackup {
     final writer = staging.StagedZipWriter(root);
     final records = <Map<String, dynamic>>[], unavailable = <String>[];
     final hashes = <String, String>{};
+    final budget = _StagedBackupBudget();
     try {
       final library = await RecentDocuments.list(),
           recoveries = await AutosaveStore.list();
-      final jobs = <Map<String, dynamic>>[
-        for (final entry in library) {'entry': entry},
-        for (final recovery in recoveries) {'recovery': recovery},
-      ];
-      for (final job in jobs) {
+      Iterable<({Map<String, dynamic> entry, bool recovery})> jobs() sync* {
+        for (final entry in library) {
+          yield (entry: entry, recovery: false);
+        }
+        for (final entry in recoveries) {
+          yield (entry: entry, recovery: true);
+        }
+      }
+
+      for (final job in jobs()) {
         cancel?.check();
-        final entry = (job['entry'] ?? job['recovery']) as Map<String, dynamic>;
-        final recovery = job['recovery'] != null;
+        final entry = job.entry;
+        final recovery = job.recovery;
         final title =
             (entry[recovery ? 'title' : 'name'] as String?) ?? 'Appunto';
         progress?.call('Preparazione: $title');
@@ -294,20 +303,21 @@ class NoteBackup {
               ? await AutosaveStore.readBytes(entry)
               : (await FilePickerCross.fromInternalPath(
                   path: entry['path'] as String,
-                  maxBytes: inMemoryBytes,
+                  maxBytes: workingLimits.compressedBytes,
                 )).toUint8List();
-          if (bytes.length > inMemoryBytes)
-            throw StateError('Appunto oltre il budget di lavoro di 32 MiB');
-          final hash = FilePickerCross(bytes).contentHash;
           final source = entry[recovery ? 'source' : 'path'] as String?;
-          if (recovery && source != null && hashes[source] == hash) continue;
           final file = await XppFile.fromFilePickerCross(
             FilePickerCross(bytes),
             null,
             (_) async => throw StateError('Sfondo mancante'),
-            limits: workingLimits,
+            limits: budget.limits,
           );
+          final hash =
+              file.originHash ??
+              await FilePickerCross(bytes).contentHashAsync();
+          if (recovery && source != null && hashes[source] == hash) continue;
           await _makePortable(file);
+          budget.add(file);
           if (file.importWarnings.isNotEmpty)
             unavailable.add(
               '$title: apertura protetta; contenuto originale conservato integralmente',
@@ -315,7 +325,10 @@ class NoteBackup {
           if (records.length >= maxNotes) throw StateError('Troppi appunti');
           final name = 'notes/${records.length}.xopp';
           writing = true;
-          await writer.add(name, bytes);
+          await writer.add(
+            name,
+            _isGzip(bytes) ? bytes : await file.serializeSnapshotAsync(),
+          );
           records.add({
             'file': name,
             'title': recovery && source != null && hashes.containsKey(source)
@@ -382,7 +395,7 @@ class NoteBackup {
           (manifest['tags'] as List).any((e) => e is! String))
         throw const FormatException('Manifesto backup invalido');
       final seen = <String>{}, notes = <BackupNote>[];
-      var xmlBytes = 0, media = 0, nodes = 0, points = 0, pages = 0, layers = 0;
+      final budget = _StagedBackupBudget();
       for (final record in manifest['notes'] as List) {
         cancellation?.check();
         if (record is! Map ||
@@ -401,25 +414,9 @@ class NoteBackup {
           FilePickerCross(await staging.readStaged(payload)),
           null,
           (_) async => throw StateError('Sfondo mancante'),
-          limits: DocumentLimits(
-            compressedBytes: inMemoryBytes,
-            xmlBytes: min(workingLimits.xmlBytes, maxBytes - xmlBytes),
-            mediaBytes: min(
-              workingLimits.mediaBytes,
-              256 * 1024 * 1024 - media,
-            ),
-            nodes: min(workingLimits.nodes, 500000 - nodes),
-            points: min(workingLimits.points, 2000000 - points),
-            pages: min(workingLimits.pages, 20000 - pages),
-            layers: min(workingLimits.layers, 100000 - layers),
-          ),
+          limits: budget.limits,
         );
-        xmlBytes += file.importedXmlBytes;
-        media += file.importedMediaBytes;
-        nodes += file.importedNodes;
-        points += file.importedPoints;
-        pages += file.importedPages;
-        layers += file.importedLayers;
+        budget.add(file);
         await _makePortable(file);
         notes.add(
           BackupNote.staged(
@@ -443,7 +440,21 @@ class NoteBackup {
   }
 
   static Future<void> _makePortable(XppFile file) async {
+    if (file.pages?.isNotEmpty != true) {
+      throw const FormatException('Appunto senza pagine.');
+    }
     for (final page in file.pages ?? []) {
+      for (final layer in page.layers ?? []) {
+        for (final stroke in (layer.content ?? []).whereType<XppStroke>()) {
+          final link = stroke.audioLink;
+          if (link != null &&
+              file.recordings[link.recordingId]?.bytes.isNotEmpty != true) {
+            throw const FormatException(
+              'Registrazione collegata al tratto mancante.',
+            );
+          }
+        }
+      }
       final bg = page.background;
       final name = switch (bg) {
         XppBackgroundPdf() => bg.filename,
@@ -547,7 +558,7 @@ class NoteBackup {
         (manifest['notes'] as List).isEmpty ||
         (manifest['notes'] as List).length != archive.length - 1) {
       throw const FormatException(
-        'Questo file non è un backup OSI supportato.',
+        'Questo file non è un backup Tenerumi o OSI supportato.',
       );
     }
     final names = <String>{};
@@ -626,18 +637,7 @@ class NoteBackup {
       if (file.pages?.isNotEmpty != true) {
         throw const FormatException('Appunto senza pagine.');
       }
-      for (final page in file.pages!) {
-        final name = switch (page.background) {
-          XppBackgroundPdf bg => bg.filename,
-          XppBackgroundImage bg => bg.filename,
-          _ => null,
-        };
-        if (name != null && !file.pdfAttachments.containsKey(name)) {
-          throw const FormatException(
-            'Il backup non contiene tutti gli allegati.',
-          );
-        }
-      }
+      await _makePortable(file);
       file.title = records[i]['title'] as String;
       file.tag = records[i]['tag'] as String;
       notes.add(BackupNote(file, favorite: records[i]['favorite'] == true));
@@ -659,16 +659,20 @@ class NoteBackup {
       throw const FormatException('Numero di appunti non valido.');
     }
     _restoring = true;
-    RecentDocuments.restoring = true;
-    final written = <String>[];
+
     final restored = <BackupNote>[];
     try {
+      // Reconcile any previous interrupted restore before suppressing recovery.
+      await RecentDocuments.list();
+      RecentDocuments.restoring = true;
       for (final (i, note) in backup.notes.indexed) {
         cancellation?.check();
         onProgress?.call(
           'Ripristino appunto ${i + 1} di ${backup.notes.length}',
         );
-        final source = await note.load();
+        final loaded = await note._loadWithPayload();
+        final source = loaded.file;
+        await _makePortable(source);
         final file = XppFile(
           title: source.title,
           tag: source.tag,
@@ -676,7 +680,6 @@ class NoteBackup {
           autoGeneratePages: source.autoGeneratePages,
           defaultPaper: source.defaultPaper,
           previewImage: source.previewImage,
-          documentId: note.payloadPath == null ? null : source.documentId,
           pages: source.pages,
           pdfAttachments: Map.of(source.pdfAttachments),
           recordings: Map.of(source.recordings),
@@ -688,9 +691,13 @@ class NoteBackup {
               'backup-${file.documentId}-${Random.secure().nextInt(1 << 32)}.xopp';
         }
         final data = FilePickerCross(
-          note.payloadPath == null
-              ? await file.serializeSnapshotAsync()
-              : await staging.readStaged(note.payloadPath!),
+          loaded.payload != null && _isGzip(loaded.payload!)
+              ? await copyBackupDocument(
+                  loaded.payload!,
+                  documentId: file.documentId,
+                  tag: file.tag,
+                )
+              : await file.serializeSnapshotAsync(),
         );
         final pending =
             (await CriticalData.read('restorePending') as List?) ?? [];
@@ -711,7 +718,6 @@ class NoteBackup {
           },
         ]);
         file.sourcePath = await data.saveToPath(path: destination);
-        written.add(file.sourcePath!);
         restored.add(
           BackupNote(
             XppFile(
@@ -727,16 +733,52 @@ class NoteBackup {
           ),
         );
       }
+      cancellation?.check();
       await RecentDocuments.addRestored([
         for (final n in restored) (file: n.file, favorite: n.favorite),
       ], backup.tags);
       return restored.length;
-    } catch (_) {
-      // Complete staged files survive interruption and are reconciled on reopen.
-      rethrow;
     } finally {
       _restoring = false;
       RecentDocuments.restoring = false;
     }
+  }
+}
+
+bool _isGzip(Uint8List bytes) =>
+    bytes.length >= 2 && bytes[0] == 31 && bytes[1] == 139;
+
+/// The same aggregate limits apply when creating and inspecting a disk backup.
+/// Documents are processed individually; these totals are not retained in RAM.
+class _StagedBackupBudget {
+  int xml = 0, media = 0, nodes = 0, points = 0, pages = 0, layers = 0;
+  final clock = Stopwatch()..start();
+  DocumentLimits get limits {
+    if (clock.elapsed > const Duration(minutes: 5)) {
+      throw const FormatException('Backup troppo complesso');
+    }
+    return DocumentLimits(
+      xmlBytes: min(
+        DocumentLimits.standard.xmlBytes,
+        2 * 1024 * 1024 * 1024 - xml,
+      ),
+      mediaBytes: min(
+        DocumentLimits.standard.mediaBytes,
+        NoteBackup.maxBytes - media,
+      ),
+      nodes: min(DocumentLimits.standard.nodes, 8000000 - nodes),
+      points: min(DocumentLimits.standard.points, 20000000 - points),
+      pages: min(DocumentLimits.standard.pages, 100000 - pages),
+      layers: min(DocumentLimits.standard.layers, 1000000 - layers),
+    );
+  }
+
+  void add(XppFile file) {
+    xml += file.importedXmlBytes;
+    media += file.importedMediaBytes;
+    nodes += file.importedNodes;
+    points += file.importedPoints;
+    pages += file.importedPages;
+    layers += file.importedLayers;
   }
 }

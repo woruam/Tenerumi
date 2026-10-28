@@ -7,7 +7,14 @@ import 'package:flutter/material.dart';
 /// Shared across page listeners so a pinch spanning two pages never adds ink.
 /// Notifications request a hard input reset; ordinary input is read in callbacks.
 class CanvasTouchSession extends ChangeNotifier with WidgetsBindingObserver {
+  bool stylusMenuActive = false;
   static const double palmRadiusThreshold = 28;
+  // Navigation rails sit outside the page's touch scope. Across split panels,
+  // a pen in either canvas must still suppress accidental palm navigation.
+  static bool rejectsNavigation(PointerEvent event) =>
+      event.kind == PointerDeviceKind.touch &&
+      (event.radiusMajor > palmRadiusThreshold ||
+          _sessions.any((session) => session.rejects(event)));
   CanvasTouchSession() {
     _awaitingHover = _nativeHoverEnded;
     _lastHoverExit = _lastNativeHoverExit;
@@ -152,6 +159,7 @@ class CanvasTouchSession extends ChangeNotifier with WidgetsBindingObserver {
 
   /// Lost input cannot keep a hover grant or an unfinished gesture alive.
   void reset() {
+    stylusMenuActive = false;
     _postContactTimer?.cancel();
     _postContactTimer = null;
     _postContactGrace = false;
@@ -304,9 +312,6 @@ class ZoomableWidget extends StatefulWidget {
 }
 
 class ZoomableWidgetState extends State<ZoomableWidget> {
-  // Mantenuto per compatibilita' con il codice esistente che lo imposta.
-  bool enabled = true;
-
   static const double _kMinScale = 0.1;
   static const double _kMaxScale = 10.0;
 
@@ -469,6 +474,7 @@ class ZoomableWidgetState extends State<ZoomableWidget> {
 
   void _updateGesture(ScaleUpdateDetails details) {
     if (!widget.interactionsEnabled ||
+        _touchSession.stylusMenuActive ||
         _gestureRejected ||
         (_gestureTouch && _touchSession.penNear) ||
         (_suppressPan && !widget.stylusPanEnabled))

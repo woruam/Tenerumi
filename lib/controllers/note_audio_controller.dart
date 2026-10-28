@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xournalpp/src/XppFile.dart';
 import 'package:xournalpp/src/note_audio.dart';
 import 'package:xournalpp/src/compat/audio_platform_stub.dart'
@@ -53,11 +54,86 @@ class NoteAudioController extends ChangeNotifier {
     required this.onModeChanged,
     NoteAudioBackend? backend,
     this.elapsedClock,
-  }) : backend = backend ?? AndroidNoteAudioBackend();
+  }) : backend = backend ?? AndroidNoteAudioBackend() {
+    _settingsReady = _loadCleanupSettings();
+  }
   final XppFile document;
   final VoidCallback onDocumentChanged, onModeChanged;
   final NoteAudioBackend backend;
   final int Function()? elapsedClock;
+  static const noisePreference = 'audio_reduce_noise';
+  static const tapsPreference = 'audio_reduce_stylus_taps';
+  bool reduceNoise = true, reduceStylusTaps = true;
+  String? cleanupNotice;
+  late final Future<void> _settingsReady;
+  final Map<String, Future<void>> _cleanupJobs = {};
+  bool get cleaning => _cleanupJobs.isNotEmpty;
+
+  Future<void> _loadCleanupSettings() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      reduceNoise = prefs.getBool(noisePreference) ?? true;
+      reduceStylusTaps = prefs.getBool(tapsPreference) ?? true;
+      _notify();
+    } catch (_) {
+      /* Capture remains available when preferences are unavailable. */
+    }
+  }
+
+  Future<void> setCleanupSettings({bool? noise, bool? stylusTaps}) async {
+    await _settingsReady;
+    if (_disposed || busy || recording) return;
+    if (noise != null) reduceNoise = noise;
+    if (stylusTaps != null) reduceStylusTaps = stylusTaps;
+    _notify();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(noisePreference, reduceNoise);
+    await prefs.setBool(tapsPreference, reduceStylusTaps);
+  }
+
+  void _queueCleanup(String id) {
+    if (_disposed || _cleanupJobs.containsKey(id)) return;
+    final original = document.recordings[id];
+    if (original == null) return;
+    // Capture can restart immediately; cleaning never holds the native-command
+    // queue or runs on the pen/sample path. ACK waits for this job separately.
+    final future = Future<void>.delayed(Duration.zero, () async {
+      try {
+        final result = await backend.invoke('cleanSegment', {
+          'noteId': document.localId,
+          'id': id,
+        });
+        if (_disposed || !identical(document.recordings[id], original)) return;
+        if (result is! Map ||
+            result['bytes'] is! Uint8List ||
+            result['applied'] != true) {
+          cleanupNotice = 'Pulizia non disponibile per un segmento: audio originale conservato.';
+          return;
+        }
+        final bytes = result['bytes'] as Uint8List;
+        if (bytes.isEmpty ||
+            bytes.length > maxRecordingBytes ||
+            totalBytes - original.bytes.length + bytes.length > maxAudioBytes)
+          return;
+        document.recordings[id] = NoteRecording(id, original.durationMs, bytes);
+        onDocumentChanged();
+      } catch (_) {
+        if (!_disposed) cleanupNotice = 'Pulizia non disponibile per un segmento: audio originale conservato.';
+      }
+    });
+    _cleanupJobs[id] = future;
+    unawaited(
+      future.whenComplete(() {
+        _cleanupJobs.remove(id);
+        _notify();
+      }),
+    );
+  }
+
+  Future<void> _waitForCleanup() async {
+    await Future.wait(List<Future<void>>.of(_cleanupJobs.values));
+  }
+
   static NoteAudioController? owner;
   static Future<void>? _queue;
   Future<void>? _closing;
@@ -130,6 +206,8 @@ class NoteAudioController extends ChangeNotifier {
 
   Future<void> start() => _run(_startRecording);
   Future<void> _startRecording() async {
+    await _settingsReady;
+    if (_disposed) return;
     if (!supported) {
       error = 'Registrazione disponibile su Android';
       return;
@@ -147,6 +225,8 @@ class NoteAudioController extends ChangeNotifier {
     await backend.invoke('start', {
       'noteId': document.localId,
       'id': recordingId,
+      'reduceNoise': reduceNoise,
+      'reduceStylusTaps': reduceStylusTaps,
     });
     if (_disposed) {
       await backend.invoke('release');
@@ -170,6 +250,10 @@ class NoteAudioController extends ChangeNotifier {
   Future<void> acknowledge(Iterable<String> ids) async {
     if (!supported || ids.isEmpty) return;
     try {
+      await Future.wait([
+        for (final id in ids)
+          if (_cleanupJobs[id] case final job?) job,
+      ]);
       await backend.invoke('ack', {
         'noteId': document.localId,
         'ids': ids.toList(),
@@ -186,6 +270,7 @@ class NoteAudioController extends ChangeNotifier {
     var changed = false;
     var partial = false;
     for (final value in raw.whereType<Map>()) {
+      var needsCleanup = value['cleanup'] == true;
       if (value['state'] != 'ready') {
         partial = true;
         error = 'Registrazione interrotta non finalizzata: originale conservato per il recupero';
@@ -205,6 +290,7 @@ class NoteAudioController extends ChangeNotifier {
           if (segment is Map) {
             bytes = segment['bytes'];
             duration = segment['duration'];
+            needsCleanup = segment['cleanup'] == true;
           }
         } catch (_) {
           error = 'Segmento audio non disponibile: staging conservato';
@@ -223,6 +309,7 @@ class NoteAudioController extends ChangeNotifier {
           totalBytes + bytes.length > maxAudioBytes)
         continue;
       document.recordings[id] = NoteRecording(id, duration, bytes);
+      if (needsCleanup) _queueCleanup(id);
       changed = true;
     }
     if (changed) {
@@ -232,8 +319,12 @@ class NoteAudioController extends ChangeNotifier {
       onDocumentChanged();
     }
   });
-  Future<void> stop() =>
-      !recording && !busy ? Future.value() : _run(_stopRecording);
+  Future<void> stop() => !recording && !busy && !cleaning
+      ? Future.value()
+      : _run(() async {
+          await _stopRecording();
+          await _waitForCleanup();
+        });
   Future<void> stopPlayback() => _run(() async {
     if (owner != this || recording) return;
     _timer?.cancel();
@@ -266,6 +357,7 @@ class NoteAudioController extends ChangeNotifier {
           raw['duration'] as int,
           bytes,
         );
+        if (raw['cleanup'] == true) _queueCleanup(id);
         onDocumentChanged();
       } else {
         error = 'Registrazione troppo grande';
@@ -308,6 +400,7 @@ class NoteAudioController extends ChangeNotifier {
     }
     await _claim();
     await _stopRecording();
+    await _cleanupJobs[id];
     final audio = document.recordings[id];
     if (audio == null) {
       error = 'Audio del tratto non disponibile';

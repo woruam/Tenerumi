@@ -1,9 +1,12 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
+
+import 'ZoomableWidget.dart';
 
 /// Screen-sized navigation rail over the transformed document.
-class PageScrollbar extends StatelessWidget {
+class PageScrollbar extends StatefulWidget {
   final TransformationController transform;
   final Size viewport;
   final double sceneHeight;
@@ -19,9 +22,58 @@ class PageScrollbar extends StatelessWidget {
   });
 
   @override
+  State<PageScrollbar> createState() => _PageScrollbarState();
+}
+
+class _PageScrollbarState extends State<PageScrollbar>
+    with WidgetsBindingObserver {
+  final Set<int> _contacts = {};
+  int? _dragPointer;
+  double _lastY = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) {
+      _contacts.clear();
+      _dragPointer = null;
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(PageScrollbar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.transform != widget.transform) {
+      _contacts.clear();
+      _dragPointer = null;
+    }
+  }
+
+  void _end(PointerEvent event) {
+    _contacts.remove(event.pointer);
+    if (_dragPointer == event.pointer) _dragPointer = null;
+  }
+
+  @override
   Widget build(BuildContext context) => ListenableBuilder(
-    listenable: transform,
+    listenable: widget.transform,
     builder: (context, _) {
+      final transform = widget.transform;
+      final viewport = widget.viewport;
+      final sceneHeight = widget.sceneHeight;
+      final currentPage = widget.currentPage;
+      final pageCount = widget.pageCount;
       final scale = transform.value.getMaxScaleOnAxis();
       final contentHeight = sceneHeight * scale;
       final maxScroll = math.max(0.0, contentHeight - viewport.height);
@@ -51,20 +103,35 @@ class PageScrollbar extends StatelessWidget {
           decreasedValue: '${currentPage.clamp(1, pageCount)} di $pageCount',
           onIncrease: () => seek(progress + viewport.height / maxScroll),
           onDecrease: () => seek(progress - viewport.height / maxScroll),
-          child: GestureDetector(
+          child: Listener(
             key: const ValueKey('page-scrollbar'),
             behavior: HitTestBehavior.opaque,
-            onTapDown: (details) {
-              if (travel > 0)
-                seek((details.localPosition.dy - thumbHeight / 2) / travel);
+            onPointerDown: (event) {
+              _contacts.add(event.pointer);
+              if (_contacts.length != 1 ||
+                  CanvasTouchSession.rejectsNavigation(event)) {
+                _dragPointer = null;
+                return;
+              }
+              _dragPointer = event.pointer;
+              _lastY = event.localPosition.dy;
+              if (travel > 0) seek((_lastY - thumbHeight / 2) / travel);
             },
-            onVerticalDragUpdate: (details) {
+            onPointerMove: (event) {
+              if (_dragPointer != event.pointer) return;
+              if (CanvasTouchSession.rejectsNavigation(event)) {
+                _dragPointer = null;
+                return;
+              }
               if (travel > 0)
                 seek(
                   -transform.value.entry(1, 3) / maxScroll +
-                      details.delta.dy / travel,
+                      (event.localPosition.dy - _lastY) / travel,
                 );
+              _lastY = event.localPosition.dy;
             },
+            onPointerUp: _end,
+            onPointerCancel: _end,
             child: SizedBox(
               width: 36,
               height: trackHeight,

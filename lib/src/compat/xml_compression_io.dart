@@ -4,14 +4,17 @@ import 'dart:typed_data';
 
 import '../document_limits.dart';
 
-Uint8List compressXml(Iterable<String> parts) {
+Uint8List compressXml(Iterable<String> parts) =>
+    compressBytes(parts.map(utf8.encode));
+
+Uint8List compressBytes(Iterable<List<int>> parts) {
   final output = BytesBuilder(copy: false);
   final encoder = GZipCodec(level: 1).encoder
       .startChunkedConversion(_Output(output));
   var length = 0;
   try {
     for (final part in parts) {
-      final bytes = utf8.encode(part);
+      final bytes = part;
       length += bytes.length;
       if (length > DocumentLimits.standard.xmlBytes) {
         throw const FormatException(

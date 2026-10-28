@@ -1,3 +1,6 @@
+import 'package:xournalpp/src/app_brand.dart';
+import 'package:xournalpp/src/compat/brand_preferences_stub.dart'
+    if (dart.library.io) 'package:xournalpp/src/compat/brand_preferences_io.dart';
 import 'package:xournalpp/src/dynamic_color_adapter.dart';
 import 'package:flutter/material.dart';
 import 'package:dynamic_color/dynamic_color.dart';
@@ -15,6 +18,7 @@ import 'generated/l10n.dart';
 
 Future<void> main(List<String> arguments) async {
   WidgetsFlutterBinding.ensureInitialized();
+  await migrateBrandPreferences();
   final documents = arguments
       .where((path) => path.toLowerCase().endsWith('.pdf'))
       .map(
@@ -132,7 +136,7 @@ class _XournalppMobileState extends State<XournalppMobile> {
               navigatorKey: _navigator,
               scaffoldMessengerKey: _messenger,
               debugShowCheckedModeBanner: false,
-              title: 'OSI',
+              title: AppBrand.name,
               localizationsDelegates: const [
                 S.delegate,
                 DefaultMaterialLocalizations.delegate,

@@ -71,7 +71,7 @@ void main() {
     expect((await RecentDocuments.list()).single['tag'], 'Scuola');
   });
 
-  testWidgets('phone creates and selects custom tags and opens OSI app info', (
+  testWidgets('phone creates and selects custom tags and opens Tenerumi app info', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(380, 800);
@@ -79,7 +79,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     PackageInfo.setMockInitialValues(
-      appName: 'OSI',
+      appName: 'Tenerumi',
       packageName: 'online.xournal.mobile',
       version: '0.5.0',
       buildNumber: '31',
@@ -101,7 +101,7 @@ void main() {
       RepaintBoundary(key: key, child: const XournalppMobile()),
     );
     await tester.pumpAndSettle();
-    expect(find.text('OSI'), findsOneWidget);
+    expect(find.text('Tenerumi'), findsOneWidget);
     await tester.tap(find.text('Nuovo Appunto'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Crea tag'));
@@ -129,7 +129,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Versione 0.5'), findsOneWidget);
     expect(find.text('Build 31'), findsOneWidget);
-    expect(find.text('OSI'), findsNWidgets(2));
+    expect(find.text('Tenerumi'), findsNWidgets(2));
     expect(tester.takeException(), isNull);
     await capture(tester, key, 'osi-app-info');
     await tester.pumpWidget(const SizedBox());

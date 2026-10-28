@@ -1,3 +1,5 @@
+import 'package:xournalpp/widgets/ink_options_panel.dart';
+
 import 'dart:typed_data';
 
 import 'package:xournalpp/plugins/plugin_controller.dart';
@@ -152,7 +154,6 @@ class CanvasPageState extends State<CanvasPage> with WidgetsBindingObserver {
   late CanvasController _controller;
   late final TransformationController _zoomController;
   final GlobalKey _pdfViewportKey = GlobalKey();
-  final GlobalKey<ZoomableWidgetState> _zoomableKey = GlobalKey();
 
   final GlobalKey _penBtn = GlobalKey(),
       _highlighterBtn = GlobalKey(),
@@ -297,13 +298,7 @@ class CanvasPageState extends State<CanvasPage> with WidgetsBindingObserver {
                         setState(() => _showPomodoro = !_showPomodoro),
                     pomodoroActive: _showPomodoro,
                     pomodoroProgress: _pomodoroProgress,
-                    onToolSelect: (tool) {
-                      ctrl.setTool(tool);
-                      _zoomableKey.currentState?.setState(
-                        () => _zoomableKey.currentState!.enabled =
-                            ctrl.isPanEnabled,
-                      );
-                    },
+                    onToolSelect: ctrl.setTool,
                   )
                 : null,
 
@@ -398,7 +393,6 @@ class CanvasPageState extends State<CanvasPage> with WidgetsBindingObserver {
                             width: constraints.maxWidth,
                             height: constraints.maxHeight,
                             child: ZoomableWidget(
-                              key: _zoomableKey,
                               controller: _zoomController,
                               sceneSize: Size(
                                 displayWidth + 32,
@@ -518,6 +512,19 @@ class CanvasPageState extends State<CanvasPage> with WidgetsBindingObserver {
                                                   position,
                                                 ),
                                             color: ctrl.getCurrentToolColor(),
+                                            penPressureEnabled:
+                                                ctrl.penPressureEnabled,
+                                            stylusShortcuts:
+                                                appearance?.stylusShortcuts ??
+                                                ctrl.stylusShortcuts,
+                                            stylusMenuHoldDelay: Duration(
+                                              milliseconds:
+                                                  appearance
+                                                      ?.stylusMenuHoldDelayMs ??
+                                                  1100,
+                                            ),
+                                            onStylusShortcut:
+                                                ctrl.applyStylusShortcut,
                                             shapeRecognition:
                                                 ctrl.shapeRecognition,
                                             buttonDownAction:
@@ -525,18 +532,7 @@ class CanvasPageState extends State<CanvasPage> with WidgetsBindingObserver {
                                             buttonUpAction: ctrl.buttonUpAction,
                                             stylusProfile: ctrl.stylusProfile,
 
-                                            // IL FIX DELLA SCRITTURA ANCHE QUI
-                                            onToolChanged: (tool) {
-                                              ctrl.setTool(tool);
-                                              _zoomableKey.currentState
-                                                  ?.setState(
-                                                    () =>
-                                                        _zoomableKey
-                                                                .currentState!
-                                                                .enabled =
-                                                            ctrl.isPanEnabled,
-                                                  );
-                                            },
+                                            onToolChanged: ctrl.setTool,
 
                                             getPageContent: () =>
                                                 ctrl
@@ -760,208 +756,7 @@ class CanvasPageState extends State<CanvasPage> with WidgetsBindingObserver {
   }
 
   void _openShapeSettings(BuildContext context, CanvasController ctrl) {
-    final renderBox =
-        _shapeBtn.currentContext?.findRenderObject() as RenderBox?;
-    if (renderBox == null) return;
-    double leftPosition = max(
-      16,
-      min(
-        renderBox.localToGlobal(Offset.zero).dx -
-            160 +
-            (renderBox.size.width / 2),
-        MediaQuery.of(context).size.width - 336,
-      ),
-    );
-
-    showDialog(
-      context: context,
-      barrierColor: Colors.transparent,
-      builder: (context) => Stack(
-        children: [
-          Positioned(
-            top:
-                renderBox.localToGlobal(Offset.zero).dy +
-                renderBox.size.height +
-                8,
-            left: leftPosition,
-            child: ClipPath(
-              clipper: const ShapeBorderClipper(
-                shape: AppAppearance.panelShape,
-              ),
-              child: Material(
-                color: AppAppearance.panel,
-                shape: AppAppearance.panelShape,
-                elevation: 0,
-                child: Container(
-                  width: 320,
-                  padding: const EdgeInsets.all(16),
-                  child: StatefulBuilder(
-                    builder: (context, setDialogState) => Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Strumento Forma:',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 8),
-                        _shapeItem(
-                          context,
-                          'Linea',
-                          Icons.horizontal_rule,
-                          EditingTool.SHAPE_LINE,
-                          ctrl,
-                          setDialogState,
-                        ),
-                        _shapeItem(
-                          context,
-                          'Linea tratteggiata',
-                          Icons.more_horiz,
-                          EditingTool.SHAPE_DASHED_LINE,
-                          ctrl,
-                          setDialogState,
-                        ),
-                        _shapeItem(
-                          context,
-                          'Rettangolo',
-                          Icons.rectangle_outlined,
-                          EditingTool.SHAPE_RECT,
-                          ctrl,
-                          setDialogState,
-                        ),
-                        _shapeItem(
-                          context,
-                          'Cerchio',
-                          Icons.circle_outlined,
-                          EditingTool.SHAPE_CIRCLE,
-                          ctrl,
-                          setDialogState,
-                        ),
-                        _shapeItem(
-                          context,
-                          'Quadrato',
-                          Icons.check_box_outline_blank,
-                          EditingTool.SHAPE_SQUARE,
-                          ctrl,
-                          setDialogState,
-                        ),
-                        _shapeItem(
-                          context,
-                          'Cubo',
-                          Icons.view_in_ar,
-                          EditingTool.SHAPE_CUBE,
-                          ctrl,
-                          setDialogState,
-                        ),
-                        _shapeItem(
-                          context,
-                          'Cilindro',
-                          Icons.album,
-                          EditingTool.SHAPE_CYLINDER,
-                          ctrl,
-                          setDialogState,
-                        ),
-                        _shapeItem(
-                          context,
-                          'Sfera',
-                          Icons.lens,
-                          EditingTool.SHAPE_SPHERE,
-                          ctrl,
-                          setDialogState,
-                        ),
-                        const Divider(),
-                        const Text(
-                          'Proprietà figure:',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children:
-                              [
-                                    Colors.black,
-                                    Colors.grey,
-                                    Colors.red,
-                                    Colors.blue,
-                                    Colors.green,
-                                  ]
-                                  .map(
-                                    (c) => InkWell(
-                                      onTap: () {
-                                        ctrl.setShapeProps(c, null);
-                                        setDialogState(() {});
-                                      },
-                                      child: Container(
-                                        width: 32,
-                                        height: 32,
-                                        decoration: BoxDecoration(
-                                          color: c,
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: ctrl.shapeColor == c
-                                                ? Colors.black
-                                                : Colors.black12,
-                                            width: ctrl.shapeColor == c ? 3 : 1,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
-                        ),
-                        Slider(
-                          value: ctrl.shapeWidth,
-                          min: 0.5,
-                          max: 20.0,
-                          onChanged: (val) {
-                            ctrl.setShapeProps(null, val);
-                            setDialogState(() {});
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _shapeItem(
-    BuildContext context,
-    String title,
-    IconData icon,
-    EditingTool tool,
-    CanvasController ctrl,
-    StateSetter setState,
-  ) {
-    final isSelected = ctrl.toolData[PointerDeviceKind.stylus] == tool;
-    return ListTile(
-      leading: Icon(
-        icon,
-        color: isSelected ? Theme.of(context).colorScheme.primary : null,
-      ),
-      title: Text(
-        title,
-        style: TextStyle(
-          color: isSelected ? Theme.of(context).colorScheme.primary : null,
-          fontWeight: isSelected ? FontWeight.bold : null,
-        ),
-      ),
-      onTap: () {
-        ctrl.setTool(tool);
-        _zoomableKey.currentState?.setState(
-          () => _zoomableKey.currentState!.enabled = ctrl.isPanEnabled,
-        );
-        setState(() {});
-      },
-      contentPadding: EdgeInsets.zero,
-      dense: true,
-    );
+    showShapeOptionsPanel(context, ctrl);
   }
 
   void _openEraserSettings(BuildContext context, CanvasController ctrl) {
@@ -1070,101 +865,15 @@ class CanvasPageState extends State<CanvasPage> with WidgetsBindingObserver {
     double curW,
     Function(Color?, double?) onUpdate,
   ) {
-    final renderBox = key.currentContext?.findRenderObject() as RenderBox?;
-    if (renderBox == null) return;
-    double leftPosition = max(
-      16,
-      min(
-        renderBox.localToGlobal(Offset.zero).dx -
-            160 +
-            (renderBox.size.width / 2),
-        MediaQuery.of(context).size.width - 336,
-      ),
-    );
-
-    showDialog(
-      context: context,
-      barrierColor: Colors.transparent,
-      builder: (context) => Stack(
-        children: [
-          Positioned(
-            top:
-                renderBox.localToGlobal(Offset.zero).dy +
-                renderBox.size.height +
-                8,
-            left: leftPosition,
-            child: ClipPath(
-              clipper: const ShapeBorderClipper(
-                shape: AppAppearance.panelShape,
-              ),
-              child: Material(
-                color: AppAppearance.panel,
-                shape: AppAppearance.panelShape,
-                elevation: 0,
-                child: Container(
-                  width: 320,
-                  padding: const EdgeInsets.all(16),
-                  child: StatefulBuilder(
-                    builder: (context, setDialogState) => Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          title,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 12),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: colors
-                              .map(
-                                (c) => InkWell(
-                                  onTap: () {
-                                    onUpdate(c, null);
-                                    setDialogState(() => curC = c);
-                                  },
-                                  child: Container(
-                                    width: 32,
-                                    height: 32,
-                                    decoration: BoxDecoration(
-                                      color: c,
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: curC == c
-                                            ? Colors.black
-                                            : Colors.black12,
-                                        width: curC == c ? 3 : 1,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                        ),
-                        const SizedBox(height: 24),
-                        Text(
-                          'Spessore: ${(curW * 0.3528).toStringAsFixed(2)} mm',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Slider(
-                          value: curW,
-                          min: title == 'Penna' ? 0.1 : 0.5,
-                          max: 30.0,
-                          onChanged: (val) {
-                            onUpdate(null, val);
-                            setDialogState(() => curW = val);
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+    showInkOptionsPanel(
+      context,
+      ctrl,
+      key,
+      title,
+      colors,
+      curC,
+      curW,
+      onUpdate,
     );
   }
 }

@@ -1,7 +1,8 @@
+import 'package:xournalpp/src/app_brand.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-Future<void> showOsiAppInfo(BuildContext context) async {
+Future<void> showTenerumiAppInfo(BuildContext context) async {
   String version = '0.5';
   String? build;
   try {
@@ -25,7 +26,12 @@ Future<void> showOsiAppInfo(BuildContext context) async {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('OSI', style: Theme.of(context).textTheme.displaySmall),
+            Image.asset(AppBrand.logo, width: 80, height: 80, cacheWidth: 240),
+            const SizedBox(height: 12),
+            Text(
+              AppBrand.name,
+              style: Theme.of(context).textTheme.displaySmall,
+            ),
             const SizedBox(height: 8),
             Text('Versione $version'),
             if (build != null && build.isNotEmpty) Text('Build $build'),
@@ -33,7 +39,7 @@ Future<void> showOsiAppInfo(BuildContext context) async {
             const Text('Versione in sviluppo'),
             const SizedBox(height: 8),
             const Text(
-              'Appunti digitali, disegno e annotazioni PDF. Organizza i tuoi documenti con tag, usa il canvas e studia con il timer Pomodoro.',
+              'Appunti digitali, disegno e annotazioni PDF. Organizza i documenti con tag e personalizza i tuoi strumenti di studio.',
             ),
             const SizedBox(height: 16),
             const Text(
@@ -46,7 +52,7 @@ Future<void> showOsiAppInfo(BuildContext context) async {
         TextButton(
           onPressed: () => showLicensePage(
             context: context,
-            applicationName: 'OSI',
+            applicationName: AppBrand.name,
             applicationVersion: version,
           ),
           child: const Text('Licenze'),

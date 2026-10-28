@@ -1,3 +1,5 @@
+import 'package:xournalpp/src/app_brand.dart';
+
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
@@ -833,7 +835,7 @@ class XppFile {
   XmlElement _xmlSkeleton() => XmlElement(
     XmlName('xournal'),
     [
-      XmlAttribute(XmlName('creator'), 'OSI'),
+      XmlAttribute(XmlName('creator'), AppBrand.name),
       XmlAttribute(XmlName('fileversion'), '4'),
       XmlAttribute(XmlName('osipp-id'), documentId),
       XmlAttribute(XmlName('osipp-auto-pages'), '$autoGeneratePages'),

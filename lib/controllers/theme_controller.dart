@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+
+import 'dart:convert';
+
+import 'package:xournalpp/src/stylus_shortcut.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Stile delle icone dell'app (personalizzazione).
@@ -25,6 +29,10 @@ class ThemeController extends ChangeNotifier {
   AppIconStyle iconStyle = AppIconStyle.outlined;
   bool showPageScrollbar = true;
   Color currentPageBorderColor = kDefaultAccent;
+  int stylusMenuHoldDelayMs = StylusShortcut.defaultHoldDelayMs;
+  List<StylusShortcut> stylusShortcuts = List.unmodifiable(
+    StylusShortcut.defaults,
+  );
 
   /// Set di icone coerente con lo stile scelto dall'utente.
   AppIcons get icons => AppIcons(iconStyle);
@@ -37,6 +45,24 @@ class ThemeController extends ChangeNotifier {
       useDynamicColor = prefs.getBool(_kDynamic) ?? true;
       pureBlack = prefs.getBool(_kPureBlack) ?? true;
       showPageScrollbar = prefs.getBool('show_page_scrollbar') ?? true;
+      stylusMenuHoldDelayMs =
+          (prefs.getInt(StylusShortcut.holdDelayPreference) ??
+                  StylusShortcut.defaultHoldDelayMs)
+              .clamp(
+                StylusShortcut.minHoldDelayMs,
+                StylusShortcut.maxHoldDelayMs,
+              );
+      try {
+        final stored = prefs.getString(StylusShortcut.preferenceKey);
+        if (stored != null) {
+          final values = (jsonDecode(stored) as List)
+              .map(StylusShortcut.fromJson)
+              .toList();
+          if (values.length == 5) stylusShortcuts = List.unmodifiable(values);
+        }
+      } catch (_) {
+        /* Preserve usable defaults for invalid older settings. */
+      }
       currentPageBorderColor = Color(
         prefs.getInt('current_page_border_color') ?? kDefaultAccent.toARGB32(),
       );
@@ -90,6 +116,28 @@ class ThemeController extends ChangeNotifier {
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('show_page_scrollbar', value);
+  }
+
+  Future<void> setStylusMenuSettings({
+    required List<StylusShortcut> shortcuts,
+    required int holdDelayMs,
+  }) async {
+    if (shortcuts.length != 5) return;
+    stylusShortcuts = List.unmodifiable(shortcuts);
+    stylusMenuHoldDelayMs = holdDelayMs.clamp(
+      StylusShortcut.minHoldDelayMs,
+      StylusShortcut.maxHoldDelayMs,
+    );
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(
+      StylusShortcut.holdDelayPreference,
+      stylusMenuHoldDelayMs,
+    );
+    await prefs.setString(
+      StylusShortcut.preferenceKey,
+      jsonEncode(stylusShortcuts.map((s) => s.toJson()).toList()),
+    );
   }
 
   Future<void> setCurrentPageBorderColor(Color color) async {

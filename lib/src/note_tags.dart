@@ -9,8 +9,9 @@ import 'critical_data.dart';
 /// Small, local tag catalog. Existing library tags are included on migration.
 abstract final class NoteTags {
   static const defaults = ['Appunti', 'Scuola', 'Lavoro'];
+  static final _whitespace = RegExp(r'\s+');
   static String normalize(String value) =>
-      value.trim().replaceAll(RegExp(r'\s+'), ' ');
+      value.trim().replaceAll(_whitespace, ' ');
 
   static Future<List<String>> load() async {
     final prefs = await SharedPreferences.getInstance();
@@ -29,6 +30,7 @@ abstract final class NoteTags {
       await CriticalData.write(PreferencesKeys.kNoteTags, catalog);
     }
     final tags = <String>[];
+    final seen = <String>{};
     for (final value in [
       ...defaults,
       ...catalog.whereType<String>(),
@@ -39,9 +41,7 @@ abstract final class NoteTags {
       final tag = normalize(value);
       if (tag.isNotEmpty &&
           tag.toLowerCase() != 'tutti' &&
-          !tags.any(
-            (existing) => existing.toLowerCase() == tag.toLowerCase(),
-          )) {
+          seen.add(tag.toLowerCase())) {
         tags.add(tag);
       }
     }

@@ -8,6 +8,6 @@ abstract final class AppFeatures {
 
   static const bool manualBackup = bool.fromEnvironment(
     'OSI_ENABLE_BACKUP',
-    defaultValue: false,
+    defaultValue: true,
   );
 }

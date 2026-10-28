@@ -344,6 +344,8 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(Icons.settings_outlined));
       await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('settings-section-pen')));
+      await tester.pumpAndSettle();
       final profile = find.byKey(const ValueKey('stylus-profile-setting'));
       await tester.ensureVisible(profile);
       await tester.pumpAndSettle();

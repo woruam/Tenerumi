@@ -22,7 +22,7 @@ void main() {
     );
     expect(
       AppFeatures.manualBackup,
-      const bool.fromEnvironment('OSI_ENABLE_BACKUP', defaultValue: false),
+      const bool.fromEnvironment('OSI_ENABLE_BACKUP', defaultValue: true),
     );
   });
 
@@ -75,6 +75,11 @@ void main() {
 
       await tester.tap(find.byIcon(Icons.settings_outlined));
       await tester.pumpAndSettle();
+      if (AppFeatures.manualBackup) {
+        await tester.ensureVisible(find.text('Backup e ripristino'));
+        await tester.tap(find.text('Backup e ripristino'));
+        await tester.pumpAndSettle();
+      }
       final backupMatcher = AppFeatures.manualBackup
           ? findsOneWidget
           : findsNothing;

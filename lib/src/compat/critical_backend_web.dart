@@ -36,7 +36,9 @@ Future<IDBDatabase> _database() async {
   request.onblocked = ((Event _) {
     if (!done.isCompleted) {
       done.completeError(
-        StateError('Chiudere le altre schede OSI per aggiornare l’archivio'),
+        StateError(
+          'Chiudere le altre schede Tenerumi per aggiornare l’archivio',
+        ),
       );
     }
   }).toJS;
