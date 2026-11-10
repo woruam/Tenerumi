@@ -13,7 +13,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(OpenPage), findsOneWidget);
     expect(find.byType(FloatingActionButton), findsOneWidget);
-    expect(find.text('Nessun documento qui'), findsOneWidget);
+    expect(find.text('No documents here'), findsOneWidget);
     final textTheme = Theme.of(tester.element(find.byType(OpenPage))).textTheme;
     final defaultTheme = ThemeData.dark();
     final baseTextTheme = defaultTheme.typography.englishLike.merge(

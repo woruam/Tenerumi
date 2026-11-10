@@ -14,7 +14,7 @@ enum AppIconStyle { outlined, rounded, sharp }
 /// sfondo nero puro (OLED) oppure grigio scurissimo, e lo stile delle icone.
 /// Tutto viene salvato in SharedPreferences e ripristinato all'avvio.
 class ThemeController extends ChangeNotifier {
-  static const Color kDefaultAccent = const Color(0xFFD71921);
+  static const Color kDefaultAccent = Color(0xFFD71921);
 
   // Chiavi di persistenza (quelle del tema restano identiche alle vecchie
   // versioni dell'app, così le preferenze già salvate non vanno perse).
@@ -22,6 +22,8 @@ class ThemeController extends ChangeNotifier {
   static const String _kDynamic = 'use_dynamic_color';
   static const String _kPureBlack = 'theme_pure_black';
   static const String _kIconStyle = 'app_icon_style';
+  static const String kLanguageKey = 'app_language';
+  static const String _kLanguage = kLanguageKey;
 
   Color accent = kDefaultAccent;
   bool useDynamicColor = true;
@@ -33,6 +35,14 @@ class ThemeController extends ChangeNotifier {
   List<StylusShortcut> stylusShortcuts = List.unmodifiable(
     StylusShortcut.defaults,
   );
+  String _languageCode = 'en';
+
+  ThemeController({String initialLanguage = 'en'})
+      : _languageCode = initialLanguage;
+
+  String get languageCode => _languageCode;
+  Locale get locale => Locale(_languageCode);
+  bool get isItalian => _languageCode == 'it';
 
   /// Set di icone coerente con lo stile scelto dall'utente.
   AppIcons get icons => AppIcons(iconStyle);
@@ -40,6 +50,12 @@ class ThemeController extends ChangeNotifier {
   Future<void> load() async {
     try {
       final prefs = await SharedPreferences.getInstance();
+      final lang = prefs.getString(_kLanguage);
+      if (lang == 'it') {
+        _languageCode = 'it';
+      } else {
+        _languageCode = 'en';
+      }
       final colorValue = prefs.getInt(_kColor);
       if (colorValue != null) accent = Color(colorValue);
       useDynamicColor = prefs.getBool(_kDynamic) ?? true;
@@ -102,6 +118,15 @@ class ThemeController extends ChangeNotifier {
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_kPureBlack, value);
+  }
+
+  Future<void> setLanguage(String code) async {
+    if (code != 'en' && code != 'it') return;
+    if (_languageCode == code) return;
+    _languageCode = code;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_kLanguage, code);
   }
 
   Future<void> setIconStyle(AppIconStyle style) async {

@@ -14,27 +14,52 @@ class SettingsSection extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => Card(
-    margin: const EdgeInsets.only(bottom: 10),
-    color: Theme.of(context).colorScheme.surfaceContainerHigh,
-    elevation: 0,
-    clipBehavior: Clip.antiAlias,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(14),
-      side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
-    ),
-    child: Theme(
-      data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-      child: ExpansionTile(
-        key: ValueKey('settings-section-$id'),
-        leading: Icon(icon),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-        subtitle: Text(subtitle),
-        tilePadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-        childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
-        expandedCrossAxisAlignment: CrossAxisAlignment.start,
-        children: children,
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      color: cs.surfaceContainerHigh,
+      elevation: 0,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: cs.outlineVariant, width: 1),
       ),
-    ),
-  );
+      child: Theme(
+        data: theme.copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          key: ValueKey('settings-section-$id'),
+          leading: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: cs.surfaceContainerHighest,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, size: 20, color: cs.primary),
+          ),
+          title: Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 15,
+              letterSpacing: 0.1,
+            ),
+          ),
+          subtitle: Text(
+            subtitle,
+            style: TextStyle(
+              fontSize: 12,
+              color: cs.onSurfaceVariant,
+            ),
+          ),
+          tilePadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+          childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          expandedCrossAxisAlignment: CrossAxisAlignment.start,
+          children: children,
+        ),
+      ),
+    );
+  }
 }

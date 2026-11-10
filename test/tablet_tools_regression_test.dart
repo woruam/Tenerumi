@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:ui' as ui;
 
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:xournalpp/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -109,6 +111,14 @@ void main() {
       );
       await tester.pumpWidget(
         MaterialApp(
+          locale: const Locale('it'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
           home: Builder(
             builder: (context) => TextButton(
               onPressed: () => requestDeleteCurrentPage(context, ctrl),

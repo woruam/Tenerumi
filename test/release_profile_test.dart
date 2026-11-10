@@ -49,6 +49,7 @@ void main() {
       // them; public startup must never create that controller in the first place.
       const legacyPlugins = 'invalid legacy plugin archive';
       SharedPreferences.setMockInitialValues({
+        'app_language': 'it',
         PluginController.builtInKey: legacyBuiltIns,
         PluginController.storageKey: legacyPlugins,
         PreferencesKeys.kRecentFiles: jsonEncode([

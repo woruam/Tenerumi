@@ -142,89 +142,111 @@ class _DocumentLibraryCardState extends State<DocumentLibraryCard> {
   }
 
   @override
-  Widget build(BuildContext context) => Card(
-    clipBehavior: Clip.antiAlias,
-    color: AppAppearance.panel,
-    shape: AppAppearance.panelShape,
-    child: InkWell(
-      onTap: widget.onTap,
-      onLongPress: widget.onLongPress ?? widget.onTagEdit,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: ColoredBox(
-              color: AppAppearance.raised,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  RepaintBoundary(
-                    child: DocumentPreviewImage(
-                      encoded: _data['preview'] is String
-                          ? _data['preview'] as String
-                          : null,
-                      fallbackIcon: widget.fallbackIcon,
-                    ),
-                  ),
-                  if (widget.onTagEdit != null)
-                    Positioned(
-                      top: 4,
-                      right: 4,
-                      child: IconButton.filledTonal(
-                        tooltip: 'Cambia tag',
-                        style: IconButton.styleFrom(
-                          backgroundColor: AppAppearance.panel,
-                          foregroundColor: Theme.of(context)
-                              .colorScheme
-                              .onSurfaceVariant,
-                          shape: const CircleBorder(
-                            side: BorderSide(color: AppAppearance.border),
-                          ),
-                        ),
-                        icon: const Icon(Icons.sell_outlined, size: 18),
-                        onPressed: widget.onTagEdit,
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final tagName = _data['tag'] as String? ?? 'Appunti';
+    final title = _data['name'] as String? ?? 'Senza titolo';
+    final modified = documentModifiedLabel(_data['modifiedAt']);
+
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      color: AppAppearance.panel,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: AppAppearance.border, width: 1),
+      ),
+      elevation: 0,
+      child: InkWell(
+        onTap: widget.onTap,
+        onLongPress: widget.onLongPress ?? widget.onTagEdit,
+        borderRadius: BorderRadius.circular(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: Container(
+                color: AppAppearance.raised,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    RepaintBoundary(
+                      child: DocumentPreviewImage(
+                        encoded: _data['preview'] is String
+                            ? _data['preview'] as String
+                            : null,
+                        fallbackIcon: widget.fallbackIcon,
                       ),
                     ),
+                    if (widget.onTagEdit != null)
+                      Positioned(
+                        top: 6,
+                        right: 6,
+                        child: IconButton.filledTonal(
+                          tooltip: 'Cambia tag',
+                          style: IconButton.styleFrom(
+                            backgroundColor:
+                                AppAppearance.panel.withValues(alpha: 0.88),
+                            foregroundColor: cs.onSurfaceVariant,
+                            minimumSize: const Size(30, 30),
+                            padding: const EdgeInsets.all(5),
+                            shape: const CircleBorder(
+                              side: BorderSide(
+                                color: AppAppearance.border,
+                                width: 0.8,
+                              ),
+                            ),
+                          ),
+                          icon: const Icon(Icons.sell_outlined, size: 15),
+                          onPressed: widget.onTagEdit,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    tagName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: cs.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    modified,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: cs.onSurfaceVariant.withValues(alpha: 0.8),
+                    ),
+                  ),
                 ],
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _data['name'] as String? ?? 'Senza titolo',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  _data['tag'] as String? ?? 'Appunti',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  documentModifiedLabel(_data['modifiedAt']),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }

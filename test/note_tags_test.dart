@@ -17,7 +17,7 @@ import 'package:xournalpp/widgets/note_tag_picker.dart';
 import 'pomodoro_appearance_test.dart' show capture;
 
 void main() {
-  setUp(() => SharedPreferences.setMockInitialValues({}));
+  setUp(() => SharedPreferences.setMockInitialValues({'app_language': 'it'}));
 
   test(
     'custom tags persist, include legacy categories and avoid duplicates',
@@ -123,7 +123,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Università'), findsOneWidget);
-    await tester.tap(find.byTooltip('Open navigation menu'));
+    await tester.tap(find.byIcon(Icons.menu));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Info App'));
     await tester.pumpAndSettle();

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:xournalpp/controllers/canvas_controller.dart';
+import 'package:xournalpp/l10n/app_localizations.dart';
 
 Future<void> requestDeleteCurrentPage(
   BuildContext context,
@@ -8,22 +9,23 @@ Future<void> requestDeleteCurrentPage(
   if (!controller.canDeletePage) return;
   final page = controller.file!.pages![controller.activePageIndex];
   if (controller.pageHasAnnotations(controller.activePageIndex)) {
+    final l10n = context.l10n;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Eliminare la pagina?'),
-        content: const Text(
-          'Questa pagina contiene modifiche. Eliminandola perderai anche le annotazioni, le immagini e il testo presenti.',
+        title: Text(l10n.deletePageConfirmTitle),
+        content: Text(
+          l10n.deletePageConfirmMessage,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annulla'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             key: const ValueKey('confirm-delete-page'),
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Elimina'),
+            child: Text(l10n.delete),
           ),
         ],
       ),

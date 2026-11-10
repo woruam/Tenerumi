@@ -1,3 +1,4 @@
+import 'package:xournalpp/l10n/app_localizations.dart';
 import 'package:xournalpp/src/app_brand.dart';
 import 'package:xournalpp/widgets/settings_section.dart';
 import 'package:xournalpp/widgets/stylus_menu_settings.dart';
@@ -48,9 +49,19 @@ class _OpenPageState extends State<OpenPage> {
   String selectedTag = 'Tutti';
   bool _deletingNote = false;
   bool _openingFile = false;
+  String _searchQuery = '';
+  bool _showSearch = false;
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   Future<void> _showNoteActions(Map<String, dynamic> entry) async {
     if (_deletingNote) return;
+    final l10n = context.l10n;
     final action = await showModalBottomSheet<String>(
       context: context,
       useSafeArea: true,
@@ -60,7 +71,7 @@ class _OpenPageState extends State<OpenPage> {
           Padding(
             padding: const EdgeInsets.all(20),
             child: Text(
-              entry['name'] as String? ?? 'Appunto',
+              entry['name'] as String? ?? l10n.newNote,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.titleLarge,
@@ -68,7 +79,7 @@ class _OpenPageState extends State<OpenPage> {
           ),
           ListTile(
             leading: const Icon(Icons.label_outline),
-            title: const Text('Cambia tag'),
+            title: Text(l10n.changeTag),
             onTap: () => Navigator.pop(sheetContext, 'tag'),
           ),
           ListTile(
@@ -76,7 +87,7 @@ class _OpenPageState extends State<OpenPage> {
               Icons.delete_outline,
               color: Theme.of(context).colorScheme.error,
             ),
-            title: const Text('Elimina'),
+            title: Text(l10n.delete),
             onTap: () => Navigator.pop(sheetContext, 'delete'),
           ),
           const SizedBox(height: 12),
@@ -90,21 +101,22 @@ class _OpenPageState extends State<OpenPage> {
 
   Future<void> _confirmDeleteNote(Map<String, dynamic> entry) async {
     if (_deletingNote) return;
+    final l10n = context.l10n;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Eliminare l’appunto?'),
+        title: Text(l10n.deleteNoteConfirmTitle),
         content: Text(
-          '“${entry['name'] ?? 'Appunto'}” verrà eliminato insieme ai suoi contenuti e alle registrazioni audio. Questa operazione non può essere annullata.',
+          l10n.deleteNoteConfirmMessage(entry['name'] as String? ?? l10n.newNote),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Annulla'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Elimina'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -115,12 +127,12 @@ class _OpenPageState extends State<OpenPage> {
       await RecentDocuments.delete(entry);
       if (mounted)
         ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('Appunto eliminato')));
+            .showSnackBar(SnackBar(content: Text(l10n.noteDeleted)));
     } catch (_) {
       if (mounted)
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Impossibile completare l’eliminazione dell’appunto'),
+          SnackBar(
+            content: Text(l10n.deleteNoteFailed),
           ),
         );
     } finally {
@@ -209,12 +221,13 @@ class _OpenPageState extends State<OpenPage> {
   }
 
   Future<void> _editNoteTag(Map<String, dynamic> entry) async {
+    final l10n = context.l10n;
     String chosen = entry['tag'] as String? ?? 'Appunti';
     final result = await showDialog<String>(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, update) => AlertDialog(
-          title: const Text('Cambia tag'),
+          title: Text(l10n.changeTag),
           content: SizedBox(
             width: 360,
             child: NoteTagPicker(
@@ -230,11 +243,11 @@ class _OpenPageState extends State<OpenPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Annulla'),
+              child: Text(l10n.cancel),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(context, chosen),
-              child: const Text('Salva'),
+              child: Text(l10n.save),
             ),
           ],
         ),
@@ -249,7 +262,7 @@ class _OpenPageState extends State<OpenPage> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Impossibile aggiornare il tag')),
+          SnackBar(content: Text(l10n.updateTagFailed)),
         );
       }
     }
@@ -267,6 +280,7 @@ class _OpenPageState extends State<OpenPage> {
   Future<void> _openDeviceFile() async {
     if (_openingFile) return;
     setState(() => _openingFile = true);
+    final l10n = context.l10n;
     try {
       final file = await XppFile.open(
         (_) {},
@@ -279,7 +293,7 @@ class _OpenPageState extends State<OpenPage> {
     } catch (error) {
       if (mounted && error != 'No file selected.') {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Impossibile aprire il file: $error')),
+          SnackBar(content: Text(l10n.fileOpenFailed(error))),
         );
       }
     } finally {
@@ -316,6 +330,7 @@ class _OpenPageState extends State<OpenPage> {
     int selectedTemplate = 1; // default: Righe (come prima)
     bool infinite = false;
     String noteTag = selectedTag == 'Tutti' ? 'Appunti' : selectedTag;
+    final l10n = context.l10n;
 
     await showDialog(
       context: context,
@@ -323,9 +338,9 @@ class _OpenPageState extends State<OpenPage> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              title: const Text(
-                'Nuovo Appunto',
-                style: TextStyle(fontWeight: FontWeight.bold),
+              title: Text(
+                l10n.newNote,
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               content: SizedBox(
                 width: 420,
@@ -338,10 +353,11 @@ class _OpenPageState extends State<OpenPage> {
                         controller: titleController,
                         autofocus: true,
                         decoration: InputDecoration(
-                          labelText: 'Titolo del documento',
-                          hintText: 'Es. Lezione di Matematica',
+                          labelText: l10n.documentTitleLabel,
+                          hintText: l10n.documentTitleHint,
+                          prefixIcon: const Icon(Icons.edit_note_rounded),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(14),
                           ),
                         ),
                       ),
@@ -360,17 +376,15 @@ class _OpenPageState extends State<OpenPage> {
                       const SizedBox(height: 8),
                       SwitchListTile(
                         contentPadding: EdgeInsets.zero,
-                        title: const Text('Canvas infinito'),
-                        subtitle: const Text(
-                          'Scrivi e spostati liberamente in tutte le direzioni',
-                        ),
+                        title: Text(l10n.infiniteCanvas),
+                        subtitle: Text(l10n.infiniteCanvasSubtitle),
                         value: infinite,
                         onChanged: (value) =>
                             setDialogState(() => infinite = value),
                       ),
-                      const Text(
-                        'MODELLO PAGINA',
-                        style: TextStyle(
+                      Text(
+                        l10n.pageModelHeader,
+                        style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
                           color: Colors.grey,
@@ -392,14 +406,14 @@ class _OpenPageState extends State<OpenPage> {
                             final cs = Theme.of(context).colorScheme;
                             return InkWell(
                               onTap: () =>
-                                  setDialogState(() => selectedTemplate = i),
+                                   setDialogState(() => selectedTemplate = i),
                               borderRadius: BorderRadius.circular(10),
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Container(
-                                    width: 64,
-                                    height: 88,
+                                    width: 66,
+                                    height: 90,
                                     decoration: BoxDecoration(
                                       border: Border.all(
                                         color: sel
@@ -407,28 +421,50 @@ class _OpenPageState extends State<OpenPage> {
                                             : Colors.grey.withOpacity(0.35),
                                         width: sel ? 2.5 : 1,
                                       ),
-                                      borderRadius: BorderRadius.circular(8),
+                                      borderRadius: BorderRadius.circular(10),
                                     ),
                                     clipBehavior: Clip.antiAlias,
-                                    child: FittedBox(
-                                      fit: BoxFit.cover,
-                                      child: SizedBox(
-                                        width: 64,
-                                        height: 88,
-                                        child: templates[i]
-                                            .builder(
-                                              XppPageSize(
-                                                width: 64,
-                                                height: 88,
+                                    child: Stack(
+                                      fit: StackFit.expand,
+                                      children: [
+                                        FittedBox(
+                                          fit: BoxFit.cover,
+                                          child: SizedBox(
+                                            width: 66,
+                                            height: 90,
+                                            child: templates[i]
+                                                .builder(
+                                                  XppPageSize(
+                                                    width: 66,
+                                                    height: 90,
+                                                  ),
+                                                )
+                                                .render(),
+                                          ),
+                                        ),
+                                        if (sel)
+                                          Positioned(
+                                            top: 4,
+                                            right: 4,
+                                            child: Container(
+                                              padding: const EdgeInsets.all(2),
+                                              decoration: BoxDecoration(
+                                                color: cs.primary,
+                                                shape: BoxShape.circle,
                                               ),
-                                            )
-                                            .render(),
-                                      ),
+                                              child: Icon(
+                                                Icons.check,
+                                                size: 10,
+                                                color: cs.onPrimary,
+                                              ),
+                                            ),
+                                          ),
+                                      ],
                                     ),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    templates[i].name,
+                                    l10n.paperTemplateName(templates[i].name),
                                     style: TextStyle(
                                       fontSize: 11,
                                       fontWeight: sel
@@ -449,15 +485,15 @@ class _OpenPageState extends State<OpenPage> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text(
-                    'Annulla',
-                    style: TextStyle(color: Colors.grey),
+                  child: Text(
+                    l10n.cancel,
+                    style: const TextStyle(color: Colors.grey),
                   ),
                 ),
                 ElevatedButton(
                   onPressed: () {
                     String title = titleController.text.trim();
-                    if (title.isEmpty) title = "Senza Titolo";
+                    if (title.isEmpty) title = l10n.untitledDocument;
 
                     Navigator.pop(context);
 
@@ -475,7 +511,7 @@ class _OpenPageState extends State<OpenPage> {
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Theme.of(context).colorScheme.onPrimary,
                   ),
-                  child: const Text('Crea Foglio'),
+                  child: Text(l10n.createSheet),
                 ),
               ],
             );
@@ -516,11 +552,12 @@ class _OpenPageState extends State<OpenPage> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             final cs = Theme.of(context).colorScheme;
+            final l10n = AppLocalizations(theme.locale);
             return AlertDialog(
               backgroundColor: AppAppearance.panel,
-              title: const Text(
-                'Impostazioni',
-                style: TextStyle(fontWeight: FontWeight.bold),
+              title: Text(
+                l10n.settings,
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               content: SingleChildScrollView(
                 // Evita errori di overflow se lo schermo è piccolo
@@ -532,17 +569,17 @@ class _OpenPageState extends State<OpenPage> {
                     children: [
                       SettingsSection(
                         id: 'appearance',
-                        title: 'Aspetto',
-                        subtitle: 'Colori, sfondo e stile delle icone',
+                        title: l10n.appearance,
+                        subtitle: l10n.appearanceSubtitle,
                         icon: Icons.palette_outlined,
                         children: [
                           // Material You: usa i colori dello sfondo di Android.
                           SwitchListTile(
                             contentPadding: EdgeInsets.zero,
-                            title: const Text('Colori dinamici (Material You)'),
-                            subtitle: const Text(
-                              'Segue lo sfondo del telefono',
-                              style: TextStyle(fontSize: 12),
+                            title: Text(l10n.dynamicColors),
+                            subtitle: Text(
+                              l10n.dynamicColorsSubtitle,
+                              style: const TextStyle(fontSize: 12),
                             ),
                             value: theme.useDynamicColor,
                             onChanged: (v) {
@@ -553,10 +590,10 @@ class _OpenPageState extends State<OpenPage> {
                           // Nero puro: sfondi #000 per schermi OLED.
                           SwitchListTile(
                             contentPadding: EdgeInsets.zero,
-                            title: const Text('Nero puro (OLED)'),
-                            subtitle: const Text(
-                              'Sfondi completamente neri',
-                              style: TextStyle(fontSize: 12),
+                            title: Text(l10n.pureBlack),
+                            subtitle: Text(
+                              l10n.pureBlackSubtitle,
+                              style: const TextStyle(fontSize: 12),
                             ),
                             value: theme.pureBlack,
                             onChanged: (v) {
@@ -606,8 +643,8 @@ class _OpenPageState extends State<OpenPage> {
                                       final bool? ok = await showDialog<bool>(
                                         context: context,
                                         builder: (context) => AlertDialog(
-                                          title: const Text(
-                                            'Colore personalizzato',
+                                          title: Text(
+                                            l10n.customColor,
                                           ),
                                           content: SingleChildScrollView(
                                             child: ColorPicker(
@@ -623,12 +660,12 @@ class _OpenPageState extends State<OpenPage> {
                                             TextButton(
                                               onPressed: () =>
                                                   Navigator.pop(context, false),
-                                              child: const Text('Annulla'),
+                                              child: Text(l10n.cancel),
                                             ),
                                             ElevatedButton(
                                               onPressed: () =>
                                                   Navigator.pop(context, true),
-                                              child: const Text('Applica'),
+                                              child: Text(l10n.apply),
                                             ),
                                           ],
                                         ),
@@ -671,9 +708,9 @@ class _OpenPageState extends State<OpenPage> {
                             ),
                           ),
 
-                          const Text(
-                            'Stile delle icone',
-                            style: TextStyle(
+                          Text(
+                            l10n.iconStyle,
+                            style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
                               color: Colors.grey,
@@ -684,7 +721,11 @@ class _OpenPageState extends State<OpenPage> {
                             spacing: 8,
                             runSpacing: 8,
                             children: AppIconStyle.values.map((style) {
-                              final labels = ['Linea', 'Tonde', 'Nette'];
+                              final labels = [
+                                l10n.iconStyleLine,
+                                l10n.iconStyleRounded,
+                                l10n.iconStyleSharp,
+                              ];
                               return ChoiceChip(
                                 label: Text(labels[style.index]),
                                 selected: theme.iconStyle == style,
@@ -698,19 +739,51 @@ class _OpenPageState extends State<OpenPage> {
                         ],
                       ),
                       SettingsSection(
+                        id: 'language',
+                        title: l10n.languageSectionTitle,
+                        subtitle: l10n.languageSectionSubtitle,
+                        icon: Icons.language_outlined,
+                        children: [
+                          RadioListTile<String>(
+                            key: const ValueKey('language-option-en'),
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(l10n.languageEnglish),
+                            value: 'en',
+                            groupValue: theme.languageCode,
+                            onChanged: (v) async {
+                              if (v != null) {
+                                await theme.setLanguage(v);
+                                setDialogState(() {});
+                              }
+                            },
+                          ),
+                          RadioListTile<String>(
+                            key: const ValueKey('language-option-it'),
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(l10n.languageItalian),
+                            value: 'it',
+                            groupValue: theme.languageCode,
+                            onChanged: (v) async {
+                              if (v != null) {
+                                await theme.setLanguage(v);
+                                setDialogState(() {});
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                      SettingsSection(
                         id: 'pen',
-                        title: 'Penna e gesti',
-                        subtitle: 'Menù circolare, tasti e disegno con le dita',
+                        title: l10n.penAndGestures,
+                        subtitle: l10n.penAndGesturesSubtitle,
                         icon: Icons.edit_outlined,
                         children: [
                           ListTile(
                             key: const ValueKey('stylus-menu-settings'),
                             contentPadding: EdgeInsets.zero,
                             leading: const Icon(Icons.touch_app_outlined),
-                            title: const Text('Menù circolare della penna'),
-                            subtitle: const Text(
-                              'Tempo di apertura e cinque scorciatoie personalizzabili',
-                            ),
+                            title: Text(l10n.stylusRadialMenu),
+                            subtitle: Text(l10n.stylusRadialMenuSubtitle),
                             onTap: () async {
                               await showStylusMenuSettings(context, theme);
                               if (context.mounted) setDialogState(() {});
@@ -718,10 +791,8 @@ class _OpenPageState extends State<OpenPage> {
                           ),
                           SwitchListTile(
                             contentPadding: EdgeInsets.zero,
-                            title: const Text('Disegna con le dita'),
-                            subtitle: const Text(
-                              'Un dito disegna; due dita spostano e ingrandiscono. Disattiva per ignorare il palmo.',
-                            ),
+                            title: Text(l10n.drawWithFingers),
+                            subtitle: Text(l10n.drawWithFingersSubtitle),
                             value: touchDrawing,
                             onChanged: (value) async {
                               await prefs.setBool(
@@ -732,9 +803,9 @@ class _OpenPageState extends State<OpenPage> {
                                 setDialogState(() => touchDrawing = value);
                             },
                           ),
-                          const Text(
-                            'Tasti della penna',
-                            style: TextStyle(
+                          Text(
+                            l10n.stylusButtons,
+                            style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
                               color: Colors.grey,
@@ -746,18 +817,18 @@ class _OpenPageState extends State<OpenPage> {
                             key: const ValueKey('stylus-profile-setting'),
                             isExpanded: true,
                             value: stylusProfile,
-                            items: const [
+                            items: [
                               DropdownMenuItem(
                                 value: StylusProfile.automatic,
-                                child: Text('Automatica (1 o 2 tasti)'),
+                                child: Text(l10n.stylusProfileAuto),
                               ),
                               DropdownMenuItem(
                                 value: StylusProfile.singleButton,
-                                child: Text('Un tasto (S Pen e simili)'),
+                                child: Text(l10n.stylusProfileSingle),
                               ),
                               DropdownMenuItem(
                                 value: StylusProfile.twoButtons,
-                                child: Text('Due tasti (Redmi Pen e simili)'),
+                                child: Text(l10n.stylusProfileTwo),
                               ),
                             ],
                             onChanged: (value) async {
@@ -773,25 +844,25 @@ class _OpenPageState extends State<OpenPage> {
                           const SizedBox(height: 12),
                           Text(
                             stylusProfile == StylusProfile.singleButton
-                                ? 'Tasto laterale'
-                                : 'Tasto 1 (principale / vicino alla punta)',
-                            style: TextStyle(fontSize: 14),
+                                ? l10n.stylusSideButton
+                                : l10n.stylusButton1,
+                            style: const TextStyle(fontSize: 14),
                           ),
                           DropdownButton<String>(
                             isExpanded: true,
                             value: buttonDown,
-                            items: const [
+                            items: [
                               DropdownMenuItem(
                                 value: 'eraser',
-                                child: Text('Gomma'),
+                                child: Text(l10n.actionEraser),
                               ),
                               DropdownMenuItem(
                                 value: 'select',
-                                child: Text('Lazo'),
+                                child: Text(l10n.actionLasso),
                               ),
                               DropdownMenuItem(
                                 value: 'highlighter',
-                                child: Text('Evidenziatore'),
+                                child: Text(l10n.actionHighlighter),
                               ),
                             ],
                             onChanged: (v) {
@@ -808,25 +879,25 @@ class _OpenPageState extends State<OpenPage> {
                           if (stylusProfile.supportsSecondaryButton) ...[
                             const SizedBox(height: 16),
 
-                            const Text(
-                              'Tasto 2 (secondario / superiore)',
-                              style: TextStyle(fontSize: 14),
+                            Text(
+                              l10n.stylusButton2,
+                              style: const TextStyle(fontSize: 14),
                             ),
                             DropdownButton<String>(
                               isExpanded: true,
                               value: buttonUp,
-                              items: const [
+                              items: [
                                 DropdownMenuItem(
                                   value: 'eraser',
-                                  child: Text('Gomma'),
+                                  child: Text(l10n.actionEraser),
                                 ),
                                 DropdownMenuItem(
                                   value: 'select',
-                                  child: Text('Lazo'),
+                                  child: Text(l10n.actionLasso),
                                 ),
                                 DropdownMenuItem(
                                   value: 'highlighter',
-                                  child: Text('Evidenziatore'),
+                                  child: Text(l10n.actionHighlighter),
                                 ),
                               ],
                               onChanged: (v) {
@@ -843,13 +914,8 @@ class _OpenPageState extends State<OpenPage> {
                           const SizedBox(height: 8),
                           Text(
                             stylusProfile.usesTemporaryButton
-                                ? 'Tieni premuto il tasto prima di toccare il foglio per usare '
-                                      'l’azione nel tratto. Rilascialo per tornare allo strumento scelto '
-                                      'dal tratto successivo. Le funzioni a distanza e Air Actions non sono incluse.'
-                                : 'Suggerimento: tieni premuto il tasto mentre scrivi per usare '
-                                      'l\'azione solo in quel tratto, oppure premilo mentre la penna '
-                                      'e\' sollevata (in hover) per attivare/disattivare l\'azione. '
-                                      'Il secondo tasto viene usato solo se la penna lo possiede.',
+                                ? l10n.stylusSingleTip
+                                : l10n.stylusTwoTip,
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey.shade500,
@@ -859,17 +925,15 @@ class _OpenPageState extends State<OpenPage> {
                       ),
                       SettingsSection(
                         id: 'pages',
-                        title: 'Pagine e navigazione',
-                        subtitle: 'Scorrimento e contorno del foglio',
+                        title: l10n.pagesAndNavigation,
+                        subtitle: l10n.pagesAndNavigationSubtitle,
                         icon: Icons.description_outlined,
                         children: [
                           SwitchListTile(
                             key: const ValueKey('page-scrollbar-setting'),
                             contentPadding: EdgeInsets.zero,
-                            title: const Text('Barra di scorrimento pagine'),
-                            subtitle: const Text(
-                              'Trascina la barra laterale per scorrere velocemente la nota.',
-                            ),
+                            title: Text(l10n.pageScrollbar),
+                            subtitle: Text(l10n.pageScrollbarSubtitle),
                             value: theme.showPageScrollbar,
                             onChanged: (value) {
                               theme.setPageScrollbar(value);
@@ -879,9 +943,7 @@ class _OpenPageState extends State<OpenPage> {
                           ListTile(
                             key: const ValueKey('page-border-color-setting'),
                             contentPadding: EdgeInsets.zero,
-                            title: const Text(
-                              'Colore contorno pagina corrente',
-                            ),
+                            title: Text(l10n.currentPageBorderColor),
                             trailing: Icon(
                               Icons.circle,
                               color: theme.currentPageBorderColor,
@@ -891,7 +953,7 @@ class _OpenPageState extends State<OpenPage> {
                               final apply = await showDialog<bool>(
                                 context: context,
                                 builder: (context) => AlertDialog(
-                                  title: const Text('Contorno pagina corrente'),
+                                  title: Text(l10n.currentPageBorderColor),
                                   content: SingleChildScrollView(
                                     child: ColorPicker(
                                       pickerColor: picked,
@@ -904,12 +966,12 @@ class _OpenPageState extends State<OpenPage> {
                                     TextButton(
                                       onPressed: () =>
                                           Navigator.pop(context, false),
-                                      child: const Text('Annulla'),
+                                      child: Text(l10n.cancel),
                                     ),
                                     FilledButton(
                                       onPressed: () =>
                                           Navigator.pop(context, true),
-                                      child: const Text('Applica'),
+                                      child: Text(l10n.apply),
                                     ),
                                   ],
                                 ),
@@ -925,17 +987,15 @@ class _OpenPageState extends State<OpenPage> {
                       if (AppFeatures.manualBackup)
                         SettingsSection(
                           id: 'backup',
-                          title: 'Backup e ripristino',
-                          subtitle: 'Esporta o importa gli appunti',
+                          title: l10n.backupAndRestore,
+                          subtitle: l10n.backupAndRestoreSubtitle,
                           icon: Icons.backup_outlined,
                           children: [
                             ListTile(
                               contentPadding: EdgeInsets.zero,
                               leading: const Icon(Icons.backup_outlined),
-                              title: const Text('Crea Backup'),
-                              subtitle: const Text(
-                                'Esporta gli appunti per un altro dispositivo',
-                              ),
+                              title: Text(l10n.createBackup),
+                              subtitle: Text(l10n.createBackupSubtitle),
                               onTap: () async {
                                 Navigator.pop(context);
                                 await showNoteBackupDialog(
@@ -949,10 +1009,8 @@ class _OpenPageState extends State<OpenPage> {
                               key: const ValueKey('restore-backup'),
                               contentPadding: EdgeInsets.zero,
                               leading: const Icon(Icons.restore_outlined),
-                              title: const Text('Ripristina Backup'),
-                              subtitle: const Text(
-                                'Carica gli appunti da un backup Tenerumi o OSI',
-                              ),
+                              title: Text(l10n.restoreBackup),
+                              subtitle: Text(l10n.restoreBackupSubtitle),
                               onTap: () async {
                                 Navigator.pop(context);
                                 await showNoteBackupDialog(
@@ -966,8 +1024,8 @@ class _OpenPageState extends State<OpenPage> {
                         ),
                       SettingsSection(
                         id: 'about',
-                        title: 'Informazioni',
-                        subtitle: 'Versione, licenze e progetto',
+                        title: l10n.about,
+                        subtitle: l10n.aboutSubtitle,
                         icon: Icons.info_outline,
                         children: [
                           ListTile(
@@ -978,7 +1036,7 @@ class _OpenPageState extends State<OpenPage> {
                               height: 40,
                               cacheWidth: 120,
                             ),
-                            title: const Text('Informazioni su Tenerumi'),
+                            title: Text(l10n.aboutTenerumi),
                             trailing: const Icon(Icons.chevron_right),
                             onTap: () => showTenerumiAppInfo(context),
                           ),
@@ -991,7 +1049,7 @@ class _OpenPageState extends State<OpenPage> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Chiudi'),
+                  child: Text(l10n.close),
                 ),
               ],
             );
@@ -1005,9 +1063,21 @@ class _OpenPageState extends State<OpenPage> {
   Widget build(BuildContext context) {
     // Set di icone scelto dall'utente (linea/tonde/nette).
     final AppIcons icons = context.watch<ThemeController>().icons;
-    final filteredFiles = selectedTag == 'Tutti'
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
+    final baseFiltered = selectedTag == 'Tutti'
         ? recentFiles
         : recentFiles.where((f) => f['tag'] == selectedTag).toList();
+    final query = _searchQuery.trim().toLowerCase();
+    final filteredFiles = query.isEmpty
+        ? baseFiltered
+        : baseFiltered.where((f) {
+            final name = (f['name'] as String? ?? '').toLowerCase();
+            final tag = (f['tag'] as String? ?? '').toLowerCase();
+            return name.contains(query) || tag.contains(query);
+          }).toList();
 
     return Scaffold(
       // --- 1. APPBAR ---
@@ -1016,12 +1086,15 @@ class _OpenPageState extends State<OpenPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Image.asset(AppBrand.logo, width: 32, height: 32, cacheWidth: 96),
-            const SizedBox(width: 8),
+            const SizedBox(width: 10),
             const Flexible(
               child: Text(
                 AppBrand.name,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.3,
+                ),
               ),
             ),
           ],
@@ -1032,7 +1105,7 @@ class _OpenPageState extends State<OpenPage> {
             if (context.watch<PluginController?>()
                 case final PluginController plugins)
               IconButton(
-                tooltip: 'Plugin',
+                tooltip: l10n.pluginsTooltip,
                 icon: const Icon(Icons.extension_outlined),
                 onPressed: () => Navigator.push(
                   context,
@@ -1041,10 +1114,23 @@ class _OpenPageState extends State<OpenPage> {
                   ),
                 ),
               ),
-          IconButton(icon: Icon(icons.search), onPressed: () {}),
+          IconButton(
+            icon: Icon(_showSearch ? Icons.close : icons.search),
+            tooltip: _showSearch ? l10n.close : l10n.searchNotes,
+            onPressed: () {
+              setState(() {
+                _showSearch = !_showSearch;
+                if (!_showSearch) {
+                  _searchQuery = '';
+                  _searchController.clear();
+                }
+              });
+            },
+          ),
           // --- COLLEGAMENTO AL TASTO IMPOSTAZIONI ---
           IconButton(
             icon: Icon(icons.settings),
+            tooltip: l10n.settings,
             onPressed:
                 _showSettingsDialog, // Apre il menu di personalizzazione!
           ),
@@ -1083,7 +1169,7 @@ class _OpenPageState extends State<OpenPage> {
             ),
             ListTile(
               leading: Icon(icons.info),
-              title: const Text('Info App'),
+              title: Text(l10n.appInfoTitle),
               onTap: () {
                 Navigator.pop(context);
                 showTenerumiAppInfo(context);
@@ -1097,18 +1183,81 @@ class _OpenPageState extends State<OpenPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Align(
-            alignment: Alignment.centerRight,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              child: TextButton.icon(
-                key: const ValueKey('home-open-file'),
-                onPressed: _openingFile ? null : _openDeviceFile,
-                icon: const Icon(Icons.folder_open_outlined),
-                label: const Text('Apri file'),
-              ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 2),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    selectedTag == 'Tutti' ? l10n.allNotes : selectedTag,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.1,
+                        ) ??
+                        const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                  ),
+                ),
+                TextButton.icon(
+                  key: const ValueKey('home-open-file'),
+                  onPressed: _openingFile ? null : _openDeviceFile,
+                  icon: const Icon(Icons.folder_open_outlined, size: 18),
+                  label: Text(l10n.openFile),
+                  style: TextButton.styleFrom(
+                    foregroundColor: cs.primary,
+                    shape: const StadiumBorder(),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
+          if (_showSearch)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 2, 16, 6),
+              child: TextField(
+                controller: _searchController,
+                autofocus: true,
+                onChanged: (val) => setState(() => _searchQuery = val),
+                decoration: InputDecoration(
+                  hintText: l10n.searchNotes,
+                  prefixIcon: Icon(icons.search, size: 20),
+                  suffixIcon: _searchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear, size: 18),
+                          onPressed: () {
+                            _searchController.clear();
+                            setState(() => _searchQuery = '');
+                          },
+                        )
+                      : null,
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: AppAppearance.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: AppAppearance.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(color: cs.primary),
+                  ),
+                  filled: true,
+                  fillColor: AppAppearance.raised,
+                ),
+              ),
+            ),
           if (CriticalData.warnings.isNotEmpty)
             MaterialBanner(
               content: Text(CriticalData.warnings.join('\n')),
@@ -1116,7 +1265,7 @@ class _OpenPageState extends State<OpenPage> {
                 TextButton(
                   onPressed: () =>
                       setState(() => CriticalData.warnings.clear()),
-                  child: const Text('Ho capito'),
+                  child: Text(l10n.understood),
                 ),
               ],
             ),
@@ -1125,16 +1274,16 @@ class _OpenPageState extends State<OpenPage> {
             ListTile(
               leading: const Icon(Icons.mic),
               title: Text(
-                'Audio da recuperare: ${audioRecoveries.length} appunti',
+                l10n.audioToRecoverTitle(audioRecoveries.length),
               ),
-              subtitle: const Text(
-                'I segmenti finalizzati sono conservati; le registrazioni incomplete vengono segnalate.',
+              subtitle: Text(
+                l10n.audioToRecoverSubtitle,
               ),
               onTap: () async {
                 final entry = await showDialog<Map<String, dynamic>>(
                   context: context,
                   builder: (context) => SimpleDialog(
-                    title: const Text('Recupera audio'),
+                    title: Text(l10n.recoverAudio),
                     children: [
                       for (final e in audioRecoveries)
                         SimpleDialogOption(
@@ -1147,7 +1296,7 @@ class _OpenPageState extends State<OpenPage> {
                   ),
                 );
                 if (entry == null || !mounted) return;
-                final file = XppFile.empty(title: 'Audio recuperato')
+                final file = XppFile.empty(title: l10n.recoveredAudioTitle)
                   ..localId = entry['noteId'] as String;
                 _openFile(file);
               },
@@ -1180,7 +1329,7 @@ class _OpenPageState extends State<OpenPage> {
                           overflow: TextOverflow.ellipsis,
                         ),
                         subtitle: Text(
-                          'Ripristina copia automatica\n${documentModifiedLabel(entry['modifiedAt'] ?? (entry['time'] is int ? DateTime.fromMillisecondsSinceEpoch(entry['time'] as int, isUtc: true).toIso8601String() : null))}',
+                          '${l10n.restoreAutoCopySubtitle}\n${documentModifiedLabel(entry['modifiedAt'] ?? (entry['time'] is int ? DateTime.fromMillisecondsSinceEpoch(entry['time'] as int, isUtc: true).toIso8601String() : null))}',
                           style: const TextStyle(fontSize: 11),
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
@@ -1193,32 +1342,32 @@ class _OpenPageState extends State<OpenPage> {
                             if (mounted)
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Recupero fallito: $error'),
+                                  content: Text(l10n.recoveryFailed(error)),
                                 ),
                               );
                           }
                         },
                         trailing: IconButton(
-                          tooltip: 'Elimina copia di recupero',
+                          tooltip: l10n.deleteRecoveryCopy,
                           icon: const Icon(Icons.close),
                           onPressed: () async {
                             final confirmed = await showDialog<bool>(
                               context: context,
                               builder: (context) => AlertDialog(
-                                title: const Text('Elimina copia di recupero'),
-                                content: const Text(
-                                  'Questa copia automatica verrà eliminata.',
+                                title: Text(l10n.deleteRecoveryCopy),
+                                content: Text(
+                                  l10n.deleteRecoveryCopyConfirm,
                                 ),
                                 actions: [
                                   TextButton(
                                     onPressed: () =>
                                         Navigator.pop(context, false),
-                                    child: const Text('Annulla'),
+                                    child: Text(l10n.cancel),
                                   ),
                                   TextButton(
                                     onPressed: () =>
                                         Navigator.pop(context, true),
-                                    child: const Text('Elimina'),
+                                    child: Text(l10n.delete),
                                   ),
                                 ],
                               ),
@@ -1240,7 +1389,7 @@ class _OpenPageState extends State<OpenPage> {
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 16.0,
-              vertical: 8.0,
+              vertical: 6.0,
             ),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -1250,8 +1399,27 @@ class _OpenPageState extends State<OpenPage> {
                   return Padding(
                     padding: const EdgeInsets.only(right: 8.0),
                     child: FilterChip(
-                      label: Text(tag),
+                      label: Text(tag == 'Tutti' ? l10n.defaultTagAll : tag),
                       selected: isSelected,
+                      showCheckmark: false,
+                      labelStyle: TextStyle(
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.normal,
+                        color: isSelected
+                            ? cs.onSurface
+                            : cs.onSurfaceVariant,
+                        fontSize: 13,
+                      ),
+                      shape: StadiumBorder(
+                        side: BorderSide(
+                          color: isSelected
+                              ? cs.primary
+                              : AppAppearance.border,
+                          width: isSelected ? 1.5 : 1.0,
+                        ),
+                      ),
+                      backgroundColor: AppAppearance.panel,
+                      selectedColor: AppAppearance.raised,
                       onSelected: (bool selected) {
                         setState(() => selectedTag = tag);
                       },
@@ -1264,23 +1432,95 @@ class _OpenPageState extends State<OpenPage> {
 
           Expanded(
             child: filteredFiles.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          icons.folder,
-                          size: 64,
-                          color: Colors.grey.shade400,
+                ? (recentFiles.isEmpty
+                    ? Center(
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 80,
+                                height: 80,
+                                decoration: BoxDecoration(
+                                  color: AppAppearance.raised,
+                                  shape: BoxShape.circle,
+                                  border:
+                                      Border.all(color: AppAppearance.border),
+                                ),
+                                child: Icon(
+                                  icons.folder,
+                                  size: 40,
+                                  color: cs.primary.withValues(alpha: 0.8),
+                                ),
+                              ),
+                              const SizedBox(height: 18),
+                              Text(
+                                l10n.noDocumentsHere,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 0.2,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                l10n.tapPlusToStart,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: cs.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 16),
-                        Text(
-                          "Nessun documento qui",
-                          style: TextStyle(color: Colors.grey.shade600),
+                      )
+                    : Center(
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.search_off_rounded,
+                                size: 56,
+                                color: cs.onSurfaceVariant
+                                    .withValues(alpha: 0.5),
+                              ),
+                              const SizedBox(height: 14),
+                              Text(
+                                l10n.noResultsFound,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                l10n.noResultsFoundSubtitle(_searchQuery),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: cs.onSurfaceVariant,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              OutlinedButton.icon(
+                                onPressed: () {
+                                  _searchController.clear();
+                                  setState(() => _searchQuery = '');
+                                },
+                                icon: const Icon(Icons.clear, size: 16),
+                                label: Text(l10n.clearSearch),
+                                style: OutlinedButton.styleFrom(
+                                  shape: const StadiumBorder(),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
-                  )
+                      ))
                 : GridView.builder(
                     padding: const EdgeInsets.all(16),
                     gridDelegate:
@@ -1333,18 +1573,18 @@ class _OpenPageState extends State<OpenPage> {
                                 _openFile(loadedFile);
                               } catch (e) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
+                                  SnackBar(
                                     content: Text(
-                                      "Errore nella lettura del file.",
+                                      l10n.fileReadError,
                                     ),
                                   ),
                                 );
                               }
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
+                                SnackBar(
                                   content: Text(
-                                    "Impossibile trovare il file fisico!",
+                                    l10n.physicalFileNotFound,
                                   ),
                                 ),
                               );
@@ -1365,7 +1605,7 @@ class _OpenPageState extends State<OpenPage> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showNewNoteDialog,
         icon: Icon(icons.add),
-        label: const Text("Nuovo Appunto"),
+        label: Text(l10n.newNote),
       ),
     );
   }

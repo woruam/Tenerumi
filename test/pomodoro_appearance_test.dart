@@ -53,6 +53,7 @@ void main() {
         }
       });
       SharedPreferences.setMockInitialValues({
+        'app_language': 'it',
         'osipp.builtin-plugins.v1': jsonEncode({'pomodoro': true}),
         PreferencesKeys.kRecentFiles: jsonEncode(
           List.generate(
@@ -81,6 +82,9 @@ void main() {
       expect(find.byType(BackdropFilter), findsNothing);
       expect(tester.takeException(), isNull);
       await capture(tester, key, 'pomodoro-style-settings');
+      await tester.ensureVisible(find.text('Aspetto'));
+      await tester.tap(find.text('Aspetto'));
+      await tester.pumpAndSettle();
       await tester.ensureVisible(find.text('Tonde'));
       await tester.tap(find.text('Tonde'));
       await tester.pumpAndSettle();

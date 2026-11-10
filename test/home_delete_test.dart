@@ -38,6 +38,7 @@ void main() {
         'key': XppFile.recoveryKeyFor(a.path, 'local-a'),
       };
       SharedPreferences.setMockInitialValues({
+        'app_language': 'it',
         PreferencesKeys.kRecentFiles: jsonEncode([
           selected,
           {'name': 'Stesso titolo', 'path': b.path},
@@ -145,6 +146,7 @@ void main() {
       });
       addTearDown(() => dir.delete(recursive: true));
       SharedPreferences.setMockInitialValues({
+        'app_language': 'it',
         PreferencesKeys.kRecentFiles: jsonEncode([
           {
             'name': 'Nota da eliminare',

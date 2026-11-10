@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:xournalpp/controllers/canvas_controller.dart';
+import 'package:xournalpp/l10n/app_localizations.dart';
 
 /// Shared by standalone canvases and the workspace, including unmounted tabs.
 Future<bool> confirmDocumentClose(
@@ -9,25 +10,26 @@ Future<bool> confirmDocumentClose(
   await controller.audio.stop();
   if (!context.mounted) return false;
   if (!controller.hasUnsavedChanges) return true;
+  final l10n = context.l10n;
   final choice = await showDialog<String>(
     context: context,
     builder: (dialogContext) => AlertDialog(
-      title: const Text('Modifiche non salvate'),
+      title: Text(l10n.unsavedChanges),
       content: Text(
-        'Salvare "${controller.file?.title ?? 'Documento'}" prima di chiudere?',
+        l10n.saveBeforeClosing(controller.file?.title ?? l10n.untitledDocument),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(dialogContext, 'cancel'),
-          child: const Text('Annulla'),
+          child: Text(l10n.cancel),
         ),
         TextButton(
           onPressed: () => Navigator.pop(dialogContext, 'discard'),
-          child: const Text('Chiudi senza salvare'),
+          child: Text(l10n.closeWithoutSaving),
         ),
         ElevatedButton(
           onPressed: () => Navigator.pop(dialogContext, 'save'),
-          child: const Text('Salva'),
+          child: Text(l10n.save),
         ),
       ],
     ),

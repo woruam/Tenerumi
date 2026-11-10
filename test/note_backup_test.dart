@@ -325,6 +325,7 @@ void main() {
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
+      SharedPreferences.setMockInitialValues({'app_language': 'it'});
       await tester.pumpWidget(const XournalppMobile());
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(Icons.settings_outlined));

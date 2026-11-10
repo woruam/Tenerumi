@@ -23,7 +23,7 @@ import 'package:xournalpp/src/compat/file_picker_cross.dart';
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:xml/xml.dart';
-import 'package:xournalpp/generated/l10n.dart';
+import 'package:xournalpp/l10n/app_localizations.dart';
 import 'package:xournalpp/layer_contents/XppImage.dart';
 import 'package:xournalpp/layer_contents/XppStroke.dart';
 import 'package:xournalpp/layer_contents/XppTexImage.dart';
@@ -171,11 +171,12 @@ class XppFile {
   }
 
   static void openAndEdit({required BuildContext context}) async {
+    final l10n = AppLocalizations.of(context);
     ScaffoldFeatureController snackBarController = ScaffoldMessenger.of(context)
         .showSnackBar(
           SnackBar(
             duration: Duration(days: 999),
-            content: Text(S.of(context).loadingFile),
+            content: Text(l10n.loadingFile),
           ),
         );
     XppFile file;
@@ -196,12 +197,12 @@ class XppFile {
       showDialog(
         context: context,
         builder: (c) => AlertDialog(
-          title: Text(S.of(context).noFileSelected),
-          content: Text(S.of(context).youDidNotSelectAnyFile),
+          title: Text(l10n.noFileSelected),
+          content: Text(l10n.youDidNotSelectAnyFile),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text(S.of(context).close),
+              child: Text(l10n.close),
             ),
           ],
         ),
