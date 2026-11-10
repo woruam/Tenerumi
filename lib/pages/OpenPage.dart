@@ -49,6 +49,15 @@ class _OpenPageState extends State<OpenPage> {
   String selectedTag = 'Tutti';
   bool _deletingNote = false;
   bool _openingFile = false;
+  String _searchQuery = '';
+  bool _showSearch = false;
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   Future<void> _showNoteActions(Map<String, dynamic> entry) async {
     if (_deletingNote) return;
@@ -346,8 +355,9 @@ class _OpenPageState extends State<OpenPage> {
                         decoration: InputDecoration(
                           labelText: l10n.documentTitleLabel,
                           hintText: l10n.documentTitleHint,
+                          prefixIcon: const Icon(Icons.edit_note_rounded),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(14),
                           ),
                         ),
                       ),
@@ -402,8 +412,8 @@ class _OpenPageState extends State<OpenPage> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Container(
-                                    width: 64,
-                                    height: 88,
+                                    width: 66,
+                                    height: 90,
                                     decoration: BoxDecoration(
                                       border: Border.all(
                                         color: sel
@@ -411,23 +421,45 @@ class _OpenPageState extends State<OpenPage> {
                                             : Colors.grey.withOpacity(0.35),
                                         width: sel ? 2.5 : 1,
                                       ),
-                                      borderRadius: BorderRadius.circular(8),
+                                      borderRadius: BorderRadius.circular(10),
                                     ),
                                     clipBehavior: Clip.antiAlias,
-                                    child: FittedBox(
-                                      fit: BoxFit.cover,
-                                      child: SizedBox(
-                                        width: 64,
-                                        height: 88,
-                                        child: templates[i]
-                                            .builder(
-                                              XppPageSize(
-                                                width: 64,
-                                                height: 88,
+                                    child: Stack(
+                                      fit: StackFit.expand,
+                                      children: [
+                                        FittedBox(
+                                          fit: BoxFit.cover,
+                                          child: SizedBox(
+                                            width: 66,
+                                            height: 90,
+                                            child: templates[i]
+                                                .builder(
+                                                  XppPageSize(
+                                                    width: 66,
+                                                    height: 90,
+                                                  ),
+                                                )
+                                                .render(),
+                                          ),
+                                        ),
+                                        if (sel)
+                                          Positioned(
+                                            top: 4,
+                                            right: 4,
+                                            child: Container(
+                                              padding: const EdgeInsets.all(2),
+                                              decoration: BoxDecoration(
+                                                color: cs.primary,
+                                                shape: BoxShape.circle,
                                               ),
-                                            )
-                                            .render(),
-                                      ),
+                                              child: Icon(
+                                                Icons.check,
+                                                size: 10,
+                                                color: cs.onPrimary,
+                                              ),
+                                            ),
+                                          ),
+                                      ],
                                     ),
                                   ),
                                   const SizedBox(height: 4),
@@ -1032,9 +1064,20 @@ class _OpenPageState extends State<OpenPage> {
     // Set di icone scelto dall'utente (linea/tonde/nette).
     final AppIcons icons = context.watch<ThemeController>().icons;
     final l10n = context.l10n;
-    final filteredFiles = selectedTag == 'Tutti'
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
+    final baseFiltered = selectedTag == 'Tutti'
         ? recentFiles
         : recentFiles.where((f) => f['tag'] == selectedTag).toList();
+    final query = _searchQuery.trim().toLowerCase();
+    final filteredFiles = query.isEmpty
+        ? baseFiltered
+        : baseFiltered.where((f) {
+            final name = (f['name'] as String? ?? '').toLowerCase();
+            final tag = (f['tag'] as String? ?? '').toLowerCase();
+            return name.contains(query) || tag.contains(query);
+          }).toList();
 
     return Scaffold(
       // --- 1. APPBAR ---
@@ -1043,12 +1086,15 @@ class _OpenPageState extends State<OpenPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Image.asset(AppBrand.logo, width: 32, height: 32, cacheWidth: 96),
-            const SizedBox(width: 8),
+            const SizedBox(width: 10),
             const Flexible(
               child: Text(
                 AppBrand.name,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.3,
+                ),
               ),
             ),
           ],
@@ -1068,10 +1114,23 @@ class _OpenPageState extends State<OpenPage> {
                   ),
                 ),
               ),
-          IconButton(icon: Icon(icons.search), onPressed: () {}),
+          IconButton(
+            icon: Icon(_showSearch ? Icons.close : icons.search),
+            tooltip: _showSearch ? l10n.close : l10n.searchNotes,
+            onPressed: () {
+              setState(() {
+                _showSearch = !_showSearch;
+                if (!_showSearch) {
+                  _searchQuery = '';
+                  _searchController.clear();
+                }
+              });
+            },
+          ),
           // --- COLLEGAMENTO AL TASTO IMPOSTAZIONI ---
           IconButton(
             icon: Icon(icons.settings),
+            tooltip: l10n.settings,
             onPressed:
                 _showSettingsDialog, // Apre il menu di personalizzazione!
           ),
@@ -1124,18 +1183,81 @@ class _OpenPageState extends State<OpenPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Align(
-            alignment: Alignment.centerRight,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              child: TextButton.icon(
-                key: const ValueKey('home-open-file'),
-                onPressed: _openingFile ? null : _openDeviceFile,
-                icon: const Icon(Icons.folder_open_outlined),
-                label: Text(l10n.openFile),
-              ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 2),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    selectedTag == 'Tutti' ? l10n.allNotes : selectedTag,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.1,
+                        ) ??
+                        const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                  ),
+                ),
+                TextButton.icon(
+                  key: const ValueKey('home-open-file'),
+                  onPressed: _openingFile ? null : _openDeviceFile,
+                  icon: const Icon(Icons.folder_open_outlined, size: 18),
+                  label: Text(l10n.openFile),
+                  style: TextButton.styleFrom(
+                    foregroundColor: cs.primary,
+                    shape: const StadiumBorder(),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
+          if (_showSearch)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 2, 16, 6),
+              child: TextField(
+                controller: _searchController,
+                autofocus: true,
+                onChanged: (val) => setState(() => _searchQuery = val),
+                decoration: InputDecoration(
+                  hintText: l10n.searchNotes,
+                  prefixIcon: Icon(icons.search, size: 20),
+                  suffixIcon: _searchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear, size: 18),
+                          onPressed: () {
+                            _searchController.clear();
+                            setState(() => _searchQuery = '');
+                          },
+                        )
+                      : null,
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: AppAppearance.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: AppAppearance.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(color: cs.primary),
+                  ),
+                  filled: true,
+                  fillColor: AppAppearance.raised,
+                ),
+              ),
+            ),
           if (CriticalData.warnings.isNotEmpty)
             MaterialBanner(
               content: Text(CriticalData.warnings.join('\n')),
@@ -1267,7 +1389,7 @@ class _OpenPageState extends State<OpenPage> {
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 16.0,
-              vertical: 8.0,
+              vertical: 6.0,
             ),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -1279,6 +1401,25 @@ class _OpenPageState extends State<OpenPage> {
                     child: FilterChip(
                       label: Text(tag == 'Tutti' ? l10n.defaultTagAll : tag),
                       selected: isSelected,
+                      showCheckmark: false,
+                      labelStyle: TextStyle(
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.normal,
+                        color: isSelected
+                            ? cs.onSurface
+                            : cs.onSurfaceVariant,
+                        fontSize: 13,
+                      ),
+                      shape: StadiumBorder(
+                        side: BorderSide(
+                          color: isSelected
+                              ? cs.primary
+                              : AppAppearance.border,
+                          width: isSelected ? 1.5 : 1.0,
+                        ),
+                      ),
+                      backgroundColor: AppAppearance.panel,
+                      selectedColor: AppAppearance.raised,
                       onSelected: (bool selected) {
                         setState(() => selectedTag = tag);
                       },
@@ -1291,23 +1432,95 @@ class _OpenPageState extends State<OpenPage> {
 
           Expanded(
             child: filteredFiles.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          icons.folder,
-                          size: 64,
-                          color: Colors.grey.shade400,
+                ? (recentFiles.isEmpty
+                    ? Center(
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 80,
+                                height: 80,
+                                decoration: BoxDecoration(
+                                  color: AppAppearance.raised,
+                                  shape: BoxShape.circle,
+                                  border:
+                                      Border.all(color: AppAppearance.border),
+                                ),
+                                child: Icon(
+                                  icons.folder,
+                                  size: 40,
+                                  color: cs.primary.withValues(alpha: 0.8),
+                                ),
+                              ),
+                              const SizedBox(height: 18),
+                              Text(
+                                l10n.noDocumentsHere,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 0.2,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                l10n.tapPlusToStart,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: cs.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 16),
-                        Text(
-                          l10n.noDocumentsHere,
-                          style: TextStyle(color: Colors.grey.shade600),
+                      )
+                    : Center(
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.search_off_rounded,
+                                size: 56,
+                                color: cs.onSurfaceVariant
+                                    .withValues(alpha: 0.5),
+                              ),
+                              const SizedBox(height: 14),
+                              Text(
+                                l10n.noResultsFound,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                l10n.noResultsFoundSubtitle(_searchQuery),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: cs.onSurfaceVariant,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              OutlinedButton.icon(
+                                onPressed: () {
+                                  _searchController.clear();
+                                  setState(() => _searchQuery = '');
+                                },
+                                icon: const Icon(Icons.clear, size: 16),
+                                label: Text(l10n.clearSearch),
+                                style: OutlinedButton.styleFrom(
+                                  shape: const StadiumBorder(),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
-                  )
+                      ))
                 : GridView.builder(
                     padding: const EdgeInsets.all(16),
                     gridDelegate:

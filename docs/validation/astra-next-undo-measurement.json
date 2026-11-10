@@ -1,1 +1,1 @@
-{"points":100000,"snapshots":50,"uniqueGeometryBuffers":1,"elapsedMicroseconds":378,"rssBefore":290893824,"rssAfter":296423424,"scope":"Flutter host test, structural sharing; not device GPU/latency profiling"}
+{"points":100000,"snapshots":50,"uniqueGeometryBuffers":1,"elapsedMicroseconds":1338,"rssBefore":289894400,"rssAfter":293928960,"scope":"Flutter host test, structural sharing; not device GPU/latency profiling"}

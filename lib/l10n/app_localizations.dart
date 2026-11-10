@@ -99,6 +99,18 @@ class AppLocalizations {
   String get defaultTagNotes => isItalian ? 'Appunti' : 'Notes';
   String get defaultTagSchool => isItalian ? 'Scuola' : 'School';
   String get defaultTagWork => isItalian ? 'Lavoro' : 'Work';
+  String get allNotes => isItalian ? 'Tutti gli appunti' : 'All notes';
+  String get searchNotes =>
+      isItalian ? 'Cerca tra gli appunti...' : 'Search notes...';
+  String get noResultsFound =>
+      isItalian ? 'Nessun appunto trovato' : 'No notes found';
+  String noResultsFoundSubtitle(String query) => isItalian
+      ? 'Nessun appunto corrisponde a “$query”.'
+      : 'No notes match “$query”.';
+  String get clearSearch => isItalian ? 'Cancella ricerca' : 'Clear search';
+  String notesCount(int count) => count == 1
+      ? (isItalian ? '1 appunto' : '1 note')
+      : (isItalian ? '$count appunti' : '$count notes');
 
   // --- Audio Recovery ---
   String audioToRecoverTitle(int count) => isItalian
