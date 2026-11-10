@@ -1,8 +1,10 @@
+import 'package:xournalpp/l10n/app_localizations.dart';
 import 'package:xournalpp/src/app_brand.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 Future<void> showTenerumiAppInfo(BuildContext context) async {
+  final l10n = context.l10n;
   String version = '0.5';
   String? build;
   try {
@@ -20,7 +22,7 @@ Future<void> showTenerumiAppInfo(BuildContext context) async {
   await showDialog<void>(
     context: context,
     builder: (context) => AlertDialog(
-      title: const Text('Info app'),
+      title: Text(l10n.appInfoTitle),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -33,18 +35,14 @@ Future<void> showTenerumiAppInfo(BuildContext context) async {
               style: Theme.of(context).textTheme.displaySmall,
             ),
             const SizedBox(height: 8),
-            Text('Versione $version'),
-            if (build != null && build.isNotEmpty) Text('Build $build'),
+            Text(l10n.versionLabel(version)),
+            if (build != null && build.isNotEmpty) Text(l10n.buildLabel(build)),
             const SizedBox(height: 16),
-            const Text('Versione in sviluppo'),
+            Text(l10n.devVersion),
             const SizedBox(height: 8),
-            const Text(
-              'Appunti digitali, disegno e annotazioni PDF. Organizza i documenti con tag e personalizza i tuoi strumenti di studio.',
-            ),
+            Text(l10n.appDescription),
             const SizedBox(height: 16),
-            const Text(
-              'Basata su Xournal++ Mobile. Compatibile con documenti .xopp. Licenza EUPL-1.2.',
-            ),
+            Text(l10n.appAttribution),
           ],
         ),
       ),
@@ -55,11 +53,11 @@ Future<void> showTenerumiAppInfo(BuildContext context) async {
             applicationName: AppBrand.name,
             applicationVersion: version,
           ),
-          child: const Text('Licenze'),
+          child: Text(l10n.licenses),
         ),
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Chiudi'),
+          child: Text(l10n.close),
         ),
       ],
     ),

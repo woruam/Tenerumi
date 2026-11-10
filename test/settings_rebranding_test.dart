@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:xournalpp/l10n/app_localizations.dart';
 import 'package:xournalpp/controllers/theme_controller.dart';
 import 'package:xournalpp/pages/OpenPage.dart';
 import 'package:xournalpp/src/app_brand.dart';
@@ -34,7 +36,7 @@ Future<void> section(WidgetTester tester, String title) async {
 
 void main() {
   setUp(() {
-    SharedPreferences.setMockInitialValues({});
+    SharedPreferences.setMockInitialValues({'app_language': 'it'});
     PackageInfo.setMockInitialValues(
       appName: AppBrand.name,
       packageName: 'online.xournal.mobile',
@@ -52,7 +54,7 @@ void main() {
         tester.view.devicePixelRatio = 1;
         addTearDown(tester.view.resetPhysicalSize);
         addTearDown(tester.view.resetDevicePixelRatio);
-        final theme = ThemeController();
+        final theme = ThemeController(initialLanguage: 'it');
         await mount(tester, theme);
         await tester.pumpAndSettle();
         expect(find.text(AppBrand.name), findsOneWidget);
@@ -131,7 +133,7 @@ void main() {
   testWidgets('theme and radial menu are reachable from their sections', (
     tester,
   ) async {
-    final theme = ThemeController();
+    final theme = ThemeController(initialLanguage: 'it');
     await mount(tester, theme);
     await tester.pumpAndSettle();
     await settings(tester);
@@ -166,6 +168,14 @@ void main() {
     (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+          locale: const Locale('it'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
           home: Builder(
             builder: (context) => Scaffold(
               body: TextButton(

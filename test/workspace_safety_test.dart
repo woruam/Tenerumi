@@ -1,3 +1,5 @@
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:xournalpp/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,14 +29,22 @@ class _SaveController extends CanvasController {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  setUp(() => SharedPreferences.setMockInitialValues({}));
+  setUp(() => SharedPreferences.setMockInitialValues({'app_language': 'it'}));
 
   testWidgets('system back protects an inactive unmounted dirty tab',
       (tester) async {
-    final theme = ThemeController();
+    final theme = ThemeController(initialLanguage: 'it');
     await tester.pumpWidget(ChangeNotifierProvider<ThemeController>.value(
       value: theme,
       child: MaterialApp(
+          locale: const Locale('it'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
           home: Builder(
               builder: (context) => Scaffold(
                     body: TextButton(
@@ -138,6 +148,14 @@ void main() {
         ..succeeds = succeeds;
       bool? allowed;
       await tester.pumpWidget(MaterialApp(
+          locale: const Locale('it'),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
           home: Scaffold(
               body: Builder(
         builder: (context) => TextButton(

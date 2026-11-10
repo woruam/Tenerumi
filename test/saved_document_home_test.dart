@@ -106,6 +106,7 @@ void main() {
         await directory.delete(recursive: true);
       });
       SharedPreferences.setMockInitialValues({
+        'app_language': 'it',
         PreferencesKeys.kRecentFiles: jsonEncode([
           {
             'name': 'Appunto precedente',

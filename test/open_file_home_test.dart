@@ -129,7 +129,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.text('Apri file'), findsOneWidget);
+      expect(find.text('Open file'), findsOneWidget);
       await tester.runAsync(() async {
         await tester.tap(find.byKey(const ValueKey('home-open-file')));
         // XOPP decoding runs in a real isolate.

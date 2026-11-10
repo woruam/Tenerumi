@@ -14,7 +14,8 @@ import 'package:flutter/services.dart';
 import 'package:xournalpp/src/external_documents.dart';
 import 'package:xournalpp/pages/WorkspacePage.dart';
 
-import 'generated/l10n.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:xournalpp/l10n/app_localizations.dart';
 
 Future<void> main(List<String> arguments) async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -137,11 +138,14 @@ class _XournalppMobileState extends State<XournalppMobile> {
               scaffoldMessengerKey: _messenger,
               debugShowCheckedModeBanner: false,
               title: AppBrand.name,
+              locale: theme.locale,
               localizationsDelegates: const [
-                S.delegate,
-                DefaultMaterialLocalizations.delegate,
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
               ],
-              supportedLocales: S.delegate.supportedLocales,
+              supportedLocales: AppLocalizations.supportedLocales,
               theme: AppAppearance.buildTheme(
                 theme,
                 flutterColorScheme(darkDynamic),
