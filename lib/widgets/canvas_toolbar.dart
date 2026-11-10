@@ -204,7 +204,10 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
           decoration: BoxDecoration(
             color: AppAppearance.panel,
             border: Border(
-              bottom: BorderSide(color: AppAppearance.border, width: 1),
+              bottom: BorderSide(
+                color: AppAppearance.border.withValues(alpha: 0.8),
+                width: 1,
+              ),
             ),
           ),
         ),
@@ -214,130 +217,174 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: Row(
           children: [
-            NoteAudioButton(audio: ctrl.audio),
-            IconButton(
-              icon: Icon(icons.undo),
-              tooltip: 'Annulla',
-              color: ctrl.undoStack.isNotEmpty
-                  ? Theme.of(context).colorScheme.onSurface
-                  : Colors.grey,
-              onPressed: ctrl.undoStack.isNotEmpty ? ctrl.undo : null,
-            ),
-            IconButton(
-              icon: Icon(icons.redo),
-              tooltip: 'Ripristina',
-              color: ctrl.redoStack.isNotEmpty
-                  ? Theme.of(context).colorScheme.onSurface
-                  : Colors.grey,
-              onPressed: ctrl.redoStack.isNotEmpty ? ctrl.redo : null,
-            ),
-            const SizedBox(height: 30, child: VerticalDivider(width: 20)),
-
-            _ToolButton(
-              buttonKey: penKey,
-              name: 'Penna',
-              selected: stylusTool == EditingTool.STYLUS,
-              icon: Icon(icons.pen),
-              swatch: ctrl.penColor,
-              onPressed: () => stylusTool == EditingTool.STYLUS
-                  ? onPenTap()
-                  : onToolSelect(EditingTool.STYLUS),
-            ),
-            _ToolButton(
-              buttonKey: highlighterKey,
-              name: 'Evidenziatore',
-              selected: stylusTool == EditingTool.HIGHLIGHT,
-              icon: Icon(icons.highlighter),
-              swatch: ctrl.highlighterColor,
-              onPressed: () => stylusTool == EditingTool.HIGHLIGHT
-                  ? onHighlighterTap()
-                  : onToolSelect(EditingTool.HIGHLIGHT),
-            ),
-            _ToolButton(
-              buttonKey: shapeKey,
-              name: 'Forme Geometriche',
-              selected: ctrl.isShapeTool,
-              icon: Icon(icons.shapes),
-              onPressed: onShapeTap,
-            ),
-            _ToolButton(
-              buttonKey: eraserKey,
-              name: 'Gomma',
-              selected: stylusTool == EditingTool.ERASER,
-              icon: const FaIcon(FontAwesomeIcons.eraser),
-              onPressed: () => stylusTool == EditingTool.ERASER
-                  ? onEraserTap()
-                  : onToolSelect(EditingTool.ERASER),
-            ),
-            _ToolButton(
-              name: 'Lazo',
-              selected: stylusTool == EditingTool.SELECT,
-              icon: Icon(icons.lasso),
-              onPressed: () => onToolSelect(EditingTool.SELECT),
-            ),
-            _ToolButton(
-              name: 'Mano (Modalità Sicura)',
-              selected: stylusTool == EditingTool.MOVE,
-              icon: Icon(icons.hand),
-              onPressed: () => onToolSelect(EditingTool.MOVE),
-            ),
-            const SizedBox(height: 30, child: VerticalDivider(width: 20)),
-
-            AddPageButton(controller: ctrl, icon: icons.addPage),
-
-            // --- IL TASTO PDF DIRETTAMENTE QUI, BEN VISIBILE ---
-            IconButton(
-              icon: Icon(icons.pdf),
-              tooltip: 'Importa PDF',
-              color: Theme.of(context)
-                  .colorScheme
-                  .primary, // Niente più rosso per forza, segue il tema Nothing
-              onPressed: onImportPdf,
-            ),
-
-            if (AppFeatures.plugins && plugins?.ankiEnabled == true) ...[
-              _ToolButton(
-                selected: stylusTool == EditingTool.FLASHCARD,
-                name: ctrl.capturingFlashcard
-                    ? 'Preparazione flashcard…'
-                    : stylusTool == EditingTool.FLASHCARD
-                    ? ctrl.flashcardFront == null
-                          ? '1. Seleziona il titolo'
-                          : '2. Seleziona la risposta'
-                    : 'Flashcard: doppia selezione',
-                icon: const Icon(Icons.crop_free),
-                onPressed: ctrl.capturingFlashcard || ctrl.savingFile
-                    ? null
-                    : stylusTool == EditingTool.FLASHCARD
-                    ? ctrl.cancelFlashcard
-                    : ctrl.beginFlashcard,
+            // --- ISOLA 1: STORIA & AUDIO ---
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+              decoration: BoxDecoration(
+                color: AppAppearance.raised,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AppAppearance.border, width: 0.8),
               ),
-              IconButton(
-                tooltip: 'Flashcard dell’appunto',
-                icon: const Icon(Icons.style_outlined),
-                onPressed: () => showNoteFlashcards(context, ctrl),
-              ),
-              if (stylusTool == EditingTool.FLASHCARD)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6),
-                  child: Center(
-                    child: Text(
-                      ctrl.flashcardFront == null
-                          ? '1 · Titolo'
-                          : '2 · Risposta',
-                    ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  NoteAudioButton(audio: ctrl.audio),
+                  IconButton(
+                    icon: Icon(icons.undo),
+                    tooltip: 'Annulla',
+                    color: ctrl.undoStack.isNotEmpty
+                        ? Theme.of(context).colorScheme.onSurface
+                        : Colors.grey,
+                    onPressed: ctrl.undoStack.isNotEmpty ? ctrl.undo : null,
                   ),
-                ),
-            ],
-            if (AppFeatures.plugins && plugins?.pomodoroEnabled == true)
-              IconButton(
-                icon: PomodoroProgressIcon(progress: pomodoroProgress),
-                tooltip: 'Pomodoro',
-                color: pomodoroActive
-                    ? Theme.of(context).colorScheme.primary
-                    : null,
-                onPressed: onPomodoroTap,
+                  IconButton(
+                    icon: Icon(icons.redo),
+                    tooltip: 'Ripristina',
+                    color: ctrl.redoStack.isNotEmpty
+                        ? Theme.of(context).colorScheme.onSurface
+                        : Colors.grey,
+                    onPressed: ctrl.redoStack.isNotEmpty ? ctrl.redo : null,
+                  ),
+                ],
               ),
+            ),
+            const SizedBox(width: 8),
+
+            // --- ISOLA 2: STRUMENTI INCHIOSTRO (FLOATING DOCK CORE) ---
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              decoration: BoxDecoration(
+                color: AppAppearance.raised,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppAppearance.border, width: 1),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 4,
+                    offset: const Offset(0, 1),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _ToolButton(
+                    buttonKey: penKey,
+                    name: 'Penna',
+                    selected: stylusTool == EditingTool.STYLUS,
+                    icon: Icon(icons.pen),
+                    swatch: ctrl.penColor,
+                    onPressed: () => stylusTool == EditingTool.STYLUS
+                        ? onPenTap()
+                        : onToolSelect(EditingTool.STYLUS),
+                  ),
+                  _ToolButton(
+                    buttonKey: highlighterKey,
+                    name: 'Evidenziatore',
+                    selected: stylusTool == EditingTool.HIGHLIGHT,
+                    icon: Icon(icons.highlighter),
+                    swatch: ctrl.highlighterColor,
+                    onPressed: () => stylusTool == EditingTool.HIGHLIGHT
+                        ? onHighlighterTap()
+                        : onToolSelect(EditingTool.HIGHLIGHT),
+                  ),
+                  _ToolButton(
+                    buttonKey: shapeKey,
+                    name: 'Forme Geometriche',
+                    selected: ctrl.isShapeTool,
+                    icon: Icon(icons.shapes),
+                    onPressed: onShapeTap,
+                  ),
+                  _ToolButton(
+                    buttonKey: eraserKey,
+                    name: 'Gomma',
+                    selected: stylusTool == EditingTool.ERASER,
+                    icon: const FaIcon(FontAwesomeIcons.eraser),
+                    onPressed: () => stylusTool == EditingTool.ERASER
+                        ? onEraserTap()
+                        : onToolSelect(EditingTool.ERASER),
+                  ),
+                  _ToolButton(
+                    name: 'Lazo',
+                    selected: stylusTool == EditingTool.SELECT,
+                    icon: Icon(icons.lasso),
+                    onPressed: () => onToolSelect(EditingTool.SELECT),
+                  ),
+                  _ToolButton(
+                    name: 'Mano (Modalità Sicura)',
+                    selected: stylusTool == EditingTool.MOVE,
+                    icon: Icon(icons.hand),
+                    onPressed: () => onToolSelect(EditingTool.MOVE),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+
+            // --- ISOLA 3: AZIONI FOGLIO & PLUGIN ---
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              decoration: BoxDecoration(
+                color: AppAppearance.raised,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AppAppearance.border, width: 0.8),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AddPageButton(controller: ctrl, icon: icons.addPage),
+                  IconButton(
+                    icon: Icon(icons.pdf),
+                    tooltip: 'Importa PDF',
+                    color: Theme.of(context).colorScheme.primary,
+                    onPressed: onImportPdf,
+                  ),
+                  if (AppFeatures.plugins && plugins?.ankiEnabled == true) ...[
+                    _ToolButton(
+                      selected: stylusTool == EditingTool.FLASHCARD,
+                      name: ctrl.capturingFlashcard
+                          ? 'Preparazione flashcard…'
+                          : stylusTool == EditingTool.FLASHCARD
+                          ? ctrl.flashcardFront == null
+                                ? '1. Seleziona il titolo'
+                                : '2. Seleziona la risposta'
+                          : 'Flashcard: doppia selezione',
+                      icon: const Icon(Icons.crop_free),
+                      onPressed: ctrl.capturingFlashcard || ctrl.savingFile
+                          ? null
+                          : stylusTool == EditingTool.FLASHCARD
+                          ? ctrl.cancelFlashcard
+                          : ctrl.beginFlashcard,
+                    ),
+                    IconButton(
+                      tooltip: 'Flashcard dell’appunto',
+                      icon: const Icon(Icons.style_outlined),
+                      onPressed: () => showNoteFlashcards(context, ctrl),
+                    ),
+                    if (stylusTool == EditingTool.FLASHCARD)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                        child: Center(
+                          child: Text(
+                            ctrl.flashcardFront == null
+                                ? '1 · Titolo'
+                                : '2 · Risposta',
+                          ),
+                        ),
+                      ),
+                  ],
+                  if (AppFeatures.plugins && plugins?.pomodoroEnabled == true)
+                    IconButton(
+                      icon: PomodoroProgressIcon(progress: pomodoroProgress),
+                      tooltip: 'Pomodoro',
+                      color: pomodoroActive
+                          ? Theme.of(context).colorScheme.primary
+                          : null,
+                      onPressed: onPomodoroTap,
+                    ),
+                ],
+              ),
+            ),
             const SizedBox(width: 16),
             if (ctrl.savingFile)
               const SizedBox(
@@ -400,12 +447,19 @@ class _ToolButton extends StatelessWidget {
                 right: -4,
                 bottom: -4,
                 child: Container(
-                  width: 10,
-                  height: 10,
+                  width: 11,
+                  height: 11,
                   decoration: BoxDecoration(
                     color: swatch,
                     shape: BoxShape.circle,
-                    border: Border.all(color: colors.onSurface),
+                    border: Border.all(color: colors.onSurface, width: 1.2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.35),
+                        blurRadius: 2,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
                   ),
                 ),
               ),
