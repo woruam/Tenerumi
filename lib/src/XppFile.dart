@@ -882,41 +882,54 @@ class XppFile {
     return XmlDocument([root]);
   }
 
-  Iterable<String> _xmlChunks() sync* {
+  static final _encodedAttachmentChunks = Expando<List<Uint8List>>();
+
+  static List<Uint8List> _getOrEncodeAttachmentChunks(Uint8List bytes) {
+    final cached = _encodedAttachmentChunks[bytes];
+    if (cached != null) return cached;
+    final chunks = <Uint8List>[];
+    for (var offset = 0; offset < bytes.length; offset += 48 * 1024) {
+      final end = (offset + 48 * 1024).clamp(0, bytes.length);
+      final b64 = base64Encode(Uint8List.sublistView(bytes, offset, end));
+      chunks.add(Uint8List.fromList(utf8.encode(b64)));
+    }
+    _encodedAttachmentChunks[bytes] = chunks;
+    return chunks;
+  }
+
+  Iterable<List<int>> _xmlChunks() sync* {
     validateSaveLimits();
     FlashcardLimits.validate(flashcards.values);
-    yield '<?xml version="1.0" standalone="no"?>\n';
+    yield utf8.encode('<?xml version="1.0" standalone="no"?>\n');
     final header = _xmlSkeleton().toXmlString();
-    yield header.substring(0, header.length - '</xournal>'.length);
+    yield utf8.encode(header.substring(0, header.length - '</xournal>'.length));
     for (final entry in pdfAttachments.entries) {
       final tag = XmlElement(XmlName('pdf-attachment'), [
         XmlAttribute(XmlName('name'), entry.key),
       ]).toXmlString();
-      yield '${tag.substring(0, tag.length - 2)}>';
-      // A multiple of three ensures concatenated base64 chunks are identical
-      // to encoding the entire attachment, without a giant temporary string.
-      for (var offset = 0; offset < entry.value.length; offset += 48 * 1024) {
-        final end = (offset + 48 * 1024).clamp(0, entry.value.length);
-        yield base64Encode(Uint8List.sublistView(entry.value, offset, end));
+      yield utf8.encode('${tag.substring(0, tag.length - 2)}>');
+      final chunks = _getOrEncodeAttachmentChunks(entry.value);
+      for (final chunk in chunks) {
+        yield chunk;
       }
-      yield '</pdf-attachment>';
+      yield utf8.encode('</pdf-attachment>');
     }
     for (final recording in recordings.values) {
-      yield recording.toXml().toXmlString();
+      yield utf8.encode(recording.toXml().toXmlString());
     }
     for (final card in flashcards.values) {
-      yield card.toXml().toXmlString();
+      yield utf8.encode(card.toXml().toXmlString());
     }
     for (final page in pages!) {
       final pageTag = page.toXmlElement(includeChildren: false).toXmlString();
       if ((page.background == null || page.background == XppBackground.none) &&
           page.layers!.isEmpty) {
-        yield pageTag;
+        yield utf8.encode(pageTag);
         continue;
       }
-      yield '${pageTag.substring(0, pageTag.length - 2)}>';
+      yield utf8.encode('${pageTag.substring(0, pageTag.length - 2)}>');
       if (page.background != null && page.background != XppBackground.none) {
-        yield page.background!.toXmlElement().toXmlString();
+        yield utf8.encode(page.background!.toXmlElement().toXmlString());
       }
       for (final layer in page.layers!) {
         final layerTag = layer
@@ -924,18 +937,21 @@ class XppFile {
             .toXmlString();
         final contents = (layer.content ?? []).whereType<XppContent>();
         if (contents.isEmpty) {
-          yield layerTag;
+          yield utf8.encode(layerTag);
           continue;
         }
-        yield '${layerTag.substring(0, layerTag.length - 2)}>';
+        final buffer = StringBuffer();
+        buffer.write(layerTag.substring(0, layerTag.length - 2));
+        buffer.write('>');
         for (final content in contents) {
-          yield content.toXmlElement().toXmlString();
+          content.writeXml(buffer);
         }
-        yield '</layer>';
+        buffer.write('</layer>');
+        yield utf8.encode(buffer.toString());
       }
-      yield '</page>';
+      yield utf8.encode('</page>');
     }
-    yield '</xournal>';
+    yield utf8.encode('</xournal>');
   }
 
   void validateSaveLimits() {
@@ -986,7 +1002,7 @@ class XppFile {
   }
 
   Uint8List? toUint8List() {
-    return compression.compressXml(_xmlChunks());
+    return compression.compressBytes(_xmlChunks());
   }
 
   FilePickerCross toFilePickerCross({String? filePath}) {

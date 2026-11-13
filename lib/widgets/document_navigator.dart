@@ -6,6 +6,7 @@ import 'package:xournalpp/controllers/canvas_controller.dart';
 
 import 'layers_panel.dart';
 import 'add_page_button.dart';
+import 'expand_page_dialog.dart';
 
 class DocumentNavigator extends StatelessWidget {
   final CanvasController controller;
@@ -182,7 +183,24 @@ class _PageThumbnailState extends State<PageThumbnail> {
                       gaplessPlayback: true,
                     ),
             ),
-            Text('Pagina ${widget.index + 1}'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Pagina ${widget.index + 1}'),
+                const SizedBox(width: 6),
+                IconButton(
+                  icon: const Icon(Icons.aspect_ratio_outlined, size: 16),
+                  tooltip: 'Espandi pagina ${widget.index + 1}',
+                  padding: const EdgeInsets.all(4),
+                  constraints: const BoxConstraints(),
+                  onPressed: () => showExpandPageDialog(
+                    context,
+                    widget.controller,
+                    widget.index,
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),

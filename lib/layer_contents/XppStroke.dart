@@ -291,6 +291,84 @@ abstract class XppStroke extends XppContent {
     return node;
   }
 
+  static String _escapeXmlAttribute(String value) {
+    return value
+        .replaceAll('&', '&amp;')
+        .replaceAll('"', '&quot;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;');
+  }
+
+  @override
+  void writeXml(StringBuffer out) {
+    out.write('<stroke tool="');
+    switch (tool) {
+      case XppStrokeTool.PEN:
+        out.write('pen"');
+        break;
+      case XppStrokeTool.HIGHLIGHTER:
+        out.write('highlighter"');
+        break;
+      case XppStrokeTool.ERASER:
+        out.write('eraser"');
+        break;
+    }
+    if (audioLink != null) {
+      out.write(' osipp-audio-id="');
+      out.write(_escapeXmlAttribute(audioLink!.recordingId));
+      out.write('" osipp-audio-start="');
+      out.write(audioLink!.startMs);
+      out.write('" osipp-audio-end="');
+      out.write(audioLink!.endMs);
+      out.write('"');
+      if (audioLink!.samples.isNotEmpty) {
+        out.write(' osipp-audio-times="');
+        for (var i = 0; i < audioLink!.samples.length; i++) {
+          if (i > 0) out.write(' ');
+          out.write(audioLink!.samples[i]);
+        }
+        out.write('"');
+      }
+    }
+    out.write(' color="');
+    out.write(color?.toHexTriplet() ?? '#000000');
+    out.write('"');
+    if (isShape) {
+      out.write(' osipp-shape="true"');
+    }
+    if (smooth) {
+      out.write(' osipp-smooth="true"');
+    }
+    if (widthIsDiameter) {
+      out.write(' osipp-width="diameter"');
+    }
+    if (erasures.isNotEmpty) {
+      out.write(' osipp-erasures="');
+      for (var i = 0; i < erasures.length; i++) {
+        if (i > 0) out.write(';');
+        out.write(erasures[i].encode());
+      }
+      out.write('"');
+    }
+
+    final pts = points ?? const <XppStrokePoint>[];
+    out.write(' width="');
+    for (var i = 0; i < pts.length; i++) {
+      if (i > 0) out.write(' ');
+      out.write((pts[i].width ?? 0.0).toStringAsFixed(3));
+    }
+    out.write('">');
+
+    for (var i = 0; i < pts.length; i++) {
+      if (i > 0) out.write(' ');
+      out.write((pts[i].x ?? 0.0).toStringAsFixed(3));
+      out.write(' ');
+      out.write((pts[i].y ?? 0.0).toStringAsFixed(3));
+    }
+
+    out.write('</stroke>');
+  }
+
   @override
   XppContentEraseData eraseWhere({Offset? coordinates, double? radius}) =>
       coordinates == null

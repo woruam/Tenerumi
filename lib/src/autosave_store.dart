@@ -16,9 +16,20 @@ import 'compat/internal_storage_generic.dart'
 class AutosaveStore {
   static const indexKey = 'osipp.autosave.v1';
   static Future<void>? _queue;
+  static Timer? _gcTimer;
+
   @visibleForTesting
   static void resetTestQueue() {
     _queue = null;
+    _gcTimer?.cancel();
+    _gcTimer = null;
+  }
+
+  static void _scheduleGc() {
+    _gcTimer?.cancel();
+    _gcTimer = Timer(const Duration(seconds: 5), () {
+      unawaited(CriticalData.collectGarbage());
+    });
   }
 
   static Future<T> _serial<T>(Future<T> Function() fn) {
@@ -82,13 +93,15 @@ class AutosaveStore {
     () => CriticalData.blobTransaction(() async {
       final blob = await CriticalData.putBlob(bytes);
       await _commit(file, blob, 'xopp');
-    }).then((_) => CriticalData.collectGarbage()),
+      _scheduleGc();
+    }),
   );
   static Future<void> saveIncremental(XppFile file) => _serial(
     () => CriticalData.blobTransaction(() async {
       final blob = await RecoveryJournal.write(file);
       await _commit(file, blob, 'journal');
-    }).then((_) => CriticalData.collectGarbage()),
+      _scheduleGc();
+    }),
   );
   static Future<void> _commit(XppFile file, String blob, String format) async {
     final previous = await list();
@@ -121,7 +134,7 @@ class AutosaveStore {
     };
     // Sidecar survives process death between the blob and the metadata commit.
     await CriticalData.stageRecovery(entry);
-    final entries = await list();
+    final entries = List<Map<String, dynamic>>.of(previous);
     entries.removeWhere((e) => e['key'] == file.recoveryKey);
     entries.add(entry);
     await CriticalData.write(indexKey, entries);
@@ -155,6 +168,21 @@ class AutosaveStore {
         } catch (_) {
           return null;
         }
+      });
+
+  static Future<String?> checkpointBlobPath(String key, DateTime? modifiedAt) =>
+      _serial(() async {
+        final entry = (await list())
+            .where(
+              (e) =>
+                  e['key'] == key &&
+                  e['modifiedAt'] == modifiedAt?.toUtc().toIso8601String(),
+            )
+            .firstOrNull;
+        if (entry == null) return null;
+        final hash = entry['hash'] as String?;
+        if (hash == null) return null;
+        return CriticalData.blobFilePath(hash);
       });
   static Future<XppFile> restore(Map<String, dynamic> entry) async {
     try {

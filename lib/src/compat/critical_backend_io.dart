@@ -133,6 +133,12 @@ Future<Uint8List> getBlob(String key) async {
   return bytes;
 }
 
+Future<String?> blobFilePath(String key) async {
+  if (!RegExp(r'^[a-f0-9]{64}$').hasMatch(key)) return null;
+  final file = File('${(await _root()).path}/$key.blob');
+  return (await file.exists()) ? file.path : null;
+}
+
 Future<void> stageRecovery(Map<String, dynamic> entry) async {
   final root = await _root();
   final payload = jsonEncode(entry);

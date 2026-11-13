@@ -44,6 +44,7 @@ import 'package:xournalpp/src/document_limits.dart';
 import 'package:xournalpp/src/document_export.dart';
 import 'package:xournalpp/src/selection_clipboard.dart';
 import 'package:xournalpp/src/XppPage.dart';
+import 'package:xournalpp/src/XppPageSize.dart';
 import 'package:xournalpp/src/paper_template.dart';
 import 'package:xournalpp/src/globals.dart';
 import 'package:xournalpp/src/editing_tool.dart';
@@ -55,8 +56,9 @@ class PageSnapshot {
   final int pageIndex;
   final List<XppLayer> layers;
   final int activeIndex;
+  final XppPageSize? pageSize;
   List<XppContent?> get content => layers[activeIndex].content ?? [];
-  PageSnapshot(this.pageIndex, this.layers, this.activeIndex);
+  PageSnapshot(this.pageIndex, this.layers, this.activeIndex, {this.pageSize});
 }
 
 enum EraserMode { pixel, stroke }
@@ -323,6 +325,8 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   Future<void>? _autosaveQueue;
   int _checkpointRevision = -1;
   Uint8List? _checkpointPreview;
+  bool _pageZeroDirty = true;
+  DateTime? _originModifiedAt;
   bool _discardRecovery = false;
   DateTime? lastAutosave;
   String? autosaveError;
@@ -340,7 +344,17 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     final path = document.sourcePath;
     if (path == null || !await FilePickerCross.exists(path)) return false;
     if (document.originHash == null) return true;
-    return await FilePickerCross.hashAt(path) != document.originHash;
+    final lastMod = await FilePickerCross.lastModified(path);
+    if (_originModifiedAt != null &&
+        lastMod != null &&
+        _originModifiedAt == lastMod) {
+      return false;
+    }
+    final changed = await FilePickerCross.hashAt(path) != document.originHash;
+    if (!changed && lastMod != null) {
+      _originModifiedAt = lastMod;
+    }
+    return changed;
   }
 
   Future<void> flushAutosave({bool compact = true}) =>
@@ -419,15 +433,32 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
             );
             throw StateError('Conflitto con l’originale: salvare una copia');
           }
+          final destination = document.sourcePath!;
           final output = FilePickerCross(bytes);
           final hash = await output.contentHashAsync();
-          await output.saveToPath(path: document.sourcePath!);
-          if (!await output.verifyAt(document.sourcePath!, expectedHash: hash))
+          final blobPath = await AutosaveStore.checkpointBlobPath(
+            document.recoveryKey,
+            snapshot.modifiedAt,
+          );
+          if (blobPath != null) {
+            try {
+              await FilePickerCross.saveFromFile(
+                sourceFilePath: blobPath,
+                destinationPath: destination,
+              );
+            } catch (_) {
+              await output.saveToPath(path: destination);
+            }
+          } else {
+            await output.saveToPath(path: destination);
+          }
+          if (!await output.verifyAt(destination, expectedHash: hash))
             throw StateError(
               'Scrittura non verificata: recupero locale conservato',
             );
           document.originHash = hash;
-          await RecentDocuments.save(snapshot, document.sourcePath!);
+          _originModifiedAt = await FilePickerCross.lastModified(destination);
+          await RecentDocuments.save(snapshot, destination);
           if (identical(file, document) && _revision == revision) {
             _hasUnsavedChanges = false;
             document.previewImage = snapshot.previewImage;
@@ -576,6 +607,23 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   void init(XppFile? initialFile) {
     if (file != null) return;
     file = initialFile;
+    if (initialFile?.previewImage != null) {
+      _checkpointPreview = initialFile!.previewImage;
+      _pageZeroDirty = false;
+    } else {
+      _pageZeroDirty = true;
+    }
+    if (initialFile?.sourcePath != null) {
+      unawaited(
+        FilePickerCross.lastModified(initialFile!.sourcePath!)
+            .then((time) {
+              if (identical(file, initialFile)) {
+                _originModifiedAt = time;
+              }
+            })
+            .catchError((_) {}),
+      );
+    }
     if (file != null && audio.supported) unawaited(audio.recoverStaged());
     WidgetsBinding.instance.addObserver(this);
     // A restored checkpoint does not authorize overwriting its origin.
@@ -1099,6 +1147,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     file!.autoGeneratePages = false;
     file!.pages!.insertAll(insertAt, newPages);
     _activeLayers.clear();
+    if (insertAt == 0) _pageZeroDirty = true;
 
     // 3) Indici cambiati: rigeneriamo le chiavi degli stack e azzeriamo l'undo
     //    (gli snapshot erano legati ai vecchi indici di pagina).
@@ -1134,6 +1183,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     file ??= XppFile.empty(title: title);
     file!.title = title;
     file!.pages = [];
+    _pageZeroDirty = true;
     pdfBackgrounds.clear();
     linkedPdfPath = pdfPath;
     try {
@@ -1326,7 +1376,26 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
             suffix++;
           }
         }
-        absolutePath = await data.saveToPath(path: destination);
+        final blobPath = !kIsWeb
+            ? await AutosaveStore.checkpointBlobPath(
+                document.recoveryKey,
+                snapshot.modifiedAt,
+              )
+            : null;
+        if (blobPath != null) {
+          String? saved;
+          try {
+            saved = await FilePickerCross.saveFromFile(
+              sourceFilePath: blobPath,
+              destinationPath: destination,
+            );
+          } catch (_) {
+            saved = null;
+          }
+          absolutePath = saved ?? await data.saveToPath(path: destination);
+        } else {
+          absolutePath = await data.saveToPath(path: destination);
+        }
       }
       final hash = await data.contentHashAsync();
       final verified =
@@ -1336,6 +1405,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
       if (verified) {
         document.sourcePath = absolutePath;
         document.originHash = hash;
+        _originModifiedAt = await FilePickerCross.lastModified(absolutePath);
         document.importWarnings.clear();
         snapshot.sourcePath = absolutePath;
         await RecentDocuments.save(snapshot, absolutePath);
@@ -1433,8 +1503,14 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   Future<void> _preparePreview(XppFile snapshot) async {
+    if (!_pageZeroDirty && _checkpointPreview != null) {
+      snapshot.previewImage = _checkpointPreview;
+      return;
+    }
     try {
       snapshot.previewImage = await buildPreviewBytes(snapshot);
+      _checkpointPreview = snapshot.previewImage;
+      _pageZeroDirty = false;
     } catch (_) {
       snapshot.previewImage = kTransparentImage;
     }
@@ -1580,6 +1656,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   void addNewContent(int pageIndex, XppContent? newContent) {
     if (newContent == null || !canEditLayer(pageIndex)) return;
     saveSnapshot(pageIndex);
+    if (pageIndex == 0) _pageZeroDirty = true;
     hasUnsavedChanges = true;
     activeLayer(pageIndex).content ??= [];
     activeLayer(pageIndex).content!.add(newContent);
@@ -1593,6 +1670,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   void deleteContent(int pageIndex, List<XppContent> deleted) {
     if (!canEditLayer(pageIndex)) return;
     saveSnapshot(pageIndex);
+    if (pageIndex == 0) _pageZeroDirty = true;
     hasUnsavedChanges = true;
     activeLayer(pageIndex).content!
         .removeWhere((element) => deleted.contains(element));
@@ -1631,6 +1709,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     if (!canEditLayer(pageIndex)) return;
     if (activeLayer(pageIndex).content!.isEmpty) return;
     saveSnapshot(pageIndex);
+    if (pageIndex == 0) _pageZeroDirty = true;
     hasUnsavedChanges = true;
     activeLayer(pageIndex).content!.removeLast();
     pageStackKeys[pageIndex]?.currentState?.setPageData(
@@ -1685,6 +1764,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
       if (delta.affected) changes[i] = delta;
     }
     if (changes.isEmpty) return;
+    if (pageIndex == 0) _pageZeroDirty = true;
     if (!eraserSnapshotTaken) {
       saveSnapshot(pageIndex);
       eraserSnapshotTaken = true;
@@ -1717,6 +1797,9 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
         pageIndex,
         snapshotLayers(pageIndex),
         activeLayerIndex(pageIndex),
+        pageSize: pageIndex < file!.pages!.length
+            ? file!.pages![pageIndex].pageSize
+            : null,
       ),
     );
     if (undoStack.length > 50) undoStack.removeAt(0);
@@ -1727,18 +1810,30 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   void undo() {
     if (undoStack.isEmpty) return;
     final last = undoStack.removeLast();
+    final page = file?.pages != null && last.pageIndex < file!.pages!.length
+        ? file!.pages![last.pageIndex]
+        : null;
+    final currentSize = page?.pageSize;
     redoStack.add(
       PageSnapshot(
         last.pageIndex,
         snapshotLayers(last.pageIndex),
         activeLayerIndex(last.pageIndex),
+        pageSize: currentSize,
       ),
     );
     file!.pages![last.pageIndex].layers = last.layers;
     _activeLayers[last.pageIndex] = last.activeIndex;
+    if (page != null && last.pageSize != null) {
+      page.pageSize = last.pageSize;
+      if (page.background != null) {
+        page.background!.size = last.pageSize;
+      }
+    }
     pageStackKeys[last.pageIndex]?.currentState?.setPageData(
       file!.pages![last.pageIndex],
     );
+    if (last.pageIndex == 0) _pageZeroDirty = true;
     hasUnsavedChanges = true;
     notifyListeners();
   }
@@ -1746,18 +1841,30 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   void redo() {
     if (redoStack.isEmpty) return;
     final future = redoStack.removeLast();
+    final page = file?.pages != null && future.pageIndex < file!.pages!.length
+        ? file!.pages![future.pageIndex]
+        : null;
+    final currentSize = page?.pageSize;
     undoStack.add(
       PageSnapshot(
         future.pageIndex,
         snapshotLayers(future.pageIndex),
         activeLayerIndex(future.pageIndex),
+        pageSize: currentSize,
       ),
     );
     file!.pages![future.pageIndex].layers = future.layers;
     _activeLayers[future.pageIndex] = future.activeIndex;
+    if (page != null && future.pageSize != null) {
+      page.pageSize = future.pageSize;
+      if (page.background != null) {
+        page.background!.size = future.pageSize;
+      }
+    }
     pageStackKeys[future.pageIndex]?.currentState?.setPageData(
       file!.pages![future.pageIndex],
     );
+    if (future.pageIndex == 0) _pageZeroDirty = true;
     hasUnsavedChanges = true;
     notifyListeners();
   }
@@ -1782,6 +1889,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   }
 
   void markContentChanged(int pageIndex) {
+    if (pageIndex == 0) _pageZeroDirty = true;
     hasUnsavedChanges = true;
     pageStackKeys[pageIndex]?.currentState?.setPageData(
       file!.pages![pageIndex],
@@ -1838,7 +1946,12 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
       for (var i = 0; i < stack.length; i++) {
         final s = stack[i];
         if (s.pageIndex > index)
-          stack[i] = PageSnapshot(s.pageIndex - 1, s.layers, s.activeIndex);
+          stack[i] = PageSnapshot(
+            s.pageIndex - 1,
+            s.layers,
+            s.activeIndex,
+            pageSize: s.pageSize,
+          );
       }
     }
     if (identical(removed, _lastAutomaticBlank)) _lastAutomaticBlank = null;
@@ -1851,6 +1964,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     _visiblePdfPages = {};
     pdfBackgrounds.clear();
     pdfErrors.clear();
+    if (index == 0) _pageZeroDirty = true;
     hasUnsavedChanges = true;
     notifyListeners();
     // Wait until the shorter column has laid out before navigating to its page.
@@ -1904,6 +2018,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
             old.pageIndex + 1,
             old.layers,
             old.activeIndex,
+            pageSize: old.pageSize,
           );
       }
     }
@@ -1912,6 +2027,7 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
     pdfBackgrounds.clear();
     pdfErrors.clear();
     pages.insert(at, page);
+    if (at == 0) _pageZeroDirty = true;
     if (activePageIndex >= at) activePageIndex++;
     hasUnsavedChanges = true;
     notifyListeners();
@@ -1982,6 +2098,53 @@ class CanvasController extends ChangeNotifier with WidgetsBindingObserver {
   void setEraserProps(EraserMode? m, double? w) {
     if (m != null) eraserMode = m;
     if (w != null) eraserWidth = w;
+    notifyListeners();
+  }
+
+  /// Espande la pagina specificata aggiungendo larghezza a destra ([deltaWidth])
+  /// e/o altezza in basso ([deltaHeight]).
+  void expandPage(
+    int pageIndex, {
+    double deltaWidth = 0.0,
+    double deltaHeight = 300.0,
+  }) {
+    if (file?.pages == null ||
+        pageIndex < 0 ||
+        pageIndex >= file!.pages!.length) {
+      return;
+    }
+    final page = file!.pages![pageIndex];
+    final currentSize = page.pageSize ?? XppPageSize.a4;
+    final newWidth = (currentSize.width + deltaWidth).clamp(100.0, 10000.0);
+    final newHeight = (currentSize.height + deltaHeight).clamp(100.0, 10000.0);
+    resizePage(pageIndex, width: newWidth, height: newHeight);
+  }
+
+  /// Imposta dimensioni personalizzate (larghezza e altezza in pt) per la pagina.
+  void resizePage(
+    int pageIndex, {
+    required double width,
+    required double height,
+  }) {
+    if (file?.pages == null ||
+        pageIndex < 0 ||
+        pageIndex >= file!.pages!.length) {
+      return;
+    }
+    saveSnapshot(pageIndex);
+    final page = file!.pages![pageIndex];
+    final newSize = XppPageSize(
+      width: width.clamp(100.0, 10000.0),
+      height: height.clamp(100.0, 10000.0),
+    );
+    page.pageSize = newSize;
+    if (page.background != null) {
+      page.background!.size = newSize;
+    }
+    if (pageIndex == 0) _pageZeroDirty = true;
+    pageStackKeys[pageIndex]?.currentState?.setPageData(page);
+    hasUnsavedChanges = true;
+    flushAutosave();
     notifyListeners();
   }
 }

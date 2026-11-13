@@ -21,6 +21,8 @@ import 'package:xournalpp/plugins/plugin_manager_page.dart';
 import 'layers_panel.dart';
 import 'add_page_button.dart';
 import 'pomodoro_progress_icon.dart';
+import 'expand_page_dialog.dart';
+import 'in_app_browser_dialog.dart';
 
 class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
   final GlobalKey penKey;
@@ -140,6 +142,10 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
               onOpenFile?.call();
             } else if (action == 'stylus-menu') {
               showStylusMenuSettings(context, context.read<ThemeController>());
+            } else if (action == 'expand-page') {
+              showExpandPageDialog(context, ctrl);
+            } else if (action == 'web-browser') {
+              showInAppBrowserDialog(context);
             }
           },
           itemBuilder: (_) => [
@@ -148,6 +154,22 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
               child: ListTile(
                 leading: Icon(Icons.touch_app_outlined),
                 title: Text('Menù circolare della penna'),
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
+            const PopupMenuItem(
+              value: 'expand-page',
+              child: ListTile(
+                leading: Icon(Icons.aspect_ratio_outlined),
+                title: Text('Espandi pagina (destra / basso)'),
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
+            const PopupMenuItem(
+              value: 'web-browser',
+              child: ListTile(
+                leading: Icon(Icons.travel_explore_outlined),
+                title: Text('Cerca sul Web / Browser'),
                 contentPadding: EdgeInsets.zero,
               ),
             ),
@@ -333,6 +355,18 @@ class CanvasToolbar extends StatelessWidget implements PreferredSizeWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   AddPageButton(controller: ctrl, icon: icons.addPage),
+                  IconButton(
+                    icon: const Icon(Icons.aspect_ratio_outlined),
+                    tooltip: 'Espandi pagina (destra / basso)',
+                    onPressed: ctrl.file?.pages?.isNotEmpty == true
+                        ? () => showExpandPageDialog(context, ctrl)
+                        : null,
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.travel_explore_outlined),
+                    tooltip: 'Cerca sul Web / Browser',
+                    onPressed: () => showInAppBrowserDialog(context),
+                  ),
                   IconButton(
                     icon: Icon(icons.pdf),
                     tooltip: 'Importa PDF',

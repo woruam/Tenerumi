@@ -10,6 +10,7 @@ Future<String> putBlob(Uint8List bytes) =>
     throw UnsupportedError('Storage non disponibile');
 Future<Uint8List> getBlob(String key) =>
     throw UnsupportedError('Storage non disponibile');
+Future<String?> blobFilePath(String key) async => null;
 Future<void> stageRecovery(Map<String, dynamic> entry) =>
     throw UnsupportedError('Storage non disponibile');
 Future<List<Map<String, dynamic>>> stagedRecoveries() =>

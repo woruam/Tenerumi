@@ -35,23 +35,23 @@ abstract class PdfDocument {
   /// For Web, [filePath] can be relative path from `index.html` or any
   /// arbitrary URL but it may be restricted by CORS.
   /// `password supported only for web!`
-  static Future<PdfDocument> openFile(String filePath, {String? password}) {
-    assertHasPdfSupport();
+  static Future<PdfDocument> openFile(String filePath, {String? password}) async {
+    await assertHasPdfSupport();
     return PdfxPlatform.instance.openFile(filePath, password: password);
   }
 
   /// Opening the specified asset.
   /// `password supported only for web!`
-  static Future<PdfDocument> openAsset(String name, {String? password}) {
-    assertHasPdfSupport();
+  static Future<PdfDocument> openAsset(String name, {String? password}) async {
+    await assertHasPdfSupport();
     return PdfxPlatform.instance.openAsset(name, password: password);
   }
 
   /// Opening the PDF on memory.
   /// `password supported only for web!`
   static Future<PdfDocument> openData(FutureOr<Uint8List> data,
-      {String? password}) {
-    assertHasPdfSupport();
+      {String? password}) async {
+    await assertHasPdfSupport();
     return PdfxPlatform.instance.openData(data, password: password);
   }
 

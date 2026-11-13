@@ -136,6 +136,8 @@ Future<Uint8List> getBlob(String key) async {
   return bytes;
 }
 
+Future<String?> blobFilePath(String key) async => null;
+
 Future<void> stageRecovery(Map<String, dynamic> entry) async {
   // The recovery manifest itself is an immutable journal in the same database.
   final entries = await stagedRecoveries();

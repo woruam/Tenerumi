@@ -12,6 +12,7 @@ import 'package:flutter/rendering.dart';
 import 'package:xournalpp/src/XppBackground.dart';
 import 'package:xournalpp/src/XppLayer.dart';
 import 'package:xournalpp/src/XppPage.dart';
+import 'package:xournalpp/src/XppPageSize.dart';
 
 class XppPageStack extends StatefulWidget {
   final XppPage? page;
@@ -30,6 +31,7 @@ class XppPageStackState extends State<XppPageStack>
   XppPage? page;
 
   XppBackground? _lastKnownBackground;
+  XppPageSize? _lastKnownSize;
   Widget background = Container();
   final ValueNotifier<int> _inkRevision = ValueNotifier(0);
 
@@ -51,8 +53,11 @@ class XppPageStackState extends State<XppPageStack>
     ]);
     List<Widget> children = [];
 
-    if (page!.background != null && _lastKnownBackground != page!.background) {
+    if (page!.background != null &&
+        (_lastKnownBackground != page!.background ||
+            _lastKnownSize != page!.pageSize)) {
       _lastKnownBackground = page!.background;
+      _lastKnownSize = page!.pageSize;
       // Il RepaintBoundary per lo sfondo
       background =
           page!.background is XppBackgroundPdf && !widget.renderPdfBackground

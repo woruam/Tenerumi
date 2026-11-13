@@ -341,6 +341,10 @@ abstract final class CriticalData {
   static Future<Uint8List> getBlob(String key) async => inMemoryForTests
       ? _memoryBlobs[await _namespace()]![key]!
       : backend.getBlob(key);
+
+  static Future<String?> blobFilePath(String key) async => inMemoryForTests
+      ? null
+      : backend.blobFilePath(key);
   static final _memoryLibrary = <String, Map<String, Map<String, dynamic>>>{};
   static Future<void> stageLibrary(Map<String, dynamic> entry) async {
     if (inMemoryForTests) {

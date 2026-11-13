@@ -81,7 +81,14 @@ object DocumentStorage {
                         "writeFromFile" -> {
                             val source = File(requireNotNull(call.argument<String>("source"))).canonicalFile
                             val root = File(context.applicationInfo.dataDir).canonicalFile
-                            require(source.path.startsWith(root.path + File.separator) && source.name in listOf("backup.zip", "export.pdf") && source.parentFile?.parentFile?.name == "backup-staging") { "Expected private export staging" }
+                            require(
+                                source.path.startsWith(root.path + File.separator) &&
+                                (
+                                    (source.name in listOf("backup.zip", "export.pdf") && source.parentFile?.parentFile?.name == "backup-staging") ||
+                                    (source.name.endsWith(".blob") && source.parentFile?.name == "state-v2") ||
+                                    source.name.endsWith(".xopp")
+                                )
+                            ) { "Expected private export staging" }
                             require(source.length() in 1..(513 * 1024 * 1024L)) { "Backup too large" }
                             resolver.openOutputStream(uri, "wt")?.use { output ->
                                 source.inputStream().use { input ->

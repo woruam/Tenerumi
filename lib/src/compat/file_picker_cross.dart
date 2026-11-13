@@ -201,6 +201,24 @@ class FilePickerCross {
     return resolved;
   }
 
+  /// Streams an existing staged file directly to disk or native SAF without
+  /// transmitting bytes across the MethodChannel bridge.
+  static Future<String> saveFromFile({
+    required String sourceFilePath,
+    required String destinationPath,
+  }) async {
+    if (destinationPath.startsWith('content://')) {
+      await _documents.invokeMethod<void>('writeFromFile', {
+        'uri': destinationPath,
+        'source': sourceFilePath,
+      });
+      return destinationPath;
+    }
+    final resolved = await storage.resolve(destinationPath);
+    await staging.copyToPath(sourceFilePath, resolved);
+    return resolved;
+  }
+
   static Future<bool> exists(String path) async {
     if (path.startsWith('content://')) {
       return await _documents.invokeMethod<bool>('exists', {'uri': path}) ??

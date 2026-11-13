@@ -38,6 +38,10 @@ abstract class XppContent {
 
   XmlElement toXmlElement();
 
+  void writeXml(StringBuffer out) {
+    out.write(toXmlElement().toXmlString());
+  }
+
   bool shouldSelectAt({Offset? coordinates, EditingTool? tool});
 
   bool inRegion({Offset? topLeft, Offset? bottomRight});
